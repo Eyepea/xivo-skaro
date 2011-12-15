@@ -29,17 +29,17 @@ logger = logging.getLogger(__name__)
 
 class JsonSimpleBackend(object):
     closed = False
-    
+
     def __init__(self, directory):
         self._directory = directory
         self._dict = {}
         self._load()
         self._closed = False
-    
+
     def _load(self):
         if not os.path.isdir(self._directory):
             os.mkdir(self._directory)
-        
+
         for rel_filename in os.listdir(self._directory):
             abs_filename = os.path.join(self._directory, rel_filename)
             try:
@@ -55,14 +55,14 @@ class JsonSimpleBackend(object):
                     self._dict[rel_filename.decode('ascii')] = document
                 finally:
                     fobj.close()
-    
+
     def close(self):
         self._dict = {}
         self._closed = True
-    
+
     def __getitem__(self, id):
         return deepcopy(self._dict[id])
-    
+
     def __setitem__(self, id, document):
         self._dict[id] = deepcopy(document)
         abs_filename = os.path.join(self._directory, id.encode('ascii'))
@@ -71,7 +71,7 @@ class JsonSimpleBackend(object):
             json.dump(document, fobj, separators=(',', ':'))
         finally:
             fobj.close()
-    
+
     def __delitem__(self, id):
         del self._dict[id]
         abs_filename = os.path.join(self._directory, id.encode('ascii'))
@@ -79,10 +79,10 @@ class JsonSimpleBackend(object):
             os.remove(abs_filename)
         except EnvironmentError, e:
             logger.info('Error while removing JSON document %s: %s', e)
-    
+
     def __contains__(self, id):
         return id in self._dict
-    
+
     def itervalues(self):
         for document in self._dict.itervalues():
             yield deepcopy(document)
@@ -99,16 +99,16 @@ class JsonDatabase(object):
         self._generator_factory = generator_factory
         self._collections = {}
         self._create_base_directory()
-    
+
     def _create_base_directory(self):
         if not os.path.isdir(self._base_directory):
             os.makedirs(self._base_directory)
-    
+
     def close(self):
         for collection in self._collections.itervalues():
             collection.close()
         self._collections = {}
-    
+
     def _new_collection(self, id):
         generator = self._generator_factory()
         directory = os.path.join(self._base_directory, id)
@@ -117,9 +117,9 @@ class JsonDatabase(object):
         except Exception, e:
             # could not create collection
             raise ValueError(e)
-    
+
     def collection(self, id):
-        if id not in self._collections or self._collections[id]._closed: 
+        if id not in self._collections or self._collections[id]._closed:
             self._collections[id] = self._new_collection(id)
         return self._collections[id]
 

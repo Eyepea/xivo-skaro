@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 # next line is to prevent from importing our own module when doing 'import shelve'
-from __future__ import absolute_import 
+from __future__ import absolute_import
 
 __license__ = """
     Copyright (C) 2011  Avencall
@@ -37,11 +37,11 @@ def _convert_to_backend(id):
 class ShelveSimpleBackend(object):
     # in python 2, shelve doesn't accept unicode string as keys, that's why
     # this layer is needed
-    
+
     def __init__(self, filename):
         self._shelve = shelve.open(filename)
         self._closed = False
-    
+
     def close(self):
         try:
             self._shelve.close()
@@ -50,23 +50,23 @@ class ShelveSimpleBackend(object):
             raise
         else:
             self._closed = True
-    
+
     def __getitem__(self, id):
         real_id = _convert_to_backend(id)
         return self._shelve[real_id]
-    
+
     def __setitem__(self, id, document):
         real_id = _convert_to_backend(id)
         self._shelve[real_id] = document
-    
+
     def __delitem__(self, id):
         real_id = _convert_to_backend(id)
         del self._shelve[real_id]
-    
+
     def __contains__(self, id):
         real_id = _convert_to_backend(id)
         return real_id in self._shelve
-    
+
     def itervalues(self):
         return self._shelve.itervalues()
 
@@ -82,16 +82,16 @@ class ShelveDatabase(object):
         self._generator_factory = generator_factory
         self._collections = {}
         self._create_shelve_dir()
-    
+
     def _create_shelve_dir(self):
         if not os.path.isdir(self._shelve_dir):
             os.makedirs(self._shelve_dir)
-    
+
     def close(self):
         for collection in self._collections.itervalues():
             collection.close()
         self._collections = {}
-    
+
     def _new_collection(self, id):
         generator = self._generator_factory()
         filename = os.path.join(self._shelve_dir, id)
@@ -100,9 +100,9 @@ class ShelveDatabase(object):
         except Exception, e:
             # could not create collection
             raise ValueError(e)
-    
+
     def collection(self, id):
-        if id not in self._collections or self._collections[id]._closed: 
+        if id not in self._collections or self._collections[id]._closed:
             self._collections[id] = self._new_collection(id)
         return self._collections[id]
 

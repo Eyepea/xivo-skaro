@@ -39,7 +39,7 @@ from provd.servers.http_site import Site
 from provd.persist.memory import MemoryDatabaseFactory
 from provd.persist.json_backend import JsonDatabaseFactory
 from provd.persist.shelve import ShelveDatabaseFactory
-from provd.rest.server.server import new_server_resource,\
+from provd.rest.server.server import new_server_resource, \
     new_restricted_server_resource
 from twisted.application.service import IServiceMaker, Service, MultiService
 from twisted.application import internet
@@ -54,14 +54,14 @@ logger = logging.getLogger(__name__)
 
 class ProvisioningService(Service):
     # has an 'app' attribute after starting
-    
+
     _DB_FACTORIES = {
         'list': MemoryDatabaseFactory(),
         'dict': MemoryDatabaseFactory(),
         'json': JsonDatabaseFactory(),
         'shelve': ShelveDatabaseFactory()
     }
-    
+
     def __init__(self, config):
         self._config = config
 
@@ -72,7 +72,7 @@ class ProvisioningService(Service):
             if pre == 'database' and sep and post not in ['type', 'generator']:
                 db_config[post] = v
         return db_config
-    
+
     def _create_database(self):
         db_type = self._config['database.type']
         db_generator = self._config['database.generator']
@@ -81,7 +81,7 @@ class ProvisioningService(Service):
                     db_type, db_generator, db_specific_config)
         db_factory = self._DB_FACTORIES[db_type]
         return db_factory.new_database(db_type, db_generator, **db_specific_config)
-    
+
     def _close_database(self):
         logger.info('Closing database...')
         try:
@@ -89,7 +89,7 @@ class ProvisioningService(Service):
         except Exception:
             logger.error('Error while closing database', exc_info=True)
         logger.info('Database closed')
-    
+
     def startService(self):
         self._database = self._create_database()
         try:
@@ -111,7 +111,7 @@ class ProvisioningService(Service):
                 self._close_database()
         else:
             Service.startService(self)
-    
+
     def stopService(self):
         Service.stopService(self)
         try:
@@ -125,7 +125,7 @@ class ProcessService(Service):
     def __init__(self, prov_service, config):
         self._prov_service = prov_service
         self._config = config
-    
+
     def _get_conffile_globals(self):
         # Pre: hasattr(self._prov_service, 'app')
         conffile_globals = {}
@@ -133,7 +133,7 @@ class ProcessService(Service):
         conffile_globals.update(provd.devices.pgasso.__dict__)
         conffile_globals['app'] = self._prov_service.app
         return conffile_globals
-    
+
     def _create_processor(self, request_config_dir, name, config_name):
         # name is the name of the processor, for example 'info_extractor'
         filename = os.path.join(request_config_dir, name + '.py.conf.' + config_name)
@@ -147,7 +147,7 @@ class ProcessService(Service):
             raise Exception('process config file "%s" doesn\'t define a "%s" name',
                             filename, name)
         return conffile_globals[name]
-    
+
     def startService(self):
         # Pre: hasattr(self._prov_service, 'app')
         self.request_processing = provd.devices.ident.RequestProcessingService(self._prov_service.app)
@@ -163,12 +163,12 @@ class HTTPProcessService(Service):
         self._prov_service = prov_service
         self._process_service = process_service
         self._config = config
-    
+
     def startService(self):
         app = self._prov_service.app
         process_service = self._process_service.request_processing
         http_process_service = provd.devices.ident.HTTPRequestProcessingService(process_service,
-                                                                                app.pg_mgr) 
+                                                                                app.pg_mgr)
         site = Site(http_process_service)
         port = self._config['general.http_port']
         interface = self._config['general.ip']
@@ -189,7 +189,7 @@ class TFTPProcessService(Service):
         self._prov_service = prov_service
         self._process_service = process_service
         self._config = config
-    
+
     def startService(self):
         app = self._prov_service.app
         process_service = self._process_service.request_processing
@@ -204,7 +204,7 @@ class TFTPProcessService(Service):
         self._udp_server = internet.UDPServer(port, tftp_protocol, interface=interface)
         self._udp_server.startService()
         Service.startService(self)
-    
+
     def stopService(self):
         Service.stopService(self)
         return self._udp_server.stopService()
@@ -214,7 +214,7 @@ class DHCPProcessService(Service):
     # has a 'dhcp_request_processing_service' attribute once started
     def __init__(self, process_service):
         self._process_service = process_service
-    
+
     def startService(self):
         process_service = self._process_service.request_processing
         self.dhcp_request_processing_service = provd.devices.ident.DHCPRequestProcessingService(process_service)
@@ -226,7 +226,7 @@ class RemoteConfigurationService(Service):
         self._prov_service = prov_service
         self._dhcp_process_service = dhcp_process_service
         self._config = config
-    
+
     def startService(self):
         app = self._prov_service.app
         dhcp_request_processing_service = self._dhcp_process_service.dhcp_request_processing_service
@@ -241,7 +241,7 @@ class RemoteConfigurationService(Service):
         root_resource = Resource()
         root_resource.putChild('provd', server_resource)
         rest_site = Site(root_resource)
-        
+
         port = self._config['general.rest_port']
         interface = self._config['general.rest_ip']
         if interface == '*':
@@ -256,7 +256,7 @@ class RemoteConfigurationService(Service):
             self._tcp_server = internet.TCPServer(port, rest_site, interface=interface)
         self._tcp_server.startService()
         Service.startService(self)
-    
+
     def stopService(self):
         Service.stopService(self)
         return self._tcp_server.stopService()
@@ -265,7 +265,7 @@ class RemoteConfigurationService(Service):
 class SynchronizeService(Service):
     def __init__(self, config):
         self._config = config
-    
+
     def _new_sync_service_asterisk_ami(self):
         server_list = self._config['general.asterisk_ami_servers']
         servers = []
@@ -274,10 +274,10 @@ class SynchronizeService(Service):
             servers.append({'host': host, 'port': port, 'enable_tls': tls,
                             'username': user, 'password': pwd})
         return provd.synchronize.AsteriskAMISynchronizeService(servers)
-    
+
     def _new_sync_service_none(self):
         return None
-    
+
     def _new_sync_service(self, sync_service_type):
         name = '_new_sync_service_' + sync_service_type
         try:
@@ -287,13 +287,13 @@ class SynchronizeService(Service):
                              sync_service_type)
         else:
             return fun()
-    
+
     def startService(self):
         sync_service = self._new_sync_service(self._config['general.sync_service_type'])
         if sync_service is not None:
             provd.synchronize.register_sync_service(sync_service)
         Service.startService(self)
-    
+
     def stopService(self):
         Service.stopService(self)
         provd.synchronize.unregister_sync_service()
@@ -302,12 +302,12 @@ class SynchronizeService(Service):
 class LocalizationService(Service):
     def _new_l10n_service(self):
         return provd.localization.LocalizationService()
-    
+
     def startService(self):
         l10n_service = self._new_l10n_service()
         provd.localization.register_localization_service(l10n_service)
         Service.startService(self)
-    
+
     def stopService(self):
         Service.stopService(self)
         provd.localization.unregister_localization_service()
@@ -316,19 +316,19 @@ class LocalizationService(Service):
 class _CompositeConfigSource(object):
     def __init__(self, options):
         self._options = options
-        
+
     def pull(self):
         raw_config = {}
-        
+
         default = provd.config.DefaultConfigSource()
         raw_config.update(default.pull())
-        
+
         command_line = provd.config.CommandLineConfigSource(self._options)
         raw_config.update(command_line.pull())
-        
+
         config_file = provd.config.ConfigFileConfigSource(raw_config['general.config_file'])
         raw_config.update(config_file.pull())
-        
+
         return raw_config
 
 
@@ -348,7 +348,7 @@ class UTFFixedSysLogHandler(SysLogHandler):
                  add_bom=True):
         SysLogHandler.__init__(self, address, facility)
         self._add_bom = add_bom
-    
+
     def emit(self, record):
         """
         Emit a record.
@@ -392,11 +392,11 @@ def _null_function(*args, **kwargs):
 
 class ProvisioningServiceMaker(object):
     implements(IServiceMaker, IPlugin)
-    
+
     tapname = 'provd'
     description = 'A provisioning server.'
     options = provd.config.Options
-    
+
     def _configure_logging(self, options):
         # configure standard logging module
         if options['stderr']:
@@ -417,43 +417,43 @@ class ProvisioningServiceMaker(object):
         log.theLogPublisher.observers = [log.PythonLoggingObserver().emit]
         log.addObserver = _null_function
         log.removeObserver = _null_function
-    
+
     def _read_config(self, options):
         logger.info('Reading application configuration')
         config_sources = [_CompositeConfigSource(options)]
         return provd.config.get_config(config_sources)
-    
+
     def makeService(self, options):
         self._configure_logging(options)
-        
+
         config = self._read_config(options)
         top_service = MultiService()
-        
+
         # check config for verbosity
         if config['general.verbose']:
             logging.getLogger().setLevel(logging.DEBUG)
-        
+
         sync_service = SynchronizeService(config)
         sync_service.setServiceParent(top_service)
-        
+
         l10n_service = LocalizationService()
         l10n_service.setServiceParent(top_service)
-        
+
         prov_service = ProvisioningService(config)
         prov_service.setServiceParent(top_service)
-        
+
         process_service = ProcessService(prov_service, config)
         process_service.setServiceParent(top_service)
-        
+
         http_process_service = HTTPProcessService(prov_service, process_service, config)
         http_process_service.setServiceParent(top_service)
-        
+
         tftp_process_service = TFTPProcessService(prov_service, process_service, config)
         tftp_process_service.setServiceParent(top_service)
-        
+
         dhcp_process_service = DHCPProcessService(process_service)
         dhcp_process_service.setServiceParent(top_service)
-        
+
         remote_config_service = RemoteConfigurationService(prov_service, dhcp_process_service, config)
         remote_config_service.setServiceParent(top_service)
 

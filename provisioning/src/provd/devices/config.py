@@ -486,10 +486,10 @@ def _check_config_validity(config):
     for id_ in config[u'parent_ids']:
         if not isinstance(id_, basestring):
             raise ValueError('parent id must be a string; is %s' % type(id_))
-    
+
     if u'raw_config' not in config:
         raise ValueError('missing "raw_config" field in config')
-    
+
     raw_config = config[u'raw_config']
     if not isinstance(raw_config, dict):
         raise ValueError('"raw_config" field must be a dict; is %s' %
@@ -545,10 +545,10 @@ class ConfigCollection(ForwardingDocumentCollection):
             parents_idx[id] = list(parent_ids)
         self._childs_idx = childs_idx
         self._parents_idx = parents_idx
-    
+
     def _has_childs_and_parents_indexes(self):
         return hasattr(self, '_childs_idx') and hasattr(self, '_parents_idx')
-    
+
     @_needs_childs_and_parents_indexes
     def insert(self, config):
         _check_config_validity(config)
@@ -566,7 +566,7 @@ class ConfigCollection(ForwardingDocumentCollection):
         deferred = self._collection.insert(config)
         deferred.addCallback(callback)
         return deferred
-    
+
     @_needs_childs_and_parents_indexes
     def update(self, config):
         _check_config_validity(config)
@@ -591,7 +591,7 @@ class ConfigCollection(ForwardingDocumentCollection):
         deferred = self._collection.update(config)
         deferred.addCallback(callback)
         return deferred
-    
+
     @_needs_childs_and_parents_indexes
     def delete(self, id):
         def callback(_):
@@ -607,7 +607,7 @@ class ConfigCollection(ForwardingDocumentCollection):
         deferred = self._collection.delete(id)
         deferred.addCallback(callback)
         return deferred
-    
+
     @_needs_childs_and_parents_indexes
     def get_ancestors(self, id):
         """Return a deferred that will fire with the set of ancestors of the
@@ -623,10 +623,10 @@ class ConfigCollection(ForwardingDocumentCollection):
                     if parent_id not in visited:
                         visited.add(parent_id)
                         aux(parent_id)
-        
+
         aux(id)
         return visited
-    
+
     @_needs_childs_and_parents_indexes
     def get_descendants(self, id):
         """Return a deferred that will fire with the set of descendants of the
@@ -642,10 +642,10 @@ class ConfigCollection(ForwardingDocumentCollection):
                     if child_id not in visited:
                         visited.add(child_id)
                         aux(child_id)
-        
+
         aux(id)
         return visited
-    
+
     def get_raw_config(self, id, base_raw_config={}):
         """Return a deferred that will fire with a raw config with every
         parameters from its ancestors config, or fire with None if id is not
@@ -671,7 +671,7 @@ class ConfigCollection(ForwardingDocumentCollection):
                         visited.add(parent_id)
                         yield aux(parent_id)
                 _rec_update_dict(flattened_raw_config[0], config[u'raw_config'])
-        
+
         d = aux(id)
         d.addCallback(lambda _: flattened_raw_config[0])
         return d
@@ -688,7 +688,7 @@ class DefaultConfigFactory(object):
         # to lessen the chance of having a username collision (which was
         # why we introduced this whole thing)
         self._n = int(time.time())
-    
+
     def _new_config(self, id, sip_line_1_username):
         new_suffix = unicode(self._n)
         self._n += 1
@@ -705,7 +705,7 @@ class DefaultConfigFactory(object):
             u'transient': True
         }
         return new_config
-    
+
     def __call__(self, config):
         try:
             sip_line_1 = config[u'raw_config'][u'sip_lines'][u'1']

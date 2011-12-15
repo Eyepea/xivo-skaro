@@ -23,7 +23,7 @@ __license__ = """
 """
 
 from fetchfw import download
-from provd.operation import OperationInProgress, OIP_SUCCESS, OIP_FAIL,\
+from provd.operation import OperationInProgress, OIP_SUCCESS, OIP_FAIL, \
     OIP_PROGRESS
 from twisted.internet import threads, defer
 
@@ -42,16 +42,16 @@ class OperationInProgressHook(download.DownloadHook):
     def __init__(self, oip):
         self._oip = oip
         self._oip.current = 0
-    
+
     def start(self):
         self._oip.state = OIP_PROGRESS
-    
+
     def update(self, arg):
         self._oip.current += len(arg)
-    
+
     def complete(self):
         self._oip.state = OIP_SUCCESS
-    
+
     def fail(self, exc_value):
         self._oip.state = OIP_FAIL
 

@@ -25,7 +25,7 @@ def numeric_id_generator(prefix=u'', start=0):
     n = start
     while True:
         yield prefix + unicode(n)
-        n += 1 
+        n += 1
 
 
 def uuid_id_generator():
@@ -39,7 +39,7 @@ def urandom_id_generator(length=12):
         try:
             id = unicode(binascii.hexlify(f.read(length)))
         finally:
-            f.close() 
+            f.close()
         yield id
 
 

@@ -27,7 +27,7 @@ from provd.localization import get_localization_service
 from provd.operation import OIP_PROGRESS, OIP_FAIL, OIP_SUCCESS
 from provd.persist.common import ID_KEY, InvalidIdError as PersistInvalidIdError
 from provd.plugins import PluginManager, PluginNotLoadedError
-from provd.services import InvalidParameterError, JsonConfigPersister,\
+from provd.services import InvalidParameterError, JsonConfigPersister, \
     PersistentConfigureServiceDecorator
 from provd.synchro import DeferredRWLock
 from twisted.internet import defer
@@ -72,7 +72,7 @@ def _rlock(fun):
         return d
     return aux
 
-    
+
 def _wlock(fun):
     # Decorator for instance method of ProvisioningApplication that need to
     # acquire the write lock
@@ -175,17 +175,17 @@ class ProvisioningApplication(object):
     """
     # Note that, seen from the outside, all method acquiring a lock return a
     # deferred.
-    
+
     def __init__(self, cfg_collection, dev_collection, config):
         self._cfg_collection = cfg_collection
         self._dev_collection = dev_collection
         self._splitted_config = _split_config(config)
-        
+
         base_storage_dir = config['general.base_storage_dir']
         plugins_dir = os.path.join(base_storage_dir, 'plugins')
-        
+
         self.proxies = self._splitted_config.get('proxy', {})
-        
+
         self.pg_mgr = PluginManager(self,
                                     plugins_dir,
                                     config['general.cache_dir'],
@@ -194,34 +194,34 @@ class ProvisioningApplication(object):
                                     config['general.check_compat_max'])
         if 'general.plugin_server' in config:
             self.pg_mgr.server = config['general.plugin_server']
-        
+
         # Do not move this line up unless you know what you are doing...
         cfg_service = ApplicationConfigureService(self.pg_mgr, self.proxies)
         persister = JsonConfigPersister(os.path.join(base_storage_dir,
                                                      'app.json'))
         self.configure_service = PersistentConfigureServiceDecorator(cfg_service, persister)
-        
+
         self._base_raw_config = config['general.base_raw_config']
         logger.info('Using base raw config %s', self._base_raw_config)
         _check_common_raw_config_validity(self._base_raw_config)
         self._rw_lock = DeferredRWLock()
         self._cfg_factory = DefaultConfigFactory()
         self._pg_load_all(True)
-    
+
     @_wlock
     def close(self):
         logger.info('Closing provisioning application...')
         self.pg_mgr.close()
         logger.info('Provisioning application closed')
-    
+
     # device methods
-    
+
     def _dev_get_plugin(self, device):
         if u'plugin' in device:
             return self.pg_mgr.get(device[u'plugin'])
         else:
             return None
-    
+
     def _dev_get_raw_config(self, device):
         # Return a deferred that will fire with a raw config associated
         # with the device, or fire with None if there's no such raw config
@@ -230,7 +230,7 @@ class ProvisioningApplication(object):
             return self._cfg_collection.get_raw_config(cfg_id, self._base_raw_config)
         else:
             return defer.succeed(None)
-    
+
     @defer.inlineCallbacks
     def _dev_get_plugin_and_raw_config(self, device):
         # Return a deferred that will fire with a tuple (plugin, raw_config)
@@ -242,7 +242,7 @@ class ProvisioningApplication(object):
             if raw_config is not None:
                 defer.returnValue((plugin, raw_config))
         defer.returnValue((None, None))
-    
+
     def _dev_configure(self, device, plugin, raw_config):
         # Return true if the device has been successfully configured (i.e.
         # no exception were raised), else false.
@@ -262,7 +262,7 @@ class ProvisioningApplication(object):
             else:
                 return True
         return False
-    
+
     @defer.inlineCallbacks
     def _dev_configure_if_possible(self, device):
         # Return a deferred that fire with true if the device has been
@@ -272,7 +272,7 @@ class ProvisioningApplication(object):
             defer.returnValue(False)
         else:
             defer.returnValue(self._dev_configure(device, plugin, raw_config))
-    
+
     def _dev_deconfigure(self, device, plugin):
         # Return true if the device has been successfully deconfigured (i.e.
         # no exception were raised), else false.
@@ -285,7 +285,7 @@ class ProvisioningApplication(object):
             return False
         else:
             return True
-    
+
     def _dev_deconfigure_if_possible(self, device):
         # Return true if the device has been successfully configured (i.e.
         # no exception were raised), else false.
@@ -294,14 +294,14 @@ class ProvisioningApplication(object):
             return False
         else:
             return self._dev_deconfigure(device, plugin)
-    
+
     def _dev_synchronize(self, device, plugin, raw_config):
         # Return a deferred that will fire with None once the device
         # synchronization is completed.
         logger.info('Synchronizing device %s with plugin %s', device[ID_KEY], plugin.id)
         _set_defaults_raw_config(raw_config)
         return plugin.synchronize(device, raw_config)
-    
+
     @defer.inlineCallbacks
     def _dev_synchronize_if_possible(self, device):
         # Return a deferred that will fire with None once the device
@@ -314,7 +314,7 @@ class ProvisioningApplication(object):
             raise Exception('Plugin %s is not installed/loaded' % device.get(u'plugin'))
         else:
             yield self._dev_synchronize(device, plugin, raw_config)
-    
+
     @defer.inlineCallbacks
     def _dev_get_or_raise(self, id):
         device = yield self._dev_collection.retrieve(id)
@@ -322,10 +322,10 @@ class ProvisioningApplication(object):
             raise InvalidIdError('invalid device ID "%s"' % id)
         else:
             defer.returnValue(device)
-    
+
     _SIGNIFICANT_KEYS = [u'plugin', u'config', u'mac', u'ip', u'uuid',
                          u'vendor', u'model', u'version']
-    
+
     def _dev_need_reconfiguration(self, old_device, new_device):
         # Note that this doesn't check if the device is deconfigurable
         # and configurable.
@@ -333,7 +333,7 @@ class ProvisioningApplication(object):
             if old_device.get(key) != new_device.get(key):
                 return True
         return False
-    
+
     @_wlock
     @defer.inlineCallbacks
     def dev_insert(self, device):
@@ -378,7 +378,7 @@ class ProvisioningApplication(object):
         except Exception:
             logger.error('Error while inserting device', exc_info=True)
             raise
-    
+
     @_wlock
     @defer.inlineCallbacks
     def dev_update(self, device):
@@ -433,7 +433,7 @@ class ProvisioningApplication(object):
         except Exception:
             logger.error('Error while updating device', exc_info=True)
             raise
-    
+
     @_wlock
     @defer.inlineCallbacks
     def dev_delete(self, id):
@@ -468,20 +468,20 @@ class ProvisioningApplication(object):
         except Exception:
             logger.error('Error while deleting device', exc_info=True)
             raise
-    
+
     def dev_retrieve(self, id):
         """Return a deferred that fire with the device with the given ID, or
         fire with None if there's no such document.
         
         """
         return self._dev_collection.retrieve(id)
-    
+
     def dev_find(self, selector, *args, **kwargs):
         return self._dev_collection.find(selector, *args, **kwargs)
-    
+
     def dev_find_one(self, selector, *args, **kwargs):
         return self._dev_collection.find_one(selector, *args, **kwargs)
-    
+
     @_wlock
     @defer.inlineCallbacks
     def dev_reconfigure(self, id):
@@ -509,7 +509,7 @@ class ProvisioningApplication(object):
         except Exception:
             logger.error('Error while reconfiguring device', exc_info=True)
             raise
-    
+
     @_rlock
     @defer.inlineCallbacks
     def dev_synchronize(self, id):
@@ -537,9 +537,9 @@ class ProvisioningApplication(object):
         except Exception:
             logger.error('Error while synchronizing device', exc_info=True)
             raise
-    
+
     # config methods
-    
+
     @defer.inlineCallbacks
     def _cfg_get_or_raise(self, id):
         config = yield self._cfg_collection.retrieve(id)
@@ -547,7 +547,7 @@ class ProvisioningApplication(object):
             raise InvalidIdError('invalid config ID "%s"' % id)
         else:
             defer.returnValue(config)
-    
+
     @_wlock
     @defer.inlineCallbacks
     def cfg_insert(self, config):
@@ -603,7 +603,7 @@ class ProvisioningApplication(object):
         except Exception:
             logger.error('Error while inserting config', exc_info=True)
             raise
-    
+
     @_wlock
     @defer.inlineCallbacks
     def cfg_update(self, config):
@@ -659,7 +659,7 @@ class ProvisioningApplication(object):
         except Exception:
             logger.error('Error while updating config', exc_info=True)
             raise
-    
+
     @_wlock
     @defer.inlineCallbacks
     def cfg_delete(self, id):
@@ -716,23 +716,23 @@ class ProvisioningApplication(object):
         except Exception:
             logger.error('Error while deleting config', exc_info=True)
             raise
-    
+
     def cfg_retrieve(self, id):
         """Return a deferred that fire with the config with the given ID, or
         fire with None if there's no such document.
         
         """
         return self._cfg_collection.retrieve(id)
-    
+
     def cfg_retrieve_raw_config(self, id):
         return self._cfg_collection.get_raw_config(id, self._base_raw_config)
-    
+
     def cfg_find(self, selector, *args, **kwargs):
         return self._cfg_collection.find(selector, *args, **kwargs)
-    
+
     def cfg_find_one(self, selector, *args, **kwargs):
         return self._cfg_collection.find_one(selector, *args, **kwargs)
-    
+
     @_wlock
     @defer.inlineCallbacks
     def cfg_create_new(self):
@@ -758,14 +758,14 @@ class ProvisioningApplication(object):
                     logger.debug('Autocreate config factory returned null config')
             else:
                 logger.debug('No config with the autocreate role found')
-            
+
             defer.returnValue(new_config_id)
         except Exception:
             logger.error('Error while autocreating config', exc_info=True)
             raise
-    
+
     # plugin methods
-    
+
     def _pg_load_all(self, catch_error=False):
         logger.info('Loading all plugins')
         loaded_plugins = 0
@@ -779,7 +779,7 @@ class ProvisioningApplication(object):
                 else:
                     raise
         logger.info('Loaded %d plugins.', loaded_plugins)
-    
+
     def _pg_configure_pg(self, id):
         # Raise an exception if configure_common fail
         plugin = self.pg_mgr[id]
@@ -790,7 +790,7 @@ class ProvisioningApplication(object):
         except Exception:
             logger.error('Error while configuring plugin %s', id, exc_info=True)
             raise
-        
+
     def _pg_load(self, id):
         # Raise an exception if plugin loading or common configuration fail
         gen_cfg = dict(self._splitted_config['general'])
@@ -803,7 +803,7 @@ class ProvisioningApplication(object):
             raise
         else:
             self._pg_configure_pg(id)
-    
+
     def _pg_unload(self, id):
         # This method should never raise an exception
         try:
@@ -812,7 +812,7 @@ class ProvisioningApplication(object):
             # this is the case were an incompatible/bogus plugin has been
             # installed succesfully but the plugin was not loadable
             logger.info('Plugin %s was not loaded ', id)
-    
+
     @defer.inlineCallbacks
     def _pg_configure_all_devices(self, plugin_id):
         logger.info('Reconfiguring all devices using plugin %s', plugin_id)
@@ -826,7 +826,7 @@ class ProvisioningApplication(object):
             if device[u'configured'] != configured:
                 device[u'configured'] = configured
                 yield self._dev_collection.update(device)
-    
+
     def pg_install(self, id):
         """Install the plugin with the given id.
         
@@ -848,7 +848,7 @@ class ProvisioningApplication(object):
         if self.pg_mgr.is_installed(id):
             logger.error('Error: plugin %s is already installed', id)
             raise Exception('plugin %s is already installed' % id)
-        
+
         def callback1(_):
             # reset the state to in progress
             oip.state = OIP_PROGRESS
@@ -869,7 +869,7 @@ class ProvisioningApplication(object):
         deferred.addCallback(callback2)
         deferred.addCallbacks(callback3, errback3)
         return deferred, oip
-    
+
     def pg_upgrade(self, id):
         """Upgrade the plugin with the given id.
         
@@ -883,7 +883,7 @@ class ProvisioningApplication(object):
         if not self.pg_mgr.is_installed(id):
             logger.error('Error: plugin %s is not already installed', id)
             raise Exception('plugin %s is not already installed' % id)
-        
+
         def callback1(_):
             # reset the state to in progress
             oip.state = OIP_PROGRESS
@@ -907,7 +907,7 @@ class ProvisioningApplication(object):
         deferred.addCallback(callback2)
         deferred.addCallbacks(callback3, errback3)
         return deferred, oip
-    
+
     @_wlock
     @defer.inlineCallbacks
     def pg_uninstall(self, id):
@@ -935,7 +935,7 @@ class ProvisioningApplication(object):
             yield self._dev_collection.update(device)
 
     @_wlock
-    @defer.inlineCallbacks    
+    @defer.inlineCallbacks
     def pg_reload(self, id):
         """Reload the plugin with the given id.
         
@@ -952,7 +952,7 @@ class ProvisioningApplication(object):
         if not self.pg_mgr.is_installed(id):
             logger.error('Can\'t reload plugin %s: not installed', id)
             raise Exception('plugin %s is not installed' % id)
-        
+
         devices = yield self._dev_collection.find({u'plugin': id})
         devices = list(devices)
         # unload plugin
@@ -980,7 +980,7 @@ class ProvisioningApplication(object):
                 if device[u'configured'] != configured:
                     device[u'configured'] = configured
                     yield self._dev_collection.update(device)
-    
+
     def pg_retrieve(self, id):
         return self.pg_mgr[id]
 
@@ -988,7 +988,7 @@ class ProvisioningApplication(object):
 def _check_is_server_url(value):
     if value is None:
         return
-    
+
     try:
         parse_result = urlparse.urlparse(value)
     except Exception, e:
@@ -1003,7 +1003,7 @@ def _check_is_server_url(value):
 def _check_is_proxy(value):
     if value is None:
         return
-    
+
     try:
         parse_result = urlparse.urlparse(value)
     except Exception, e:
@@ -1020,7 +1020,7 @@ def _check_is_proxy(value):
 def _check_is_https_proxy(value):
     if value is None:
         return
-    
+
     if not value:
         raise InvalidParameterError('zero-length value')
     try:
@@ -1036,7 +1036,7 @@ class ApplicationConfigureService(object):
     def __init__(self, pg_mgr, proxies):
         self._pg_mgr = pg_mgr
         self._proxies = proxies
-    
+
     def _get_param_locale(self):
         l10n_service = get_localization_service()
         if l10n_service is None:
@@ -1048,7 +1048,7 @@ class ApplicationConfigureService(object):
                 return None
             else:
                 return value.decode('ascii')
-    
+
     def _set_param_locale(self, value):
         l10n_service = get_localization_service()
         if l10n_service is None:
@@ -1061,42 +1061,42 @@ class ApplicationConfigureService(object):
                     l10n_service.set_locale(value.encode('ascii'))
                 except (UnicodeError, ValueError), e:
                     raise InvalidParameterError(e)
-    
+
     def _generic_set_proxy(self, key, value):
         if not value:
             if key in self._proxies:
                 del self._proxies[key]
         else:
             self._proxies[key] = value
-    
+
     def _get_param_http_proxy(self):
         return self._proxies.get('http')
-    
+
     def _set_param_http_proxy(self, value):
         _check_is_proxy(value)
         self._generic_set_proxy('http', value)
-    
+
     def _get_param_ftp_proxy(self):
         return self._proxies.get('ftp')
-    
+
     def _set_param_ftp_proxy(self, value):
         _check_is_proxy(value)
         self._generic_set_proxy('ftp', value)
-    
+
     def _get_param_https_proxy(self):
         return self._proxies.get('https')
-    
+
     def _set_param_https_proxy(self, value):
         _check_is_https_proxy(value)
         self._generic_set_proxy('https', value)
-    
+
     def _get_param_plugin_server(self):
         return self._pg_mgr.server
-    
+
     def _set_param_plugin_server(self, value):
         _check_is_server_url(value)
         self._pg_mgr.server = value
-    
+
     def get(self, name):
         get_fun_name = '_get_param_%s' % name
         try:
@@ -1105,7 +1105,7 @@ class ApplicationConfigureService(object):
             raise KeyError(name)
         else:
             return get_fun()
-    
+
     def set(self, name, value):
         set_fun_name = '_set_param_%s' % name
         try:
@@ -1114,7 +1114,7 @@ class ApplicationConfigureService(object):
             raise KeyError(name)
         else:
             set_fun(value)
-    
+
     description = [
         (u'plugin_server', u'The plugins repository URL'),
         (u'http_proxy', u'The proxy for HTTP requests. Format is "http://[user:password@]host:port"'),
@@ -1122,7 +1122,7 @@ class ApplicationConfigureService(object):
         (u'https_proxy', u'The proxy for HTTPS requests. Format is "host:port"'),
         (u'locale', u'The current locale. Example: fr_FR'),
     ]
-    
+
     description_fr = [
         (u'plugin_server', u"L'addresse (URL) du dépôt de plugins"),
         (u'http_proxy', u'Le proxy pour les requêtes HTTP. Le format est "http://[user:password@]host:port"'),

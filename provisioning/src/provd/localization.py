@@ -49,7 +49,7 @@ class LocalizationService(object):
     def __init__(self, locale=None):
         self._locale = locale
         self._observers = weakref.WeakKeyDictionary()
-    
+
     def attach_observer(self, observer):
         """Attach an observer to this localization service.
         
@@ -65,14 +65,14 @@ class LocalizationService(object):
             logger.info('Observer %s was already attached', observer)
         else:
             self._observers[observer] = None
-    
+
     def detach_observer(self, observer):
         logger.debug('Detaching localization observer %s', observer)
         try:
             del self._observers[observer]
         except KeyError:
             logger.info('Observer %s was not attached', observer)
-    
+
     def _notify(self, event, arg):
         logger.debug('Notifying localization observers: %s %s', event, arg)
         for observer in self._observers.keys():
@@ -81,7 +81,7 @@ class LocalizationService(object):
                 observer((event, arg))
             except Exception:
                 logger.error('Error while notifying observer %s', observer, exc_info=True)
-    
+
     def set_locale(self, locale):
         """Set the current locale and fire a LOCALE_CHANGED event if the
         locale has changed.
@@ -96,7 +96,7 @@ class LocalizationService(object):
         if locale != self._locale:
             self._locale = locale
             self._notify(LOCALE_CHANGED, None)
-    
+
     def get_locale(self):
         """Return the current locale.
         
@@ -104,7 +104,7 @@ class LocalizationService(object):
         
         """
         return self._locale
-    
+
     def get_locale_and_language(self):
         """Return a tuple (locale, language) of the current locale."""
         if self._locale is None:

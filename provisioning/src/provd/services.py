@@ -46,7 +46,7 @@ class IConfigureService(Interface):
     parameters values must not contain any newline characters.
     
     """
-    
+
     def get(name):
         """Return the value associated with a parameter.
         
@@ -71,7 +71,7 @@ class IConfigureService(Interface):
         be used as a value.
         
         """
-    
+
     description = Attribute(
         """A read-only list of tuple where the first element is the name of
         the parameter that can be set and the second element is a short
@@ -112,14 +112,14 @@ class IInstallService(Interface):
         Raise an Exception if pkg_id is unknown.
         
         """
-    
+
     def uninstall(pkg_id):
         """Uninstall a package.
         
         Raise an Exception if pkg_id is unknown.
         
         """
-    
+
     # XXX should probably rename list_installable, list_installed (remove list_)
     def list_installable():
         """Return a dictionary of installable packages, where keys are
@@ -133,7 +133,7 @@ class IInstallService(Interface):
           description -- the description of the package
         
         """
-    
+
     def list_installed():
         """Return a dictionary of installed packages, where keys are package
         identifier and value are dictionary of package information.
@@ -144,7 +144,7 @@ class IInstallService(Interface):
           description -- the description of the package
         
         """
-    
+
     def upgrade(pkg_id):
         """Upgrade a package (optional operation).
         
@@ -153,7 +153,7 @@ class IInstallService(Interface):
         If the operation is not available, the method should not be defined.
         
         """
-    
+
     def update():
         """Update the list of installable package (optional operation).
         
@@ -170,17 +170,17 @@ class IInstallService(Interface):
 
 class IConfigureServiceParam(Interface):
     description = Attribute("The description of this parameter, or None.")
-    
+
     def get():
         """Get the value of this parameter."""
-    
+
     def set(value):
-        """Set the value of this parameter.""" 
+        """Set the value of this parameter."""
 
 
 class AttrConfigureServiceParam(object):
     implements(IConfigureServiceParam)
-    
+
     def __init__(self, obj, name, description=None, check_fun=None, **kwargs):
         # kwargs is used to set localized description for example "description_fr='bonjour'"
         self._obj = obj
@@ -188,10 +188,10 @@ class AttrConfigureServiceParam(object):
         self.description = description
         self._check_fun = check_fun
         self.__dict__.update(kwargs)
-    
+
     def get(self):
         return getattr(self._obj, self._name)
-    
+
     def set(self, value):
         if self._check_fun is not None:
             self._check_fun(value)
@@ -200,9 +200,9 @@ class AttrConfigureServiceParam(object):
 
 class DictConfigureServiceParam(object):
     # implements(IConfigureServiceParam)
-    
+
     # Note that this delete the key from the dict when setting a None value
-    
+
     def __init__(self, dict_, key, description=None, check_fun=None, **kwargs):
         # kwargs is used to set localized description, for example "description_fr='bonjour'"
         self._dict = dict_
@@ -210,10 +210,10 @@ class DictConfigureServiceParam(object):
         self.description = description
         self._check_fun = check_fun
         self.__dict__.update(kwargs)
-    
+
     def get(self):
         return self._dict.get(self._key)
-    
+
     def set(self, value):
         if self._check_fun is not None:
             self._check_fun(value)
@@ -226,7 +226,7 @@ class DictConfigureServiceParam(object):
 
 class BaseConfigureService(object):
     implements(IConfigureService)
-    
+
     def __init__(self, params):
         """
         params -- a dictionary object where keys are parameter names and
@@ -242,15 +242,15 @@ class BaseConfigureService(object):
     def get(self, name):
         param = self._params[name]
         return param.get()
-    
+
     def set(self, name, value):
         param = self._params[name]
         param.set(value)
-    
+
     @property
     def description(self):
         return [(k, v.description) for k, v in self._params.iteritems()]
-    
+
     def __getattr__(self, name):
         # used to implement the localized description
         if not name.startswith('description_'):
@@ -272,7 +272,7 @@ class PersistentConfigureServiceDecorator(object):
         self._cfg_service = cfg_service
         self._persister = persister
         self._load_params()
-    
+
     def _load_params(self):
         params = self._persister.params()
         for name, value in params.iteritems():
@@ -284,14 +284,14 @@ class PersistentConfigureServiceDecorator(object):
             except InvalidParameterError, e:
                 logger.warning('Invalid value "%s" for parameter "%s": %s',
                                value, name, e)
-    
+
     def get(self, name):
         return self._cfg_service.get(name)
-    
+
     def set(self, name, value):
         self._cfg_service.set(name, value)
         self._persister.update(name, value)
-    
+
     def __getattr__(self, name):
         # used for description and localized description 
         return getattr(self._cfg_service, name)
@@ -302,7 +302,7 @@ class JsonConfigPersister(object):
         self._filename = filename
         self._cache = {}
         self._load()
-    
+
     def _load(self):
         try:
             with open(self._filename) as fobj:
@@ -311,16 +311,16 @@ class JsonConfigPersister(object):
             logger.debug('Could not load file %s: %s', self._filename, e)
         except ValueError, e:
             logger.warning('Invalid content in file %s: %s', self._filename, e)
-    
+
     def _save(self):
         with open(self._filename, 'w') as fobj:
             json.dump(self._cache, fobj)
-    
+
     def params(self):
         # Return every persisted parameter as a dictionary of parameters
         # names and values.
         return dict(self._cache)
-    
+
     def update(self, name, value):
         self._cache[name] = value
         self._save()

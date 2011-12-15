@@ -52,13 +52,13 @@ class ProvdFileSystemLoader(BaseLoader):
     override a base template.
     
     """
-    
+
     def __init__(self, searchpath, encoding='utf-8'):
         if isinstance(searchpath, basestring):
             searchpath = [searchpath]
         self._searchpath = list(searchpath)
         self._encoding = encoding
-    
+
     def get_source(self, environment, template):
         pieces = split_template_path(template)
         for searchpath in self._searchpath:
@@ -70,13 +70,13 @@ class ProvdFileSystemLoader(BaseLoader):
                 contents = f.read().decode(self._encoding)
             finally:
                 f.close()
-            
+
             mtime_map = _new_mtime_map(self._searchpath)
             def uptodate():
                 return mtime_map == _new_mtime_map(self._searchpath)
             return contents, filename, uptodate
         raise TemplateNotFound(template)
-    
+
     def list_templates(self):
         found = set()
         for searchpath in self._searchpath:

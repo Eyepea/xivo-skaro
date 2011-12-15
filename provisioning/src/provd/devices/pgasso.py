@@ -60,7 +60,7 @@ class IPluginAssociator(Interface):
 
 class BasePgAssociator(object):
     implements(IPluginAssociator)
-    
+
     def associate(self, dev_info):
         vendor = dev_info.get(u'vendor')
         if vendor is None:
@@ -69,7 +69,7 @@ class BasePgAssociator(object):
             model = dev_info.get(u'model')
             version = dev_info.get(u'version')
             return self._do_associate(vendor, model, version)
-    
+
     def _do_associate(self, vendor, model, version):
         """
         Pre: vendor is not None
@@ -88,10 +88,10 @@ class IConflictSolver(Interface):
 
 class PreferredConflictSolver(object):
     implements(IConflictSolver)
-    
+
     def __init__(self, preferred_pg_ids):
         self._pref_pg_ids = preferred_pg_ids
-    
+
     def solve(self, pg_ids):
         for pg_id in self._pref_pg_ids:
             if pg_id in pg_ids:
@@ -101,24 +101,24 @@ class PreferredConflictSolver(object):
 
 class AlphabeticConflictSolver(object):
     implements(IConflictSolver)
-    
+
     def solve(self, pg_ids):
         return min(pg_ids)
 
 
 class ReverseAlphabeticConflictSolver(object):
     implements(IConflictSolver)
-    
+
     def solve(self, pg_ids):
         return max(pg_ids)
 
 
 class CompositeConflictSolver(object):
     implements(IConflictSolver)
-    
+
     def __init__(self, solvers):
         self._solvers = solvers
-    
+
     def solve(self, pg_ids):
         for solver in self._solvers:
             pg_id = solver.solve(pg_ids)
@@ -129,14 +129,14 @@ class CompositeConflictSolver(object):
 
 class PluginAssociatorDeviceUpdater(object):
     implements(IDeviceUpdater)
-    
+
     force_update = False
     min_level = PROBABLE_SUPPORT
-    
+
     def __init__(self, pg_mgr, conflict_solver):
         self._pg_mgr = pg_mgr
         self._solver = conflict_solver
-    
+
     def update(self, dev, dev_info, request, request_type):
         logger.debug('In %s', self.__class__.__name__)
         if self.force_update or u'plugin' not in dev:
@@ -144,7 +144,7 @@ class PluginAssociatorDeviceUpdater(object):
             if pg_id:
                 dev[u'plugin'] = pg_id
         return defer.succeed(False)
-    
+
     def _do_update(self, dev_info):
         pg_scores = self._get_scores(dev_info)
         if pg_scores:
@@ -161,7 +161,7 @@ class PluginAssociatorDeviceUpdater(object):
                         logger.warning('Conflict resolution yielded nothing for plugins: %s',
                                        pg_ids)
         return None
-    
+
     def _get_scores(self, dev_info):
         pg_scores = defaultdict(list)
         for pg_id, pg in self._pg_mgr.iteritems():

@@ -71,14 +71,14 @@ class InvalidIdError(Exception):
 
 class IDocumentCollection(Interface):
     """A collection of documents."""
-    
+
     def close():
         """Close the collection. This method may be called more than once, and
         if it doesn't raise an exception on the first time, it should not
         raise an exception the next times it is called.
         
         """
-    
+
     def insert(document):
         """Store a new document in the collection and return a deferred that
         will fire with the ID of the newly added document once the document
@@ -92,7 +92,7 @@ class IDocumentCollection(Interface):
         an 'id' key.
         
         """
-    
+
     def update(document):
         """Update the document with the current document and return a
         deferred that fire with None once the document has been successfully
@@ -103,7 +103,7 @@ class IDocumentCollection(Interface):
         InvalidIdError.
         
         """
-    
+
     def delete(id):
         """Delete the document with the given ID and return a deferred that
         fire with None once the document with the given id has been
@@ -113,13 +113,13 @@ class IDocumentCollection(Interface):
         no document with the given ID.
         
         """
-    
+
     def retrieve(id):
         """Return a deferred that will fire with the document with the given
         ID, or fire with None if there's no such document.
         
         """
-    
+
     def find(selector, fields, skip, limit, sort):
         """Return a deferred that will fire with an iterator over documents
         that match the selector.
@@ -140,13 +140,13 @@ class IDocumentCollection(Interface):
         All arguments are optional except for selector.
         
         """
-    
+
     def find_one(selector):
         """Return a deferred that will fire with the 'first' document that
         match the selector, or fire with None if there's no document. 
         
         """
-    
+
     def ensure_index(complex_key):
         """Create an index on the given complex key if it does not already
         exist and return a deferred that fire with None once the index has
@@ -164,14 +164,14 @@ class IDocumentCollection(Interface):
 
 class IDatabase(Interface):
     """A database is a group of zero or more document collections."""
-    
+
     def close():
         """Close the underlying collections and the database. All resources
         used by the collections and the database should be freed after a call
         to this method.
         
         """
-    
+
     def collection(id):
         """Return the collection with the given id.
         

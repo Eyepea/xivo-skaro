@@ -104,7 +104,7 @@ class DefaultConfigSource(object):
     values.
     
     """
-    
+
     _DEFAULT_RAW_PARAMETERS = [
         # (parameter name, parameter value)
         ('general.config_file', '/etc/pf-xivo/provd/provd.conf'),
@@ -139,7 +139,7 @@ class DefaultConfigSource(object):
         ('database.json_db_dir', 'jsondb'),
         ('database.shelve_db_dir', 'shelvedb'),
     ]
-    
+
     def pull(self):
         return dict(self._DEFAULT_RAW_PARAMETERS)
 
@@ -152,7 +152,7 @@ class Options(usage.Options):
         ('stderr', 's', 'Log to standard error instead of syslog.'),
         ('verbose', 'v', 'Increase verbosity.'),
     ]
-    
+
     optParameters = [
         ('config-file', 'f', None,
          'The configuration file'),
@@ -174,7 +174,7 @@ class CommandLineConfigSource(object):
     Options class defined above.
     
     """
-    
+
     _OPTION_TO_PARAM_LIST = [
         # (<option name, param name>)
         ('config-file', 'general.config_file'),
@@ -184,10 +184,10 @@ class CommandLineConfigSource(object):
         ('tftp-port', 'general.tftp_port'),
         ('rest-port', 'general.rest_port'),
     ]
-    
+
     def __init__(self, options):
         self.options = options
-    
+
     def pull(self):
         raw_config = {}
         for option_name, param_name in self._OPTION_TO_PARAM_LIST:
@@ -203,22 +203,22 @@ class ConfigFileConfigSource(object):
     See the example file to see what is the syntax of the configuration file.
     
     """
-    
+
     _BASE_SECTIONS = ['general', 'database', 'proxy']
     _PLUGIN_SECTION_PREFIX = 'pluginconfig_'
-    
+
     def __init__(self, filename):
         self.filename = filename
-    
+
     def _get_config_from_section(self, config, section):
         # Note: config is a [Raw]ConfigParser object
         raw_config = {}
         if config.has_section(section):
             for name, value in config.items(section):
-                raw_config_name = section + '.' + name 
+                raw_config_name = section + '.' + name
                 raw_config[raw_config_name] = value
         return raw_config
-    
+
     def _get_pluginconfig_from_section(self, config, section):
         # Pre: config.has_section(section)
         # Pre: section.startswith(self._PLUGIN_SECTION_PREFIX)
@@ -229,7 +229,7 @@ class ConfigFileConfigSource(object):
             raw_config_name = base_name + '.' + name
             raw_config[raw_config_name] = value
         return raw_config
-    
+
     def _get_pluginconfig(self, config):
         # Note: config is a [Raw]ConfigParser object
         raw_config = {}
@@ -237,7 +237,7 @@ class ConfigFileConfigSource(object):
             if section.startswith(self._PLUGIN_SECTION_PREFIX):
                 raw_config.update(self._get_pluginconfig_from_section(config, section))
         return raw_config
-    
+
     def _do_pull(self):
         config = ConfigParser.RawConfigParser()
         fobj = open(self.filename)
@@ -245,13 +245,13 @@ class ConfigFileConfigSource(object):
             config.readfp(fobj)
         finally:
             fobj.close()
-        
+
         raw_config = {}
         for section in self._BASE_SECTIONS:
             raw_config.update(self._get_config_from_section(config, section))
         raw_config.update(self._get_pluginconfig(config))
         return raw_config
-    
+
     def pull(self):
         try:
             return self._do_pull()
@@ -388,7 +388,7 @@ def _check_and_convert_parameters(raw_config):
                 raise ConfigError('parameter "%s" is invalid: %s' % (param_name, e))
     if raw_config['general.rest_ssl']:
         if 'general.rest_ssl_certfile' not in raw_config:
-            raise ConfigError('Missing parameter "rest_ssl_certfile"') 
+            raise ConfigError('Missing parameter "rest_ssl_certfile"')
         if 'general.rest_ssl_keyfile' not in raw_config:
             raise ConfigError('Missing parameter "rest_ssl_keyfile"')
     # load base_raw_config_file JSON document

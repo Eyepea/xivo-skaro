@@ -26,17 +26,17 @@ import shutil
 import tarfile
 import weakref
 from binascii import a2b_hex
-from fetchfw.download import DefaultDownloader, RemoteFile, SHA1Hook,\
+from fetchfw.download import DefaultDownloader, RemoteFile, SHA1Hook, \
     new_downloaders_from_handlers
-from fetchfw.package import PackageManager, InstallerController,\
+from fetchfw.package import PackageManager, InstallerController, \
     UninstallerController
-from fetchfw.storage import DefaultRemoteFileBuilder, DefaultFilterBuilder,\
-    DefaultInstallablePkgStorage, DefaultInstallMgrFactoryBuilder,\
+from fetchfw.storage import DefaultRemoteFileBuilder, DefaultFilterBuilder, \
+    DefaultInstallablePkgStorage, DefaultInstallMgrFactoryBuilder, \
     DefaultPkgBuilder, DefaultInstalledPkgStorage
 from provd.download import async_download_with_oip, OperationInProgressHook
 from provd.loaders import ProvdFileSystemLoader
 from provd.localization import get_locale_and_language
-from provd.operation import OperationInProgress, OIP_PROGRESS, OIP_SUCCESS,\
+from provd.operation import OperationInProgress, OIP_PROGRESS, OIP_SUCCESS, \
     OIP_FAIL
 from provd.proxy import DynProxyHandler
 from provd.services import IInstallService, InvalidParameterError
@@ -70,8 +70,8 @@ def _clean_localized_description(raw_plugin_info):
     for key in raw_plugin_info.keys():
         if key.startswith('description_'):
             del raw_plugin_info[key]
-    
-    
+
+
 def _new_localize_fun():
     # Return a function that receive a raw plugin info and update
     # it so it becomes localized
@@ -151,7 +151,7 @@ class Plugin(object):
     
     """
     id = None
-    
+
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         """Create a new plugin instance.
         
@@ -171,7 +171,7 @@ class Plugin(object):
         
         """
         self._plugin_dir = plugin_dir
-    
+
     def close(self):
         """Close the plugin.
         
@@ -183,7 +183,7 @@ class Plugin(object):
         
         """
         pass
-    
+
     def info(self):
         """Return a dictionary containing information about this plugin.
         
@@ -205,9 +205,9 @@ class Plugin(object):
         localize_fun = _new_localize_fun()
         localize_fun(raw_plugin_info)
         return raw_plugin_info
-    
+
     # Methods for additional plugin services
-    
+
     services = {}
     """Return a dictionary where keys are service name and values are
     service object.
@@ -222,22 +222,22 @@ class Plugin(object):
     provide the IInstallService interface.
     
     """
-    
+
     # Methods for TFTP/HTTP services
-    
+
     # Contrary to TFTP and HTTP, there's no DHCP service, but only an extractor
     dhcp_dev_info_extractor = None
     """An object providing the IDeviceInfoExtractor interface for DHCP
     requests or None if there's no such object.
     
     """
-    
+
     http_dev_info_extractor = None
     """An object providing the IDeviceInfoExtractor interface for HTTP
     requests or None if there's no such object.
     
     """
-    
+
     http_service = None
     """The HTTP service of this plugin, or None if the plugin doesn't offer
     an HTTP service.
@@ -247,7 +247,7 @@ class Plugin(object):
     device which is doing the request, or None if the device is unknown.
     
     """
-    
+
     tftp_dev_info_extractor = None
     """An object providing the IDeviceInfoExtractor interface for TFTP
     request or None if there's no such object.
@@ -263,15 +263,15 @@ class Plugin(object):
     the device which is doing the request, or None if the device is unknown.
     
     """
-    
+
     pg_associator = None
     """Return an object providing the IPluginAssociator interface, or None if
     the plugin doesn't have a plugin associator.
     
     """
-    
+
     # Methods for device configuration
-    
+
     def configure_common(self, raw_config):
         """Apply a non-device specific configuration to the plugin. In typical
         case, this will configure the 'common files' shared by all the devices.
@@ -287,9 +287,9 @@ class Plugin(object):
         
         This method is synchronous/blocking.
         
-        """ 
+        """
         pass
-    
+
     def configure(self, device, raw_config):
         """Configure the plugin so that the raw config is applied to the
         device. This method MUST not synchronize the configuration between
@@ -325,7 +325,7 @@ class Plugin(object):
         
         """
         pass
-    
+
     def deconfigure(self, device):
         """Deconfigure the plugin so that the plugin won't configure the
         device.
@@ -363,7 +363,7 @@ class Plugin(object):
         
         """
         pass
-    
+
     def synchronize(self, device, raw_config):
         """Force the device to synchronize its configuration so that its the
         same as the one in the raw config object.
@@ -404,7 +404,7 @@ class StandardPlugin(Plugin):
     
     """
     _TFTPBOOT_DIR = os.path.join('var', 'tftpboot')
-    
+
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         Plugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
         self._tftpboot_dir = os.path.join(plugin_dir, self._TFTPBOOT_DIR)
@@ -415,13 +415,13 @@ class TemplatePluginHelper(object):
     """Directory where the default templates lies."""
     CUSTOM_TPL_DIR = os.path.join('var', 'templates')
     """Directory where the custom templates lies."""
-    
+
     def __init__(self, plugin_dir):
         custom_dir = os.path.join(plugin_dir, self.CUSTOM_TPL_DIR)
         default_dir = os.path.join(plugin_dir, self.DEFAULT_TPL_DIR)
         loader = ProvdFileSystemLoader([custom_dir, default_dir])
         self._env = Environment(loader=loader)
-    
+
     def get_dev_template(self, filename, dev):
         """Get the device template used for the device specific configuration
         file.
@@ -451,16 +451,16 @@ class TemplatePluginHelper(object):
         # get base template
         logger.info('Getting base template')
         return self._env.get_template('base.tpl')
-    
+
     def get_template(self, name):
         return self._env.get_template(name)
-    
+
     def dump(self, template, context, filename, encoding='UTF-8', errors='strict'):
         logger.info('Writing template to file "%s"', filename)
         tmp_filename = filename + '.tmp'
         template.stream(context).dump(tmp_filename, encoding, errors)
         os.rename(tmp_filename, filename)
-    
+
     def render(self, template, context, encoding='UTF-8', errors='strict'):
         return template.render(context).encode(encoding, errors)
 
@@ -469,25 +469,25 @@ class AsyncInstallerController(InstallerController):
     def __init__(self, installable_pkg_sto, installed_pkg_sto, dl_oip, install_oip):
         self._dl_oip = dl_oip
         self._install_oip = install_oip
-    
+
     def pre_download(self, remote_files):
         self._dl_oip.state = OIP_PROGRESS
-    
+
     def download_file(self, remote_file):
         oip = OperationInProgress(end=remote_file.size)
         oip_hook = OperationInProgressHook(oip)
         self._dl_oip.sub_oips.append(oip)
         remote_file.download([oip_hook])
-    
+
     def post_download(self, remote_files):
         self._dl_oip.state = OIP_SUCCESS
-    
+
     def pre_install(self, installable_pkgs):
         self._install_oip.state = OIP_PROGRESS
-    
+
     def post_install(self, installable_pkgs):
         self._install_oip.state = OIP_SUCCESS
-    
+
     def post_installation(self, exc_value):
         if exc_value is not None:
             if self._dl_oip.state != OIP_SUCCESS:
@@ -509,9 +509,9 @@ class FetchfwPluginHelper(object):
     be able to support a certain kind of device.
     
     """
-    
+
     implements(IInstallService)
-    
+
     PKG_DIR = 'pkgs'
     """Directory where the package definitions are stored."""
     CACHE_DIR = os.path.join('var', 'cache')
@@ -520,32 +520,32 @@ class FetchfwPluginHelper(object):
     """Directory where the 'installed packages DB' is stored."""
     TFTPBOOT_DIR = os.path.join('var', 'tftpboot')
     """Base directory where the files are extracted."""
-    
+
     @classmethod
     def new_handlers(cls, proxies=None):
         return _new_handlers(proxies)
-    
+
     @classmethod
     def new_downloaders_from_handlers(cls, handlers=None):
         return new_downloaders_from_handlers(handlers)
-    
+
     @classmethod
     def new_downloaders(cls, proxies=None):
         handlers = _new_handlers(proxies)
         return new_downloaders_from_handlers(handlers)
-    
+
     def __init__(self, plugin_dir, downloaders=None, filter_builder=None):
         self._plugin_dir = plugin_dir
         self._in_install_set = set()
         self._pkg_mgr = self._new_pkg_mgr(downloaders, filter_builder)
         self.root_dir = os.path.join(plugin_dir, self.TFTPBOOT_DIR)
-    
+
     def _new_pkg_mgr(self, downloaders, filter_builder):
         # downloaders and filter_builder can be None
         pkg_db_dir = os.path.join(self._plugin_dir, self.PKG_DIR)
-        cache_dir = os.path.join(self._plugin_dir, self.CACHE_DIR)        
+        cache_dir = os.path.join(self._plugin_dir, self.CACHE_DIR)
         installed_db_dir = os.path.join(self._plugin_dir, self.INSTALLED_DIR)
-        
+
         if downloaders is None:
             downloaders = self.new_downloaders()
         if filter_builder is None:
@@ -558,7 +558,7 @@ class FetchfwPluginHelper(object):
                                                 pkg_builder)
         ed_sto = DefaultInstalledPkgStorage(installed_db_dir)
         return PackageManager(able_sto, ed_sto)
-    
+
     def install(self, pkg_id):
         """Install a package.
         
@@ -570,7 +570,7 @@ class FetchfwPluginHelper(object):
             raise Exception('an install operation for pkg %s is already in progress' % pkg_id)
         if pkg_id not in self._pkg_mgr.installable_pkg_sto:
             raise Exception('package not found')
-        
+
         dl_oip = OperationInProgress('download')
         install_oip = OperationInProgress('install')
         oip = OperationInProgress('install_pkg', OIP_PROGRESS,
@@ -592,7 +592,7 @@ class FetchfwPluginHelper(object):
             return err
         deferred.addCallbacks(callback, errback)
         return deferred, oip
-    
+
     def uninstall(self, pkg_id):
         """Uninstall a package.
         
@@ -602,7 +602,7 @@ class FetchfwPluginHelper(object):
         logger.info('Uninstalling plugin-package %s', pkg_id)
         ctrl_factory = UninstallerController.new_factory()
         self._pkg_mgr.uninstall([pkg_id], self.root_dir, ctrl_factory)
-    
+
     def _new_localize_description_fun(self):
         locale, lang = get_locale_and_language()
         if locale is None:
@@ -627,7 +627,7 @@ class FetchfwPluginHelper(object):
                         except KeyError:
                             return pkg_info['description']
                 return aux
-    
+
     def list_installable(self):
         """Return a dictionary of installable packages.
         
@@ -640,7 +640,7 @@ class FetchfwPluginHelper(object):
                               'description': localize_desc_fun(pkg.pkg_info),
                               'dsize': sum(rfile.size for rfile in pkg.remote_files)})
                     for pkg_id, pkg in installable_pkg_sto.iteritems())
-    
+
     def list_installed(self):
         """Return a dictionary of installed packages.
         
@@ -652,7 +652,7 @@ class FetchfwPluginHelper(object):
         return dict((pkg_id, {'version': pkg.pkg_info['version'],
                               'description': localize_desc_fun(pkg.pkg_info)})
                     for pkg_id, pkg in installed_pkg_sto.iteritems())
-    
+
     def services(self):
         """Return the following dictionary: {'install': self}."""
         return {'install': self}
@@ -665,7 +665,7 @@ class IPluginManagerObserver(Interface):
     """
     def pg_load(pg_id):
         pass
-    
+
     def pg_unload(pg_id):
         pass
 
@@ -678,11 +678,11 @@ class BasePluginManagerObserver(object):
     def __init__(self, pg_load=None, pg_unload=None):
         self._pg_load = pg_load
         self._pg_unload = pg_unload
-    
+
     def pg_load(self, pg_id):
         if self._pg_load is not None:
             self._pg_load(pg_id)
-    
+
     def pg_unload(self, pg_id):
         if self._pg_unload is not None:
             self._pg_unload(pg_id)
@@ -696,18 +696,18 @@ class PluginManager(object):
     It can be set to None if no server is specified.
     
     """
-    
+
     PLUGIN_IFACE_VERSION = 0.1
-    
+
     _ENTRY_FILENAME = 'entry.py'
     # name of the python plugin code
     _DB_FILENAME = 'plugins.db'
     # plugin definition filename on the remote and local server.
-    
+
     _INSTALL_LABEL = 'install'
     _DOWNLOAD_LABEL = 'download'
     _UPDATE_LABEL = 'update'
-    
+
     def __init__(self, app, plugins_dir, cache_dir, cache_plugin=True,
                  check_compat_min=True, check_compat_max=True):
         """
@@ -730,7 +730,7 @@ class PluginManager(object):
         self._observers = weakref.WeakKeyDictionary()
         self._plugins = {}
         self._downloader = DefaultDownloader(_new_handlers(app.proxies))
-    
+
     def close(self):
         """Close the plugin manager.
         
@@ -743,7 +743,7 @@ class PluginManager(object):
         for id in self._plugins.keys():
             self._unload_and_notify(id)
         logger.info('Plugin manager closed')
-    
+
     def _db_pathname(self):
         return os.path.join(self._plugins_dir, self._DB_FILENAME)
 
@@ -757,12 +757,12 @@ class PluginManager(object):
                 return server + p
             else:
                 return server + '/' + p
-    
+
     def _extract_plugin(self, cache_filename):
         with contextlib.closing(tarfile.open(cache_filename)) as tfile:
             # XXX this is unsafe unless we have authenticated the tarfile
             tfile.extractall(self._plugins_dir)
-    
+
     def install(self, id):
         """Install a plugin.
         
@@ -785,7 +785,7 @@ class PluginManager(object):
         if id in self._in_install:
             logger.warning('Install operation already in progress for plugin %s', id)
             raise Exception('an install/upgrade operation for plugin %s is already in progress' % id)
-        
+
         try:
             pg_info = self._get_installable_plugin_info(id)
         except KeyError:
@@ -848,7 +848,7 @@ class PluginManager(object):
         """
         logger.info('Upgrading plugin %s', id)
         return self.install(id)
-        
+
     def uninstall(self, id):
         """Uninstall a plugin.
         
@@ -862,7 +862,7 @@ class PluginManager(object):
         if not self.is_installed(id):
             logger.error('Can\'t uninstall plugin %s: not installed', id)
             raise Exception('plugin not found')
-        
+
         shutil.rmtree(os.path.join(self._plugins_dir, id))
 
     def update(self):
@@ -906,13 +906,13 @@ class PluginManager(object):
         dl_deferred.addCallbacks(callback, errback)
         dl_deferred.addBoth(dl_end)
         return dl_deferred, dl_oip
-    
+
     def _get_installable_plugin_info(self, id):
         # Return an 'installable plugin info' object from a id, or raise
         # a KeyError if no such plugin is found
         installable_plugins = self.list_installable()
         return installable_plugins[id]
-    
+
     def list_installable(self):
         """Return a dictionary of installable plugins, where keys are
         plugin identifier and values are dictionary of plugin information.
@@ -946,19 +946,19 @@ class PluginManager(object):
                                        _PLUGIN_INFO_INSTALLABLE_KEYS)
                 localize_fun(raw_plugin_info)
             return raw_plugin_infos
-    
+
     def is_installed(self, id):
         """Return true if the plugin <id> is currently installed, else
         false.
         
         """
         return id in self.list_installed()
-    
+
     def _get_installed_plugin_info(self, plugin_dir):
         plugin_info_path = os.path.join(plugin_dir, _PLUGIN_INFO_FILENAME)
         with open(plugin_info_path) as fobj:
             return json.load(fobj)
-    
+
     def list_installed(self):
         """Return a dictionary of installed plugins, where keys are plugin
         identifier and value are dictionary of plugin information.
@@ -982,7 +982,7 @@ class PluginManager(object):
                 localize_fun(raw_plugin_info)
                 installed_plugins[rel_plugin_dir] = raw_plugin_info
         return installed_plugins
-    
+
     @staticmethod
     def _add_execfile(pg_globals, plugin_dir):
         # add 'execfile_' to pg_globals.
@@ -1002,13 +1002,13 @@ class PluginManager(object):
                 filename = os.path.join(plugin_dir, filename)
             execfile(filename, globals, *args, **kwargs)
         pg_globals['execfile_'] = aux
-    
+
     def _execplugin(self, plugin_dir, pg_globals):
         entry_file = os.path.join(plugin_dir, self._ENTRY_FILENAME)
         self._add_execfile(pg_globals, plugin_dir)
         logger.debug('Executing plugin entry file "%s"', entry_file)
         execfile(entry_file, pg_globals)
-    
+
     def attach(self, observer):
         """Attach an IPluginManagerObserver object to this plugin manager.
         
@@ -1022,7 +1022,7 @@ class PluginManager(object):
             logger.info('Observer %s was already attached', observer)
         else:
             self._observers[observer] = None
-    
+
     def detach(self, observer):
         """Detach an IPluginManagerObserver object to this plugin manager."""
         logger.debug('Detaching plugin manager observer %s', observer)
@@ -1030,7 +1030,7 @@ class PluginManager(object):
             del self._observers[observer]
         except KeyError:
             logger.info('Observer %s was not attached', observer)
-    
+
     def _notify(self, id, action):
         # action is either 'load' or 'unload'
         logger.debug('Notifying plugin manager observers: %s %s', action, id)
@@ -1042,11 +1042,11 @@ class PluginManager(object):
             except Exception:
                 logger.error('Error while notifying plugin manager observer %s',
                              observer, exc_info=True)
-    
+
     def _load_and_notify(self, id, plugin):
         self._plugins[id] = plugin
         self._notify(id, 'load')
-    
+
     def _unload_and_notify(self, id):
         try:
             plugin = self._plugins.pop(id)
@@ -1059,13 +1059,13 @@ class PluginManager(object):
             except Exception:
                 logger.error('Error while closing plugin %s', id, exc_info=True)
             self._notify(id, 'unload')
-    
+
     @staticmethod
     def _is_plugin_class(obj):
         # return true if obj is a plugin class with IS_PLUGIN true
         return isinstance(obj, type) and issubclass(obj, Plugin) and \
                hasattr(obj, 'IS_PLUGIN') and getattr(obj, 'IS_PLUGIN')
-    
+
     def load(self, id, gen_cfg={}, spec_cfg={}):
         """Load a plugin.
         
@@ -1122,38 +1122,38 @@ class PluginManager(object):
         """
         logger.info('Unloading plugin %s', id)
         self._unload_and_notify(id)
-    
+
     # Dictionary-like methods for loaded plugin access
-    
+
     def __contains__(self, key):
         return key in self._plugins
-    
+
     def __iter__(self):
         return iter(self._plugins)
-    
+
     def __getitem__(self, key):
         return self._plugins[key]
-    
+
     def __len__(self):
         return len(self._plugins)
-    
+
     def get(self, key, default=None):
         return self._plugins.get(key, default)
-    
-    def iterkeys(self): 
+
+    def iterkeys(self):
         return self._plugins.iterkeys()
-    
+
     def iteritems(self):
         return self._plugins.iteritems()
-    
+
     def itervalues(self):
         return self._plugins.itervalues()
-    
+
     def keys(self):
         return self._plugins.keys()
-    
+
     def items(self):
         return self._plugins.items()
-    
+
     def values(self):
         return self._plugins.values()

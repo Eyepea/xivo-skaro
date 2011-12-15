@@ -86,7 +86,7 @@ def remove_test_configs():
     """Remove all test configs, i.e. all configs which have a key 'X_test'
     set to True.
     
-    """ 
+    """
     for config in _configs.find({u'X_test': True}, fields=[_ID_KEY]):
         config_id = config[_ID_KEY]
         print 'Removing config %s' % config_id

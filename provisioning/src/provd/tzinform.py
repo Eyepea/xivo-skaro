@@ -29,19 +29,19 @@ class TimezoneNotFoundError(Exception):
 class Time(object):
     def __init__(self, raw_seconds):
         self._raw_seconds = raw_seconds
-    
+
     @property
     def as_seconds(self):
         return self._raw_seconds
-    
+
     @property
     def as_minutes(self):
         return self._raw_seconds // 60
-    
+
     @property
     def as_hours(self):
         return self._raw_seconds // 3600
-    
+
     @property
     def as_hms(self):
         """Return the time decomposed into hours, minutes and seconds.
@@ -65,25 +65,25 @@ class Time(object):
             return result
         else:
             return self._compute_positive_hms()
-    
+
     def _compute_positive_hms(self):
         seconds = abs(self._raw_seconds)
         return [seconds // 3600, seconds // 60 % 60, seconds % 60]
 
-    
+
 class TextTimezoneInfoDB(object):
     """Instances of TextTimeZoneInfoDB return timezone information read from a
     text file. The file format is the same as the one created by default for
     the tzdataexport tool.
     """
-    
+
     _TZ_DEFAULT_FILENAME = os.path.join(os.path.dirname(__file__), 'tzinform/tzdatax')
-    
+
     def __init__(self, filename=None):
         if filename is None:
             filename = self._TZ_DEFAULT_FILENAME
         self._read_file(filename)
-        
+
     def _read_file(self, filename):
         fobj = open(filename)
         try:
@@ -106,7 +106,7 @@ class TextTimezoneInfoDB(object):
                     'end': cls._parse_dst_change(tokens[1]),
                     'save': Time(int(tokens[2])),
                     'as_string': str}
-    
+
     @classmethod
     def _parse_dst_change(cls, str):
         tokens = str.split('/')
@@ -149,7 +149,7 @@ class DefaultTimezoneInfoDB(object):
     def __init__(self, default_tz, db):
         self.db = db
         self.default = db.get_timezone_info(default_tz)
-        
+
     def get_timezone_info(self, timezone_name):
         try:
             return self.db.get_timezone_info(timezone_name)

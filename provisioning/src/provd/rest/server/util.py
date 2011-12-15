@@ -86,7 +86,7 @@ def content_type(mime_type):
                 return (u"Entity must be in one of these media types '%s'."
                         % mime_type).encode('UTF-8')
             else:
-                return fun(self,request)
+                return fun(self, request)
         return aux
     return in_content_type
 

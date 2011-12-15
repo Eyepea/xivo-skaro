@@ -48,7 +48,7 @@ DEFAULT_HOST = 'localhost'
 DEFAULT_PORT = 8666
 DEFAULT_USER = 'admin'
 DEFAULT_HISTFILE = os.path.expanduser('~/.provd_pycli_history')
-DEFAULT_HISTFILESIZE = 500 
+DEFAULT_HISTFILESIZE = 500
 
 
 # parse command line arguments
@@ -345,7 +345,7 @@ RAW_HELP_MAP = {
 class CLIHelp(object):
     def __init__(self, raw_help_map):
         self._help_map = self._build_help_map(raw_help_map)
-    
+
     @staticmethod
     def _build_help_map(raw_help_map):
         res = {}
@@ -356,7 +356,7 @@ class CLIHelp(object):
             else:
                 res[raw_k] = v
         return res
-    
+
     def __call__(self, obj=None):
         help_map = self._help_map
         if obj in help_map:
@@ -367,7 +367,7 @@ class CLIHelp(object):
             print help_map[obj.__func__]
         else:
             print 'No help for object "%s"' % obj
-    
+
     def __repr__(self):
         return 'Type help() for help, or help(object) for help about object.'
 
@@ -411,7 +411,7 @@ cli_globals = {
     'devices': devices,
     'plugins': plugins,
     'parameters': parameters,
-    
+
     'help': cli_help,
     'python_help': __builtin__.help,
 
@@ -431,8 +431,8 @@ class Completer(object):
     # This is largely taken from the rlcompleter module
     def __init__(self, namespace):
         if not isinstance(namespace, dict):
-            raise TypeError,'namespace must be a dictionary'
-        
+            raise TypeError, 'namespace must be a dictionary'
+
         self.namespace = namespace
 
     def complete(self, text, state):
@@ -485,7 +485,7 @@ class Completer(object):
 
 def get_class_members(klass):
     ret = dirr(klass)
-    if hasattr(klass,'__bases__'):
+    if hasattr(klass, '__bases__'):
         for base in klass.__bases__:
             ret = ret + get_class_members(base)
     return ret
