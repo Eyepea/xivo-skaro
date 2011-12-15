@@ -1,3 +1,7 @@
+
+; error
+%s
+
 ; error_generic(invalidvalue)
 Invalid value
 
@@ -43,11 +47,11 @@ Invalid type
 ; error(between)
 Value not in interval
 
-; number_out_of_context_interval
-Number is out of context interval
-
 ; error(invalidpwd)
 Invalid password
+
+; number_out_of_context_interval
+Number is out of context interval
 
 ; invalid_name_context
 Context name invalid (%s)

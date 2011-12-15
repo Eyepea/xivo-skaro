@@ -108,7 +108,10 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		if($this->_dso->is_single_primary() === true)
 		{
 			if(dwho_has_len($id) === false) {
-				dwho_report::push('error', 'you_must_set_id_for_edit');
+				$msg = 'Table: '.$this->_dso->_table;
+				$msg .= ' - ';
+				$msg .= 'Object: '.$this->_name;
+				dwho_report::push('debug', 'ERR: edit object with no id: '.$msg);
 				return(false);
 			} else {
 				return($this->_dso->mk_primary_key_value($id));

@@ -1,7 +1,7 @@
-Index: asterisk-1.8.7.0-rc2/channels/chan_sip.c
+Index: asterisk-1.8.7.2/channels/chan_sip.c
 ===================================================================
---- asterisk-1.8.7.0-rc2.orig/channels/chan_sip.c	2011-09-20 15:20:32.218959809 -0400
-+++ asterisk-1.8.7.0-rc2/channels/chan_sip.c	2011-09-20 15:20:44.298959791 -0400
+--- asterisk-1.8.7.2.orig/channels/chan_sip.c	2011-12-14 08:04:14.073264122 -0500
++++ asterisk-1.8.7.2/channels/chan_sip.c	2011-12-14 08:04:20.373262256 -0500
 @@ -553,6 +553,26 @@
  			via multiple Variable: name=value sequences.</para>
  		</description>
@@ -143,7 +143,7 @@ Index: asterisk-1.8.7.0-rc2/channels/chan_sip.c
  static int manager_sipnotify(struct mansession *s, const struct message *m)
  {
  	const char *channame = astman_get_header(m, "Channel");
-@@ -29650,6 +29777,7 @@
+@@ -29686,6 +29813,7 @@
  	ast_manager_register_xml("SIPqualifypeer", EVENT_FLAG_SYSTEM | EVENT_FLAG_REPORTING, manager_sip_qualify_peer);
  	ast_manager_register_xml("SIPshowregistry", EVENT_FLAG_SYSTEM | EVENT_FLAG_REPORTING, manager_show_registry);
  	ast_manager_register_xml("SIPnotify", EVENT_FLAG_SYSTEM, manager_sipnotify);
@@ -151,7 +151,7 @@ Index: asterisk-1.8.7.0-rc2/channels/chan_sip.c
  	sip_poke_all_peers();	
  	sip_send_all_registers();
  	sip_send_all_mwi_subscriptions();
-@@ -29749,6 +29877,7 @@
+@@ -29785,6 +29913,7 @@
  	ast_manager_unregister("SIPqualifypeer");
  	ast_manager_unregister("SIPshowregistry");
  	ast_manager_unregister("SIPnotify");

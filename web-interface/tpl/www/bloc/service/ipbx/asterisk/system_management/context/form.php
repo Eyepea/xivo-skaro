@@ -120,8 +120,10 @@ $incall_err = $this->get_var('error','contextnumbers','incall');
 	echo	$form->select(array('desc'	=> $this->bbf('fm_contexttype'),
 			  'name'	=> 'context[contexttype]',
 			  'labelid'	=> 'context-contexttype',
-			  'key'		=> 'displayname',
+			  'key'		=> 'name',
 			  'altkey'	=> 'name',
+			  'bbf'	=> 'fm_context_type-opt',
+			  'bbfopt'	=> array('argmode' => 'paramvalue'),
 			  'default'	=> $element['context']['contexttype']['default'],
 			  'selected'	=> $info['context']['contexttype']),
 				   $this->get_var('list_contexttype'));

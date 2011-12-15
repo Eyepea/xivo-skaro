@@ -280,7 +280,7 @@ $array['element']['iduserfeatures']['default'] = 0;
 
 $array['element']['fknum'] = array();
 $array['element']['fknum']['value'] = range(1,100);
-$array['element']['fknum']['default'] = 6;
+$array['element']['fknum']['default'] = 1;
 
 $array['element']['exten'] = array();
 $array['element']['exten']['default'] = '';

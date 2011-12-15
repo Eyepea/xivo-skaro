@@ -36,3 +36,4 @@ pf_manager_inherit.patch
 pf_AgentCallbackLogin
 pf_cel_pgsql_mem_leak
 pf_cel_dbg
+pf_cel_pgsql_fix_reload

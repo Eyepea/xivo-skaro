@@ -124,14 +124,14 @@ def modify_network_config(args):
         check_conf = json_ops.compile_conj(args['rel'])
     except ValueError:
         raise HttpReqError(415, "invalid relation")
-    
+
     if not NETLOCK.acquire_write(NET_LOCK_TIMEOUT):
         raise HttpReqError(503, "unable to take NETLOCK for writing after %s seconds" % NET_LOCK_TIMEOUT)
     try:
         current_config = xivo_config.load_current_configuration()
         if not check_conf(args['old'], current_config):
             raise HttpReqError(409, "Conflict between state wanted by client and current state")
-        
+
     finally:
         NETLOCK.release()
 
@@ -150,7 +150,7 @@ def routes(args, options):
         for route in args:
             if route['disable']:
                 continue
-            
+
             if route['iface'] != iface:
                 iface = route['iface']
                 f.write("\n[%s]\n" % iface)
@@ -159,7 +159,7 @@ def routes(args, options):
                 (route['name'], route['destination'], route['netmask'], route['gateway']))
 
             try:
-                (eid, verbose) = network.route_set(route['destination'], route['netmask'], route['gateway'], iface)
+                (eid, output) = network.route_set(route['destination'], route['netmask'], route['gateway'], iface)
                 if eid != 0 and route['current']:
                     ret = False
             except Exception, e:

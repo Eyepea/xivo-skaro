@@ -99,17 +99,6 @@ $page = $url->pager($pager['pages'],
 					null,
 					$this->bbf('opt_modify')),"\n";
 
-#		if($ref['ctiphonehints']['deletable'] == 1):
-			echo	$url->href_html($url->img_html('img/site/button/delete.gif',
-							       $this->bbf('opt_delete'),
-							       'border="0"'),
-						'cti/phonehints',
-						array('act'	=> 'delete',
-						      'idphonehints'	=> $ref['ctiphonehints']['id'],
-						      'page'	=> $pager['page']),
-						'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
-						$this->bbf('opt_delete'));
-#		endif;
 ?>
 		</td>
 	</tr>

@@ -99,24 +99,6 @@ endif;
 						  'id'		=> 'picture',
 						  'size'	=> 15)),
 
-		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_loginclient'),
-				  'name'	=> 'userfeatures[loginclient]',
-				  'labelid'	=> 'userfeatures-loginclient',
-				  'size'	=> 15,
-				  'default'	=> $element['userfeatures']['loginclient']['default'],
-				  'value'	=> $info['userfeatures']['loginclient'],
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'userfeatures', 'loginclient')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_passwdclient'),
-				  'name'	=> 'userfeatures[passwdclient]',
-				  'labelid'	=> 'userfeatures-passwdclient',
-				  'size'	=> 15,
-				  'default'	=> $element['userfeatures']['passwdclient']['default'],
-				  'value'	=> $info['userfeatures']['passwdclient'],
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'userfeatures', 'passwdclient')) )),
-
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_mobilephonenumber'),
 				  'name'	=> 'userfeatures[mobilephonenumber]',
 				  'labelid'	=> 'userfeatures-mobilephonenumber',
@@ -237,24 +219,45 @@ endif;
 				  'size'	=> 15,
 				  'value'	=> $this->get_var('info','userfeatures','userfield'),
 				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'userfeatures', 'userfield')) )),
-
-	 	$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableclient'),
+						   $this->get_var('error', 'userfeatures', 'userfield')) ));
+?>
+<fieldset id="fld-xivoclient">
+	<legend><?=$this->bbf('fld-client');?></legend>
+<?php echo		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableclient'),
 				      'name'	=> 'userfeatures[enableclient]',
 				      'labelid'	=> 'userfeatures-enableclient',
 				      'default'	=> $element['userfeatures']['enableclient']['default'],
-				      'checked'	=> $info['userfeatures']['enableclient']));
+				      'checked'	=> $info['userfeatures']['enableclient'])),
+
+				$form->text(array('desc'	=> $this->bbf('fm_userfeatures_loginclient'),
+				  'name'	=> 'userfeatures[loginclient]',
+				  'labelid'	=> 'userfeatures-loginclient',
+				  'size'	=> 15,
+				  'default'	=> $element['userfeatures']['loginclient']['default'],
+				  'value'	=> $info['userfeatures']['loginclient'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'loginclient')) )),
+
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_passwdclient'),
+				  'name'	=> 'userfeatures[passwdclient]',
+				  'labelid'	=> 'userfeatures-passwdclient',
+				  'size'	=> 15,
+				  'default'	=> $element['userfeatures']['passwdclient']['default'],
+				  'value'	=> $info['userfeatures']['passwdclient'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'passwdclient')) ));
 
 	if(is_array($profileclient_list) === true && empty($profileclient_list) === false):
 		echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_profileclient'),
 					    'name'	=> 'userfeatures[profileclient]',
 					    'labelid'	=> 'userfeatures-profileclient',
-				   		'altkey'	=> 'name',
+						'altkey'	=> 'name',
 					    'default'	=> $element['userfeatures']['profileclient']['default'],
 					    'selected'	=> $info['userfeatures']['profileclient']),
 				      $profileclient_list);
 	endif;
 ?>
+</fieldset>
 	<div class="fm-paragraph fm-description">
 		<p>
 			<label id="lb-userfeatures-description" for="it-userfeatures-description"><?=$this->bbf('fm_userfeatures_description');?></label>
@@ -286,8 +289,8 @@ endif;
 				    'help'		=> $this->bbf('hlp_fm_userfeatures_entity'),
 				    'key'		=> 'displayname',
 				    'altkey'	=> 'id',
-	           		'selected'  => $info['userfeatures']['entityid'],
-					 'error'	=> $this->bbf_args('error',
+				    'selected'  => $info['userfeatures']['entityid'],
+				    'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'userfeatures', 'entityid'))),
 			      $this->get_var('entity_list'));
 ?>

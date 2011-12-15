@@ -208,7 +208,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_info['picture'] = false;
 		$this->_origin['picture'] = false;
 
-		if(is_object($this->_attachment) === false)
+		$pictureid = (int) $this->_info['userfeatures']['pictureid'];
+
+		if(is_object($this->_attachment) === false
+		|| $pictureid === 0)
 			return(false);
 
 		$this->_info['picture'] = $this->_attachment->get($this->_info['userfeatures']['pictureid']);
@@ -286,8 +289,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_info['voicemail'] = $this->_info['voicemailfeatures'] = false;
 		$this->_origin['voicemail'] = $this->_origin['voicemailfeatures'] = false;
 
+		$voicemailid = (int) $this->_info['userfeatures']['voicemailid'];
+
 		if(is_object($this->_voicemail) === false
-		|| $this->_voicemail->get($this->_info['userfeatures']['voicemailid']) === false)
+		|| $voicemailid === 0
+		|| $this->_voicemail->get() === false)
 			return(false);
 
 		$this->_info['voicemail'] = $this->_voicemail->get_info('voicemail');

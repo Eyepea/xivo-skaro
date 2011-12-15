@@ -199,8 +199,9 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		if(is_array($arr) === false
 		|| dwho_has_len($arr,'netmask') === false
 		|| ($calc = dwho_network::ipv4_calc($arr['destination'],
-						    $arr['netmask'])) === false)
+						    $arr['netmask'])) === false) {
 			return(false);
+		}
 
 		$arr['destination'] = $calc['network'];
 
@@ -213,20 +214,29 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		$uuid = $this->_sysconfd->request_get('/xivo_uuid');
 		$uuid = $uuid['uuid'];
 
-		if($this->_netiface->exists(array('name'	=> $iface,
-						  'hwtypeid'	=> 1,
-						  'uuid'        => $uuid)) === false)
+		$where = array();
+		$where['ifname'] = $iface;
+		$where['hwtypeid'] = 1;
+		$where['uuid'] = $uuid;
+
+		if($this->_netiface->exists($where) === false) {
+			dwho_report::push('error', dwho_i18n::babelfish('interface_not_exist',array($iface)));
 			return(false);
+		}
 
 		$where = array();
 		$where['destination'] = $destination;
 		$where['netmask'] = $netmask;
 
-		if($id === null)
-			return(($this->_iproute->exists($where) === false));
-		else if(($primary = $this->_iproute->get_primary($where)) === false
-		|| dwho_ulongint($id) === dwho_ulongint($primary))
+		if($id === null) {
+			if($this->_iproute->exists($where) === false) {
+				return(true);
+			}
+			dwho_report::push('error', dwho_i18n::babelfish('destination_already_exist',array($destination.'/'.$netmask)));
+		} else if(($primary = $this->_iproute->get_primary($where)) === false
+		|| dwho_ulongint($id) === dwho_ulongint($primary)) {
 			return(true);
+		}
 
 		return(false);
 	}
@@ -240,8 +250,9 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 
 		if($this->get_errnb() > 0
 		|| $this->add_iproute() === false
-		|| $this->commit_sysconfnet('add') === false)
+		|| $this->commit_sysconfnet() === false) {
 			$r = false;
+		}
 
 		$this->_status = '';
 
@@ -254,8 +265,9 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		|| $rs === false
 		|| $this->is_valid_iproute($rs['iface'],
 					   $rs['destination'],
-					   $rs['netmask']) === false)
+					   $rs['netmask']) === false) {
 			return(false);
+		}
 
 		$this->_return['iproute'] = $this->_iproute->add($rs);
 
@@ -271,7 +283,7 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 
 		if($this->get_errnb() > 0
 		|| $this->edit_iproute() === false
-		|| $this->commit_sysconfnet('edit') === false)
+		|| $this->commit_sysconfnet() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -290,8 +302,9 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		|| $this->is_valid_iproute($rs['iface'],
 					   $rs['destination'],
 					   $rs['netmask'],
-					   $this->_info['iproute']['id']) === false)
+					   $this->_info['iproute']['id']) === false) {
 			return(false);
+		}
 
 		$rs['disable'] = $this->_info['iproute']['disable'];
 
@@ -306,8 +319,9 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'edit'
 		|| is_array($this->_return) === false
-		|| empty($this->_return) === true)
+		|| empty($this->_return) === true) {
 			return(false);
+		}
 
 		foreach($this->_return as $key => $val)
 		{
@@ -337,7 +351,7 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		$this->_return = array();
 
 		if($this->delete_iproute() === false
-		|| $this->commit_sysconfnet('del') === false)
+		|| $this->commit_sysconfnet() === false)
 			$r = false;
 
 		$this->_status = '';
@@ -366,7 +380,7 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		$this->_return = array();
 
 		if($this->enable_iproute() === false
-		|| $this->commit_sysconfnet('del') === false)
+		|| $this->commit_sysconfnet() === false)
 			$r = false;
 
 		$this->_status = '';
@@ -382,7 +396,7 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		$this->_return = array();
 
 		if($this->disable_iproute() === false
-		|| $this->commit_sysconfnet('del') === false)
+		|| $this->commit_sysconfnet() === false)
 			$r = false;
 
 		$this->_status = '';
@@ -400,22 +414,14 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		return($this->_enable_disable_iproute(true));
 	}
 
-	function commit_sysconfnet($mode)
+	function commit_sysconfnet()
 	{
-		if(($list = $this->get_iproutes_list(null,$order,$limit)) === false)
+		if(($list = $this->get_iproutes_list()) === false)
 			$list = array();
 
-		# get local UUID
-		$uuid = $this->_sysconfd->request_get('/xivo_uuid');
-		$uuid = $uuid['uuid'];
-
 		$curroute = $this->_info['iproute'];
-		foreach($list as &$route)
-		{
+		foreach($list as &$route) {
 			$route['current'] = ($route['id'] == $curroute['id']);
-			// we need system network interface name, not database name
-			$iface            = $this->_netiface->get_where(array('name' => $route['iface'], 'uuid' => $uuid));
-			$route['iface']   = $iface['ifname'];
 		}
 
 		$ret = (bool) $this->_sysconfd->request_post('/routes', $list);

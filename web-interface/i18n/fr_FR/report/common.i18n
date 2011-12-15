@@ -16,3 +16,12 @@ Erreur durant la mise à jour
 
 ; cant_activate_xivoclient_without_login_and_password
 Vous ne pouvez pas activez le xivo client sans avoir spécifié un identifiant et un mot de passe.
+
+; voip_interface_successfully_updated
+Interface voix mise à jour avec succés
+
+; error_during_update_voip_interface
+Erreur durant la mise à jour de l'interface voix
+
+; error_during_update_voip_default_line_registrar
+Erreur durant la mise à jour de la configuration des lignes par défaut

@@ -25,9 +25,9 @@ define('XIVO_SOFT_LABEL','XIVO');
 define('XIVO_SOFT_VERSION','1.2');
 define('XIVO_SOFT_CODENAME','Skaro');
 define('XIVO_SOFT_URL','xivo.fr');
-define('XIVO_CORP_LABEL','Proformatique');
-define('XIVO_PF_FR_CORP_LABEL','Proformatique');
-define('XIVO_CORP_URL','xivo.fr');
+define('XIVO_CORP_LABEL','Avencall');
+define('XIVO_PF_FR_CORP_LABEL','Avencall');
+define('XIVO_CORP_URL','avencall.com');
 
 define('XIVO_AV_FR_CORP_NAME'		,'Avencall');
 define('XIVO_AV_FR_CORP_EMAIL'		,'contact@avencall.com');
@@ -40,8 +40,8 @@ define('XIVO_AV_FR_CORP_PHONE'		,'+33 (0) 4 37 49 78 10');
 define('XIVO_AV_FR_CORP_FAX'		,'+33 (0) 4 27 46 63 30');
 
 define('XIVO_PF_FR_CORP_NAME'		,'Proformatique sarl');
-define('XIVO_PF_FR_CORP_EMAIL'		,'contact@proformatique.fr');
-define('XIVO_PF_FR_CORP_URL'		,'proformatique.fr');
+define('XIVO_PF_FR_CORP_EMAIL'		,'contact@avencall.com');
+define('XIVO_PF_FR_CORP_URL'		,'avencall.com');
 define('XIVO_PF_FR_CORP_ADDRESS'	,'10 bis, rue Lucien VOILIN');
 define('XIVO_PF_FR_CORP_ZIPCODE'	,'92800');
 define('XIVO_PF_FR_CORP_CITY'		,'Puteaux');
@@ -49,9 +49,9 @@ define('XIVO_PF_FR_CORP_COUNTRY'	,'France');
 define('XIVO_PF_FR_CORP_PHONE'		,'+33 (0) 1 41 38 99 60');
 define('XIVO_PF_FR_CORP_FAX'		,'+33 (0) 1 41 38 99 70');
 
-define('XIVO_PF_CA_CORP_NAME'		,'Proformatique inc');
-define('XIVO_PF_CA_CORP_EMAIL'		,'contact@proformatique.ca');
-define('XIVO_PF_CA_CORP_URL'		,'proformatique.ca');
+define('XIVO_PF_CA_CORP_NAME'		,'Avencall inc');
+define('XIVO_PF_CA_CORP_EMAIL'		,'contact@vencall.ca');
+define('XIVO_PF_CA_CORP_URL'		,'avencall.ca');
 define('XIVO_PF_CA_CORP_ADDRESS'	,'2590, boul. Laurier, local 770');
 define('XIVO_PF_CA_CORP_ZIPCODE'	,'G1V 4M6');
 define('XIVO_PF_CA_CORP_CITY'		,'Quebec');

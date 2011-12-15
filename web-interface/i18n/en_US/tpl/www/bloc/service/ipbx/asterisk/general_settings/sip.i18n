@@ -745,22 +745,16 @@ No
 ; fm_nat-opt(yes)
 Yes
 
+; fm_nat-opt(force_rport)
+Force rport
+
+; fm_nat-opt(comedia)
+Comedia
+
 ; fm_nat-opt(never)
 Never
 
 ; fm_nat-opt(route)
-Route
-
-; fm_nat-opt-no
-No
-
-; fm_nat-opt-yes
-Yes
-
-; fm_nat-opt-never
-Never
-
-; fm_nat-opt-route
 Route
 
 ; fm_dtmfmode
@@ -779,7 +773,10 @@ RFC 2833
 InBand
 
 ; fm_dtmfmode-opt(info)
-INFO
+INFO (application/dtmf-relay)
+
+; fm_dtmfmode-opt(shortinfo)
+INFO (application/dtmf)
 
 ; fm_dtmfmode-opt(auto)
 Auto
@@ -1478,3 +1475,8 @@ Use domain as realm:
 ; hlp_fm_domainsasrealm
 Asterisk config: domainsasrealm
 
+; col_add
+Add
+
+; opt_disp-delete
+Delete

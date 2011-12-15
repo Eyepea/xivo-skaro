@@ -110,43 +110,8 @@ switch($act)
 		$_QRY->go($_TPL->url('cti/phonehints'),$param);
 		break;
 
-	case 'add':
-		$app = &$ipbx->get_application('ctiphonehints');
-		$param['idgroup'] = $idgroup;
-
-		$result = $fm_save = null;
-
-		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('phonehints',$_QR) === true)
-		{
-		    $_QR['phonehints']['idgroup'] = $idgroup;
-			if($app->set_add($_QR) === false
-			|| $app->add() === false)
-			{
-				$fm_save = false;
-				$result = $app->get_result();
-				$error = $app->get_error();
-			}
-			else
-			{
-			    $ipbx->discuss('xivo[cticonfig,update]');
-				$_QRY->go($_TPL->url('cti/phonehints'),$param);
-			}
-		}
-
-		dwho::load_class('dwho_sort');
-
-		$_TPL->set_var('info',$result);
-		$_TPL->set_var('fm_save',$fm_save);
-
-		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/dwho/submenu.js');
-		$dhtml->set_js('js/jscolor/jscolor.js');
-		break;
-
 	case 'edit':
 		$app = &$ipbx->get_application('ctiphonehints');
-		$param['idgroup'] = $idgroup;
 
 		if(isset($_QR['idphonehints']) === false
 		|| ($info = $app->get($_QR['idphonehints'])) === false)
@@ -160,7 +125,8 @@ switch($act)
 		{
 			$return = &$result;
 
-			$_QR['phonehints']['idgroup'] = $idgroup;
+			$_QR['phonehints']['idgroup'] = $info['phonehints']['idgroup'];
+			$_QR['phonehints']['number'] = $info['phonehints']['number'];
 
 			if($app->set_edit($_QR) === false
 			|| $app->edit() === false)
@@ -184,21 +150,6 @@ switch($act)
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/jscolor/jscolor.js');
-		break;
-
-	case 'delete':
-		$param['page'] = $page;
-
-		$app = &$ipbx->get_application('ctiphonehints');
-
-		if(isset($_QR['idphonehints']) === false
-		|| ($info = $app->get($_QR['idphonehints'])) === false)
-			$_QRY->go($_TPL->url('cti/phonehints'),$param);
-
-		$app->delete();
-	    $ipbx->discuss('xivo[cticonfig,update]');
-
-		$_QRY->go($_TPL->url('cti/phonehints'),$param);
 		break;
 
 	case 'list':

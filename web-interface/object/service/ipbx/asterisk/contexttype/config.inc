@@ -27,9 +27,6 @@ $array['element']['default'] = '';
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
-$array['element']['displayname'] = array();
-$array['element']['displayname']['default'] = '';
-
 $array['element']['commented'] = array();
 $array['element']['commented']['value'] = array(0,1);
 $array['element']['commented']['default'] = 0;

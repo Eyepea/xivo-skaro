@@ -40,10 +40,10 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_name'),
 
 	if(($interfaces = $this->get_var('interfaces')) !== false):
 		echo	$form->select(array('desc'	=> $this->bbf('fm_iface'),
-					    'name'	=> 'iface',
+					    'name'		=> 'iface',
 					    'labelid'	=> 'iface',
-					    'key'	=> 'identity',
-					    'altkey'	=> 'name',
+					    'key'		=> 'identity',
+					    'altkey'	=> 'ifname',
 					    'default'	=> $element['iproute']['iface']['default'],
 					    'selected'	=> $info['iface']),
 				      $interfaces);

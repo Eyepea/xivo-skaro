@@ -82,11 +82,15 @@ $dhtml = &$this->get_module('dhtml');
 						   'xivo/configuration/network/interface',
 						   'act=list');?>
 			</dd>
+<?php
+/* IP ROUTE - COMMENTED
 			<dd id="mn-network--iproute">
 				<?=$url->href_html($this->bbf('mn_left_network-iproute'),
 						   'xivo/configuration/network/iproute',
 						   'act=list');?>
 			</dd>
+*/
+?>
 			<dd id="mn-network--resolvconf">
 				<?=$url->href_html($this->bbf('mn_left_network-resolvconf'),
 						   'xivo/configuration/network/resolvconf');?>

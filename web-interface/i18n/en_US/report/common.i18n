@@ -16,3 +16,12 @@ Error during edit params
 
 ; cant_activate_xivoclient_without_login_and_password
 Can't activate xivoclient without login and password
+
+; voip_interface_successfully_updated
+VoIP interface successfully updated
+
+; error_during_update_voip_interface
+Error during update voip interface
+
+; error_during_update_voip_default_line_registrar
+Error during update voip default line registrar

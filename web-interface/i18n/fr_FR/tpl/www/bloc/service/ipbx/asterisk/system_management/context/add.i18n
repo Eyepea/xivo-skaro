@@ -130,3 +130,17 @@ Ajouter un ou plusieurs contextes ->
 ; bt_outcontext
 <- Enlever un ou plusieurs contextes
 
+;fm_context_type-opt(internal)
+Interne
+
+;fm_context_type-opt(incall)
+Entrant
+
+;fm_context_type-opt(outcall)
+Sortant
+
+;fm_context_type-opt(services)
+Service
+
+;fm_context_type-opt(others)
+Autre

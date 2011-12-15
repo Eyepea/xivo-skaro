@@ -673,6 +673,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			return(false);
 
 		$this->_provdconfig->delete($this->_info['devicefeatures']['config']);
+		$this->_provdconfig->delete($this->_info['devicefeatures']['deviceid']);
 		$this->_provddevice->delete($this->_info['devicefeatures']['deviceid']);
 		$r = $this->_devicefeatures->delete($this->_info['devicefeatures']['id']);
 

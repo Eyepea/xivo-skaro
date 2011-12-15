@@ -31,7 +31,7 @@
 			<dd id="mn-wizard--welcome"><?=$this->bbf('mn_left_wizard-welcome');?></dd>
 			<dd id="mn-wizard--license"><?=$this->bbf('mn_left_wizard-license');?></dd>
 			<?php /*<dd id="mn-wizard--ipbxengine"><?=$this->bbf('mn_left_wizard-ipbxengine');?></dd>*/ ?>
-			<dd id="mn-wizard--dbconfig"><?=$this->bbf('mn_left_wizard-dbconfig');?></dd>
+			<?php /*<dd id="mn-wizard--dbconfig"><?=$this->bbf('mn_left_wizard-dbconfig');?></dd>*/ ?>
 			<dd id="mn-wizard--checkcomponents"><?=$this->bbf('mn_left_wizard-checkcomponents');?></dd>
 			<dd id="mn-wizard--mainconfig"><?=$this->bbf('mn_left_wizard-mainconfig');?></dd>
 			<dd id="mn-wizard--entitycontext"><?=$this->bbf('mn_left_wizard-entitycontext');?></dd>

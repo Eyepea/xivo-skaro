@@ -27,6 +27,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 	var $_netiface	= false;
 	var $_sysconfd	= false;
 	var $_sysnet	= false;
+	var $_appprovdconfig	= false;
 	var $_commonconf = false;
 
 	function xivo_application_xivo_object_netiface(&$xobj)
@@ -35,7 +36,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		if(($this->_netiface = &$this->_xobj->get_module('netiface')) === false
 		|| ($this->_sysconfd = &$this->_xobj->get_module('sysconfd')) === false
-		|| ($this->_commonconf = &$this->_xobj->get_module('commonconf')) === false)
+		|| ($this->_commonconf = &$this->_xobj->get_module('commonconf')) === false
+		|| ($this->_appprovdconfig = &$this->_xobj->get_application('provdconfig')) === false)
 			return(false);
 
 		$sysinfo = new dwho_sysinfo();
@@ -382,8 +384,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 			if($id === null)
 			{
-				if($this->_netiface->exists($where) === true)
+				if($this->_netiface->exists($where) === true) {
+					$this->_set_error('netiface', 'address', 'already-defined');
 					return(false);
+				}
 			}
 			else
 			{
@@ -410,13 +414,16 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			if($hwtypeid !== null)
 				$where['hwtypeid'] = $hwtypeid;
 
-			if($this->_netiface->exists($where) !== true)
+			if($this->_netiface->exists($where) !== true) {
+				$this->_set_error('netiface', 'ifname', 'already-defined');
 				return(false);
+			}
 
 			if($hwtypeid !== null
 			&& isset($phyiface['hwtypeid']) === true
-			&& dwho_uint($phyiface['hwtypeid']) !== $hwtypeid)
+			&& dwho_uint($phyiface['hwtypeid']) !== $hwtypeid) {
 				return(false);
+			}
 
 			return(true);
 		}
@@ -539,7 +546,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		/* cannot remove/disable a interface if another one is depending on */
 		if($this->_netiface->exists_link($ifname, $uuid) !== false
 		|| isset($unremovables[$ifname]) === true
-		|| $voip_iface['name'] == $ifname) {
+		|| $voip_iface['ifname'] == $ifname) {
 			$res['disableable'] = false;
 			$res['deletable'] = false;
 		}
@@ -700,13 +707,17 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			$arr['networktype'] = 'data';
 		}
 
+		if (isset($arr['vlanrawdevice']) && dwho_has_len($arr['vlanid'])) {
+			$arr['ifname'] = 'vlan'.$arr['vlanid'];
+			$arr['devname'] = $arr['vlanrawdevice'];
+		}
+
 		switch($action)
 		{
 			case 'add':
 				if(isset($arr['devname']) === true
 				&& dwho_has_len($arr['devname']) === true)
 					$devname = $arr['devname'];
-				$arr['ifname'] = $arr['name'];
 				break;
 			case 'edit':
 				if(dwho_issa('netiface',$this->_info) === true
@@ -853,15 +864,33 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 	function make_voip_interface($netiface)
 	{
-		if (!$netiface || !is_array($netiface) || empty($netiface)) {
+		if (!is_array($netiface) || empty($netiface)) {
 			return(false);
 		} elseif(($voip_iface = $this->_netiface->get_voip_iface($netiface['uuid'])) !== false
 		&& $netiface['networktype'] == 'voip'
 		&& $voip_iface['ifname'] !== $netiface['ifname'])
 		{
-			$iface = array('networktype' => 'data');
-			if($this->_netiface->edit($voip_iface['id'], $iface) === false) {
-				dwho_report::push('error', dwho_i18n::babelfish('error_during_update_voip_interface'));
+			$data = array('networktype' => 'data');
+			if($this->_netiface->edit($voip_iface['id'], $data) === false) {
+				dwho_report::push('error', 'error_during_update_voip_interface');
+				return false;
+			}
+			dwho_report::push('info', 'voip_interface_successfully_updated');
+		}
+
+		if ($netiface['networktype'] == 'voip')
+		{
+			$defaultconf = $this->_appprovdconfig->get('default');
+
+			$config = &$defaultconf['config'];
+			$config['registrar_main'] = $voip_iface['address'];
+			$config['proxy_main'] = $voip_iface['address'];
+
+			if($this->_appprovdconfig->set_edit($defaultconf,'registrar') === false
+			|| $this->_appprovdconfig->edit() === false)
+			{
+				$error = $this->_appprovdconfig->get_error('config');
+				dwho_report::push('error', 'error_during_update_voip_default_line_registrar');
 				return false;
 			}
 		}
@@ -881,7 +910,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		|| ($netifacename = $this->add_netiface()) === false)
 		{
 			$r = false;
-			$this->_set_error('netiface', 'ifname', 'already-defined');
 			if($netifacename !== null)
 				$this->_reverse_add();
 		}
@@ -890,7 +918,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		if($r === false)
 			return false;
 
-		$this->make_voip_interface($this->get_result('netiface'));
 		$this->notify_changes();
 
 		return($r);
@@ -908,8 +935,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 					  $rs['uuid']) === false)
 			return(false);
 
+		$this->make_voip_interface($rs);
+
 		if($this->_netiface->add($rs) !== false)
-			$this->_return['netiface'] = $rs['name'];
+			$this->_return['netiface'] = $rs['id'];
 		else
 			$this->_return['netiface'] = false;
 
@@ -958,7 +987,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		if($r === false)
 			return false;
 
-		$this->make_voip_interface($this->get_result('netiface'));
 		$this->notify_changes();
 
 		return($r);
@@ -981,8 +1009,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		&& $this->_netiface->exists_link($this->_info['netiface']['ifname'], $this->_info['netiface']['uuid']) !== false)
 			return(false);
 
+		$this->make_voip_interface($rs);
+
 		if($this->_netiface->edit($this->_info['netiface']['id'],$rs) !== false)
-			$this->_return['netiface'] = $rs['name'];
+			$this->_return['netiface'] = $rs['id'];
 		else
 			$this->_return['netiface'] = false;
 
@@ -1039,6 +1069,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$this->_status = '';
 		if($r === false)
 			return false;
+
+		$this->notify_changes();
 
 		return true;
 	}
@@ -1123,6 +1155,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		if($r === false)
 			return false;
 
+		$this->notify_changes();
+
 		return true;
 	}
 
@@ -1148,10 +1182,12 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		$this->_status = '';
 
-        if($r === false)
-            return false;
+		if($r === false)
+			return false;
 
-        return true;
+		$this->notify_changes();
+
+		return true;
 	}
 
 	function enable_netiface()

@@ -202,6 +202,8 @@ CREATE TABLE "cel" (
  PRIMARY KEY("id")
 );
 
+CREATE INDEX "cel__idx__uniqueid" ON "cel"("uniqueid");
+
 
 DROP TABLE IF EXISTS "context";
 CREATE TABLE "context" (
@@ -272,7 +274,6 @@ DROP TABLE IF EXISTS "contexttype";
 CREATE TABLE "contexttype" (
  "id" SERIAL,
  "name" varchar(40) NOT NULL,
- "displayname" varchar(40) NOT NULL,
  "commented" integer,
  "deletable" integer,
  "description" text,
@@ -281,11 +282,11 @@ CREATE TABLE "contexttype" (
 
 CREATE UNIQUE INDEX "contexttype__uidx__name" ON "contexttype"("name");
 
-INSERT INTO "contexttype" VALUES(DEFAULT, 'internal', 'Interne', 0, 0, '');
-INSERT INTO "contexttype" VALUES(DEFAULT, 'incall', 'Entrant', 0, 0, '');
-INSERT INTO "contexttype" VALUES(DEFAULT, 'outcall', 'Sortant', 0, 0, '');
-INSERT INTO "contexttype" VALUES(DEFAULT, 'services', 'Services', 0, 0, '');
-INSERT INTO "contexttype" VALUES(DEFAULT, 'others', 'Autres', 0, 0, '');
+INSERT INTO "contexttype" VALUES(DEFAULT, 'internal', 0, 0, '');
+INSERT INTO "contexttype" VALUES(DEFAULT, 'incall', 0, 0, '');
+INSERT INTO "contexttype" VALUES(DEFAULT, 'outcall', 0, 0, '');
+INSERT INTO "contexttype" VALUES(DEFAULT, 'services', 0, 0, '');
+INSERT INTO "contexttype" VALUES(DEFAULT, 'others', 0, 0, '');
 
 
 DROP TABLE IF EXISTS "ctiaccounts";
@@ -542,7 +543,7 @@ CREATE TABLE "ctisheetactions" (
 );
 
 INSERT INTO "ctisheetactions" VALUES(DEFAULT,'dial','sheet_action_dial','["default"]','dest','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} de {xivo-calleridnum}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ],"40": [ "Numéro appelé","phone","Inconnu","{xivo-calledidnum}" ]}','{"10": [ ","title","","Appel {xivo-direction}" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1,0);
-INSERT INTO "ctisheetactions" VALUES(DEFAULT,'queue','sheet_action_queue','["default"]','dest','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ ","title","","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','file:///etc/pf-xivo/ctiservers/form.ui','{}',0,1,0);
+INSERT INTO "ctisheetactions" VALUES(DEFAULT,'queue','sheet_action_queue','["default"]','dest','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ ","title","","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','file:///etc/pf-xivo/xivo-ctid/form.ui','{}',0,1,0);
 INSERT INTO "ctisheetactions" VALUES(DEFAULT,'custom1','sheet_action_custom1','["default"]','all','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} (Custom)" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ ","title","","Appel {xivo-direction} (Custom)" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1,0);
 
 

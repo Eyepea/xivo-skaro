@@ -106,8 +106,8 @@ $page = $url->pager($pager['pages'],
 		<td title="<?=dwho_alttitle($ref['context']['displayname']);?>">
 			<?=dwho_htmlen(dwho_trunc($ref['context']['displayname'],30,'...',false));?>
 		</td>
-		<td title="<?=dwho_alttitle($ref['contexttype']['displayname']);?>">
-			<?=dwho_htmlen(dwho_trunc($ref['contexttype']['displayname'],30,'...',false));?>
+		<td title="<?=dwho_alttitle($this->bbf('ctx_'.$ref['contexttype']['name']));?>">
+			<?=dwho_htmlen(dwho_trunc($this->bbf('ctx_'.$ref['contexttype']['name']),30,'...',false));?>
 		</td>
 		<td><?=$entity?></td>
 		<td class="td-right" colspan="2">
