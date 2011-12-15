@@ -523,8 +523,6 @@ def _needs_childs_and_parents_indexes(fun):
 class ConfigCollection(ForwardingDocumentCollection):
     @defer.inlineCallbacks
     def _build_childs_and_parents_indexes(self):
-        # Build childs and parents index from scratch.
-        # Parents index is not strictly needed but simplify some stuff
         # XXX it's possible to have this method executed twice, for example
         #     if during the time to yield another methods call this method,
         #     etc, we should use a lock, twisted is such a pain sometimes,

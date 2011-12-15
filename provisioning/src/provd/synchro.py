@@ -19,8 +19,6 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# TODO add support for cancel
-
 import logging
 from collections import deque
 from twisted.internet import defer

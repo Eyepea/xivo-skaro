@@ -53,9 +53,6 @@ class OperationInProgressHook(download.DownloadHook):
         self._oip.state = OIP_SUCCESS
     
     def fail(self, exc_value):
-        # fail will never be called if start is not called, which could
-        # happens in the rare case where one hook factory raise an error,
-        # i.e. if there's a bug in a hook factory
         self._oip.state = OIP_FAIL
 
 

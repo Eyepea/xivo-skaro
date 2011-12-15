@@ -17,8 +17,6 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# TODO add support for plugin-package signing...
-
 import contextlib
 import json
 import logging
@@ -69,7 +67,6 @@ def _check_raw_plugin_info(raw_plugin_info, id, keys):
 
 
 def _clean_localized_description(raw_plugin_info):
-    # remove every description_* key
     for key in raw_plugin_info.keys():
         if key.startswith('description_'):
             del raw_plugin_info[key]

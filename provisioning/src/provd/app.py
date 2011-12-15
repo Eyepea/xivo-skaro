@@ -84,15 +84,12 @@ def _wlock(fun):
 
 
 def _check_common_raw_config_validity(raw_config):
-    # Check if the common raw config is valid or raise an exception
     for param in [u'ip', u'http_port', u'tftp_port']:
         if param not in raw_config:
             raise RawConfigError('missing %s parameter' % param)
 
 
 def _check_raw_config_validity(raw_config):
-    # Check if all the mandatory parameters are present. Note that this
-    # check is done before settings the default values. 
     # XXX this is bit repetitive...
     _check_common_raw_config_validity(raw_config)
     if raw_config.get(u'ntp_enabled'):
@@ -133,9 +130,6 @@ def _check_raw_config_validity(raw_config):
 
 
 def _set_defaults_raw_config(raw_config):
-    # Set defaults parameter in raw config.
-    # Note that this is done after checking the raw config is valid.
-    # modify raw_config by setting default parameter value
     if raw_config.get(u'syslog_enabled'):
         raw_config.setdefault(u'syslog_port', 514)
         raw_config.setdefault(u'level', u'warning')
@@ -223,8 +217,6 @@ class ProvisioningApplication(object):
     # device methods
     
     def _dev_get_plugin(self, device):
-        # Return the plugin associated with the device, or None if there's
-        # no such plugin
         if u'plugin' in device:
             return self.pg_mgr.get(device[u'plugin'])
         else:
@@ -335,8 +327,6 @@ class ProvisioningApplication(object):
                          u'vendor', u'model', u'version']
     
     def _dev_need_reconfiguration(self, old_device, new_device):
-        # Return true if the device object are different enough that we
-        # need to reconfigure the device.
         # Note that this doesn't check if the device is deconfigurable
         # and configurable.
         for key in self._SIGNIFICANT_KEYS:
@@ -815,7 +805,7 @@ class ProvisioningApplication(object):
             self._pg_configure_pg(id)
     
     def _pg_unload(self, id):
-        # This method should never raise an exception (in theory)
+        # This method should never raise an exception
         try:
             self.pg_mgr.unload(id)
         except PluginNotLoadedError:
@@ -824,10 +814,9 @@ class ProvisioningApplication(object):
             logger.info('Plugin %s was not loaded ', id)
     
     @defer.inlineCallbacks
-    def _pg_configure_all_devices(self, id):
-        # Reconfigure all the devices that use the given plugin id
-        logger.info('Reconfiguring all devices using plugin %s', id)
-        devices = yield self._dev_collection.find({u'plugin': id})
+    def _pg_configure_all_devices(self, plugin_id):
+        logger.info('Reconfiguring all devices using plugin %s', plugin_id)
+        devices = yield self._dev_collection.find({u'plugin': plugin_id})
         for device in devices:
             # deconfigure
             if device[u'configured']:

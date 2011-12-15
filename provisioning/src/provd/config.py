@@ -71,7 +71,6 @@ __license__ = """
 
 # XXX right now, bad parameter names will be silently ignored, and we might
 #     want to raise an exception when we see a parameter that is invalid
-# XXX better parameter documentation...
 # XXX there's is some naming confusion between application configuration
 #     and device configuration, since both used the word 'config' and
 #     raw config yet it means different thing
@@ -286,7 +285,6 @@ def _pre_update_raw_config(raw_config):
 
 
 def _port_number(raw_value):
-    # Return a port number as an integer or raise a ValueError
     port = int(raw_value)
     if not 1 <= port <= 65535:
         raise ValueError('invalid port number "%s"' % str)
@@ -294,7 +292,6 @@ def _port_number(raw_value):
 
 
 def _ip_address(raw_value):
-    # Return an IP address as a string or raise a ValueError
     return norm_ip(raw_value)
 
 
@@ -309,7 +306,6 @@ _BOOL_TRUE = ['True', 'true', '1']
 _BOOL_FALSE = ['False', 'false', '0']
 
 def _bool(raw_value):
-    # Return a boolean (type boolean) from a boolean string representation
     if raw_value in _BOOL_TRUE:
         return True
     elif raw_value in _BOOL_FALSE:
