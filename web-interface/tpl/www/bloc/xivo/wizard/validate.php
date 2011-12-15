@@ -60,11 +60,6 @@ endif;
 	<dl>
 		<dt><?=$this->bbf('info_language');?></dt>
 		<dd><?=dwho_htmlen($this->bbf('language_'.$info['welcome']['language']));?></dd>
-		<dt><?=$this->bbf('info_dbbackend');?></dt>
-		<dd><?=dwho_htmlen($this->get_var('dbbackend',$info['dbconfig']['result']['backend'],'label')).
-		       $dhtml->message_error(
-				nl2br($this->bbf_args('error_dbconfig_backends',
-					        $this->get_var('error','dbconfig','backends'))));?></dd>
 	</dl>
 </fieldset>
 <fieldset id="fld-server-information">
