@@ -884,8 +884,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			$defaultconf = $this->_appprovdconfig->get('default');
 
 			$config = &$defaultconf['config'];
-			$config['registrar_main'] = $voip_iface['address'];
-			$config['proxy_main'] = $voip_iface['address'];
+			$config['registrar_main'] = $netiface['address'];
+			$config['proxy_main'] = $netiface['address'];
 
 			if($this->_appprovdconfig->set_edit($defaultconf,'registrar') === false
 			|| $this->_appprovdconfig->edit() === false)
