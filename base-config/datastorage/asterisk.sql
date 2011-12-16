@@ -2157,7 +2157,7 @@ CREATE TABLE "useriax" (
  "qualifyfreqnotok" INTEGER NOT NULL DEFAULT 10000, -- peer --
  "timezone" varchar(80), -- peer --
  "disallow" varchar(100), -- general / user / peer --
- "allow" text NOT NULL, -- general / user / peer --
+ "allow" text, -- general / user / peer --
  "mohinterpret" varchar(80), -- general / user / peer --
  "mohsuggest" varchar(80), -- general / user / peer --
  "deny" varchar(31), -- user / peer --
