@@ -67,11 +67,11 @@ Non
 ; fm_protocol_nat-opt(yes)
 Oui
 
-; fm_protocol_nat-opt(never)
-Jamais
+; fm_protocol_nat-opt(force_rport)
+Force rport
 
-; fm_protocol_nat-opt(route)
-Route
+; fm_protocol_nat-opt(comedia)
+Comedia
 
 ; fm_register
 Enregistrement :

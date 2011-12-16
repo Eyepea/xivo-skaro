@@ -751,12 +751,6 @@ Force rport
 ; fm_nat-opt(comedia)
 Comedia
 
-; fm_nat-opt(never)
-Never
-
-; fm_nat-opt(route)
-Route
-
 ; fm_dtmfmode
 DTMF:
 

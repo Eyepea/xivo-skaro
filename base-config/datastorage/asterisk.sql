@@ -2200,7 +2200,7 @@ DROP TYPE  IF EXISTS "usersip_session_refresher";
 
 
 CREATE TYPE "usersip_insecure" AS ENUM ('port', 'invite', 'port,invite');
-CREATE TYPE "usersip_nat" AS ENUM ('no','yes','never','route');
+CREATE TYPE "usersip_nat" AS ENUM ('no','yes','force_rport','comedia');
 CREATE TYPE "usersip_videosupport" AS ENUM ('no','yes','always');
 CREATE TYPE "usersip_dtmfmode" AS ENUM ('rfc2833','inband','info','auto');
 CREATE TYPE "usersip_progressinband" AS ENUM ('no','yes','never');

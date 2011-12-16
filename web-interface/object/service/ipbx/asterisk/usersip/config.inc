@@ -111,7 +111,7 @@ $array['element']['insecure']['default'] = '';
 $array['element']['insecure']['null'] = true;
 
 $array['element']['nat'] = array();
-$array['element']['nat']['value'] = array('no','yes','never','route');
+$array['element']['nat']['value'] = array('no','yes','force_rport','comedia');
 $array['element']['nat']['default'] = '';
 $array['element']['nat']['null'] = true;
 
@@ -459,7 +459,7 @@ $array['filter']['fullname'] = array('set' => false,'chk' => 0);
 $array['filter']['cid_number'] = array('set' => false,'chk' => 0);
 $array['filter']['maxcallbitrate'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,1860));
 $array['filter']['insecure'] = array('set' => false,'chk' => 2,'key' => $array['element']['insecure']['value']);
-$array['filter']['nat'] = array('set' => false,'chk' => 2,'key' => array('no','yes','never','route'));
+$array['filter']['nat'] = array('set' => false,'chk' => 2,'key' => array('no','yes','force_rport','comedia'));
 $array['filter']['promiscredir'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['usereqphone'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['trustrpid'] = array('set' => false,'chk' => 2,'bool' => true);
