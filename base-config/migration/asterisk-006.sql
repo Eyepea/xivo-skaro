@@ -23,7 +23,7 @@
 
 BEGIN;
 
-ALTER TABLE "useriax" ALTER allow TYPE text;
-ALTER TABLE "usersip" ALTER allow TYPE text;
+ALTER TABLE "useriax" ALTER allow DROP NOT NULL;
+ALTER TABLE "usersip" ALTER allow DROP NOT NULL;
 
 COMMIT;
