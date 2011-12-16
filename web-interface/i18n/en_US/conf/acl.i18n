@@ -1,260 +1,110 @@
-; acl(xivo)
-XiVO
-
-; acl(xivo-user)
-Users
-
 ; acl(service)
 Services
 
-; acl(service-ipbx)
-IPBX
+; acl(service-callcenter)
+Call Center
 
-; acl(service-ipbx-general_settings)
-General settings
+; acl(service-callcenter-campaigns)
+Campaigns
 
-; acl(service-ipbx-general_settings-sip)
-SIP Protocol
-
-; acl(service-ipbx-general_settings-iax)
-IAX Protocol
-
-; acl(service-ipbx-general_settings-voicemail)
-Voicemails
-
-; acl(service-ipbx-general_settings-phonebook)
-Phonebook
-
-; acl(service-ipbx-general_settings-advanced)
-Advanced
-
-; acl(service-ipbx-general_settings-outboundmwi)
-Outbound MWI registrations
-
-; acl(service-ipbx-pbx_settings)
-IPBX settings
-
-; acl(service-ipbx-pbx_settings-agents)
-Agents
-
-; acl(service-ipbx-pbx_settings-users)
-Users
-
-; acl(service-ipbx-pbx_settings-groups)
-Groups
-
-; acl(service-ipbx-pbx_settings-queues)
-Queues
-
-; acl(service-ipbx-pbx_settings-meetme)
-Conference rooms
-
-; acl(service-ipbx-pbx_settings-voicemail)
-Voicemails
-
-; acl(service-ipbx-pbx_settings-extension)
-Free extensions
-
-; acl(service-ipbx-call_management)
-Call management
-
-; acl(service-ipbx-call_management-incall)
-Incoming calls
-
-; acl(service-ipbx-call_management-outcall)
-Outgoing calls
-
-; acl(service-ipbx-call_management-rightcall)
-Call permissions
-
-; acl(service-ipbx-call_management-callfilter)
-Call filters
-
-; acl(service-ipbx-call_management-schedule)
-Schedules
-
-; acl(service-ipbx-call_management-voicemenu)
-Voice menus
-
-; acl(service-ipbx-call_management-cdr)
-Call logs
-
-; acl(service-ipbx-trunk_management)
-Trunk management
-
-; acl(service-ipbx-trunk_management-sip)
-SIP Protocol
-
-; acl(service-ipbx-trunk_management-iax)
-IAX Protocol
-
-; acl(service-ipbx-trunk_management-custom)
-Custom
-
-; acl(service-ipbx-pbx_services)
-IPBX services
-
-; acl(service-ipbx-pbx_services-sounds)
-Audio files
-
-; acl(service-ipbx-pbx_services-musiconhold)
-On Hold Music
-
-; acl(service-ipbx-pbx_services-extenfeatures)
-Extensions
-
-; acl(service-ipbx-pbx_services-parkinglot)
-Parking
-
-; acl(service-ipbx-pbx_services-phonebook)
-Phonebook
-
-; acl(service-ipbx-system_management)
-IPBX configuration
-
-; acl(service-ipbx-dundi)
-Dundi
-
-; acl(service-ipbx-dundi-peers)
-Peers
-
-; acl(service-ipbx-dundi-mappings)
-Mappings
-
-; acl(service-ipbx-system_management-configfiles)
-Configuration files
-
-; acl(service-ipbx-system_management-context)
-Contexts
-
-; acl(service-ipbx-system_management-ldapfilter)
-LDAP filters
-
-; acl(service-ipbx-system_management-isdncard)
-ISDN Cards
-
-; acl(service-ipbx-system_management-modules)
-Modules
-
-; acl(service-ipbx-system_management-manager)
-Manager
-
-; acl(service-ipbx-control_system)
-Control
-
-; acl(service-ipbx-control_system-reload)
-Reload IPBX
-
-; acl(service-ipbx-control_system-restart)
-Restart IPBX
-
-; acl(service-monitoring)
-Monitoring
-
-; acl(service-monitoring-control_system)
-Control
-
-; acl(service-monitoring-control_system-start)
-Start
-
-; acl(service-monitoring-control_system-stop)
-Stop
-
-; acl(service-monitoring-control_system-restart)
-Restart
-
-; acl(service-monitoring-control_system-monitor)
-Enable monitoring
-
-; acl(service-monitoring-control_system-unmonitor)
-Disable monitoring
-
-; acl(xivo-configuration)
-Configuration
-
-; acl(xivo-configuration-manage)
-Management
-
-; acl(xivo-configuration-manage-entity)
-Entities
-
-; acl(xivo-configuration-manage-server)
-XiVO servers
-
-; acl(xivo-configuration-manage-ldapserver)
-LDAP servers
-
-; acl(xivo-configuration-manage-accesswebservice)
-Web services
-
-; acl(xivo-configuration-network)
-Network
-
-; acl(xivo-configuration-network-interface)
-Interfaces
-
-; acl(xivo-configuration-network-iproute)
-Static IP routes
-
-; acl(xivo-configuration-network-resolvconf)
-DNS resolving
-
-; acl(service-ipbx)
-IPBX
-
-; acl(service-ipbx-general_settings)
-Paramètres globaux
-
-; acl(service-ipbx-general_settings-sip)
-Protocole SIP
-
-; acl(service-ipbx-general_settings-iax)
-Protocole IAX
-
-; acl(service-ipbx-general_settings-voicemail)
-Messageries vocales
-
-; acl(service-ipbx-general_settings-phonebook)
-Carnet d'adresses
-
-; acl(service-ipbx-general_settings-advanced)
-Avancés
-
-; acl(service-ipbx-ctiserver)
-CTI server
-
-; acl(service-cti)
-CTI server
-
-; acl(service-cti-general_settings)
-General settings
-
-; acl(service-cti-general_settings-general)
+; acl(service-callcenter-general)
 General
 
-; acl(service-cti-general_settings-presences)
-Presences
+; acl(service-callcenter-registrationcampaign)
+Record campaigns
 
-; acl(service-cti-general_settings-phonehints)
-Phone hints
+; acl(service-callcenter-registrationcampaign-campaigns)
+Campaigns
 
-; acl(service-cti-general_settings-profiles)
-Profiles
+; acl(service-callcenter-settings)
+Configuration
+
+; acl(service-callcenter-settings-agents)
+Agents
+
+; acl(service-callcenter-settings-queuepenalties)
+Queue penalties
+
+; acl(service-callcenter-settings-queues)
+Queues
+
+; acl(service-callcenter-settings-queueskillrules)
+Queue skill rules
+
+; acl(service-callcenter-settings-queueskills)
+Queue skills
+
+; acl(service-callcenter-tags)
+Tags
+
+; acl(service-cti)
+CTI servers
+
+; acl(service-cti-contexts)
+Contexts
+
+; acl(service-cti-control_system)
+Control system
+
+; acl(service-cti-control_system-restart)
+Restart CTI server
 
 ; acl(service-cti-directories)
 Directories
 
+; acl(service-cti-directories-contexts)
+Direct directories
+
 ; acl(service-cti-directories-directories)
 Definitions
 
-; acl(service-cti-directories-reversedirectories)
-Reverse directories
-
 ; acl(service-cti-directories-displays)
+Display Filter
+
+; acl(service-cti-directories-reversedirectories)
+Reverse directory
+
+; acl(service-cti-displays)
 Display filters
 
-; acl(service-cti-directories-contexts)
-Direct directories
+; acl(service-cti-general)
+General
+
+; acl(service-cti-general_settings)
+Global settings
+
+; acl(service-cti-general_settings-general)
+General options
+
+; acl(service-cti-general_settings-phonehints)
+Phone presences
+
+; acl(service-cti-general_settings-presences)
+Presences
+
+; acl(service-cti-general_settings-profiles)
+Profiles
+
+; acl(service-cti-phonehints)
+Phone hints
+
+; acl(service-cti-presences)
+Presences
+
+; acl(service-cti-profiles)
+Profiles
+
+; acl(service-cti-restart)
+CTI server restart
+
+; acl(service-cti-reversedirectories)
+Reverse directories
+
+; acl(service-cti-sheetactions)
+Sheets : Actions
+
+; acl(service-cti-sheetevents)
+Sheets : Events
 
 ; acl(service-cti-sheets)
 Sheets
@@ -265,50 +115,131 @@ Actions
 ; acl(service-cti-sheets-sheetevents)
 Events
 
-; acl(service-cti-control_system)
-Control
+; acl(service-graphs)
+Graphs
 
-; acl(service-cti-control_system-restart)
-Restart CTI server
+; acl(service-graphs-munin)
+Munin graphs
+
+; acl(service-ipbx)
+IPBX
+
+; acl(service-ipbx-call_center-agents)
+Agents
+
+; acl(service-ipbx-call_center-campaigns)
+Campaigns
+
+; acl(service-ipbx-call_center-queues)
+Queues
+
+; acl(service-ipbx-call_center-queueskillrules)
+Queueskill rules
+
+; acl(service-ipbx-call_center-queueskills)
+Queueskills
+
+; acl(service-ipbx-call_management)
+Call management
+
+; acl(service-ipbx-call_management-callfilter)
+Call filters
+
+; acl(service-ipbx-call_management-cdr)
+Call logs
+
+; acl(service-ipbx-call_management-incall)
+Incoming calls
+
+; acl(service-ipbx-call_management-outcall)
+Outgoing calls
+
+; acl(service-ipbx-call_management-pickup)
+Call pickups
+
+; acl(service-ipbx-call_management-rightcall)
+Call permissions
+
+; acl(service-ipbx-call_management-schedule)
+Schedules
+
+; acl(service-ipbx-call_management-voicemenu)
+Voice menus
+
+; acl(service-ipbx-control_system)
+Control system
+
+; acl(service-ipbx-control_system-logfiles)
+Log files
+
+; acl(service-ipbx-control_system-reload)
+Reload IPBX
+
+; acl(service-ipbx-control_system-restart)
+Restart IPBX
+
+; acl(service-ipbx-cost_center)
+Cost center 
+
+; acl(service-ipbx-cost_center-operator)
+Operator
+
+; acl(service-ipbx-cost_center-servicesgroup)
+Services group
+
+; acl(service-ipbx-ctiserver)
+CTI servers
 
 ; acl(service-ipbx-ctiserver-configuration)
 Configuration
 
-; acl(service-cti)
-CTI servers
+; acl(service-ipbx-dundi)
+Dundi
 
-; acl(service-cti-general)
-General
+; acl(service-ipbx-dundi-mappings)
+Mappings
 
-; acl(service-cti-presences)
-Presences
+; acl(service-ipbx-dundi-peers)
+Peers
 
-; acl(service-cti-phonehints)
-Phone hints
+; acl(service-ipbx-general_settings)
+General settings
 
-; acl(service-cti-profiles)
-Profiles
+; acl(service-ipbx-general_settings-advanced)
+Advanced
 
-; acl(service-cti-directories)
-Directories
+; acl(service-ipbx-general_settings-iax)
+IAX Protocol
 
-; acl(service-cti-reversedirectories)
-Reverse directories
+; acl(service-ipbx-general_settings-outboundmwi)
+MWI registration
 
-; acl(service-cti-displays)
-Display filters
+; acl(service-ipbx-general_settings-phonebook)
+Phonebook
 
-; acl(service-cti-contexts)
-Contexts
+; acl(service-ipbx-general_settings-sip)
+SIP Protocol
 
-; acl(service-cti-sheetactions)
-Sheets : Actions
+; acl(service-ipbx-general_settings-voicemail)
+Voicemails
 
-; acl(service-cti-sheetevents)
-Sheets : Events
+; acl(service-ipbx-pbx_services)
+IPBX services
 
-; acl(service-cti-restart)
-CTI server restart
+; acl(service-ipbx-pbx_services-extenfeatures)
+Extensions
+
+; acl(service-ipbx-pbx_services-musiconhold)
+On Hold Music
+
+; acl(service-ipbx-pbx_services-parkinglot)
+Parking
+
+; acl(service-ipbx-pbx_services-phonebook)
+Phonebook
+
+; acl(service-ipbx-pbx_services-sounds)
+Audio files
 
 ; acl(service-ipbx-pbx_settings)
 IPBX settings
@@ -316,64 +247,29 @@ IPBX settings
 ; acl(service-ipbx-pbx_settings-agents)
 Agents
 
-; acl(service-ipbx-pbx_settings-users)
-Users
+; acl(service-ipbx-pbx_settings-devices)
+Devices
+
+; acl(service-ipbx-pbx_settings-extension)
+Free extensions
 
 ; acl(service-ipbx-pbx_settings-groups)
 Groups
 
-; acl(service-ipbx-pbx_settings-queues)
-Queues
+; acl(service-ipbx-pbx_settings-lines)
+Lines
 
 ; acl(service-ipbx-pbx_settings-meetme)
 Conference rooms
 
-; acl(service-ipbx-pbx_settings-voicemail)
-Voicemails
-
-; acl(xivo-configuration-support)
-Monitoring
-
-; acl(xivo-configuration-network-mail)
-Mail
-
-; acl(xivo-configuration-network-dhcp)
-DHCP server
-
-; acl(xivo-configuration-network-ha)
-HA
-
-; acl(xivo-configuration-support-monitoring)
-Monitoring
-
-
-
-; acl(service-ipbx-call_center)
-Call center
-
-; acl(service-ipbx-call_center-agents)
-Agents
-
-; acl(service-ipbx-call_center-queues)
+; acl(service-ipbx-pbx_settings-queues)
 Queues
 
-; acl(service-ipbx-call_center-queueskills)
-Queueskills
+; acl(service-ipbx-pbx_settings-users)
+Users
 
-; acl(service-ipbx-call_center-queueskillrules)
-Queueskill rules
-
-; acl(service-ipbx-system_management-backupfiles)
-Backup files
-
-; acl(service-ipbx-control_system-logfiles)
-Log files
-
-; acl(service-graphs)
-Graphs
-
-; acl(service-graphs-munin)
-Munin graphs
+; acl(service-ipbx-pbx_settings-voicemail)
+Voicemails
 
 ; acl(service-ipbx-queuelogger)
 Queuelogger
@@ -381,94 +277,198 @@ Queuelogger
 ; acl(service-ipbx-queuelogger-configuration)
 Configuration
 
-; acl(xivo-configuration-provisioning)
-Provisioning
+; acl(service-ipbx-system_management)
+IPBX configuration
 
-; acl(xivo-configuration-cti)
-CTI
- 
-; acl(xivo-configuration-cti-configuration)
-Configuration
- 
-; acl(xivo-configuration-cti-accounts)
-Accounts
- 
-; acl(xivo-configuration-provisioning-general)
-General 
+; acl(service-ipbx-system_management-backupfiles)
+Backup files
 
-; acl(xivo-configuration-check)
-Check
+; acl(service-ipbx-system_management-configfiles)
+Configuration files
+
+; acl(service-ipbx-system_management-context)
+Contexts
+
+; acl(service-ipbx-system_management-isdncard)
+ISDN Cards
+
+; acl(service-ipbx-system_management-ldapfilter)
+LDAP filters
+
+; acl(service-ipbx-system_management-manager)
+Manager
+
+; acl(service-ipbx-system_management-modules)
+Modules
+
+; acl(service-ipbx-trunk_management)
+Trunk management
+
+; acl(service-ipbx-trunk_management-custom)
+Custom
+
+; acl(service-ipbx-trunk_management-iax)
+IAX Protocol
+
+; acl(service-ipbx-trunk_management-sip)
+SIP Protocol
+
+; acl(service-monitoring)
+Monitoring
+
+; acl(service-monitoring-control_system)
+Control
+
+; acl(service-monitoring-control_system-monitor)
+Enable monitoring
+
+; acl(service-monitoring-control_system-restart)
+Restart
+
+; acl(service-monitoring-control_system-start)
+Start
+
+; acl(service-monitoring-control_system-stop)
+Stop
+
+; acl(service-monitoring-control_system-unmonitor)
+Disable monitoring
 
 ; acl(service-statistics)
 Statistics
 
 ; acl(service-statistics-call_center)
-Call Center Statistics
+Call center statistics
 
 ; acl(service-statistics-call_center-configuration)
 Configuration
 
-; acl(service-statistics-call_center-data)
+; acl(statistics)
+Statistiques
+
+; acl(statistics-call_center)
+Call center statistics
+
+; acl(statistics-call_center-data)
 Data
 
-; acl(service-callcenter)
-Call Center
+; acl(statistics-call_center-data-stats1)
+Queue
 
-; acl(service-callcenter-settings)
+; acl(statistics-call_center-data-stats2)
+Agent performance
+
+; acl(statistics-call_center-data-stats3)
+Agents details / times
+
+; acl(statistics-call_center-data-stats4)
+Period details
+
+; acl(statistics-call_center-data-stats5)
+Incoming calls
+
+; acl(statistics-call_center-ressources)
+Ressources
+
+; acl(statistics-call_center-ressources-agents)
+Agent
+
+; acl(statistics-call_center-ressources-queues)
+Queue
+
+; acl(statistics-call_center-settings)
+Settings
+
+; acl(statistics-call_center-settings-cache)
+Cache
+
+; acl(statistics-call_center-settings-configuration)
 Configuration
 
-; acl(service-callcenter-registrationcampaign)
-Record campaigns
-
-; acl(service-callcenter-general)
-General
-
-; acl(service-callcenter-tags)
-Tags
-
-; acl(service-callcenter-campaigns)
-Campaigns
-
-; acl(xivo-monit)
-Monit
+; acl(statistics-call_center-settings-genercache)
+Generate cache
 
 ; acl(statistics-statistics)
 Statistics
 
-; acl(statistics-statistics-call_center)
-Call center
-
 ; acl(statistics-statistics-cel)
 CEL
+
+; acl(xivo)
+XiVO
+
+; acl(xivo-configuration)
+Configuration
+
+; acl(xivo-configuration-check)
+Check
+
+; acl(xivo-configuration-cti)
+CTI
+
+; acl(xivo-configuration-cti-accounts)
+Accounts
+
+; acl(xivo-configuration-cti-configuration)
+Configuration
+
+; acl(xivo-configuration-manage)
+Manage
+
+; acl(xivo-configuration-manage-accesswebservice)
+Web services access
+
+; acl(xivo-configuration-manage-entity)
+Entities
+
+; acl(xivo-configuration-manage-ldapserver)
+LDAP servers
+
+; acl(xivo-configuration-manage-server)
+XiVO servers
+
+; acl(xivo-configuration-manage-user)
+Users
+
+; acl(xivo-configuration-network)
+Network
+
+; acl(xivo-configuration-network-dhcp)
+DHCP server
+
+; acl(xivo-configuration-network-ha)
+HA
+
+; acl(xivo-configuration-network-interface)
+Interfaces
+
+; acl(xivo-configuration-network-iproute)
+IP routes
+
+; acl(xivo-configuration-network-mail)
+Mail
+
+; acl(xivo-configuration-network-resolvconf)
+Resolv DNS
+
+; acl(xivo-configuration-provisioning)
+Provisioning
 
 ; acl(xivo-configuration-provisioning-autoprov)
 Autoprovisioning
 
-; acl(service-ipbx-pbx_settings-devices)
-Devices
+; acl(xivo-configuration-provisioning-general)
+General
 
-; acl(service-ipbx-pbx_settings-lines)
-Lines
+; acl(xivo-configuration-support)
+Monitoring
 
-; acl(service-ipbx-call_management-pickup)
-Call pickups
+; acl(xivo-configuration-support-monitoring)
+Monitoring
 
+; acl(xivo-monit)
+Monit
 
-; acl(service-callcenter-settings-agents)
-Agents
-
-; acl(service-callcenter-settings-queues)
-Queues
-
-; acl(service-callcenter-settings-queuepenalties)
-Queue penalties
-
-; acl(service-callcenter-settings-queueskills)
-Queue skills
-
-; acl(service-callcenter-settings-queueskillrules)
-Queue skill rules
-
-; acl(service-callcenter-registrationcampaign-campaigns)
-Campaigns
+; acl(xivo-user)
+Users
 
