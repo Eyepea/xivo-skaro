@@ -21,5 +21,4 @@ BEGIN;
 
 CREATE INDEX "cel__idx__uniqueid" ON "cel"("uniqueid");
 
-
 COMMIT;

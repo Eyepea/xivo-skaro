@@ -27,5 +27,4 @@ ALTER TABLE "devicefeatures" ALTER COLUMN "sn" TYPE varchar(64);
 ALTER TABLE "devicefeatures" ALTER COLUMN "plugin" TYPE varchar(64);
 ALTER TABLE "devicefeatures" ALTER COLUMN "config" TYPE varchar(32);
 
-
 COMMIT;

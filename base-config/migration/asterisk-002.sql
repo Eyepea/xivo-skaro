@@ -23,6 +23,4 @@ BEGIN;
 ALTER TABLE "dialpattern" DROP COLUMN "setcallerid";
 ALTER TABLE "dialpattern" DROP COLUMN "emergency";
 
-
 COMMIT;
-
