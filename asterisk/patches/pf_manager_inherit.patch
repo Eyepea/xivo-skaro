@@ -1,8 +1,8 @@
-Index: asterisk-1.8.7.2/main/channel.c
+Index: asterisk-1.8.8.0/main/channel.c
 ===================================================================
---- asterisk-1.8.7.2.orig/main/channel.c	2011-12-14 08:03:29.413263377 -0500
-+++ asterisk-1.8.7.2/main/channel.c	2011-12-14 08:04:25.663266802 -0500
-@@ -6009,6 +6009,13 @@
+--- asterisk-1.8.8.0.orig/main/channel.c	2011-12-16 09:26:44.963264235 -0500
++++ asterisk-1.8.8.0/main/channel.c	2011-12-16 09:27:31.633262647 -0500
+@@ -6035,6 +6035,13 @@
  	struct ast_var_t *current, *newvar;
  	const char *varname;
  

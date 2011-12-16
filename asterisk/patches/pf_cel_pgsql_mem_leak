@@ -1,7 +1,7 @@
-Index: asterisk-1.8.7.2/cel/cel_pgsql.c
+Index: asterisk-1.8.8.0/cel/cel_pgsql.c
 ===================================================================
---- asterisk-1.8.7.2.orig/cel/cel_pgsql.c	2011-12-14 08:03:29.363265731 -0500
-+++ asterisk-1.8.7.2/cel/cel_pgsql.c	2011-12-14 08:04:28.583264051 -0500
+--- asterisk-1.8.8.0.orig/cel/cel_pgsql.c	2011-12-16 09:26:44.903265640 -0500
++++ asterisk-1.8.8.0/cel/cel_pgsql.c	2011-12-16 09:27:51.423266050 -0500
 @@ -325,13 +325,11 @@
  					ast_log(LOG_ERROR, "Reason: %s\n", pgerror);
  				}

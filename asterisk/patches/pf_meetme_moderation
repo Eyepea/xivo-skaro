@@ -1,7 +1,7 @@
-Index: asterisk-1.8.7.2/apps/app_meetme.c
+Index: asterisk-1.8.8.0/apps/app_meetme.c
 ===================================================================
---- asterisk-1.8.7.2.orig/apps/app_meetme.c	2011-12-14 08:03:29.473262145 -0500
-+++ asterisk-1.8.7.2/apps/app_meetme.c	2011-12-14 08:04:22.093262853 -0500
+--- asterisk-1.8.8.0.orig/apps/app_meetme.c	2011-12-16 09:26:45.033263085 -0500
++++ asterisk-1.8.8.0/apps/app_meetme.c	2011-12-16 09:27:14.643261921 -0500
 @@ -116,15 +116,27 @@
  						</argument>
  						<para>Play an intro announcement in conference.</para>
