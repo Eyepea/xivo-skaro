@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-\connect asterisk;
-
 -- remove unused column from dialpattern table #2819
 
 BEGIN;

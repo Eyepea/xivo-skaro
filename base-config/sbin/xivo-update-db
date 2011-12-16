@@ -108,9 +108,11 @@ class PostgresDB(object):
             command.extend(['2>', '/dev/null'])
         return ' '.join(command)
 
-    def execute_sql_file(self, filename, on_error_stop=True):
+    def execute_sql_file(self, filename, connect=False, on_error_stop=True):
         logger.info('Executing SQL file %r', filename)
         psql_args = ['-f', filename, '-v', 'dir=%s' % os.path.dirname(filename)]
+        if connect:
+            psql_args.extend(['-d', self._db_name])
         if on_error_stop:
             psql_args.extend(['-v', 'ON_ERROR_STOP='])
         retcode = self._exec_psql_command(psql_args)
@@ -197,6 +199,7 @@ class DatabaseUpdater(object):
         try:
             for sql_file in sql_files:
                 self._postgres_db.execute_sql_file(sql_file.filename,
+                                                   connect=True,
                                                    on_error_stop=False)
         finally:
             self._update_file.write(sql_file.update_id)
@@ -217,7 +220,8 @@ class DatabaseUpdater(object):
             last_sql_file = SQLFile(None, update_file_id)
             try:
                 for sql_file in new_sql_files:
-                    self._postgres_db.execute_sql_file(sql_file.filename)
+                    self._postgres_db.execute_sql_file(sql_file.filename,
+                                                       connect=True)
                     last_sql_file = sql_file
             finally:
                 self._update_file.write(last_sql_file.update_id)
