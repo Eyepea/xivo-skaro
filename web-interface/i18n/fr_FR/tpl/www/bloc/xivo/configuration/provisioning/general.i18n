@@ -27,7 +27,7 @@ L'addresse (URL) du dépôt de plugins
 Le proxy pour les requêtes HTTP. Le format est "http://[user:password@]host:port"
 
 ; fm_hlp_ftp_proxy
-The proxy for FTP requests. Format is "http://[user:password@]host:port"
+Le proxy pour les requêtes FTP. Le format est "http://[user:password@]host:port"
 
 ; fm_hlp_https_proxy
 Le proxy pour les requêtes HTTPS. Le format est "host:port"
