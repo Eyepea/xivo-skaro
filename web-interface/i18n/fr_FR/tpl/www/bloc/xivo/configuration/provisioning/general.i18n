@@ -20,6 +20,21 @@ Proxy HTTP :
 ; fm_configure_https_proxy
 Proxy HTTPS :
 
+; fm_hlp_plugin_server
+L'addresse (URL) du dépôt de plugins
+
+; fm_hlp_http_proxy
+Le proxy pour les requêtes HTTP. Le format est "http://[user:password@]host:port"
+
+; fm_hlp_ftp_proxy
+The proxy for FTP requests. Format is "http://[user:password@]host:port"
+
+; fm_hlp_https_proxy
+Le proxy pour les requêtes HTTPS. Le format est "host:port"
+
+; fm_hlp_locale
+La locale courante. Exemple: en_CA
+
 ; fld_provd_general_configuration
 Configuration de provd
 
