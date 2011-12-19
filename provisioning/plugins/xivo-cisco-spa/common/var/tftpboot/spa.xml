@@ -106,9 +106,7 @@ usefulness/applicability.
 
 <Station_Name></Station_Name>
 <Text_Logo>XiVO</Text_Logo>
-<Screen_Saver_Enable>Yes</Screen_Saver_Enable>
-<Screen_Saver_Wait>900</Screen_Saver_Wait>
-<Screen_Saver_Icon>Power Save Screen</Screen_Saver_Icon>
+<Screen_Saver_Enable>No</Screen_Saver_Enable>
 
 <Idle_Key_List>em_login|1;acd_login|1;acd_logout|1;avail|3;unavail|3;redial|5;resume|5;dir|6;cfwd|7;chkcfwd|7;dnd|8;chkdnd|8;lcr|9;pickup|10;gpickup|11;unpark|12;em_logout</Idle_Key_List>
 <Missed_Call_Key_List>lcr|1;miss|4</Missed_Call_Key_List>
