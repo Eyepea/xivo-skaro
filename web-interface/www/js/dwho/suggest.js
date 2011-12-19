@@ -266,7 +266,12 @@ dwho.suggest.prototype.get = function(value)
 {
     if(this._searchval === value && value.length > 0 ||
         (value.length == 0 && !this._options.result_fullsearch))
+    {
+    	
+        this._searchlen = value.length;
+        this._searchval = value;
         return(null);
+    }
 
     var prevlength = this._searchlen;
     this._searchval = value;
@@ -353,7 +358,6 @@ dwho.suggest.prototype.clear = function()
     this.deletetimeout();
     this._highlightedid    = null;
     this._suggestid        = null;
-    this._searchval        = '';
     dwho.dom.remove_element(dwho_eid(this._dwsid,true));
 
 };
