@@ -39,7 +39,6 @@ dwho.suggest = function(options,id)
     this._dwsresdescid    = null;
     this._highlightclass    = 'dws-highlight';
     this._searchval        = '';
-    this._searchlen        = 0;
     this._vk        = {'TAB':    9,
                    'RETURN':    13,
                    'ESCAPE':    27,
@@ -47,22 +46,14 @@ dwho.suggest = function(options,id)
                    'DOWN':    40};
     this._options        = {
         'requestor':            null,
-        'request_delay':        0,
         'result_minlen':        1,
         'result_maxentries':        25,
         'result_field':            '',
         'result_onsetfield':        null,
         'result_onclearfield':        null,
-        'result_fielddefaultvalue':    false,
-        'result_fulldisplay':        false,
-        'result_cache':            false,
         'result_class':            'dwho-suggest',
         'result_topoffset':        -10,
-        'result_callback':        null,
-        'result_displaycallback':    null,
-        'result_emptyalert'     : false,
-        'result_fullsearch'     : false,
-        'result_emptycallback'  : null};
+        'result_emptyalert'     : false};
 
     this.set_options(options);
 
@@ -70,7 +61,7 @@ dwho.suggest = function(options,id)
 
     this.fnkeypress    = function(e) { return(dwsptr.onkeypress(e)); };
     this.fnkeyup    = function(e) { return(dwsptr.onkeyup(e)); };
-    this.fnfocus    = function() { dwsptr.fullsearch(); dwsptr.deletetimeout(); };
+    this.fnfocus    = function() { dwsptr.deletetimeout(); };
     this.fnblur    = function() { dwsptr.onblur(); };
     this.fnchange    = function() { dwsptr.onchange(); };
 
@@ -145,7 +136,6 @@ dwho.suggest.prototype.set_field = function(id)
                this.fnchange);
 
     this._searchval        = this._field.value;
-    this._searchlen        = this._field.value.length;
     this._dwsid        = this._namespace + this._field.id;
     this._dwsresid        = this._dwsid + '-res';
     this._dwsrestitleid    = this._dwsresid + '-title-';
@@ -163,9 +153,6 @@ dwho.suggest.prototype.set_option = function(name,value)
         case 'requestor':
         case 'result_onsetfield':
         case 'result_onclearfield':
-        case 'result_callback':
-        case 'result_displaycallback':
-        case 'result_emptycallback':
             if(dwho_is_function(value) === false)
                 return(false);
             break;
@@ -264,18 +251,13 @@ dwho.suggest.prototype.set = function(request,value)
 
 dwho.suggest.prototype.get = function(value)
 {
-    if(this._searchval === value && value.length > 0 ||
-        (value.length == 0 && !this._options.result_fullsearch))
+    if(this._searchval === value || value.length == 0)
     {
-    	
-        this._searchlen = value.length;
         this._searchval = value;
         return(null);
     }
 
-    var prevlength = this._searchlen;
     this._searchval = value;
-    this._searchlen = value.length;
 
     if(this._options.result_minlen > value.length)
     {
@@ -284,50 +266,16 @@ dwho.suggest.prototype.get = function(value)
 
         return(false);
     }
-    var cnt = this._suggests.length;
 
-    if(this._options.result_cache === true
-    && this._searchlen > prevlength
-    && cnt > 0
-    && cnt < this._options.result_maxentries)
+    var dwsptr = this;
+
+    if(this._delayid !== null)
     {
-        var arr = [];
-
-        for(var i = 0;i < cnt;i++)
-        {
-            if(this._options.result_fulldisplay === true
-            && dwho_has_len(this._suggests[i].info) === true)
-                var suggest = this._suggests[i].value +
-                ' (' + this._suggests[i].info + ')';
-            else
-                var suggest = this._suggests[i].value;
-
-            if(dwho_strcasecmp(suggest,value,value.length) === 0)
-                arr.push(this._suggests[i]);
-        }
-
-        this._suggests = arr;
-        this.display_result();
+        window.clearTimeout(this._delayid);
+        this._delayid = null;
     }
-    else
-    {
-        var dwsptr = this;
 
-        if(this._delayid !== null)
-        {
-            window.clearTimeout(this._delayid);
-            this._delayid = null;
-        }
-
-        if(this._options.request_delay > 0)
-        {
-            this._delayid = window.setTimeout(
-                        function() { dwsptr.get_option('requestor')(dwsptr); },
-                        this._options.request_delay);
-        }
-        else
-            dwsptr.get_option('requestor')(dwsptr);
-    }
+    dwsptr.get_option('requestor')(dwsptr);
 
     return(true);
 };
@@ -337,24 +285,16 @@ dwho.suggest.prototype.clear = function()
     if(dwho_is_object(this._resfield) === true
     && this._resfieldcleared === true)
     {
-        if(this._options.result_fielddefaultvalue === true)
-        {
-            this._field.value = this._field.defaultValue;
-
-            if(dwho_is_function(this._options.result_onclearfield) === true)
-                this._options.result_onclearfield(this);
-        }
-        else if(dwho_has_len(this._field.value) === true)
+        if(dwho_has_len(this._field.value) === true)
         {
             this._field.value = '';
-
+            this._searchval = '';
             if(dwho_is_function(this._options.result_onclearfield) === true)
                 this._options.result_onclearfield(this);
         }
     }
 
     this._resfieldcleared = false;
-
     this.deletetimeout();
     this._highlightedid    = null;
     this._suggestid        = null;
@@ -364,19 +304,9 @@ dwho.suggest.prototype.clear = function()
 
 dwho.suggest.prototype.display_result = function()
 {
-    if(this._options.result_displaycallback !== null)
+    if((cnt = this._suggests.length) === 0)
     {
-        this._options.result_displaycallback(this);
-        return(true);
-    }
-    else if((cnt = this._suggests.length) === 0)
-    {
-        if(this._options.result_emptycallback !== null)
-        {
-            this._options.result_emptycallback(this);
-            return(true);
-        }
-        else if(this._options.result_emptyalert)
+    	if(this._options.result_emptyalert)
             this._field.style.backgroundColor = '#ffcbcb';
 
         this.clear();
@@ -645,15 +575,9 @@ dwho.suggest.prototype.setselectedvalue = function()
     if(this._suggestid === null)
         return(null);
 
-    if(this._options.result_fulldisplay === true
-    && dwho_has_len(this._suggests[this._suggestid - 1].info) === true)
-        var value = this._suggests[this._suggestid - 1].value +
-            ' (' + this._suggests[this._suggestid - 1].info + ')';
-    else
-        var value = this._suggests[this._suggestid - 1].value;
+    var value = this._suggests[this._suggestid - 1].value;
 
     this._searchval = this._field.value = value;
-    this._searchlen = value.length;
 
     if(dwho_is_object(this._resfield) === true)
     {
@@ -671,8 +595,6 @@ dwho.suggest.prototype.setselectedvalue = function()
 
     this.clear();
 
-    if(this._options.result_callback !== null)
-        this._options.result_callback(this._suggests[this._suggestid - 1]);
 };
 
 dwho.suggest.prototype.starttimeout = function()
@@ -689,13 +611,5 @@ dwho.suggest.prototype.deletetimeout = function()
         window.clearTimeout(this._timeoutid);
 
     this._timeoutid = null;
-};
-
-dwho.suggest.prototype.fullsearch = function()
-{
-    if(!this._options.result_fullsearch)
-        return;
-
-    this.get(this._field.value);
 };
 
