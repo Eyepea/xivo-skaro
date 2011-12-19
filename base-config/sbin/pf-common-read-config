@@ -11,6 +11,7 @@ echo "Generating configuration"
 #### Set and check general variables ####
 
 if [ -n "${XIVO_NET4_CIDR}" ]; then
+  # ipcalc errors are redirected to /dev/null to avoid displaying a warning when $TERM is not set ie. PXE install
   XIVO_NET4_IP=$(ipcalc -n ${XIVO_NET4_CIDR} 2> /dev/null | grep "Address:" | awk '{print $2}')
   XIVO_NET4_NETMASK=$(ipcalc -n ${XIVO_NET4_CIDR} 2> /dev/null | grep "Netmask:" | awk '{print $2}')
   XIVO_NET4_SUBNET=$(ipcalc -n ${XIVO_NET4_CIDR} 2> /dev/null | grep "Network:" | awk '{print $2}' | cut -d/ -f1)
