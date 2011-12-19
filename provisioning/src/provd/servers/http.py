@@ -104,7 +104,6 @@ class HTTPLogService(HTTPHookService):
         self._logger = logger
 
     def _pre_handle(self, path, request):
-        # XXX this is just an example
         self._logger(str(path) + ' ---- ' + str(request))
 
 
@@ -126,22 +125,3 @@ class HTTPNoListingFileService(static.File):
             return self._NOT_ALLOWED_RESOURCE
         else:
             return static.File.getChild(self, path, request)
-
-
-if __name__ == '__main__':
-    from provd.servers.http_site import Site
-    from twisted.python import log
-    import sys
-    log.startLogging(sys.stderr)
-
-    def metaaff(prefix):
-        def aff(msg):
-            print >> sys.stderr, prefix, msg
-        return aff
-    hook = HTTPLogService(metaaff('1:'), HTTPLogService(metaaff('2:'), resource.NoResource('Not found')))
-    res = HTTPNoListingFileService('/home/etienne', 'application/octet-stream')
-    site = Site(res)
-
-    from twisted.internet import reactor
-    reactor.listenTCP(8080, site)
-    reactor.run()
