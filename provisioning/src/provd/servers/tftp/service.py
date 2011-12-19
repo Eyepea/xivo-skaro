@@ -22,7 +22,6 @@ __license__ = """
 import os
 import StringIO
 from provd.servers.tftp.packet import ERR_FNF
-from provd.servers.tftp.proto import TFTPProtocol
 from zope.interface import Interface
 
 

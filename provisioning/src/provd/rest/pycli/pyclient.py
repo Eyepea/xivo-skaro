@@ -17,12 +17,6 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# TODO wrap some exceptions at client level, especially the one that are
-#      easy to process
-# XXX Configs.update and Devices.update are more of a replace operation than
-#     an update operation, we might want to change the name, although we have
-#     use the word update everywhere else (server part)
-
 from copy import deepcopy
 from time import sleep
 from sys import stdout
@@ -34,8 +28,6 @@ from provd.rest.client.client import new_provisioning_client
 
 
 class _Options(object):
-    # XXX eventually some values could be properties and we could be aware
-    #     when some values change if it's useful...
     def __init__(self):
         self.search_description = True
         self.search_case_sensitive = False

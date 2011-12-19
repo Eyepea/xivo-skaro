@@ -24,10 +24,6 @@ __license__ = """
 # TODO help for object/class/method should be closer than the code who defines
 #      such object, with help of decorator or something alike, and/or refactor
 #      the help definition to have less redundancy
-# XXX value of completer has yet to be seen, and would be more useful with
-#      restrained auto-completion by doing static evaluation of python
-#      expression...
-# XXX our custom display hook doesn't always give nice result
 # TODO lookup default value (like default port or default username) in config.py
 #      instead of duplicating them here ?
 
@@ -387,8 +383,8 @@ helpers._init_module(configs, devices, plugins)
 
 # import and initialize the tests module
 if opts.tests:
-    import provd.rest.pycli.tests as tests
-    tests._init_module(configs, devices, plugins)
+    import provd.rest.pycli.plugin_tests as plugin_tests
+    plugin_tests._init_module(configs, devices, plugins)
 
 
 # change interpreter prompt
@@ -423,7 +419,7 @@ cli_globals = {
 }
 
 if opts.tests:
-    cli_globals['tests'] = tests
+    cli_globals['tests'] = plugin_tests
 
 
 # define completer for readline auto-completion
