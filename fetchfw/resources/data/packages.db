@@ -12,6 +12,12 @@ version: 2.06
 files: digium-hx8fw
 install: digium-fw
 
+[pkg_digium-vpmoct032]
+description: Firmware for Digium VPMOCT032.
+version: 1.12.0
+files: digium-vpmoct032fw
+install: digium-fw
+
 [pkg_digium-oct6114-128]
 description: Firmware for Digium VPMOCT128M/VPM450M.
 version: 1.05.01

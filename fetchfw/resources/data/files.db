@@ -10,6 +10,11 @@ url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-hx8-2.
 size: 29252
 sha1sum: 56c59081b1bd29c97f352b62c9667c409ca99f69
 
+[file_digium-vpmoct032fw]
+url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-vpmoct032-1.12.0.tar.gz
+size: 443985
+sha1sum: 743a3356d5c3ba6dd5ad759550f598879049cd2e
+
 [file_digium-oct61114-128fw]
 url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-oct6114-128-1.05.01.tar.gz
 size: 165849
