@@ -120,6 +120,8 @@ if(isset($error_js[0]) === true)
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
+<?php
+/* Group - COMMENTED
 		<li id="dwsm-tab-4"
 		    class="dwsm-blur"
 		    onclick="dwho_submenu.select(this,'sb-part-group');"
@@ -130,7 +132,9 @@ if(isset($error_js[0]) === true)
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="dwsm-tab-5"
+ */
+?>
+		<li id="dwsm-tab-4"
 		    class="dwsm-blur-last"
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
@@ -150,7 +154,7 @@ if(isset($error_js[0]) === true)
  */
 ?>
 					<li><a href="#paging"
-					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-paging',1);">
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-4'),'sb-part-paging',1);">
 							<?=$this->bbf('smenu_paging');?></a></li>
 				</ul>
 			</div>
