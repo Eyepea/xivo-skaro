@@ -637,11 +637,6 @@ $array['element']['callcounter']['value']    = array('no', 'yes');
 $array['element']['callcounter']['default']  = 'no';
 $array['element']['callcounter']['set']      = true;
 
-$array['element']['faxdetect'] = array();
-$array['element']['faxdetect']['value']    = array('yes', 'no', 'cng', 't38', 'both');
-$array['element']['faxdetect']['default']  = 'no';
-$array['element']['faxdetect']['null']     = true;
-
 $array['element']['stunaddr'] = array();
 $array['element']['stunaddr']['default']  = '';
 $array['element']['stunaddr']['null']     = true;

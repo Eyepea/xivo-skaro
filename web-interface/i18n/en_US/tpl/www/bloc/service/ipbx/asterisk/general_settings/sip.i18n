@@ -1255,29 +1255,6 @@ Server
 ; refresher-opt(uac)
 Client
 
-;;; t38
-
-; fm_faxdetect
-Enable fax detection:
-
-; hlp_fm_faxdetect
-Asterisk config: faxdetect
-
-; faxdetect-opt(yes)
-Yes
-
-; faxdetect-opt(no)
-No
-
-; faxdetect-opt(cng)
-CNG
-
-; faxdetect-opt(t38)
-T38
-
-; faxdetect-opt(both)
-Both
-
 ;;; jitter buffer
 
 ; fm_jbtargetextra
