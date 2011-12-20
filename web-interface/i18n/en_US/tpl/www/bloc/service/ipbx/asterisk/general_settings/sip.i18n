@@ -613,38 +613,14 @@ Add one or more codecs ->
 ; fm_t38pt-udptl
 Activate T38 (UDPTL) :
 
-; cmt_fm_t38pt-udptl
-Asterisk config: t38pt-udptl
-
 ; hlp_fm_t38pt-udptl
-Asterisk config: t38pt-udptl
-
-; fm_t38pt-rtp
-Activate T38 (RTP) :
-
-; cmt_fm_t38pt-rtp
-Asterisk config: t38pt-rtp
-
-; hlp_fm_t38pt-rtp
-Asterisk config: t38pt-rtp
-
-; fm_t38pt-tcp
-Activate T38 (TCP) :
-
-; cmt_fm_t38pt-tcp
-Asterisk config: t38pt-tcp
-
-; hlp_fm_t38pt-tcp
-Asterisk config: t38pt-tcp
+Asterisk config: t38pt_udptl
 
 ; fm_t38pt-usertpsource
 Use the source IP address as the destination for the T38:
 
-; cmt_fm_t38pt-usertpsource
-Asterisk config: t38pt-usertpsource
-
 ; hlp_fm_t38pt-usertpsource
-Asterisk config: t38pt-usertpsource
+Asterisk config: t38pt_usertpsource
 
 ; fm_jbenable
 Activate Jitter Buffer :
@@ -1254,29 +1230,6 @@ Server
 
 ; refresher-opt(uac)
 Client
-
-;;; t38
-
-; fm_faxdetect
-Enable fax detection:
-
-; hlp_fm_faxdetect
-Asterisk config: faxdetect
-
-; faxdetect-opt(yes)
-Yes
-
-; faxdetect-opt(no)
-No
-
-; faxdetect-opt(cng)
-CNG
-
-; faxdetect-opt(t38)
-T38
-
-; faxdetect-opt(both)
-Both
 
 ;;; jitter buffer
 
