@@ -17,7 +17,7 @@ Avancé
 Nom :
 
 ; fm_protocol_username
-Identifiant :
+Identifiant d'authentification :
 
 ; fm_protocol_secret
 Mot de passe :
@@ -76,14 +76,14 @@ Comedia
 ; fm_register
 Enregistrement :
 
-; fm_register_username
-Identifiant :
+; fm_register_name
+Nom :
 
 ; fm_register_password
 Mot de passe :
 
 ; fm_register_authuser
-Authentification :
+Identifiant d'authentification :
 
 ; fm_register_host
 Serveur distant :

@@ -20,7 +20,7 @@ Advanced
 Name:
 
 ; fm_protocol_username
-Username:
+Authentication username:
 
 ; fm_protocol_secret
 Password:
@@ -109,14 +109,14 @@ Add one or more codecs ->
 ; fm_register
 Register:
 
-; fm_register_username
-Username:
+; fm_register_name
+Name:
 
 ; fm_register_password
 Password:
 
 ; fm_register_authuser
-Authentication:
+Authentication username:
 
 ; fm_register_host
 Remote server:
