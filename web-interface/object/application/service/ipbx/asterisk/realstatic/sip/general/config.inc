@@ -139,7 +139,7 @@ $array['element']['tos_video']['default'] = '';
 $array['element']['tos_video']['null'] = true;
 
 $array['element']['t38pt_udptl'] = array();
-$array['element']['t38pt_udptl']['value'] = array('no','yes', 'fec', 'redundancy', 'none');
+$array['element']['t38pt_udptl']['value'] = array('no','yes');
 $array['element']['t38pt_udptl']['default'] = 'no';
 $array['element']['t38pt_udptl']['set'] = true;
 
