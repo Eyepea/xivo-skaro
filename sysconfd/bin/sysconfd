@@ -119,11 +119,11 @@ def argv_parse_check():
     return options
 
 
-def server_version(args, options):  # pylint: disable-msg=W0613
+def status_check(args, options):  # pylint: disable-msg=W0613
     """ 
-    GET /server-version
+    GET /status-check
     """
-    return {'version': __version__}
+    return {'status': 'up'}
 
 
 def main(options):
@@ -167,7 +167,7 @@ def main(options):
 if __name__ == '__main__':
     def _start():
         "entry point"
-        http_json_server.register(server_version, CMD_R, name='server-version')
+        http_json_server.register(status_check, CMD_R, name='status-check')
         options = argv_parse_check()
         if not options.dontlauchmain:
             main(options)
