@@ -63,7 +63,7 @@ if (($params = $this->get_var('info','configure')) !== false
 			  'id'		=> 'configure-ajax',
 			  'size'	=> strlen($ref['value']),
 			  'value'	=> $ref['value'],
-			  'help'	=> $ref['description']));
+			  'help'	=> $this->bbf('fm_hlp_'.$ref['id'])));
 ?>
 <?php
 	endfor;

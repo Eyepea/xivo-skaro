@@ -25,9 +25,6 @@ $array['element'] = array();
 $array['element']['uuid'] = array();
 $array['element']['uuid']['default'] = '';
 
-$array['element']['name'] = array();
-$array['element']['name']['default'] = '';
-
 $array['element']['ifname'] = array();
 $array['element']['ifname']['default'] = '';
 
@@ -88,7 +85,6 @@ dwho::load_class('dwho_network');
 
 $array['filter'] = array();
 $array['filter']['uuid'] = array('set' => true);
-$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
 $array['filter']['ifname'] = array('regexp'	=> '/^(?:eth[a-z0-9_]+(?:\.[0-9]+)?(?:\:[0-9]+)?|vlan[0-9]+(?:\:[0-9]+)?|dummy[0-9])$/',
 				   'minlen'	=> 1,
 				   'maxlen'	=> 64);

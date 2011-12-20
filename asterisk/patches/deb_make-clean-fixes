@@ -3,10 +3,10 @@ Author: Faidon Liambotis <paravoid@debian.org>
 Forwarded: not-needed
 Last-Update: 2009-12-19
 
-Index: asterisk-1.8.7.2/Makefile
+Index: asterisk-1.8.8.0/Makefile
 ===================================================================
---- asterisk-1.8.7.2.orig/Makefile	2011-12-14 08:03:55.163265676 -0500
-+++ asterisk-1.8.7.2/Makefile	2011-12-14 08:04:10.813266847 -0500
+--- asterisk-1.8.8.0.orig/Makefile	2011-12-16 09:26:59.713265414 -0500
++++ asterisk-1.8.8.0/Makefile	2011-12-16 09:27:05.683266064 -0500
 @@ -442,7 +442,6 @@
  
  distclean: $(SUBDIRS_DIST_CLEAN) _clean

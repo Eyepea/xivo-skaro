@@ -55,7 +55,7 @@ class IDeviceInfoExtractor(Interface):
     up to date. 
     
     """
-    
+
     def extract(request, request_type):
         """Return a deferred that will fire with either an non empty
         device info object or an object that evaluates to false in a boolean
@@ -76,18 +76,18 @@ class StandardDeviceInfoExtractor(object):
     You SHOULD always use this extractor.
     
     """
-    
+
     implements(IDeviceInfoExtractor)
-    
+
     def _extract_tftp(self, request):
         return {u'ip': norm_ip(request['address'][0].decode('ascii'))}
-    
+
     def _extract_http(self, request):
         return {u'ip': norm_ip(request.getClientIP().decode('ascii'))}
-    
+
     def _extract_dhcp(self, request):
         return {u'ip': request[u'ip'], u'mac': request[u'mac']}
-    
+
     def extract(self, request, request_type):
         logger.debug('In StandardDeviceInfoExtractor')
         method_name = '_extract_%s' % request_type
@@ -102,9 +102,9 @@ class StandardDeviceInfoExtractor(object):
 
 class StaticDeviceInfoExtractor(object):
     """Device info extractor that always return the same device information."""
-    
+
     implements(IDeviceInfoExtractor)
-    
+
     def __init__(self, dev_info):
         self._dev_info = dev_info
 
@@ -124,7 +124,7 @@ class CompositeDeviceInfoExtractor(object):
     be instantiated.
     
     """
-    
+
     def __init__(self, extractors=None):
         self.extractors = [] if extractors is None else extractors
 
@@ -134,9 +134,9 @@ class FirstCompositeDeviceInfoExtractor(CompositeDeviceInfoExtractor):
     the first extractor that returned a nonempty device info object.
     
     """
-    
+
     implements(IDeviceInfoExtractor)
-    
+
     @defer.inlineCallbacks
     def extract(self, request, request_type):
         logger.debug('In FirstCompositeDeviceInfoExtractor')
@@ -156,9 +156,9 @@ class LongestDeviceInfoExtractor(CompositeDeviceInfoExtractor):
     of the same length, the result of the first extractor will be returned.
     
     """
-    
+
     implements(IDeviceInfoExtractor)
-        
+
     @defer.inlineCallbacks
     def extract(self, request, request_type):
         logger.debug('In LongestDeviceInfoExtractor')
@@ -197,7 +197,7 @@ class FirstSeenUpdater(object):
     """
     def __init__(self):
         self.dev_info = {}
-    
+
     def update(self, dev_info):
         nonconflicts = _find_key_conflicts(self.dev_info, dev_info)[1]
         self.dev_info.update(nonconflicts)
@@ -210,7 +210,7 @@ class LastSeenUpdater(object):
     """
     def __init__(self):
         self.dev_info = {}
-    
+
     def update(self, dev_info):
         self.dev_info.update(dev_info)
 
@@ -220,11 +220,11 @@ class RemoveUpdater(object):
     info object with only keys that are not in conflict.
     
     """
-    
+
     def __init__(self):
         self.dev_info = {}
         self._conflicts = set()
-        
+
     def update(self, dev_info):
         conflicts, nonconflicts = _find_key_conflicts(self.dev_info, dev_info)
         for k, v in nonconflicts.iteritems():
@@ -243,27 +243,27 @@ class VotingUpdater(object):
     Note that in the case of a tie, it returns any of the most popular values.
     
     """
-    
+
     def __init__(self):
         self._votes = {}
-    
+
     def _vote(self, (key, value)):
         key_pool = self._votes.setdefault(key, {})
         key_pool[value] = key_pool.get(value, 0) + 1
-    
+
     def _get_winner(self, key_pool):
         # Pre: key_pool is non-empty
         # XXX we are not doing any conflict resolution if key_pool has
         #     a tie. What's worst is that it's not totally deterministic.
         return max(key_pool.iteritems(), key=itemgetter(1))[0]
-    
+
     @property
     def dev_info(self):
         dev_info = {}
         for key, key_pool in self._votes.iteritems():
             dev_info[key] = self._get_winner(key_pool)
         return dev_info
-    
+
     def update(self, dev_info):
         for item in dev_info.iteritems():
             self._vote(item)
@@ -281,13 +281,13 @@ class CollaboratingDeviceInfoExtractor(CompositeDeviceInfoExtractor):
     - 'dev_info' attribute, which is the current computed dev_info
     
     """
-    
+
     implements(IDeviceInfoExtractor)
-    
+
     def __init__(self, updater_factory, extractors=None):
         CompositeDeviceInfoExtractor.__init__(self, extractors)
         self._updater_factory = updater_factory
-    
+
     @defer.inlineCallbacks
     def extract(self, request, request_type):
         logger.debug('In CollaboratingDeviceInfoExtractor')
@@ -306,9 +306,9 @@ class PluginDeviceInfoExtractor(object):
     device info extractors of a plugin, if the plugin is loaded.
     
     """
-    
+
     implements(IDeviceInfoExtractor)
-    
+
     def __init__(self, pg_id, pg_mgr):
         self._pg_id = pg_id
         self._pg_mgr = pg_mgr
@@ -318,13 +318,13 @@ class PluginDeviceInfoExtractor(object):
         self._obs = BasePluginManagerObserver(self._on_plugin_load_or_unload,
                                               self._on_plugin_load_or_unload)
         pg_mgr.attach(self._obs)
-    
+
     def _set_pg(self):
         self._pg = self._pg_mgr.get(self._pg_id)
-        
+
     def _on_plugin_load_or_unload(self, pg_id):
         self._set_pg()
-    
+
     def extract(self, request, request_type):
         logger.debug('In PluginDeviceInfoExtractor')
         if self._pg is None:
@@ -339,11 +339,11 @@ class AllPluginsDeviceInfoExtractor(object):
     device info extractors of every loaded plugins.
     
     """
-    
+
     implements(IDeviceInfoExtractor)
-    
+
     _REQUEST_TYPES = ['http', 'tftp', 'dhcp']
-    
+
     def __init__(self, extractor_factory, pg_mgr):
         """
         extractor_factory -- a function taking a list of extractors and
@@ -357,10 +357,10 @@ class AllPluginsDeviceInfoExtractor(object):
         self._obs = BasePluginManagerObserver(self._on_plugin_load_or_unload,
                                               self._on_plugin_load_or_unload)
         pg_mgr.attach(self._obs)
-    
+
     def _xtor_name(self, request_type):
         return '_%s_xtor' % request_type
-    
+
     def _set_xtors(self):
         logger.debug('Updating extractors for %s', self)
         for request_type in self._REQUEST_TYPES:
@@ -372,10 +372,10 @@ class AllPluginsDeviceInfoExtractor(object):
                     pg_extractors.append(pg_extractor)
             xtor = self.extractor_factory(pg_extractors)
             setattr(self, self._xtor_name(request_type), xtor)
-    
+
     def _on_plugin_load_or_unload(self, pg_id):
         self._set_xtors()
-    
+
     def extract(self, request, request_type):
         logger.debug('In AllPluginsDeviceInfoExtractor')
         xtor = getattr(self, self._xtor_name(request_type))
@@ -389,7 +389,7 @@ class IDeviceRetriever(Interface):
     application, like adding a new device.
     
     """
-    
+
     def retrieve(dev_info):
         """Return a deferred that will fire with either a device object
         or None if it can't find such object.
@@ -400,7 +400,7 @@ class IDeviceRetriever(Interface):
 class NullDeviceRetriever(object):
     """Device retriever who never retrieves anything."""
     implements(IDeviceRetriever)
-    
+
     def retrieve(self, dev_info):
         logger.debug('In NullDeviceRetriever')
         return defer.succeed(None)
@@ -412,13 +412,13 @@ class SearchDeviceRetriever(object):
     one found.
     
     """
-    
+
     implements(IDeviceRetriever)
-    
+
     def __init__(self, app, key):
         self._app = app
         self._key = key
-    
+
     def retrieve(self, dev_info):
         logger.debug('In SearchDeviceRetriever')
         if self._key in dev_info:
@@ -467,12 +467,12 @@ class AddDeviceRetriever(object):
     don't find anything.
     
     """
-    
+
     implements(IDeviceRetriever)
-    
+
     def __init__(self, app):
         self._app = app
-    
+
     def retrieve(self, dev_info):
         logger.debug('In AddDeviceRetriever')
         device = copy.deepcopy(dev_info)
@@ -487,12 +487,12 @@ class FirstCompositeDeviceRetriever(object):
     returns.
     
     """
-    
+
     implements(IDeviceRetriever)
-    
+
     def __init__(self, retrievers=None):
         self.retrievers = [] if retrievers is None else retrievers
-    
+
     @defer.inlineCallbacks
     def retrieve(self, dev_info):
         logger.debug('In FirstCompositeDeviceRetriever')
@@ -515,7 +515,7 @@ class IDeviceUpdater(Interface):
     exception, incorrect behaviors elsewhere in the application.  
     
     """
-    
+
     def update(device, dev_info, request, request_type):
         """Update a device object, returning a deferred that will fire once
         the device object has been updated, with either true if the device
@@ -533,9 +533,9 @@ class IDeviceUpdater(Interface):
 
 class NullDeviceUpdater(object):
     """Device updater that updates nothing."""
-    
+
     implements(IDeviceUpdater)
-    
+
     def update(self, device, dev_info, request, request_type):
         logger.debug('In NullDeviceUpdater')
         return defer.succeed(False)
@@ -551,14 +551,14 @@ class StaticDeviceUpdater(object):
     reconfiguration.
     
     """
-    
+
     implements(IDeviceUpdater)
-    
+
     def __init__(self, key, value, force_update=False):
         self._key = key
         self._value = value
         self._force_update = force_update
-    
+
     def update(self, device, dev_info, request, request_type):
         logger.debug('In StaticDeviceUpdater')
         if self._force_update or self._key not in device:
@@ -577,9 +577,9 @@ class DynamicDeviceUpdater(object):
     reconfiguration.
     
     """
-    
+
     implements(IDeviceUpdater)
-    
+
     def __init__(self, keys, force_update=False):
         # keys can either be a string (i.e. u'ip') or a list of string
         #   (i.e. [u'ip', u'version'])
@@ -587,7 +587,7 @@ class DynamicDeviceUpdater(object):
             keys = [keys]
         self._keys = list(keys)
         self._force_update = force_update
-    
+
     def update(self, device, dev_info, request, request_type):
         logger.debug('In DynamicDeviceUpdater')
         for key in self._keys:
@@ -605,9 +605,9 @@ class AddInfoDeviceUpdater(object):
     reconfiguration.
     
     """
-    
+
     implements(IDeviceUpdater)
-    
+
     def update(self, device, dev_info, request, request_type):
         logger.debug('In AddInfoDeviceUpdater')
         for key in dev_info:
@@ -622,9 +622,9 @@ class ReplaceDeviceUpdater(object):
     This SHOULD NOT be used in normal situation.
     
     """
-    
+
     implements(IDeviceUpdater)
-    
+
     def update(self, device, dev_info, request, request_type):
         logger.debug('In ReplaceDeviceUpdater')
         device.clear()
@@ -641,12 +641,12 @@ class VersionDeviceUpdater(object):
     """If 'model' in dev and 'version' in dev_info, then update dev['version']
     to dev_info['version'].
     
-    """ 
-    
+    """
+
     implements(IDeviceUpdater)
-    
+
     delete_on_no_version = True
-    
+
     def update(self, device, dev_info, request, request_type):
         logger.debug('In VersionDeviceUpdater')
         if u'vendor' in device and u'model' in device:
@@ -669,7 +669,7 @@ class DefaultConfigDeviceUpdater(object):
     """
     def __init__(self, app):
         self._app = app
-    
+
     @defer.inlineCallbacks
     def update(self, device, dev_info, request, request_type):
         logger.debug('In DefaultConfigDeviceUpdater')
@@ -689,7 +689,7 @@ class AutocreateConfigDeviceUpdater(object):
     """
     def __init__(self, app):
         self._app = app
-    
+
     @defer.inlineCallbacks
     def update(self, device, dev_info, request, request_type):
         logger.debug('In AutocreateConfigDeviceUpdater')
@@ -720,10 +720,10 @@ class RemoveDuplicateDeviceUpdater(object):
       device collection.
     
     """
-    
+
     def __init__(self, app):
         self._app = app
-    
+
     @defer.inlineCallbacks
     def update(self, device, dev_info, request, request_type):
         logger.debug('In RemoveDuplicateDeviceUpdater')
@@ -738,10 +738,10 @@ class RemoveDuplicateDeviceUpdater(object):
 
 class CompositeDeviceUpdater(object):
     implements(IDeviceUpdater)
-    
+
     def __init__(self, updaters=None):
         self.updaters = [] if updaters is None else updaters
-    
+
     @defer.inlineCallbacks
     def update(self, device, dev_info, request, request_type):
         logger.debug('In CompositeDeviceUpdater')
@@ -757,7 +757,7 @@ class IDeviceRouter(Interface):
     from device objects.
     
     """
-    
+
     def route(device, dev_info):
         """Return a plugin ID from a device object, or None if there's no
         route.
@@ -773,9 +773,9 @@ class PluginDeviceRouter(object):
     it exists, or None in any other cases.
     
     """
-    
+
     implements(IDeviceRouter)
-    
+
     def route(self, device, dev_info):
         logger.debug('In PluginDeviceRouter')
         if device is None:
@@ -786,12 +786,12 @@ class PluginDeviceRouter(object):
 
 class StaticDeviceRouter(object):
     """A device router that always returns the same plugin ID."""
-    
+
     implements(IDeviceRouter)
-    
+
     def __init__(self, pg_id):
         self._pg_id = pg_id
-        
+
     def route(self, device, dev_info):
         logger.debug('In StaticDeviceRouter')
         return self._pg_id
@@ -804,12 +804,12 @@ def NullDeviceRouter():
 
 class FirstCompositeDeviceRouter(object):
     """A composite device router that returns the first not None route ID."""
-    
+
     implements(IDeviceRouter)
-    
+
     def __init__(self, routers):
         self.routers = [] if routers is None else routers
-        
+
     def route(self, device, dev_info):
         logger.debug('In FirstCompositeDeviceRouter')
         for router in self.routers:
@@ -828,16 +828,16 @@ class RequestProcessingService(object):
     dev_retriever = NullDeviceRetriever()
     dev_updater = NullDeviceUpdater()
     dev_router = NullDeviceRouter()
-    
+
     def __init__(self, app):
         self._app = app
         self._req_id = 0    # used for logging
-    
+
     def _new_request_id(self):
         req_id = "%d" % self._req_id
         self._req_id = (self._req_id + 1) % 100
         return req_id
-    
+
     @defer.inlineCallbacks
     def process(self, request, request_type):
         """Return a deferred that will eventually fire with a (device, pg_id)
@@ -850,7 +850,7 @@ class RequestProcessingService(object):
         
         """
         req_id = self._new_request_id()
-        
+
         # 1. Get a device info object
         logger.debug('<%s> Extracting device info', req_id)
         dev_info = yield self.dev_info_extractor.extract(request, request_type)
@@ -859,7 +859,7 @@ class RequestProcessingService(object):
             dev_info = {}
         else:
             logger.info('<%s> Extracted device info: %s', req_id, dev_info)
-        
+
         # 2. Get a device object
         logger.debug('<%s> Retrieving device', req_id)
         device = yield self.dev_retriever.retrieve(dev_info)
@@ -867,7 +867,7 @@ class RequestProcessingService(object):
             logger.info('<%s> No device retrieved', req_id)
         else:
             logger.info('<%s> Retrieved device id: %s', req_id, device[u'id'])
-        
+
         # 3. Update the device
         if device is not None:
             logger.debug('<%s> Updating device', req_id)
@@ -875,12 +875,12 @@ class RequestProcessingService(object):
             orig_device = copy.deepcopy(device)
             force_reconfigure = yield self.dev_updater.update(device, dev_info,
                                                               request, request_type)
-            
+
             # 3.2 Persist the modification if there was a change
             if device != orig_device:
                 logger.info('<%s> Device has been updated', req_id)
                 yield self._app.dev_update(device)
-            
+
             # 3.3 Reconfigure the device if needed
             # XXX we should check that the call to _app.dev_update did not lead
             #     to a device reconfiguration; if this is the case, we should
@@ -888,7 +888,7 @@ class RequestProcessingService(object):
             if force_reconfigure:
                 logger.info('<%s> Reconfiguring device', req_id)
                 self._app.dev_reconfigure(device[ID_KEY])
-        
+
         # 4. Return a plugin ID
         logger.debug('<%s> Finding route', req_id)
         pg_id = self.dev_router.route(device, dev_info)
@@ -920,17 +920,17 @@ class HTTPRequestProcessingService(Resource):
     is used to continue with the request processing.
     
     """
-    
+
     # implements(IHTTPService)
-    
+
     default_service = NoResource('Nowhere to route this request.')
-    
+
     def __init__(self, process_service, pg_mgr):
         Resource.__init__(self)
         self._process_service = process_service
         self._pg_mgr = pg_mgr
         self.service_factory = _null_service_factory
-    
+
     @defer.inlineCallbacks
     def getChild(self, path, request):
         logger.info('Processing HTTP request: %s', request.path)
@@ -945,7 +945,7 @@ class HTTPRequestProcessingService(Resource):
         else:
             # Here we 'inject' the device object into the request object
             request.prov_dev = device
-        
+
             service = self.default_service
             if pg_id in self._pg_mgr:
                 pg_service = self._pg_mgr[pg_id].http_service
@@ -963,23 +963,23 @@ class TFTPRequestProcessingService(object):
     the TFTP read service of plugins.
     
     """
-    
+
     # implements(ITFTPReadService)
-    
+
     default_service = TFTPNullService(errmsg="Nowhere to route this request")
 
     def __init__(self, process_service, pg_mgr):
         self._process_service = process_service
         self._pg_mgr = pg_mgr
         self.service_factory = _null_service_factory
-    
+
     def handle_read_request(self, request, response):
         logger.info('Processing TFTP request: %s', request['packet']['filename'])
         logger.debug('TFTP request: %s', request)
         def callback((device, pg_id)):
             # Here we 'inject' the device object into the request object
             request['prov_dev'] = device
-            
+
             service = self.default_service
             if pg_id in self._pg_mgr:
                 pg_service = self._pg_mgr[pg_id].tftp_service
@@ -1009,7 +1009,7 @@ class DHCPRequestProcessingService(Resource):
     """
     def __init__(self, process_service):
         self._process_service = process_service
-    
+
     def handle_dhcp_request(self, request):
         """Handle DHCP request.
         

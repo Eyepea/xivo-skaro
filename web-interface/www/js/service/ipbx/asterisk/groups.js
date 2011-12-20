@@ -36,7 +36,6 @@ function xivo_ast_group_suggest_event_extension()
 {
     xivo_ast_group_suggest_extension.set_option('result_field', 'it-groupfeatures-numberid');
     xivo_ast_group_suggest_extension.set_option('result_emptyalert', true);
-    //xivo_ast_group_suggest_extension.set_option('result_fullsearch', true);
     xivo_ast_group_suggest_extension.set_option('result_minlen', 0);
         
     xivo_ast_group_suggest_extension.set_field(this.id);

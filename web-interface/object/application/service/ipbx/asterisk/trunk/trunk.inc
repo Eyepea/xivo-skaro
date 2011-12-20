@@ -435,6 +435,8 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 		if(dwho_issa('allow',$rs) === true)
 			$rs['allow'] = implode(',',$rs['allow']);
+		else
+			$rs['allow'] = '';
 
 		$this->_set_result('protocol',$rs);
 
@@ -947,9 +949,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 	{
 		if(($data = $this->_get_data_from_json()) === false
 		|| $this->set_add($data) === false
-		|| $this->add() === false)
-        {
-			var_dump($_QR);
+		|| $this->add() === false) {
 			return(false);
 		}
 

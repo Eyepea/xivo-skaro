@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-__version__ = "$Revision$ $Date$"
 
 from distutils.core import setup
 
@@ -13,9 +12,8 @@ setup(
     maintainer_email='technique@proformatique.com',
     url='http://wiki.xivo.fr/',
     license='GPLv3',
-    
     packages=['fetchfw'],
-    scripts=['scripts/xivo_fetchfw'],
+    scripts=['bin/xivo-fetchfw'],
     data_files=[('/etc/pf-xivo', ['resources/etc/fetchfw.conf']),
                 ('/var/lib/pf-xivo-fetchfw/installable',
                       ['resources/data/files.db',

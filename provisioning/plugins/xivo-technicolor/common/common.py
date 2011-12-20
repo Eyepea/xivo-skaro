@@ -6,7 +6,6 @@ Support the ST2022, ST2030 and TB30.
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Avencall
 

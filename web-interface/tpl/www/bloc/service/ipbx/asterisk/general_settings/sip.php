@@ -1301,32 +1301,20 @@ endif;
 <div id="sb-part-t38" class="b-nodisplay">
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_t38pt-udptl'),
-				      'name'		=> 't38pt_udptl',
-				      'labelid'		=> 't38pt-udptl',
-					    'help'		=> $this->bbf('hlp_fm_t38pt-udptl'),
-				  	  'required'	=> false,
-				      'checked'		=> $this->get_var('info','t38pt_udptl','var_val'),
-				      'default'		=> $element['t38pt_udptl']['default'])),
+					'name'		=> 't38pt_udptl',
+					'labelid'	=> 't38pt-udptl',
+					'help'		=> $this->bbf('hlp_fm_t38pt-udptl'),
+					'required'	=> false,
+					'checked'	=> $this->get_var('info','t38pt_udptl','var_val'),
+					'default'	=> $element['t38pt_udptl']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_t38pt-usertpsource'),
-				      'name'		=> 't38pt_usertpsource',
-				      'labelid'		=> 't38pt-usertpsource',
-		  			  'help'		=> $this->bbf('hlp_fm_t38pt-usertpsource'),
-			  		  'required'	=> false,
-				      'checked'		=> $this->get_var('info','t38pt_usertpsource','var_val'),
-							'default'		=> $element['t38pt_usertpsource']['default'])),
-
-		$form->select(array('desc'	=> $this->bbf('fm_faxdetect'),
-				    'name'		=> 'faxdetect',
-				    'labelid'	=> 'faxdetect',
-				    'key'		=> false,
-				    'bbf'		=> 'faxdetect-opt',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-  					'help'		=> $this->bbf('hlp_fm_faxdetect'),
-	  				'required'	=> false,
-				    'selected'	=> $this->get_var('info','faxdetect','var_val'),
-				    'default'	=> $element['faxdetect']['default']),
-			      $element['faxdetect']['value']);
+					'name'		=> 't38pt_usertpsource',
+					'labelid'	=> 't38pt-usertpsource',
+					'help'		=> $this->bbf('hlp_fm_t38pt-usertpsource'),
+					'required'	=> false,
+					'checked'	=> $this->get_var('info','t38pt_usertpsource','var_val'),
+					'default'	=> $element['t38pt_usertpsource']['default']));
 
 ?>
 </div>

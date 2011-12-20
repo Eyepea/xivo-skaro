@@ -42,20 +42,11 @@ if ($this->get_var('disableable') === true):
 				      'checked'		=> $this->get_var_default('info','disable',$this->get_var('devinfo','auto'))));
 endif;
 
-	echo	$form->text(array('desc'	=> $this->bbf('fm_name'),
-				  'name'	=> 'name',
-				  'labelid'	=> 'name',
-				  'size'	=> 15,
-				  'default'	=> $element['netiface']['name']['default'],
-				  'value'	=> $info['name'],
-				  'error'	=> $this->bbf_args('error',
-					   $this->get_var('error', 'name'))));
-
 if($interfaces !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_vlanrawdevice'),
 				    'name'		=> 'vlanrawdevice',
 				    'labelid'	=> 'vlanrawdevice',
-				    'key'		=> 'identity',
+				    'key'		=> 'ifname',
 				    'altkey'	=> 'ifname',
 				    'default'	=> $element['netiface']['vlanrawdevice']['default'],
 				    'selected'	=> $this->get_var_default('info',

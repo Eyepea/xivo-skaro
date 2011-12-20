@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-\connect asterisk;
-
 -- remove unused column from dialpattern table #2819
 
 BEGIN;
@@ -25,6 +23,4 @@ BEGIN;
 ALTER TABLE "dialpattern" DROP COLUMN "setcallerid";
 ALTER TABLE "dialpattern" DROP COLUMN "emergency";
 
-
 COMMIT;
-

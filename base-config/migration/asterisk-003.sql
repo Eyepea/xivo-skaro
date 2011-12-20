@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-\connect asterisk;
-
 
 BEGIN;
 
@@ -28,6 +26,5 @@ ALTER TABLE "devicefeatures" ALTER COLUMN "proto" TYPE varchar(16);
 ALTER TABLE "devicefeatures" ALTER COLUMN "sn" TYPE varchar(64);
 ALTER TABLE "devicefeatures" ALTER COLUMN "plugin" TYPE varchar(64);
 ALTER TABLE "devicefeatures" ALTER COLUMN "config" TYPE varchar(32);
-
 
 COMMIT;

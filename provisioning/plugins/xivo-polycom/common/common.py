@@ -8,7 +8,6 @@ VVX1500.
 
 """
 
-__version__ = "$Revision: 10288 $ $Date: 2011-03-02 08:58:26 -0500 (Wed, 02 Mar 2011) $"
 __license__ = """
     Copyright (C) 2010-2011  Avencall
 

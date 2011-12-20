@@ -5,7 +5,6 @@ by returning file not found errors.
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010  Avencall
 

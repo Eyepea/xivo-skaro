@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-\connect asterisk;
-
 -- alter type "useriax_type" add new value 'user' in enum ('friend', 'peer');
 BEGIN;
 

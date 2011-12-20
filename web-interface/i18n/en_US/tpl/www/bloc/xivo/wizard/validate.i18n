@@ -27,15 +27,6 @@ Language :
 ; info_ipbxengine
 IPBX engine :
 
-; info_dbbackend
-Database type :
-
-; error_dbconfig_backends(save)
-Possible errors :
-1. Database server cannot be joined
-2. Impossible configuration server
-3. A problem occured when generating configuration files
-
 ; fld-server-information
 Server informations
 
@@ -76,7 +67,7 @@ Possible errors :
 3. A problem occured when generating configuration files
 
 ; info_resolvconf_nameserver1
-primary DNS server :
+Primary DNS server :
 
 ; info_resolvconf_nameserver2
 Secondary DNS server :

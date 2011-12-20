@@ -28,15 +28,6 @@ Langue sélectionnée :
 ; info_ipbxengine
 Moteur IPBX :
 
-; info_dbbackend
-Type de base de données :
-
-; error_dbconfig_backends(save)
-Erreurs possibles :
-1. Bases de données inaccessibles depuis le serveur
-2. Serveur de configuration indisponible
-3. Un problème est survenu lors de la génération des fichiers de configuration
-
 ; fld-server-information
 Informations serveur
 

@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Avencall
 
@@ -20,10 +19,10 @@ __license__ = """
 
 import re
 
-OIP_WAITING  = 'waiting'
+OIP_WAITING = 'waiting'
 OIP_PROGRESS = 'progress'
-OIP_SUCCESS  = 'success'
-OIP_FAIL     = 'fail'
+OIP_SUCCESS = 'success'
+OIP_FAIL = 'fail'
 
 
 class OperationInProgress(object):
@@ -109,7 +108,7 @@ def _split_top_parentheses(str_):
                 count -= 1
             idx += 1
         end_idx = idx
-        result.append(str_[start_idx+1:end_idx-1])
+        result.append(str_[start_idx + 1:end_idx - 1])
     return result
 
 
@@ -128,7 +127,7 @@ def parse_oip(oip_string):
         raise ValueError('invalid oip string: %s' % oip_string)
     else:
         label, state, raw_current, raw_end = m.groups()
-        raw_sub_oips = oip_string[m.end():] 
+        raw_sub_oips = oip_string[m.end():]
         current = raw_current if raw_current is None else int(raw_current)
         end = raw_end if raw_end is None else int(raw_end)
         sub_oips = [parse_oip(sub_oip_string) for sub_oip_string in

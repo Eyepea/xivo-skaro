@@ -39,7 +39,6 @@ Finally, device collection objects are used as a storage for device objects.
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2010-2011  Avencall
 
@@ -74,7 +73,7 @@ class DeviceCollection(ForwardingDocumentCollection):
     def insert(self, device):
         _check_device_validity(device)
         return self._collection.insert(device)
-    
+
     def update(self, device):
         _check_device_validity(device)
         return self._collection.update(device)

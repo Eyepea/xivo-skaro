@@ -24,10 +24,6 @@ __license__ = """
 # TODO help for object/class/method should be closer than the code who defines
 #      such object, with help of decorator or something alike, and/or refactor
 #      the help definition to have less redundancy
-# XXX value of completer has yet to be seen, and would be more useful with
-#      restrained auto-completion by doing static evaluation of python
-#      expression...
-# XXX our custom display hook doesn't always give nice result
 # TODO lookup default value (like default port or default username) in config.py
 #      instead of duplicating them here ?
 
@@ -48,7 +44,7 @@ DEFAULT_HOST = 'localhost'
 DEFAULT_PORT = 8666
 DEFAULT_USER = 'admin'
 DEFAULT_HISTFILE = os.path.expanduser('~/.provd_pycli_history')
-DEFAULT_HISTFILESIZE = 500 
+DEFAULT_HISTFILESIZE = 500
 
 
 # parse command line arguments
@@ -345,7 +341,7 @@ RAW_HELP_MAP = {
 class CLIHelp(object):
     def __init__(self, raw_help_map):
         self._help_map = self._build_help_map(raw_help_map)
-    
+
     @staticmethod
     def _build_help_map(raw_help_map):
         res = {}
@@ -356,7 +352,7 @@ class CLIHelp(object):
             else:
                 res[raw_k] = v
         return res
-    
+
     def __call__(self, obj=None):
         help_map = self._help_map
         if obj in help_map:
@@ -367,7 +363,7 @@ class CLIHelp(object):
             print help_map[obj.__func__]
         else:
             print 'No help for object "%s"' % obj
-    
+
     def __repr__(self):
         return 'Type help() for help, or help(object) for help about object.'
 
@@ -387,8 +383,8 @@ helpers._init_module(configs, devices, plugins)
 
 # import and initialize the tests module
 if opts.tests:
-    import provd.rest.pycli.tests as tests
-    tests._init_module(configs, devices, plugins)
+    import provd.rest.pycli.plugin_tests as plugin_tests
+    plugin_tests._init_module(configs, devices, plugins)
 
 
 # change interpreter prompt
@@ -411,7 +407,7 @@ cli_globals = {
     'devices': devices,
     'plugins': plugins,
     'parameters': parameters,
-    
+
     'help': cli_help,
     'python_help': __builtin__.help,
 
@@ -423,7 +419,7 @@ cli_globals = {
 }
 
 if opts.tests:
-    cli_globals['tests'] = tests
+    cli_globals['tests'] = plugin_tests
 
 
 # define completer for readline auto-completion
@@ -431,8 +427,8 @@ class Completer(object):
     # This is largely taken from the rlcompleter module
     def __init__(self, namespace):
         if not isinstance(namespace, dict):
-            raise TypeError,'namespace must be a dictionary'
-        
+            raise TypeError, 'namespace must be a dictionary'
+
         self.namespace = namespace
 
     def complete(self, text, state):
@@ -485,7 +481,7 @@ class Completer(object):
 
 def get_class_members(klass):
     ret = dirr(klass)
-    if hasattr(klass,'__bases__'):
+    if hasattr(klass, '__bases__'):
         for base in klass.__bases__:
             ret = ret + get_class_members(base)
     return ret

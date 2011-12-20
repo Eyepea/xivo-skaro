@@ -88,11 +88,11 @@ No
 ; fm_protocol_nat-opt(yes)
 Yes
 
-; fm_protocol_nat-opt(never)
-Never
+; fm_protocol_nat-opt(force_rport)
+Force rport
 
-; fm_protocol_nat-opt(route)
-Route
+; fm_protocol_nat-opt(comedia)
+Comedia
 
 ; fm_protocol_parkinglot
 Parking:

@@ -39,11 +39,11 @@ import urllib
 import urllib2
 import urlparse
 import json
-from provd.rest.client.util import once_per_instance, DeleteRequest,\
+from provd.rest.client.util import once_per_instance, DeleteRequest, \
     PutRequest
 from provd.rest.util import PROV_MIME_TYPE, uri_append_path, uri_append_query
 
-GET_HEADERS  = {'Accept': PROV_MIME_TYPE}
+GET_HEADERS = {'Accept': PROV_MIME_TYPE}
 POST_HEADERS = {'Accept': PROV_MIME_TYPE, 'Content-Type': PROV_MIME_TYPE}
 
 
@@ -94,7 +94,7 @@ def _build_find_query_string(selector=None, fields=None, skip=0, limit=0, sort=N
 class RequestBroker(object):
     def __init__(self, opener):
         self._opener = opener
-    
+
     def json_content(self, request):
         # send the request, parse the response as json, and return a tuple
         # (decoded json object, response headers)
@@ -104,7 +104,7 @@ class RequestBroker(object):
         finally:
             f.close()
         return obj, f.info()
-    
+
     def ignore_content(self, request):
         # send the request, ignore the response and return a tuple
         # (None, response headers)
@@ -114,7 +114,7 @@ class RequestBroker(object):
         finally:
             f.close()
         return None, f.info()
-    
+
     def raw_content(self, request):
         # send the request, read the response and return a tuple
         # (raw data, response headers)
@@ -130,12 +130,12 @@ class OperationInProgressResource(object):
     def __init__(self, op_in_progress_uri, broker):
         self._uri = op_in_progress_uri
         self._broker = broker
-    
+
     def status(self):
         request = new_get_request(self._uri)
         response, _ = self._broker.json_content(request)
         return response[u'status']
-    
+
     def delete(self):
         request = new_delete_request(self._uri)
         self._broker.ignore_content(request)
@@ -145,11 +145,11 @@ class ConfigureServiceResource(object):
     def __init__(self, config_uri, broker):
         self._config_uri = config_uri
         self._broker = broker
-    
+
     def get(self, id):
         param_uri = uri_append_path(self._config_uri, id)
         return ConfigureParameterResource(param_uri, self._broker)
-    
+
     def infos(self):
         """Return the list of parameters, i.e. a list of dictionaries."""
         request = new_get_request(self._config_uri)
@@ -165,59 +165,59 @@ class ConfigureParameterResource(object):
     def __init__(self, param_uri, broker):
         self._param_uri = param_uri
         self._broker = broker
-    
-    def get(self):    
+
+    def get(self):
         request = new_get_request(self._param_uri)
         response, _ = self._broker.json_content(request)
         return response[u'param'][u'value']
-    
+
     def _build_set_request(self, value):
         content = {u'param': {u'value': value}}
         return new_put_request(self._param_uri, content)
-    
+
     def set(self, value):
         request = self._build_set_request(value)
         self._broker.ignore_content(request)
-    
+
 
 class InstallServiceResource(object):
     def __init__(self, install_uri, broker):
         self._create_sub_resources(install_uri, broker)
-    
+
     def _create_sub_resources(self, install_srv_uri, broker):
         install_uri = uri_append_path(install_srv_uri, 'install')
         self._install_res = InstallResource(install_uri, broker)
-        
+
         uninstall_uri = uri_append_path(install_srv_uri, 'uninstall')
         self._uninstall_res = UninstallResource(uninstall_uri, broker)
-        
+
         installed_uri = uri_append_path(install_srv_uri, 'installed')
         self._installed_res = InstalledResource(installed_uri, broker)
-        
+
         installable_uri = uri_append_path(install_srv_uri, 'installable')
         self._installable_res = InstallableResource(installable_uri, broker)
-        
+
         upgrade_uri = uri_append_path(install_srv_uri, 'upgrade')
         self._upgrade_res = UpgradeResource(upgrade_uri, broker)
-        
+
         update_uri = uri_append_path(install_srv_uri, 'update')
         self._update_res = UpdateResource(update_uri, broker)
-        
+
     def install_res(self):
         return self._install_res
-    
+
     def uninstall_res(self):
         return self._uninstall_res
-    
+
     def installed_res(self):
         return self._installed_res
-    
+
     def installable_res(self):
         return self._installable_res
-    
+
     def upgrade_res(self):
         return self._upgrade_res
-    
+
     def update_res(self):
         return self._update_res
 
@@ -226,7 +226,7 @@ class InstallResource(object):
     def __init__(self, install_uri, broker):
         self._install_uri = install_uri
         self._broker = broker
-    
+
     def install(self, id):
         """Install the package with the given ID and return an
         OperationInProgress resource.
@@ -244,7 +244,7 @@ class UninstallResource(object):
     def __init__(self, uninstall_uri, broker):
         self._uninstall_uri = uninstall_uri
         self._broker = broker
-    
+
     def uninstall(self, id):
         """Uninstall the package with the given ID."""
         content = {u'id': id}
@@ -256,7 +256,7 @@ class InstalledResource(object):
     def __init__(self, installed_uri, broker):
         self._installed_uri = installed_uri
         self._broker = broker
-    
+
     def installed(self):
         """Return a dictionary of installed package, where keys are package
         IDs and value are dictionary giving info about the package.
@@ -271,7 +271,7 @@ class InstallableResource(object):
     def __init__(self, installable_uri, broker):
         self._installable_uri = installable_uri
         self._broker = broker
-    
+
     def installable(self):
         """Similar to InstalledResource.installed()."""
         request = new_get_request(self._installable_uri)
@@ -283,7 +283,7 @@ class UpgradeResource(object):
     def __init__(self, upgrade_uri, broker):
         self._upgrade_uri = upgrade_uri
         self._broker = broker
-    
+
     def upgrade(self, id):
         """Upgrade the package with the given ID and return an
         OperationInProgress resource.
@@ -301,7 +301,7 @@ class UpdateResource(object):
     def __init__(self, update_uri, broker):
         self._update_uri = update_uri
         self._broker = broker
-    
+
     def update(self):
         request = new_post_request(self._update_uri, {})
         _, headers = self._broker.ignore_content(request)
@@ -315,32 +315,32 @@ class ServerResource(object):
         self._broker = broker
         self._server_uri = server_uri
         self._create_sub_resources()
-    
+
     def _create_sub_resources(self):
         dev_mgr_uri = uri_append_path(self._server_uri, 'dev_mgr')
         self._dev_mgr = DeviceManagerResource(dev_mgr_uri, self._broker)
-        
+
         cfg_mgr_uri = uri_append_path(self._server_uri, 'cfg_mgr')
         self._cfg_mgr = ConfigManagerResource(cfg_mgr_uri, self._broker)
 
         pg_mgr_uri = uri_append_path(self._server_uri, 'pg_mgr')
         self._pg_mgr = PluginManagerResource(pg_mgr_uri, self._broker)
-        
+
         config_uri = uri_append_path(self._server_uri, 'configure')
         self._config_res = ConfigureServiceResource(config_uri, self._broker)
-    
+
     def dev_mgr_res(self):
         return self._dev_mgr
-    
+
     def cfg_mgr_res(self):
         return self._cfg_mgr
-    
+
     def pg_mgr_res(self):
         return self._pg_mgr
-    
+
     def config_srv_res(self):
         return self._config_res
-    
+
     def test_connectivity(self):
         # raise an exception if there seems to be connectivity issues
         request = new_get_request(self._server_uri)
@@ -350,36 +350,36 @@ class ServerResource(object):
 class DeviceManagerResource(object):
     def __init__(self, dev_mgr_uri, broker):
         self._create_sub_resources(dev_mgr_uri, broker)
-    
+
     def _create_sub_resources(self, dev_mgr_uri, broker):
         resync_uri = uri_append_path(dev_mgr_uri, 'synchronize')
         self._resync_res = DeviceSynchronizeResource(resync_uri, broker)
-        
+
         reconfigure_uri = uri_append_path(dev_mgr_uri, 'reconfigure')
         self._reconfigure_res = DeviceReconfigureResource(reconfigure_uri, broker)
-        
+
         devices_uri = uri_append_path(dev_mgr_uri, 'devices')
         self._devices_res = DevicesResource(devices_uri, broker)
-    
+
     def resync_res(self):
         return self._resync_res
-    
+
     def reconfigure_res(self):
         return self._reconfigure_res
-    
+
     def devices_res(self):
         return self._devices_res
-    
+
 
 class DeviceSynchronizeResource(object):
     def __init__(self, resync_uri, broker):
         self._resync_uri = resync_uri
         self._broker = broker
-    
+
     def _build_resync_request(self, id):
         content = {u'id': id}
         return new_post_request(self._resync_uri, content)
-    
+
     def resync(self, id):
         """Resynchronize the device with the given ID and return an
         OperationInProgress ressource.
@@ -395,11 +395,11 @@ class DeviceReconfigureResource(object):
     def __init__(self, reconf_uri, broker):
         self._reconf_uri = reconf_uri
         self._broker = broker
-    
+
     def _build_reconf_request(self, id):
         content = {u'id': id}
         return new_post_request(self._reconf_uri, content)
-    
+
     def reconfigure(self, id):
         """Reconfigure the device with the given ID."""
         request = self._build_reconf_request(id)
@@ -410,17 +410,17 @@ class DevicesResource(object):
     def __init__(self, devices_uri, broker):
         self._devices_uri = devices_uri
         self._broker = broker
-    
+
     def _build_add_request(self, device):
         content = {u'device': device}
         return new_post_request(self._devices_uri, content)
-    
+
     def add(self, device):
         """Add a device and return the ID of the newly added device."""
         request = self._build_add_request(device)
         response, _ = self._broker.json_content(request)
         return response[u'id']
-    
+
     def _build_find_request(self, *args, **kwargs):
         query_string = _build_find_query_string(*args, **kwargs)
         if query_string:
@@ -428,7 +428,7 @@ class DevicesResource(object):
         else:
             uri = self._devices_uri
         return new_get_request(uri)
-    
+
     def find(self, *args, **kwargs):
         """Return a list of devices matching the given parameters.
         
@@ -444,7 +444,7 @@ class DevicesResource(object):
         request = self._build_find_request(*args, **kwargs)
         response, _ = self._broker.json_content(request)
         return response[u'devices']
-    
+
     def device_res(self, id):
         device_uri = uri_append_path(self._devices_uri, id)
         return DeviceResource(device_uri, self._broker)
@@ -454,20 +454,20 @@ class DeviceResource(object):
     def __init__(self, device_uri, broker):
         self._device_uri = device_uri
         self._broker = broker
-    
+
     def _build_get_request(self):
         return new_get_request(self._device_uri)
-    
+
     def get(self):
         """Return a device object (i.e. a dictionary)."""
         request = self._build_get_request()
         response, _ = self._broker.json_content(request)
         return response[u'device']
-    
+
     def _build_update_request(self, device):
         content = {u'device': device}
         return new_put_request(self._device_uri, content)
-    
+
     def update(self, device):
         """Update the remote device with the given device.
         
@@ -476,10 +476,10 @@ class DeviceResource(object):
         """
         request = self._build_update_request(device)
         self._broker.ignore_content(request)
-    
+
     def _build_delete_request(self):
         return new_delete_request(self._device_uri)
-    
+
     def delete(self):
         request = self._build_delete_request()
         self._broker.ignore_content(request)
@@ -488,17 +488,17 @@ class DeviceResource(object):
 class ConfigManagerResource(object):
     def __init__(self, cfg_mgr_uri, broker):
         self._create_sub_resources(cfg_mgr_uri, broker)
-    
+
     def _create_sub_resources(self, cfg_mgr_uri, broker):
         configs_uri = uri_append_path(cfg_mgr_uri, 'configs')
         self._configs_res = ConfigsResource(configs_uri, broker)
-        
+
         autocreate_uri = uri_append_path(cfg_mgr_uri, 'autocreate')
         self._autocreate_res = AutocreateConfigResource(autocreate_uri, broker)
-    
+
     def configs_res(self):
         return self._configs_res
-    
+
     def autocreate_res(self):
         return self._autocreate_res
 
@@ -507,7 +507,7 @@ class AutocreateConfigResource(object):
     def __init__(self, autocreate_uri, broker):
         self._autocreate_uri = autocreate_uri
         self._broker = broker
-    
+
     def autocreate(self):
         """Create a new config and return its ID."""
         request = new_post_request(self._autocreate_uri, {})
@@ -519,17 +519,17 @@ class ConfigsResource(object):
     def __init__(self, configs_uri, broker):
         self._configs_uri = configs_uri
         self._broker = broker
-    
+
     def _build_add_request(self, config):
         content = {u'config': config}
         return new_post_request(self._configs_uri, content)
-    
+
     def add(self, config):
         """Add a config and return the ID of the newly added config."""
         request = self._build_add_request(config)
         response, _ = self._broker.json_content(request)
         return response[u'id']
-    
+
     def _build_find_request(self, *args, **kwargs):
         query_string = _build_find_query_string(*args, **kwargs)
         if query_string:
@@ -537,7 +537,7 @@ class ConfigsResource(object):
         else:
             uri = self._configs_uri
         return new_get_request(uri)
-    
+
     def find(self, *args, **kwargs):
         """Return a list of configs matching the given parameters.
         
@@ -553,33 +553,33 @@ class ConfigsResource(object):
         request = self._build_find_request(*args, **kwargs)
         response, _ = self._broker.json_content(request)
         return response[u'configs']
-    
+
     def config_res(self, id):
         config_uri = uri_append_path(self._configs_uri, id)
         return ConfigResource(config_uri, self._broker)
-    
+
     def raw_config_res(self, id):
         raw_config_uri = uri_append_path(self._configs_uri, id, 'raw')
         return RawConfigResource(raw_config_uri, self._broker)
-    
+
 
 class ConfigResource(object):
     def __init__(self, config_uri, broker):
         self._config_uri = config_uri
         self._broker = broker
-    
+
     def _build_get_request(self):
         return new_get_request(self._config_uri)
-    
+
     def get(self):
         request = self._build_get_request()
         response, _ = self._broker.json_content(request)
         return response[u'config']
-    
+
     def _build_update_request(self, config):
         content = {u'config': config}
         return new_put_request(self._config_uri, content)
-    
+
     def update(self, config):
         """Update the remote config with the given config.
         
@@ -588,10 +588,10 @@ class ConfigResource(object):
         """
         request = self._build_update_request(config)
         self._broker.ignore_content(request)
-    
+
     def _build_delete_request(self):
         return new_delete_request(self._config_uri)
-    
+
     def delete(self):
         request = self._build_delete_request()
         self._broker.ignore_content(request)
@@ -601,10 +601,10 @@ class RawConfigResource(object):
     def __init__(self, raw_config_uri, broker):
         self._raw_config_uri = raw_config_uri
         self._broker = broker
-    
+
     def _build_get_request(self):
         return new_get_request(self._raw_config_uri)
-    
+
     def get(self):
         request = self._build_get_request()
         response, _ = self._broker.json_content(request)
@@ -614,23 +614,23 @@ class RawConfigResource(object):
 class PluginManagerResource(object):
     def __init__(self, pg_mgr_uri, broker):
         self._create_sub_resources(pg_mgr_uri, broker)
-    
+
     def _create_sub_resources(self, pg_mgr_uri, broker):
         install_uri = uri_append_path(pg_mgr_uri, 'install')
         self._install_res = InstallServiceResource(install_uri, broker)
-        
+
         plugins_uri = uri_append_path(pg_mgr_uri, 'plugins')
         self._plugins_res = PluginsResource(plugins_uri, broker)
-        
+
         reload_uri = uri_append_path(pg_mgr_uri, 'reload')
         self._reload_res = PluginReloadResource(reload_uri, broker)
-    
+
     def install_srv_res(self):
         return self._install_res
-    
+
     def plugins_res(self):
         return self._plugins_res
-    
+
     def reload_res(self):
         return self._reload_res
 
@@ -639,11 +639,11 @@ class PluginsResource(object):
     def __init__(self, plugins_uri, broker):
         self._plugins_uri = plugins_uri
         self._broker = broker
-    
+
     def get(self, id):
         plugin_uri = uri_append_path(self._plugins_uri, id)
         return PluginResource(plugin_uri, self._broker)
-    
+
     def list(self):
         request = new_get_request(self._plugins_uri)
         response, _ = self._broker.json_content(request)
@@ -655,11 +655,11 @@ class PluginReloadResource(object):
     def __init__(self, reload_uri, broker):
         self._reload_uri = reload_uri
         self._broker = broker
-    
+
     def _build_reload_request(self, id):
         content = {u'id': id}
         return new_post_request(self._reload_uri, content)
-    
+
     def reload(self, id):
         """Reload the plugin with the given ID."""
         request = self._build_reload_request(id)
@@ -669,11 +669,11 @@ class PluginReloadResource(object):
 class PluginResource(object):
     _SERVICE_MAP = {'srv.install': InstallServiceResource,
                     'srv.configure': ConfigureServiceResource}
-    
+
     def __init__(self, plugin_uri, broker):
         self._plugin_uri = plugin_uri
         self._broker = broker
-    
+
     @once_per_instance
     def _do_services(self):
         request = new_get_request(self._plugin_uri)
@@ -687,7 +687,7 @@ class PluginResource(object):
                 uri = urlparse.urljoin(self._plugin_uri, str(link[u'href']))
                 services[rel] = self._SERVICE_MAP[rel](uri, self._broker)
         return services
-    
+
     def services(self):
         return self._do_services()
 

@@ -22,7 +22,7 @@ xivo_object::required(array('abstract','datastorage','sql.inc'),true);
 
 class xivo_object_netiface_sql extends xivo_object_abstract_sql
 {
-	var $_unique	= array(array('uuid','name'),array('uuid','ifname'));
+	var $_unique	= array(array('uuid','ifname'));
 
 	function exists_link($ifname, $uuid)
 	{

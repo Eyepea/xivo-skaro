@@ -6,7 +6,6 @@ Support the T12, T20, T22, T26 and T28.
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2011  Avencall
 

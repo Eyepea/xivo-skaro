@@ -1883,7 +1883,6 @@ INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','hash_peers',
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','hash_dialogs',NULL);
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','notifycid','no');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','callcounter','no');
-INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','faxdetect','no');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','stunaddr',NULL);
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','directmedia','yes');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','ignoresdpversion','no');
@@ -2157,7 +2156,7 @@ CREATE TABLE "useriax" (
  "qualifyfreqnotok" INTEGER NOT NULL DEFAULT 10000, -- peer --
  "timezone" varchar(80), -- peer --
  "disallow" varchar(100), -- general / user / peer --
- "allow" text NOT NULL, -- general / user / peer --
+ "allow" text, -- general / user / peer --
  "mohinterpret" varchar(80), -- general / user / peer --
  "mohsuggest" varchar(80), -- general / user / peer --
  "deny" varchar(31), -- user / peer --
@@ -2200,7 +2199,7 @@ DROP TYPE  IF EXISTS "usersip_session_refresher";
 
 
 CREATE TYPE "usersip_insecure" AS ENUM ('port', 'invite', 'port,invite');
-CREATE TYPE "usersip_nat" AS ENUM ('no','yes','never','route');
+CREATE TYPE "usersip_nat" AS ENUM ('no','yes','force_rport','comedia');
 CREATE TYPE "usersip_videosupport" AS ENUM ('no','yes','always');
 CREATE TYPE "usersip_dtmfmode" AS ENUM ('rfc2833','inband','info','auto');
 CREATE TYPE "usersip_progressinband" AS ENUM ('no','yes','never');
