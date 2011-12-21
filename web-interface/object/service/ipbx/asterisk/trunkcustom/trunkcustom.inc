@@ -45,9 +45,9 @@ class xivo_service_asterisk_trunkcustom extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
-		
+
 		$this->_identity->_prepare_identity($data);
-		
+
 		$data['id'] = (int) $data['id'];
 		$data['commented'] = (bool) $data['commented'];
 
@@ -58,17 +58,17 @@ class xivo_service_asterisk_trunkcustom extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-		
+
 		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_CUSTOM;
 		$arr['category'] = 'trunk';
-		
+
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
-		
+
 		unset($arr['allow']);
-		
+
 		return($arr);
-		
+
 	}
 
 	function add($arr,$id=0)
@@ -81,7 +81,7 @@ class xivo_service_asterisk_trunkcustom extends xivo_service_asterisk_abstract
 	function edit($id,$arr,$disable=null)
 	{
 		$arr = $this->_addOrEdit($arr);
-		
+
 		return(parent::edit($id,$arr,$disable));
 	}
 }
