@@ -39,10 +39,9 @@ class SQLExecutionException(Exception):
 
 
 class UpdateFile(object):
-    def __init__(self, db_name, state_dir, dry_run=False):
+    def __init__(self, db_name, state_dir):
         self._db_name = db_name
         self._state_dir = state_dir
-        self._dry_run = dry_run
 
     def read(self):
         logger.info('Reading update file')
@@ -69,15 +68,13 @@ class UpdateFile(object):
     def write(self, update_id):
         logger.info('Writing %r to update file', update_id)
         content = '%s\n' % update_id
-        if not self._dry_run:
-            with self._open('w') as fobj:
-                fobj.write(content)
+        with self._open('w') as fobj:
+            fobj.write(content)
 
 
 class PostgresDB(object):
-    def __init__(self, db_name, dry_run=False):
+    def __init__(self, db_name):
         self._db_name = db_name
-        self._dry_run = dry_run
 
     def is_database_created(self):
         logger.info('Testing if database %r is created', self._db_name)
@@ -88,12 +85,7 @@ class PostgresDB(object):
     def _exec_psql_command(self, psql_args, hide_stderr=False):
         command = self._format_command(psql_args, hide_stderr)
         logger.info('Executing command %r', command)
-        if not self._dry_run:
-            process = subprocess.Popen(command)
-            process.communicate()
-            retcode = process.returncode
-        else:
-            retcode = 0
+        retcode = subprocess.call(command)
         return retcode
 
     def _format_command(self, psql_args, hide_stderr):
@@ -230,10 +222,10 @@ class DatabaseUpdater(object):
 
     @classmethod
     def new_from_name_and_args(cls, db_name, args):
-        postgres_db = PostgresDB(db_name, args.dry_run)
+        postgres_db = PostgresDB(db_name)
         repository = SQLFilesRepository(db_name, args.datastorage_dir,
                                         args.migration_dir)
-        update_file = UpdateFile(db_name, args.state_dir, args.dry_run)
+        update_file = UpdateFile(db_name, args.state_dir)
         return cls(db_name, postgres_db, repository, update_file)
 
 
@@ -258,8 +250,6 @@ def _parse_args(args):
 
 def _new_argument_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-n', '--dry-run', action='store_true', default=False,
-                        help='perform a trial run with no changes made')
     parser.add_argument('-v', '--verbose', action='store_true', default=False,
                         help='increase verbosity')
     parser.add_argument('--state-dir', action='store',
