@@ -195,8 +195,6 @@ endif;
 		</table>
 	</div>
 <br />
-<div class="fm-paragraph fm-description">
-
 
 <div class="fm-paragraph fm-description">
 	<p>
