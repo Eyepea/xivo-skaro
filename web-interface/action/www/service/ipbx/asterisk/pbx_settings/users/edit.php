@@ -80,8 +80,8 @@ if(isset($_QR['fm_send']) === true
 		$result['voicemail-option'] = $_QRY->get('voicemail-option');
 
 		$return = array_merge($return,$result);
-/*
 		$error = $appuser->get_error();
+/*
 		$error['queueskills'] = $appqueue->userskills_get_error();
 
 		$_TPL->set_var('queueskills', $queueskills);
