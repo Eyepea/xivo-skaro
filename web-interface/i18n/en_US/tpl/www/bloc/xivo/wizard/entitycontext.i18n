@@ -5,7 +5,7 @@ Entity
 Name :
 
 ; fm_entity_displayname
-Printed name :
+Display name :
 
 ; error_fm_context_internal_numberend
 Invalid interval
@@ -20,7 +20,7 @@ Internal calls context
 Name :
 
 ; fm_context_internal-displayname
-Printed name :
+Display name :
 
 ; fm_context_internal-displayname-default(default)
 Default
@@ -38,7 +38,7 @@ Incalls context
 Name :
 
 ; fm_context_incall-displayname
-Printed name :
+Display name :
 
 ; fm_context_incall-displayname-default(from-extern)
 Incalls
@@ -59,7 +59,7 @@ Outcalls context
 Name :
 
 ; fm_context_outcall-displayname
-Printed name :
+Display name :
 
 ; fm_context_outcall-displayname-default(to-extern)
 Outcalls
@@ -72,7 +72,7 @@ Outcalls
 
 ; cmt_fm_context_internal-displayname
 
-; cmt_fm_context_internal-numberbeg 
+; cmt_fm_context_internal-numberbeg
 
 ; cmt_fm_context_internal-numberend
 
