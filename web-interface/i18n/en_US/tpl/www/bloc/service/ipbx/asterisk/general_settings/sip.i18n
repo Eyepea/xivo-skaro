@@ -47,7 +47,7 @@ Automatic user creation:
 Asterisk config: autocreatepeer
 
 ; fm_allowguest
-Accept unauthentified calls:
+Accept unauthenticated calls:
 
 ; hlp_fm_allowguest
 Asterisk config: allowguest
