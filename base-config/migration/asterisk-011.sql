@@ -19,7 +19,7 @@
 
 BEGIN;
 
-UPDATE "staticvoicemail" SET "var_val" = '%d/%m/%y à %H:%M:%S' WHERE
+UPDATE "staticvoicemail" SET "var_val" = '%Y-%m-%d à %H:%M:%S' WHERE
     "var_name" = 'emaildateformat';
 
 COMMIT;
