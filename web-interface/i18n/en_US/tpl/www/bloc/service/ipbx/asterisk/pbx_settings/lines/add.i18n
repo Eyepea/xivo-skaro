@@ -1112,7 +1112,7 @@ Remote password:
 Config asterisk: remotesecret
 
 ; fm_protocol-directmedia
-Invite:
+Redirect media streams:
 
 ; hlp_fm_protocol-directmedia
 Config asterisk: directmedia
@@ -1124,14 +1124,13 @@ No
 Yes
 
 ; fm_protocol-directmedia-opt(nonat)
-
-Without NAT
+Not behind NAT
 
 ; fm_protocol-directmedia-opt(update)
-Update
+Using UPDATE
 
 ; fm_protocol-directmedia-opt(update,nonat)
-Update without NAT
+Using UPDATE not behind NAT
 
 ; fm_protocol-callcounter
 Enable calls counter:

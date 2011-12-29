@@ -1260,25 +1260,25 @@ Num. of peers qualified at the same time (per group):
 Config Asterisk: qualifypeers
 
 ; fm_directmedia
-Redirect RTP stream from caller to callee:
+Redirect media streams:
 
 ; hlp_fm_directmedia
 Config Asterisk: directmedia
 
-; fm_directmedia-opt(yes)
-Yes
-
 ; fm_directmedia-opt(no)
 No
 
+; fm_directmedia-opt(yes)
+Yes
+
 ; fm_directmedia-opt(nonat)
-not over NAT
+Not behind NAT
 
 ; fm_directmedia-opt(update)
-using UPDATE
+Using UPDATE
 
 ; fm_directmedia-opt(update,nonat)
-not over NAT and using UPDATE
+Using UPDATE not behind NAT
 
 ; fm_parkinglot
 Parking lot:

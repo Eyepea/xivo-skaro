@@ -533,7 +533,7 @@ Mot de passe distant :
 Config asterisk: remotesecret
 
 ; fm_protocol-directmedia
-Rediriger le flux RTP de pair à pair : 
+Rediriger les flux médias :
 
 ; hlp_fm_protocol-directmedia
 Config asterisk: directmedia
@@ -545,13 +545,13 @@ Non
 Oui
 
 ; fm_protocol-directmedia-opt(nonat)
-Pas sur le NAT
+Pas lorsque NAT
 
 ; fm_protocol-directmedia-opt(update)
-Oui, via UPDATE
+Via UPDATE
 
 ; fm_protocol-directmedia-opt(update,nonat)
-Oui, via UPDATE + pas sur le NAT
+Via UPDATE et pas lorsque NAT
 
 ; fm_protocol-callcounter
 Compter les appels : 

@@ -1309,25 +1309,25 @@ Nombre de postes par group (testés simultanéments) :
 Config Asterisk: qualifypeers
 
 ; fm_directmedia
-Rediriger le flux RTP de pair à pair : 
+Rediriger les flux médias :
 
 ; hlp_fm_directmedia
 Config Asterisk: directmedia
 
-; fm_directmedia-opt(yes)
-Oui
-
 ; fm_directmedia-opt(no)
 Non
 
+; fm_directmedia-opt(yes)
+Oui
+
 ; fm_directmedia-opt(nonat)
-Pas sur le NAT
+Pas lorsque NAT
 
 ; fm_directmedia-opt(update)
-Oui, via UPDATE
+Via UPDATE
 
 ; fm_directmedia-opt(update,nonat)
-Oui, via UPDATE + pas sur le NAT
+Via UPDATE et pas lorsque NAT
 
 ; fm_parkinglot
 Parquage par défaut : 

@@ -642,14 +642,14 @@ $array['element']['stunaddr']['default']  = '';
 $array['element']['stunaddr']['null']     = true;
 
 $array['element']['directmedia'] = array();
-$array['element']['directmedia']['value']    = array(
-	'yes'          => 'yes',
-	'no'           => 'no',
-	'nonat'        => 'nonat',
-	'update'       => 'update',
-	'update,nonat' => 'update,nonat');
-$array['element']['directmedia']['default']  = 'yes';
-$array['element']['directmedia']['null']     = true;
+$array['element']['directmedia']['value'] = array(
+		'no'			=> 'no',
+		'yes'			=> 'yes',
+		'nonat'			=> 'nonat',
+		'update'		=> 'update',
+		'update,nonat'	=> 'update,nonat');
+$array['element']['directmedia']['default'] = 'yes';
+$array['element']['directmedia']['null'] = true;
 
 $array['element']['ignoresdpversion'] = array();
 $array['element']['ignoresdpversion']['value']    = array('no', 'yes');

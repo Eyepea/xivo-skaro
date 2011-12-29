@@ -307,7 +307,7 @@ $array['element']['transport']['null']    = true;
 
 $array['element']['directmedia'] = array();
 $array['element']['directmedia']['value'] = array('no','yes','nonat','update','update,nonat');
-$array['element']['directmedia']['default'] = 'yes';
+$array['element']['directmedia']['default'] = '';
 $array['element']['directmedia']['null'] = true;
 
 $array['element']['callcounter'] = array();
