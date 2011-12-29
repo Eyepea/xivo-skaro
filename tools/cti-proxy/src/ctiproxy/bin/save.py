@@ -32,6 +32,7 @@ def _new_proxy_establisher(args):
     return core.IPv4ProxyEstablisher(bind_address, server_address)
 
 
+@common.hide_exception(KeyboardInterrupt)
 def main():
     args = _parse_args(sys.argv[1:])
     common.init_logging(args.verbose)
@@ -55,7 +56,4 @@ def main():
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
+    main()

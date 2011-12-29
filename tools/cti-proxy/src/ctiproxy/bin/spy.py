@@ -66,6 +66,7 @@ def _new_loop_ctrl(args):
         return [True]
 
 
+@common.hide_exception(KeyboardInterrupt)
 def main():
     args = _parse_args(sys.argv[1:])
     common.init_logging(args.verbose)
@@ -88,7 +89,4 @@ def main():
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
+    main()
