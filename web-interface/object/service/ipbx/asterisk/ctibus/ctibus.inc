@@ -45,7 +45,7 @@ class xivo_service_asterisk_ctibus extends xivo_service_asterisk_abstract
 			return(false);
 
 		$this->_conf['socket']['address'] = $this->_sre->_ini[$this->_name]['bindaddr'];
-		$this->_conf['socket']['port'] = $this->_sre->_ini[$this->_name]['port'];
+		$this->_conf['socket']['port'] = (int) $this->_sre->_ini[$this->_name]['port'];
 	}
 
 	function _load_socket()

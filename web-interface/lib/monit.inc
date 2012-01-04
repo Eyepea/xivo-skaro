@@ -189,7 +189,7 @@ class dwho_monit
         && isset($this->_conf['service'][$name]) === true
         && (bool) $this->_conf['service'][$name] === false)
             return(false);
-        
+
         $r = $this->_curl->load($this->_url.$name.'?action='.$action,$this->_option);
 
         $this->_curl->close();
@@ -250,7 +250,7 @@ class dwho_monit
             return(false);
         if(dwho_issa('stoppable',$this->_conf) === true
         && isset($this->_conf['stoppable'][$name]) === true
-        && (bool) $this->_conf['stoppable'][$name] === false)
+        && dwho_bool($this->_conf['stoppable'][$name]) === false)
             return(false);
 
         return(true);
@@ -389,10 +389,10 @@ class dwho_monit
             if(($typename = $this->get_typename($infos['service'][$i]['@attributes']['type'])) === false
             || ($monitorname = $this->get_monitorname($infos['service'][$i]['monitor'])) === false)
                 continue;
-            
+
             $type = $infos['service'][$i]['@attributes']['type'];
             $groups = $infos['service'][$i]['groups'];
-            
+
             unset($infos['service'][$i]['groups']);
             unset($infos['service'][$i]['@attributes']);
 
@@ -400,7 +400,7 @@ class dwho_monit
 
             $this->_service[$name] = $infos['service'][$i];
             $ref = &$this->_service[$name];
-            
+
             $ref['status'] = (int) $ref['status'];
             $ref['status_hint'] = (int) $ref['status_hint'];
             $ref['monitormode'] = (int) $ref['monitormode'];
@@ -475,7 +475,7 @@ class dwho_monit
 
             if(isset($this->_group[$group]) === false)
                 $this->_group[$group] = array();
-            
+
             $this->_group[$group][] = $ref;
         }
 

@@ -28,7 +28,7 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 	var $_filter	= false;
 	var $_cfgpath	= '';
 	var $_error	= array();
-	var $_conf	= array();	
+	var $_conf	= array();
 
 	function xivo_service_asterisk_configfiles(&$sre)
 	{
@@ -93,13 +93,13 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 		$shortname = trim($shortname);
 		if(strlen($shortname) == 0)
 		{ $this->_error['filename'] = 'empty'; return false; }
-			
+
 		if(strpos($shortname, '.conf') !== strlen($shortname) - 5)
 			$shortname .= '.conf';
 
 		if(preg_match('/^[a-zA-Z0-9_-]+\.conf$/',$shortname) !== 1)
 		{ $this->_error['filename'] = 'regexp'; return false; }
-		
+
 		$filename = $this->_cfgpath.DWHO_SEP_DIR.$shortname;
 		if(dwho_file::is_f($filename) || dwho_file::is_d($filename))
 		{ $this->_error['filename'] = 'alreadyexists'; return false; }
@@ -147,7 +147,7 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 		|| ($fileinfo = $http_response->upload_file('import',
 							    $this->_conf['import']['file'])) === false)
 		{ $this->_error['import'] = 'empty'; return(false); }
-		
+
 		$shortname = $fileinfo['name'];
 		if(($pos = strpos($shortname, '.')) !== null)
 			$shortname = substr($shortname, 0, $pos);

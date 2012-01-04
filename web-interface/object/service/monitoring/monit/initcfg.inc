@@ -20,7 +20,4 @@
 
 $array = array();
 
-$array['stoppable'] = array();
-$array['stoppable']['nginx'] = false;
-
 ?>

@@ -20,23 +20,4 @@
 
 $array = array();
 
-$array['ctibus'] = array();
-$array['ctibus']['bindaddr'] = '127.0.0.1';
-$array['ctibus']['port'] = 5004;
-
-$array['backupfiles'] = array();
-$array['backupfiles']['path'] = '/var/backups/pf-xivo';
-
-$array['configfiles'] = array();
-$array['configfiles']['path'] = '/etc/asterisk';
-
-$array['musiconhold'] = array();
-$array['musiconhold']['path'] = '/var/lib/pf-xivo/moh';
-
-$array['logfiles'] = array();
-$array['logfiles']['path'] = '/var/log/asterisk';
-
-$array['sounds'] = array();
-$array['sounds']['path'] = '/var/lib/pf-xivo/sounds';
-
 ?>

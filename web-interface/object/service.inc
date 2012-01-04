@@ -114,9 +114,9 @@ class xivo_service
 		if(is_array($init) === false)
 			return($this->get_engine_config($service,$engine));
 
-        return(dwho_array_merge_replace_recursive(
-                $init,
-                $this->get_engine_config($service,$engine)));
+		return(dwho_array_merge_replace_recursive(
+				$this->get_engine_config($service,$engine),
+				$init));
 	}
 
 	public function &get_module($service,$module,$engine=null)
