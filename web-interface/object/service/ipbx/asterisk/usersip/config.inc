@@ -419,7 +419,7 @@ dwho::load_class('dwho_network');
 
 $array['filter'] = array();
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/i');
-$array['filter']['type'] = array('set' => false,'chk' => 0);
+$array['filter']['type'] = array('set' => false);
 $array['filter']['username'] = array('set' => false,'chk' => 0);
 $array['filter']['secret'] = array('set'	=> false,
 				   'chk'	=> 2,
@@ -510,7 +510,7 @@ $array['filter']['fullcontact'] = array('set' => false,'chk' => 0);
 $array['filter']['vmexten'] = array('set' => false,'chk' => 0);
 $array['filter']['callingpres'] = array('set' => false,'chk' => 0);
 $array['filter']['ipaddr'] = array('set' => false,'chk' => 0);
-$array['filter']['regseconds'] = array('set' => false,'chk' => 0);
+$array['filter']['regseconds'] = array('set' => false);
 $array['filter']['regserver'] = array('set' => false,'chk' => 0);
 $array['filter']['lastms'] = array('set' => false,'chk' => 0);
 $array['filter']['protocol'] = array('set' => false);

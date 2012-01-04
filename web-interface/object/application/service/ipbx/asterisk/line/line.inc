@@ -465,6 +465,15 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		$arr['protocol']['callerid'] = $this->_service->mk_callerid($callerid, '', $protocolname);
 
+		if (dwho_issa('userfeatures',$arr) === true
+		&& $this->_protocol !== false
+		&& ($protocol = $this->_protocol->get($arr['protocol']['protocolid'])) !== false) {
+			$arr['protocol'] = array_merge($protocol, $arr['protocol']);
+			if($this->protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP) {
+				$arr['protocol']['call-limit'] = (2 * (int) $arr['userfeatures']['simultcalls']);
+			}
+		}
+
 		$this->set_protocol($arr['protocol'],$protocolname);
 
 		if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM) {
@@ -509,15 +518,11 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		$number = (string) $arr['linefeatures']['number'];
 		$numhaslen = dwho_has_len($number);
 
-		$simultcalls = (int) $userfeatures['simultcalls'];
 		$musiconhold = (string) $userfeatures['musiconhold'];
 
 		switch ($this->_protocolname)
 		{
 			case XIVO_SRE_IPBX_AST_PROTO_SIP:
-				$protocol['call-limit'] = (2 * $simultcalls);
-				$this->_set_result_var('protocol','call-limit',(2 * $simultcalls));
-
 				if(dwho_issa('group',$arr) === true
 				&& dwho_issa('group-select',$arr) === true
 				&& $this->set_groupmember($arr['group'],
