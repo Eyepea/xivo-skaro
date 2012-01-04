@@ -510,7 +510,7 @@
 				    'selected'	=> ($host_static === true ? 'static' : $host)),
 			      $element['protocol']['sip']['host-type']['value']),
 
-		$form->text(array('desc'	=> '&nbsp;',
+		$form->text(array('desc'	=> $this->bbf('fm_protocol_host-static'),
 				  'name'	=> 'protocol[host-static]',
 				  'labelid'	=> 'protocol-host-static',
 				  'size'	=> 15,

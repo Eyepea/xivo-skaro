@@ -271,6 +271,9 @@ Dynamique
 ; fm_protocol_host-type-opt(static)
 Statique
 
+; fm_protocol_host-static
+Adresse IP :
+
 ; fm_protocol_mask
 Masque réseau :
 

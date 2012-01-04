@@ -67,6 +67,9 @@ Dynamic
 ; fm_protocol_host-type-opt(static)
 Static
 
+; fm_protocol_host-static
+IP address:
+
 ; fm_protocol_protocol
 Protocol:
 
