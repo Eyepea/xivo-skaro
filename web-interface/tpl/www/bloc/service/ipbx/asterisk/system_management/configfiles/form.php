@@ -29,7 +29,7 @@ if($this->get_var('fm_save') === false):
 endif;
 ?>
 
-<div id="sb-part-first" class="b-nodisplay">
+<div id="sb-part-first">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_filename'),
 				  'name'	=> 'configfile[filename]',
@@ -37,7 +37,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['configfile']['filename']['default'],
 				  'value'	=> $info['configfile']['filename'],
-			  	  'error'	=> $this->bbf_args('error_fm_filename', 
+				  'error'	=> $this->bbf_args('error_fm_filename',
 					$this->get_var('error', 'filename'))));
 
 ?>
@@ -51,12 +51,12 @@ endif;
 
 	echo	$form->textarea(array('paragraph'	=> false,
 				      'label'		=> false,
-			 	      'name'		=> 'configfile[content]',
-			 	      'id'		=> 'it-context-description',
-			 	      'cols'		=> 90,
-			 	      'rows'		=> 30,
-			 	      'default'		=> $element['configfile']['content']['default'],
-				      'error'		=> $this->bbf_args('error_fm_content', 
+				      'name'		=> 'configfile[content]',
+				      'id'		=> 'it-context-description',
+				      'cols'		=> 90,
+				      'rows'		=> 30,
+				      'default'		=> $element['configfile']['content']['default'],
+				      'error'		=> $this->bbf_args('error_fm_content',
 					$this->get_var('error', 'content'))),
 		   		$info['configfile']['content']);
 ?>
