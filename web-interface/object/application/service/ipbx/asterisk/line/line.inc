@@ -465,11 +465,12 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		$arr['protocol']['callerid'] = $this->_service->mk_callerid($callerid, '', $protocolname);
 
-		if (dwho_issa('userfeatures',$arr) === true
-		&& $this->_protocol !== false
-		&& ($protocol = $this->_protocol->get($arr['protocol']['protocolid'])) !== false) {
+		if ($this->_protocol !== false
+		&& ($protocol = $this->_protocol->get($arr['linefeatures']['protocolid'])) !== false) {
 			$arr['protocol'] = array_merge($protocol, $arr['protocol']);
-			if($this->protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP) {
+		}
+		if (dwho_issa('userfeatures',$arr) === true) {
+			if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP) {
 				$arr['protocol']['call-limit'] = (2 * (int) $arr['userfeatures']['simultcalls']);
 			}
 		}
