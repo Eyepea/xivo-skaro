@@ -689,7 +689,7 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_queue_wrapuptime-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'error'	=> $this->get_var('error','queue','warpuptime'),
+				    'error'	=> $this->get_var('error','queue','wrapuptime'),
 				    'default'	=> $element['queue']['wrapuptime']['default'],
 				    'selected'	=> $this->get_var('info','queue','wrapuptime')),
 			      $element['queue']['wrapuptime']['value']),

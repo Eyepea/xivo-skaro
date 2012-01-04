@@ -27,32 +27,17 @@ Persistent agents:
 ; hlp_fm_generalagents_persistentagents
 Asterisk config: persistentagents
 
-; fm_agentoptions_musiconhold
-Music on hold:
-
 ; fm_agentfeatures_silent
 Disable connection announce:
 
 ; fm_agentfeatures_numgroup
 Group:
 
-; fm_agentoptions_autologoff
-Ringing time before logging off the agent:
+; fm_agentoptions_endcall
+Press DTMF to hangup:
 
-; fm_agentoptions_autologoff-opt(0)
-Unlimited
-
-; fm_agentoptions_autologoff-opt
-%s seconds
-
-; fm_agentoptions_wrapuptime
-Delay before reassigning a call:
-
-; fm_agentoptions_wrapuptime-opt(0)
-Disabled
-
-; fm_agentoptions_wrapuptime-opt
-%s seconds
+; fm_agentoptions_autologoffunavail
+Autodisconnect if channel unavailable:
 
 ; fm_agentoptions_maxlogintries
 Number of login retries:
@@ -63,23 +48,11 @@ Unlimited
 ; fm_agentoptions_maxlogintries-opt
 %s
 
-; fm_agentoptions_goodbye
-Audio file used when a call ends:
-
-; fm_agentoptions_goodbye-opt-default
-Default
-
-; fm_agentoptions_musiconhold
-On-Hold Music:
-
 ; fm_agentoptions_updatecdr
 Log the calls:
 
 ; fm_agentoptions_recordagentcalls
 Record the calls:
-
-; fm_agentoptions_createlink
-Add the name of the recording in the logs:
 
 ; fm_agentoptions_recordformat
 Recording format:
@@ -90,42 +63,26 @@ URL prefix used to access the recordings:
 ; fm_agentoptions_custom_beep
 Beeps audio file:
 
-; fm_agentoptions_custom-beep-opt-default
+; fm_agentoptions_custom-beep-opt(default)
 Default
 
-; fm_agentoptions_enddtmf
-DTMF key: 
+; fm_agentoptions_goodbye
+Audio file used when a call ends:
 
-; fm_agentoptions_endcall
-Press DTMF to hangup: 
+; fm_agentoptions_goodbye-opt(default)
+Default
 
 ; fm_agentoptions_savecallsin
-Directory for call records: 
-
-; fm_agentoptions_autologoffunavail
-Autodisconnect if channel unavailable:
-
+Directory for call records:
 
 ; hlp_fm_agentoptions_maxlogintries
 Asterisk config: maxlogintries
-
-; hlp_fm_agentoptions_autologoff
-Asterisk config: autologoff
 
 ; hlp_fm_agentoptions_autologoffunavail
 Asterisk config: autologoffunavail
 
 ; hlp_fm_agentoptions_endcall
 Asterisk config: endcall
-
-; hlp_fm_agentoptions_enddtmf
-Asterisk config: enddtmf
-
-; hlp_fm_agentoptions_warpuptime
-Asterisk config: warpuptime
-
-; hlp_fm_agentoptions_musiconhold
-Asterisk config: musiconhold
 
 ; hlp_fm_agentoptions_goodbye
 Asterisk config: goodbye

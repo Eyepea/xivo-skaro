@@ -108,11 +108,11 @@ $array['element']['monitor-type']['default'] = '';
 $array['element']['monitor-type']['null'] = true;
 
 $array['element']['joinempty'] = array();
-$array['element']['joinempty']['value']   = array('paused','penalty','inuse','ringing','unavailable','invalid','unknown','warpup');
+$array['element']['joinempty']['value']   = array('paused','penalty','inuse','ringing','unavailable','invalid','unknown','wrapup');
 $array['element']['joinempty']['default'] = '';
 
 $array['element']['leavewhenempty'] = array();
-$array['element']['leavewhenempty']['value']   = array('paused','penalty','inuse','ringing','unavailable','invalid','unknown','warpup');
+$array['element']['leavewhenempty']['value']   = array('paused','penalty','inuse','ringing','unavailable','invalid','unknown','wrapup');
 $array['element']['leavewhenempty']['default'] = '';
 
 $array['element']['ringinuse'] = array();
