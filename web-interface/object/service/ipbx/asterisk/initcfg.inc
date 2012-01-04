@@ -24,10 +24,6 @@ $array['ctibus'] = array();
 $array['ctibus']['bindaddr'] = '127.0.0.1';
 $array['ctibus']['port'] = 5004;
 
-$array['autoprov'] = array();
-$array['autoprov']['host'] = '127.0.0.1';
-$array['autoprov']['port'] = 8666;
-
 $array['backupfiles'] = array();
 $array['backupfiles']['path'] = '/var/backups/pf-xivo';
 
