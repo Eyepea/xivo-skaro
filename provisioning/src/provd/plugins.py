@@ -461,7 +461,7 @@ class TemplatePluginHelper(object):
         template.stream(context).dump(tmp_filename, encoding, errors)
         os.rename(tmp_filename, filename)
 
-    def render(self, template, context, encoding='UTF-8', errors='strict'):
+    def render(self, template, context, encoding='UTF-8', errors='replace'):
         return template.render(context).encode(encoding, errors)
 
 
