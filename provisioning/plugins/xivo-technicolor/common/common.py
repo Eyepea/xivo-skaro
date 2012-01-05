@@ -30,9 +30,9 @@ import time
 from provd import tzinform
 from provd import synchronize
 from provd.devices.config import RawConfigError
-from provd.devices.pgasso import BasePgAssociator, FULL_SUPPORT,\
+from provd.devices.pgasso import BasePgAssociator, FULL_SUPPORT, \
     COMPLETE_SUPPORT, PROBABLE_SUPPORT, IMPROBABLE_SUPPORT
-from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
+from provd.plugins import StandardPlugin, FetchfwPluginHelper, \
     TemplatePluginHelper
 from provd.servers.http import HTTPNoListingFileService
 from provd.util import format_mac, norm_mac
@@ -43,7 +43,7 @@ logger = logging.getLogger('plugin.xivo-technicolor')
 
 class BaseTechnicolorHTTPDeviceInfoExtractor(object):
     _UA_REGEX = re.compile(r'^(?:Thomson|THOMSON) (\w+) hw[^ ]+ fw([^ ]+) ([^ ]+)$')
-    
+
     def extract(self, request, request_type):
         return defer.succeed(self._do_extract(request))
 
@@ -54,7 +54,7 @@ class BaseTechnicolorHTTPDeviceInfoExtractor(object):
             # Technicolor
             return self._extract_info_from_ua(ua)
         return None
-    
+
     def _extract_info_from_ua(self, ua):
         # HTTP User-Agent:
         #   "THOMSON ST2022 hw2 fw3.54 00-18-F6-B5-00-00" (from web)
@@ -83,7 +83,7 @@ class BaseTechnicolorPgAssociator(BasePgAssociator):
         BasePgAssociator.__init__(self)
         self._model = model
         self._version = version
-    
+
     def _do_associate(self, vendor, model, version):
         if vendor == u'Technicolor':
             if model == self._model:
@@ -203,46 +203,46 @@ class BaseTechnicolorPlugin(StandardPlugin):
         u'en': u'Enterprise directory'
     }
     _XX_PHONEBOOK_NAME_DEF = u''
-    
+
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
-        
+
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
-        
+
         downloaders = FetchfwPluginHelper.new_downloaders(gen_cfg.get('proxies'))
         fetchfw_helper = FetchfwPluginHelper(plugin_dir, downloaders)
-        
-        self.services = fetchfw_helper.services() 
+
+        self.services = fetchfw_helper.services()
         self.http_service = HTTPNoListingFileService(self._tftpboot_dir)
-    
+
     http_dev_info_extractor = BaseTechnicolorHTTPDeviceInfoExtractor()
-    
+
     def configure_common(self, raw_config):
         for tpl_filename, filename in self._COMMON_TEMPLATES:
             tpl = self._tpl_helper.get_template(tpl_filename)
             dst = os.path.join(self._tftpboot_dir, filename)
             self._tpl_helper.dump(tpl, raw_config, dst, self._ENCODING)
-    
+
     def _add_country_and_lang(self, raw_config):
         locale = raw_config.get(u'locale')
         raw_config[u'XX_language_type'], raw_config[u'XX_country_code'] = \
                                 self._LOCALE.get(locale, self._LOCALE_DEF)
-    
+
     def _add_config_sn(self, raw_config):
         # The only thing config_sn needs to be is 12 digit long and different
         # from one config file to another.
         raw_config[u'XX_config_sn'] = '%012.f' % time.time()
-    
+
     def _add_dtmf_mode_flag(self, raw_config):
         dtmf_mode = raw_config.get(u'sip_dtmf_mode')
         raw_config[u'XX_dtmf_mode_flag'] = self._SIP_DTMF_MODE.get(dtmf_mode,
                                                                    self._DTMF_DEF)
-    
+
     def _add_transport_flg(self, raw_config):
         sip_transport = raw_config.get(u'sip_transport')
         raw_config[u'XX_transport_flg'] = self._SIP_TRANSPORT.get(sip_transport,
                                                                   self._TRANSPORT_DEF)
-    
+
     def _gen_xx_phonebook_name(self, raw_config):
         if u'locale' in raw_config:
             language = raw_config[u'locale'].split('_')[0]
@@ -250,7 +250,7 @@ class BaseTechnicolorPlugin(StandardPlugin):
                                                self._XX_PHONEBOOK_NAME_DEF)
         else:
             return self._XX_PHONEBOOK_NAME_DEF
-    
+
     def _tzinfo_to_zone_num(self, tzinfo):
         utcoffset_m = tzinfo['utcoffset'].as_minutes
         if utcoffset_m not in self._TZ_MAP:
@@ -261,7 +261,7 @@ class BaseTechnicolorPlugin(StandardPlugin):
                     break
             else:
                 return self._XX_NTP_ZONE_NUM_DEF
-        
+
         dst_map = self._TZ_MAP[utcoffset_m]
         if tzinfo['dst']:
             dst_key = tzinfo['dst']['as_string']
@@ -275,7 +275,7 @@ class BaseTechnicolorPlugin(StandardPlugin):
             else:
                 dst_key = dst_map.keys[0]
         return dst_map[dst_key]
-    
+
     def _add_ntp_zone_num(self, raw_config):
         raw_config[u'XX_ntp_zone_num'] = self._NTP_ZONE_NUM_DEF
         if u'timezone' in raw_config:
@@ -285,7 +285,7 @@ class BaseTechnicolorPlugin(StandardPlugin):
                 logger.info('Unknown timezone: %s', e)
             else:
                 raw_config[u'XX_ntp_zone_num'] = self._tzinfo_to_zone_num(tzinfo)
-    
+
     def _add_fkeys(self, raw_config):
         funckeys = raw_config[u'funckeys']
         lines = []
@@ -307,26 +307,26 @@ class BaseTechnicolorPlugin(StandardPlugin):
             else:
                 lines.append(u'FeatureKeyExt%02d=L/<sip:>' % keynum)
         raw_config[u'XX_fkeys'] = u'\n'.join(lines)
-    
+
     def _dev_specific_filename(self, device):
         # Return the device specific filename (not pathname) of device
         fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
         return '%s_%s.txt' % (self._FILENAME_PREFIX, fmted_mac)
-    
+
     def _check_config(self, raw_config):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
-    
+
     def _check_device(self, device):
         if u'mac' not in device:
             raise Exception('MAC address needed for device configuration')
-    
+
     def configure(self, device, raw_config):
         self._check_config(raw_config)
         self._check_device(device)
         filename = self._dev_specific_filename(device)
         tpl = self._tpl_helper.get_dev_template(filename, device)
-        
+
         self._add_country_and_lang(raw_config)
         self._add_config_sn(raw_config)
         self._add_dtmf_mode_flag(raw_config)
@@ -334,10 +334,10 @@ class BaseTechnicolorPlugin(StandardPlugin):
         self._add_ntp_zone_num(raw_config)
         self._add_fkeys(raw_config)
         raw_config[u'XX_phonebook_name'] = self._gen_xx_phonebook_name(raw_config)
-        
+
         path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING, errors='replace')
-    
+
     def deconfigure(self, device):
         path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))
         try:
@@ -345,7 +345,7 @@ class BaseTechnicolorPlugin(StandardPlugin):
         except OSError, e:
             # ignore
             logger.info('error while removing file: %s', e)
-    
+
     def synchronize(self, device, raw_config):
         try:
             ip = device[u'ip'].encode('ascii')
