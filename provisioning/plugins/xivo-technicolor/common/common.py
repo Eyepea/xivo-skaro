@@ -174,7 +174,7 @@ def _gen_tz_map():
 
 
 class BaseTechnicolorPlugin(StandardPlugin):
-    _ENCODING = 'UTF-8'
+    _ENCODING = 'ISO-8859-1'
     _TZ_MAP = _gen_tz_map()
     _LOCALE = {
         # <locale id>, (<langage type>, <country code>)
@@ -336,7 +336,7 @@ class BaseTechnicolorPlugin(StandardPlugin):
         raw_config[u'XX_phonebook_name'] = self._gen_xx_phonebook_name(raw_config)
         
         path = os.path.join(self._tftpboot_dir, filename)
-        self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
+        self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING, errors='replace')
     
     def deconfigure(self, device):
         path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))
