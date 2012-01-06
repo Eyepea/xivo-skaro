@@ -1,12 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-"""Plugin for Aastra phones using the 3.0.1.2031 firmware.
-
-The following Aastra phones are supported:
-- 6739i
-
-"""
-
 common = {}
 execfile_('common.py', common)
 
@@ -19,6 +12,6 @@ VERSION = u'3.0.1.2031'
 
 class AastraPlugin(common['BaseAastraPlugin']):
     IS_PLUGIN = True
-    
+
     pg_associator = common['BaseAastraPgAssociator'](MODELS, VERSION,
                                                      COMPAT_MODELS)

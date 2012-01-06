@@ -15,7 +15,7 @@ def build_2_6_0_2019(path):
     check_call(['rsync', '-rlp', '--exclude', '.*',
                 '--exclude', '/templates/6739i.tpl',
                 'common/', path])
-    
+
     check_call(['rsync', '-rlp', '--exclude', '.*',
                 '2.6.0.2019/', path])
 
@@ -27,7 +27,7 @@ def build_3_0_1_2031(path):
                 '--include', '/templates/base.tpl',
                 '--exclude', '/templates/*',
                 'common/', path])
-    
+
     check_call(['rsync', '-rlp', '--exclude', '.*',
                 '3.0.1.2031/', path])
 
@@ -37,7 +37,7 @@ def build_3_2_2_56(path):
     check_call(['rsync', '-rlp', '--exclude', '.*',
                 '--exclude', '/templates/6751i.tpl',
                 'common/', path])
-    
+
     check_call(['rsync', '-rlp', '--exclude', '.*',
                 '3.2.2.56/', path])
 
