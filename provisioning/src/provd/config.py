@@ -123,6 +123,7 @@ class DefaultConfigSource(object):
         ('general.ip', '*'),
         ('general.http_port', '8667'),
         ('general.tftp_port', '69'),
+        ('general.rest_ip', '127.0.0.1'),
         ('general.rest_port', '8666'),
         ('general.rest_username', 'admin'),
         ('general.rest_password', 'admin'),
@@ -267,23 +268,6 @@ def _pull_config_from_sources(config_sources):
     return raw_config
 
 
-_RAW_CONFIG_UPDATE_LIST = [
-    # <param name to set if absent>, <source param name to use if present>
-    ('general.rest_ip', 'general.ip'),
-]
-
-def _pre_update_raw_config(raw_config):
-    # Update raw config before transformation/check
-    for param_name, source_param_name in _RAW_CONFIG_UPDATE_LIST:
-        if param_name not in raw_config:
-            if source_param_name in raw_config:
-                raw_config[param_name] = raw_config[source_param_name]
-            else:
-                logger.info('Could not set config parameter "%s" because '
-                            'source parameter "%s" is absent' %
-                            (param_name, source_param_name))
-
-
 def _port_number(raw_value):
     port = int(raw_value)
     if not 1 <= port <= 65535:
@@ -359,8 +343,8 @@ _PARAMS_DEFINITION = [
     ('general.ip', (_ip_address_or_star, True)),
     ('general.http_port', (_port_number, True)),
     ('general.tftp_port', (_port_number, True)),
-    ('general.rest_port', (_port_number, True)),
     ('general.rest_ip', (_ip_address_or_star, True)),
+    ('general.rest_port', (_port_number, True)),
     ('general.rest_username', (str, True)),
     ('general.rest_password', (str, True)),
     ('general.rest_authentication', (_bool, True)),
@@ -449,7 +433,6 @@ def get_config(config_sources):
     
     """
     raw_config = _pull_config_from_sources(config_sources)
-    _pre_update_raw_config(raw_config)
     _check_and_convert_parameters(raw_config)
     _post_update_raw_config(raw_config)
     return raw_config
