@@ -22,7 +22,6 @@ configuration file are documented in provd.conf):
     general.retriever
     general.updater
     general.router
-    general.ip
     general.external_ip
     general.http_port
     general.tftp_port
@@ -119,7 +118,6 @@ class DefaultConfigSource(object):
         ('general.retriever', 'default'),
         ('general.updater', 'default'),
         ('general.router', 'default'),
-        ('general.ip', '*'),
         ('general.http_port', '8667'),
         ('general.tftp_port', '69'),
         ('general.rest_ip', '127.0.0.1'),
@@ -321,6 +319,11 @@ def _load_json_file(raw_value):
         fobj.close()
 
 
+def _process_aliases(raw_config):
+    if 'general.ip' in raw_config and 'general.external_ip' not in raw_config:
+        raw_config['general.external_ip'] = raw_config['general.ip']
+
+
 _PARAMS_DEFINITION = [
     # list only the mandatory parameters or the parameters that need
     # transformation
@@ -336,7 +339,6 @@ _PARAMS_DEFINITION = [
     ('general.retriever', (str, True)),
     ('general.updater', (str, True)),
     ('general.router', (str, True)),
-    ('general.ip', (_ip_address_or_star, True)),
     ('general.external_ip', (_ip_address, False)),
     ('general.http_port', (_port_number, True)),
     ('general.tftp_port', (_port_number, True)),
@@ -431,6 +433,7 @@ def get_config(config_sources):
     
     """
     raw_config = _pull_config_from_sources(config_sources)
+    _process_aliases(raw_config)
     _check_and_convert_parameters(raw_config)
     _post_update_raw_config(raw_config)
     return raw_config
