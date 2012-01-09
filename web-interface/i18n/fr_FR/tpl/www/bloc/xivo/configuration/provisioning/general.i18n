@@ -3,7 +3,7 @@
 Approvisionnement: configuration
 
 ; fld_provd_server
-Configuration du serveur
+Paramètres généraux
 
 ; fm_configure_locale
 Locale: 
@@ -36,16 +36,16 @@ Le proxy pour les requêtes HTTPS. Le format est "host:port"
 La locale courante. Exemple: en_CA
 
 ; fld_provd_general_configuration
-Configuration de provd
+Configuration locale de provd
 
 ; fld_provd_rest_configuration
 Configuration de l'API REST
 
 ; fm_provd_net4_ip
-Adresse IP:
+IP externe:
 
 ; fm_hlp_provd_net4_ip
-Laisser vide si provd est sur le même serveur.
+Laisser vide pour utiliser l'adresse IP de l'interface VoIP
 
 ; fm_provd_http_port
 Port HTTP: 

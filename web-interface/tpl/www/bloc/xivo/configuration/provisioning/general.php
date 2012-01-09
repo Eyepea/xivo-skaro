@@ -111,6 +111,13 @@ endif;
                     'value'	  	=> $this->get_var('info','provd','net4_ip_rest'),
                     'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','net4_ip_rest')))),
 
+	$form->text(array('desc'	=> $this->bbf('fm_provd_rest_port'),
+                    'name'		=> 'provd[rest_port]',
+                    'labelid'	=> 'provd-rest_port',
+                    'size'	  	=> 4,
+                    'value'	  	=> $this->get_var('info','provd','rest_port'),
+                    'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','rest_port')))),
+
 	$form->checkbox(array('desc'	=> $this->bbf('fm_provd_private'),
                     'name'	    => 'provd[private]',
                     'labelid'	=> 'provd-private',
@@ -133,14 +140,7 @@ endif;
 	$form->checkbox(array('desc'	=> $this->bbf('fm_provd_secure_rest'),
                     'name'	    => 'provd[secure]',
                     'labelid'	=> 'provd-secure',
-                    'checked'	=> $this->get_var('info','provd','secure'))),
-
-	$form->text(array('desc'	=> $this->bbf('fm_provd_rest_port'),
-                    'name'		=> 'provd[rest_port]',
-                    'labelid'	=> 'provd-rest_port',
-                    'size'	  	=> 4,
-                    'value'	  	=> $this->get_var('info','provd','rest_port'),
-                    'error'   	=> $this->bbf_args('error', $this->get_var('error','provd','rest_port'))));
+                    'checked'	=> $this->get_var('info','provd','secure')));
 
 
 ?>
