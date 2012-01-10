@@ -8,7 +8,6 @@ ASTVER = $(shell cat $(MODULE_PATH)/ASTERISK-VERSION)
 TARBALL_NAME = "asterisk_$(ASTVER)+dfsg.orig.tar.gz"
 UPSTREAM_VER = $(ASTVER)+dfsg+pf.xivo.$(MAINREV)~svn$(SVNREV)
 
-
 default:
 
 prepare-tarball::
