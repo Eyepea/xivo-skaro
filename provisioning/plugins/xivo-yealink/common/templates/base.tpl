@@ -70,7 +70,7 @@ User = {{ user_username }}
 [ account ]
 path = /config/voip/sipAccount{{ line['XX_line_no'] }}.cfg
 Enable = 1
-Label = {{ line['display_name'] }}
+Label = {{ line['number']|d(line['display_name']) }}
 DisplayName = {{ line['display_name'] }}
 AuthName = {{ line['auth_username'] }}
 UserName = {{ line['username'] }}
