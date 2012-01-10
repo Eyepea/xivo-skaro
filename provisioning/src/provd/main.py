@@ -171,11 +171,8 @@ class HTTPProcessService(Service):
                                                                                 app.pg_mgr)
         site = Site(http_process_service)
         port = self._config['general.http_port']
-        interface = self._config['general.ip']
-        if interface == '*':
-            interface = ''
-        logger.info('Binding HTTP provisioning service to "%s:%s"', interface, port)
-        self._tcp_server = internet.TCPServer(port, site, interface=interface)
+        logger.info('Binding HTTP provisioning service to port %s', port)
+        self._tcp_server = internet.TCPServer(port, site)
         self._tcp_server.startService()
         Service.startService(self)
 
@@ -197,11 +194,8 @@ class TFTPProcessService(Service):
                                                                                 app.pg_mgr)
         tftp_protocol = TFTPProtocol(tftp_process_service)
         port = self._config['general.tftp_port']
-        interface = self._config['general.ip']
-        if interface == '*':
-            interface = ''
-        logger.info('Binding TFTP provisioning service to "%s:%s"', interface, port)
-        self._udp_server = internet.UDPServer(port, tftp_protocol, interface=interface)
+        logger.info('Binding TFTP provisioning service to port %s', port)
+        self._udp_server = internet.UDPServer(port, tftp_protocol)
         self._udp_server.startService()
         Service.startService(self)
 

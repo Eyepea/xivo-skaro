@@ -24,12 +24,10 @@
 <Primary_NTP_Server>{{ ntp_ip }}</Primary_NTP_Server>
 {% endif -%}
 
-{# Syslog settings -#}
 {% if syslog_enabled -%}
 <Syslog_Server>{{ syslog_ip }}:{{ syslog_port }}</Syslog_Server>
 {% endif -%}
 
-{# VLAN settings -#}
 {% if vlan_enabled -%}
 <Enable_VLAN>Yes</Enable_VLAN>
 <VLAN_ID>{{ vlan_id }}</VLAN_ID>
@@ -78,16 +76,17 @@
 {% endif -%}
 {% endfor -%}
 
+{% block suffix %}{% endblock %}
+
 <!-- Function keys definition SHOULD go before the line key definition if we
-     want the line key def to override the func key def (is it what we want ?) -->
+     want the line key definition to override the function key definition -->
 {{ XX_fkeys }}
 
 {% for line_no, line in sip_lines.iteritems() %}
 <Extension_{{ line_no }}_>{{ line_no }}</Extension_{{ line_no }}_>
 <Short_Name_{{ line_no }}_>{{ line['number']|d('$USER') }}</Short_Name_{{ line_no }}_>
 <Extended_Function_{{ line_no }}_></Extended_Function_{{ line_no }}_>
-{% endfor -%}
-
-{% block suffix %}{% endblock -%}
+{% endfor %}
 
 </flat-profile>
+

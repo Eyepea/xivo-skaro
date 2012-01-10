@@ -33,9 +33,9 @@ from operator import itemgetter
 from provd import tzinform
 from provd import synchronize
 from provd.devices.config import RawConfigError
-from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
+from provd.plugins import StandardPlugin, FetchfwPluginHelper, \
     TemplatePluginHelper
-from provd.devices.pgasso import IMPROBABLE_SUPPORT, PROBABLE_SUPPORT,\
+from provd.devices.pgasso import IMPROBABLE_SUPPORT, PROBABLE_SUPPORT, \
     INCOMPLETE_SUPPORT, COMPLETE_SUPPORT, FULL_SUPPORT, BasePgAssociator
 from provd.servers.http import HTTPNoListingFileService
 from provd.util import norm_mac, format_mac
@@ -47,15 +47,15 @@ logger = logging.getLogger('plugin.xivo-aastra')
 class BaseAastraHTTPDeviceInfoExtractor(object):
     _UA_REGEX = re.compile(r'^Aastra(\w+) MAC:([^ ]+) V:([^ ]+)-SIP$')
     _UA_MODELS_MAP = {
-        '51i': u'6751i',       # not tested
-        '53i': u'6753i',       # not tested
+        '51i': u'6751i', # not tested
+        '53i': u'6753i', # not tested
         '55i': u'6755i',
         '57i': u'6757i',
     }
-    
+
     def extract(self, request, request_type):
         return defer.succeed(self._do_extract(request))
-    
+
     def _do_extract(self, request):
         ua = request.getHeader('User-Agent')
         if ua:
@@ -63,7 +63,7 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
             # Aastra
             return self._extract_from_ua(ua)
         return None
-    
+
     def _extract_from_ua(self, ua):
         # HTTP User-Agent:
         #   "Aastra6731i MAC:00-08-5D-23-74-29 V:2.6.0.1008-SIP"
@@ -99,7 +99,7 @@ class BaseAastraPgAssociator(BasePgAssociator):
         self._models = models
         self._version = version
         self._compat_models = compat_models
-    
+
     def _do_associate(self, vendor, model, version):
         if vendor == u'Aastra':
             if model in self._models:
@@ -116,7 +116,6 @@ class BaseAastraPgAssociator(BasePgAssociator):
 
 
 class BaseAastraPlugin(StandardPlugin):
-    # XXX actually, we didn't find which encoding Aastra were using
     _ENCODING = 'UTF-8'
     _KEYTYPE = {
         # <model>: ([(<nb keys>, <keytype>), ...], <nb expansion modules>)
@@ -183,25 +182,25 @@ class BaseAastraPlugin(StandardPlugin):
             u'remote_directory': u'Annuaire',
         },
     }
-    
+
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
         # update to use the non-standard tftpboot directory
         self._base_tftpboot_dir = self._tftpboot_dir
         self._tftpboot_dir = os.path.join(self._tftpboot_dir, 'Aastra')
-        
+
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
-        
+
         downloaders = FetchfwPluginHelper.new_downloaders(gen_cfg.get('proxies'))
         fetchfw_helper = FetchfwPluginHelper(plugin_dir, downloaders)
         # update to use the non-standard tftpboot directory
         fetchfw_helper.root_dir = self._tftpboot_dir
-        
+
         self.services = fetchfw_helper.services()
         self.http_service = HTTPNoListingFileService(self._base_tftpboot_dir)
-    
+
     http_dev_info_extractor = BaseAastraHTTPDeviceInfoExtractor()
-    
+
     def _add_out_of_band_dtmf(self, raw_config):
         dtmf_mode = raw_config.get(u'sip_dtmf_mode')
         if dtmf_mode in self._SIP_DTMF_MODE:
@@ -212,16 +211,16 @@ class BaseAastraPlugin(StandardPlugin):
         locale = raw_config.get(u'locale')
         if locale in self._LOCALE:
             raw_config[u'XX_locale'] = self._LOCALE[locale]
-    
+
     def _add_log_level(self, raw_config):
         syslog_level = raw_config.get(u'syslog_level')
         raw_config[u'XX_log_level'] = self._SYSLOG_LEVEL.get(syslog_level, u'1')
-    
+
     def _add_transport_proto(self, raw_config):
         sip_transport = raw_config.get(u'sip_transport')
         if sip_transport in self._SIP_TRANSPORT:
             raw_config[u'XX_transport_proto'] = self._SIP_TRANSPORT[sip_transport]
-    
+
     def _format_dst_change(self, suffix, dst_change):
         lines = []
         lines.append(u'dst %s month: %d' % (suffix, dst_change['month']))
@@ -236,7 +235,7 @@ class BaseAastraPlugin(StandardPlugin):
                 lines.append(u'dst %s week: %s' % (suffix, week))
             lines.append(u'dst %s day: %s' % (suffix, weekday))
         return lines
-    
+
     def _format_tzinfo(self, tzinfo):
         lines = []
         lines.append(u'time zone name: Custom')
@@ -253,7 +252,7 @@ class BaseAastraPlugin(StandardPlugin):
             lines.extend(self._format_dst_change('start', tzinfo['dst']['start']))
             lines.extend(self._format_dst_change('end', tzinfo['dst']['end']))
         return u'\n'.join(lines)
-    
+
     def _add_timezone(self, raw_config):
         if u'timezone' in raw_config:
             try:
@@ -262,7 +261,7 @@ class BaseAastraPlugin(StandardPlugin):
                 logger.info('Unknown timezone: %s', e)
             else:
                 raw_config[u'XX_timezone'] = self._format_tzinfo(tzinfo)
-    
+
     def _get_keytype(self, model, keynum):
         # Return a key type (i.e. prgkey, softkey, topsoftkey, etc..) from a
         # model name and a key number (an integer).
@@ -288,8 +287,8 @@ class BaseAastraPlugin(StandardPlugin):
             return None
         else:
             expmod_key_no = expmod_keynum % 60 + 1
-            return u'expmod%s key%s' % (expmod_no, expmod_key_no) 
-    
+            return u'expmod%s key%s' % (expmod_no, expmod_key_no)
+
     def _add_fkeys(self, raw_config, model):
         if model not in self._KEYTYPE:
             logger.warning(u'Unknown model or model with no funckeys: %s', model)
@@ -320,7 +319,7 @@ class BaseAastraPlugin(StandardPlugin):
                 lines.append(u'%s label: %s' % (keytype, label))
                 lines.append(u'%s line: %s' % (keytype, line))
         raw_config[u'XX_fkeys'] = u'\n'.join(lines)
-    
+
     def _update_sip_lines(self, raw_config):
         proxy_ip = raw_config.get(u'sip_proxy_ip')
         proxy_port = raw_config.get(u'sip_proxy_port', u'0')
@@ -354,7 +353,7 @@ class BaseAastraPlugin(StandardPlugin):
             # add voicemail
             if voicemail:
                 line.setdefault(u'voicemail', voicemail)
-    
+
     def _gen_xx_dict(self, raw_config):
         xx_dict = self._XX_DICT[self._XX_DICT_DEF]
         if u'locale' in raw_config:
@@ -363,12 +362,12 @@ class BaseAastraPlugin(StandardPlugin):
             if lang in self._XX_DICT:
                 xx_dict = self._XX_DICT[lang]
         return xx_dict
-    
+
     def _device_cert_or_key_filename(self, device, suffix):
         # Return the cert or key file filename for a device 
         fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
         return fmted_mac + suffix
-    
+
     def _write_cert_or_key_file(self, pem_cert, device, suffix):
         filename = self._device_cert_or_key_filename(device, suffix)
         pathname = os.path.join(self._tftpboot_dir, filename)
@@ -376,36 +375,36 @@ class BaseAastraPlugin(StandardPlugin):
             f.write(pem_cert)
         # return the path, from the point of view of the device
         return filename
-    
+
     def _add_trusted_certificates(self, raw_config, device):
         if u'sip_servers_root_and_intermediate_certificates' in raw_config:
             pem_cert = raw_config[u'sip_servers_root_and_intermediate_certificates']
             raw_config[u'XX_trusted_certificates'] = self._write_cert_or_key_file(pem_cert, device,
                                                                     self._TRUSTED_ROOT_CERTS_SUFFIX)
-    
+
     def _add_parking(self, raw_config):
         # to be optionally overriden in derived class
         pass
-    
+
     def _dev_specific_filename(self, device):
         # Return the device specific filename (not pathname) of device
         fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
         return fmted_mac + '.cfg'
-    
+
     def _check_config(self, raw_config):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
-    
+
     def _check_device(self, device):
         if u'mac' not in device:
             raise Exception('MAC address needed for device configuration')
-    
+
     def configure(self, device, raw_config):
         self._check_config(raw_config)
         self._check_device(device)
         filename = self._dev_specific_filename(device)
         tpl = self._tpl_helper.get_dev_template(filename, device)
-        
+
         self._add_out_of_band_dtmf(raw_config)
         self._add_fkeys(raw_config, device.get(u'model'))
         self._add_locale(raw_config)
@@ -416,10 +415,10 @@ class BaseAastraPlugin(StandardPlugin):
         self._update_sip_lines(raw_config)
         self._add_parking(raw_config)
         raw_config[u'XX_dict'] = self._gen_xx_dict(raw_config)
-        
+
         path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
-    
+
     def deconfigure(self, device):
         # remove device configuration file
         path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))
@@ -436,7 +435,7 @@ class BaseAastraPlugin(StandardPlugin):
         except OSError, e:
             # ignore
             logger.info('error while removing file: %s', e)
-    
+
     def synchronize(self, device, raw_config):
         try:
             ip = device[u'ip'].encode('ascii')

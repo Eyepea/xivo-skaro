@@ -100,7 +100,7 @@ check_drive()
   fi
   smartctl -i -d 3ware,${DISK_NUMBER} /dev/${DEVICE_NAME_3WARE}${CONTROLLER_NUMBER} >/dev/null 2>/dev/null
 }
-#
+
 gen_conf_name()
 {
   echo "${DEVICE_NAME_3WARE}${2}-${3}"

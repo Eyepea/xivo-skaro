@@ -22,7 +22,7 @@ configuration file are documented in provd.conf):
     general.retriever
     general.updater
     general.router
-    general.ip
+    general.external_ip
     general.http_port
     general.tftp_port
     general.rest_port
@@ -69,8 +69,6 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# XXX right now, bad parameter names will be silently ignored, and we might
-#     want to raise an exception when we see a parameter that is invalid
 # XXX there's is some naming confusion between application configuration
 #     and device configuration, since both used the word 'config' and
 #     raw config yet it means different thing
@@ -120,9 +118,9 @@ class DefaultConfigSource(object):
         ('general.retriever', 'default'),
         ('general.updater', 'default'),
         ('general.router', 'default'),
-        ('general.ip', '*'),
         ('general.http_port', '8667'),
         ('general.tftp_port', '69'),
+        ('general.rest_ip', '127.0.0.1'),
         ('general.rest_port', '8666'),
         ('general.rest_username', 'admin'),
         ('general.rest_password', 'admin'),
@@ -158,8 +156,6 @@ class Options(usage.Options):
          'The configuration file'),
         ('config-dir', 'c', None,
          'The directory where request processing configuration file can be found'),
-        ('ip', None, None,
-         'The IP address to listen on, or * to listen on every.'),
         ('http-port', None, None,
          'The HTTP port to listen on.'),
         ('tftp-port', None, None,
@@ -179,7 +175,6 @@ class CommandLineConfigSource(object):
         # (<option name, param name>)
         ('config-file', 'general.config_file'),
         ('config-dir', 'general.request_config_dir'),
-        ('ip', 'general.ip'),
         ('http-port', 'general.http_port'),
         ('tftp-port', 'general.tftp_port'),
         ('rest-port', 'general.rest_port'),
@@ -267,23 +262,6 @@ def _pull_config_from_sources(config_sources):
     return raw_config
 
 
-_RAW_CONFIG_UPDATE_LIST = [
-    # <param name to set if absent>, <source param name to use if present>
-    ('general.rest_ip', 'general.ip'),
-]
-
-def _pre_update_raw_config(raw_config):
-    # Update raw config before transformation/check
-    for param_name, source_param_name in _RAW_CONFIG_UPDATE_LIST:
-        if param_name not in raw_config:
-            if source_param_name in raw_config:
-                raw_config[param_name] = raw_config[source_param_name]
-            else:
-                logger.info('Could not set config parameter "%s" because '
-                            'source parameter "%s" is absent' %
-                            (param_name, source_param_name))
-
-
 def _port_number(raw_value):
     port = int(raw_value)
     if not 1 <= port <= 65535:
@@ -341,6 +319,11 @@ def _load_json_file(raw_value):
         fobj.close()
 
 
+def _process_aliases(raw_config):
+    if 'general.ip' in raw_config and 'general.external_ip' not in raw_config:
+        raw_config['general.external_ip'] = raw_config['general.ip']
+
+
 _PARAMS_DEFINITION = [
     # list only the mandatory parameters or the parameters that need
     # transformation
@@ -356,11 +339,11 @@ _PARAMS_DEFINITION = [
     ('general.retriever', (str, True)),
     ('general.updater', (str, True)),
     ('general.router', (str, True)),
-    ('general.ip', (_ip_address_or_star, True)),
+    ('general.external_ip', (_ip_address, False)),
     ('general.http_port', (_port_number, True)),
     ('general.tftp_port', (_port_number, True)),
-    ('general.rest_port', (_port_number, True)),
     ('general.rest_ip', (_ip_address_or_star, True)),
+    ('general.rest_port', (_port_number, True)),
     ('general.rest_username', (str, True)),
     ('general.rest_password', (str, True)),
     ('general.rest_authentication', (_bool, True)),
@@ -420,11 +403,12 @@ def _update_general_base_raw_config(app_raw_config):
             # so next line will never raise a KeyError
             base_raw_config[key] = app_raw_config[source_param_name]
     if u'ip' not in base_raw_config:
-        ip = app_raw_config['general.ip']
-        if ip == '*':
-            ip = _get_ip_fallback()
-            logger.warning('Using "%s" for base raw config ip parameter', ip)
-        base_raw_config[u'ip'] = ip
+        if 'general.external_ip' in app_raw_config:
+            external_ip = app_raw_config['general.external_ip']
+        else:
+            external_ip = _get_ip_fallback()
+            logger.warning('Using "%s" for base raw config ip parameter', external_ip)
+        base_raw_config[u'ip'] = external_ip
 
 
 def _post_update_raw_config(raw_config):
@@ -449,7 +433,7 @@ def get_config(config_sources):
     
     """
     raw_config = _pull_config_from_sources(config_sources)
-    _pre_update_raw_config(raw_config)
+    _process_aliases(raw_config)
     _check_and_convert_parameters(raw_config)
     _post_update_raw_config(raw_config)
     return raw_config
