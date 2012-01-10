@@ -18,422 +18,32 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import itertools
 import logging
-import optparse
 import sys
-import traceback
 from operator import itemgetter
 from fetchfw import cli, config, download, package, params, storage, util
+from fetchfw import commands
 
-CONFIG_FILE = '/etc/pf-xivo/fetchfw.conf'
+logger = logging.getLogger('xivo-fetchfw')
 
 
-def install(pkg_mgr, opts, cli_opts, args):
-    if not args:
-        print >>sys.stderr, "error: no targets specified"
+def main():
+    _init_logging()
+    try:
+        commands.execute_command(_XivoFetchfwCommand())
+    except cli.UserCancellationError:
+        pass
+    except util.FetchfwError, e:
+        print >> sys.stderr, "error:", e
+        logger.debug('Stack trace:', exc_info=True)
         sys.exit(1)
-    for pkg_id in args:
-        if pkg_id in pkg_mgr.installed_pkg_sto and pkg_id in pkg_mgr.installable_pkg_sto:
-            installed_pkg = pkg_mgr.installed_pkg_sto[pkg_id]
-            installed_version = installed_pkg.pkg_info['version']
-            installable_version = pkg_mgr.installable_pkg_sto[pkg_id].pkg_info['version']
-            cmp_result = util.cmp_version(installed_version, installable_version)
-            if cmp_result == 0:
-                print "warning: %s is up to date -- reinstalling" % installed_pkg
-            else:
-                print >>sys.stderr, "error: %s is already installed" % installed_pkg
-                sys.exit(1)
-    ctrl_factory = cli.CliInstallerController.new_factory(nodeps=cli_opts.nodeps)
-    pkg_mgr.install(args, opts['general.root_dir'], ctrl_factory)
-
-
-def upgrade(pkg_mgr, opts, cli_opts, args):
-    if args:
-        print >>sys.stderr, "error: upgrade doesn't accept arguments"
-        sys.exit(1)
-    if cli_opts.ignore:
-        ignore = cli_opts.ignore.split(',')
-        ctrl_factory = cli.CliUpgraderController.new_factory(
-                nodeps=cli_opts.nodeps, ignore=ignore)
-    else:
-        ctrl_factory = cli.CliUpgraderController.new_factory(
-                nodeps=cli_opts.nodeps)
-    pkg_mgr.upgrade(opts['general.root_dir'], ctrl_factory)
-
-
-def search_installable(pkg_mgr, opts, cli_opts, args):
-    if len(args) > 1:
-        print >>sys.stderr, "warning: ignoring search words after the first space"
-    if not args:
-        word = ''
-    else:
-        word = args[0].lower()
-    for installable_pkg in sorted_itervalues(pkg_mgr.installable_pkg_sto):
-        pkg_id = installable_pkg.pkg_info['id']
-        if word in pkg_id.lower():
-            if pkg_id in pkg_mgr.installed_pkg_sto:
-                installed_version = pkg_mgr.installed_pkg_sto[pkg_id].pkg_info['version']
-                if installed_version != installable_pkg.pkg_info['version']:
-                    print installable_pkg, "[installed: %s]" % installed_version
-                else:
-                    print installable_pkg, "[installed]"
-            else:
-                print installable_pkg
-            print '   ', installable_pkg.pkg_info['description']
-
-
-def info_installable(pkg_mgr, opts, cli_opts, args):
-    if not args:
-        print >>sys.stderr, "error: no targets specified"
-        sys.exit(1)
-    for pkg_id in args:
-        if pkg_id not in pkg_mgr.installable_pkg_sto:
-            print >>sys.stderr, "error: package '%s' was not found" % pkg_id
-        else:
-            pkg = pkg_mgr.installable_pkg_sto[pkg_id]
-            print 'Name\t\t:', pkg.pkg_info['id']
-            print 'Version\t\t:', pkg.pkg_info['version']
-            if pkg.pkg_info['depends']:
-                depends_on = ' '.join(pkg.pkg_info['depends'])
-            else:
-                depends_on = 'None'
-            print 'Depends On\t:', depends_on
-            print 'Description\t:', pkg.pkg_info['description']
-            print
-
-
-def list_installed(pkg_mgr, opts, cli_opts, args):
-    if args:
-        for pkg_id in args:
-            if pkg_id in pkg_mgr.installed_pkg_sto:
-                installed_pkg = pkg_mgr.installed_pkg_sto[pkg_id]
-                print installed_pkg
-            else:
-                print >>sys.stderr, "error: package '%s' not found" % pkg_id
-    else:
-        for installed_pkg in sorted_itervalues(pkg_mgr.installed_pkg_sto):
-            print installed_pkg
-
-
-def info_installed(pkg_mgr, opts, cli_opts, args):
-    if not args:
-        print >>sys.stderr, "error: no targets specified"
-        sys.exit(1)
-    for pkg_id in args:
-        if pkg_id not in pkg_mgr.installed_pkg_sto:
-            print >>sys.stderr, "error: package '%s' not found" % pkg_id
-        else:
-            pkg = pkg_mgr.installed_pkg_sto[pkg_id]
-            print 'Name\t\t:', pkg.pkg_info['id']
-            print 'Version\t\t:', pkg.pkg_info['version']
-            dependencies = pkg.pkg_info['depends']
-            print 'Depends On\t:', '  '.join(dependencies) if dependencies else 'None'
-            requisites = pkg_mgr.installed_pkg_sto.get_requisites(pkg_id)
-            print 'Required By\t:', '  '.join(requisites) if requisites else 'None'
-            print 'Install Reason\t:', 'Explicitly installed' if pkg.pkg_info['explicit_install'] \
-                                       else 'Installed as a dependency for another package'
-            print 'Description\t:', pkg.pkg_info['description']
-            print
-
-
-def search_installed(pkg_mgr, opts, cli_opts, args):
-    if len(args) > 1:
-        print >>sys.stderr, "warning: ignoring search words after the first space"
-    if not args:
-        word = ''
-    else:
-        word = args[0].lower()
-    for installed_pkg in sorted_itervalues(pkg_mgr.installed_pkg_sto):
-        if word in installed_pkg.pkg_info['id'].lower():
-            print installed_pkg
-            print '   ', installed_pkg.pkg_info['description']
-
-
-def list_files_installed(pkg_mgr, opts, cli_opts, args):
-    if not args:
-        print >>sys.stderr, "error: no targets specified"
-        sys.exit(1)
-    for pkg_id in args:
-        if pkg_id not in pkg_mgr.installed_pkg_sto:
-            print >>sys.stderr, "error: package '%s' not found" % pkg_id
-        else:
-            installed_pkg = pkg_mgr.installed_pkg_sto[pkg_id]
-            files = installed_pkg.pkg_info['files']
-            if not files:
-                print pkg_id, "-- no installed files"
-            else:
-                for file in files:
-                    print pkg_id, file
-
-
-def remove(pkg_mgr, opts, cli_opts, args):
-    if not args:
-        print >>sys.stderr, "error: no targets specified"
-        sys.exit(1)
-    ctrl_factory = cli.CliUninstallerController.new_factory(
-            recursive=cli_opts.recursive)
-    pkg_mgr.uninstall(args, opts['general.root_dir'], ctrl_factory)
-
-
-def sorted_itervalues(dict_):
-    return map(itemgetter(1), sorted(dict_.iteritems(), key=itemgetter(0)))
-
-
-# command parsing functions to help in displaying nice help. I though it
-# was simpler than beginning to override optparse there and there to make
-# it fit the usage
-
-def discard_positional_params(argv):
-    # Return a copy of argv where every parameters after a '--' is discarded
-    return list(itertools.takewhile(lambda s: s != '--', argv))
-
-
-def _is_short_option(s):
-    return s.startswith('-') and not s.startswith('--')
-
-
-def _get_short_options(argv):
-    # Return a set of short options in argv
-    short_options_groups = filter(_is_short_option, argv)
-    return set(c for group in short_options_groups for c in group[1:])
-
-
-def _is_long_options(s):
-    return s.startswith('--')
-
-
-def _get_long_options(argv):
-    return set(map(itemgetter(slice(2, None)), filter(_is_long_options, argv)))
-
-
-def get_options(argv):
-    # Return a tuple (short options, long options)
-    cleaned_argv = discard_positional_params(argv)
-    return _get_short_options(cleaned_argv), _get_long_options(cleaned_argv)
-
-
-def has_option((short_opt, long_opt), (short_opts, long_opts)):
-    if short_opt and short_opt in short_opts:
-        return True
-    else:
-        return long_opt and long_opt in long_opts
-
-
-def get_option_subset(options_set, options):
-    return set(opt for opt in options_set if has_option(opt, options))
-
-
-class CustomHelpFormatter(optparse.IndentedHelpFormatter):
-    def format_epilog(self, epilog):
-        return "\n" + epilog + "\n"
-
-
-def new_common_option_parser(*args, **kwargs):
-    kwargs.setdefault('formatter', CustomHelpFormatter())
-    p = optparse.OptionParser(*args, **kwargs)
-    p.add_option('--config', action='store',
-                 help='set an alternate configuration file')
-    p.add_option('--debug', action='store_true',
-                 help='display debug messages')
-    p.add_option('--root', action='store',
-                 help='set the root directory')
-    return p
-
-
-SYNC_USAGE='Usage:  xivo_fetchfw {-S --sync} [options] [package(s)]'
-SYNC_EPILOG="""\
-Example:
-    xivo_fetchfw -S digium-tc400
-        Install digium-tc400m package.
-    xivo_fetchfw -Ss digium
-        Return all installable package with the word digium in it
-    xivo_fetchfw -Si digium-tc400
-        Show info about the digium-tc400 package.
-    xivo_fetchfw -Su
-        Upgrade all installed package.\
-"""
-
-def new_sync_option_parser():
-    p = new_common_option_parser(usage=SYNC_USAGE, add_help_option=False,
-                                 epilog=SYNC_EPILOG)
-    p.add_option('-S', '--sync', action='store_true',
-                 help=optparse.SUPPRESS_HELP)
-    p.add_option('-i', '--info', action='store_true',
-                 help='view package information')
-    p.add_option('-s', '--search', action='store_true',
-                 help='search packages for matching strings')
-    p.add_option('-u', '--upgrade', action='store_true',
-                 help='upgrade installed packages')
-    p.add_option('-d', '--nodeps', action='store_true',
-                 help='ignore a package upgrade')
-    p.add_option('--ignore', action='store',
-                 help='ignore a package upgrade')
-    return p
-
-
-def do_operation_sync(pkg_mgr, opts, cli_opts, args):
-    sub_op = tuple(bool(x) for x in [cli_opts.info, cli_opts.search, cli_opts.upgrade])
-    if (False, False, False) == sub_op:
-        install(pkg_mgr, opts, cli_opts, args)
-    elif (True, False, False) == sub_op:
-        info_installable(pkg_mgr, opts, cli_opts, args)
-    elif (False, True, False) == sub_op:
-        search_installable(pkg_mgr, opts, cli_opts, args)
-    elif (False, False, True) == sub_op:
-        upgrade(pkg_mgr, opts, cli_opts, args)
-    else:
-        print >>sys.stderr, 'error: invalid sync operation'
+    except Exception, e:
+        print >> sys.stderr, "Unexpected exception:", e
+        logger.debug('Stack trace:', exc_info=True)
         sys.exit(1)
 
 
-QUERY_USAGE='Usage:  xivo_fetchfw {-Q --query} [options] [package(s)]'
-QUERY_EPILOG="""\
-Example:
-    xivo_fetchfw -Q digium-tc400
-        Show digium-tc400 package.
-    xivo_fetchfw -Qs digium
-        Return all installed package with the word digium in it
-    xivo_fetchfw -Qi digium-tc400
-        Show info about the digium-tc400 package.
-    xivo_fetchfw -Ql digium-tc400
-        List the content of the digium-tc400 package.\
-"""
-
-def new_query_option_parser():
-    p = new_common_option_parser(usage=QUERY_USAGE, add_help_option=False,
-                                 epilog=QUERY_EPILOG)
-    p.add_option('-Q', '--query', action='store_true',
-                 help=optparse.SUPPRESS_HELP)
-    p.add_option('-i', '--info', action='store_true',
-                 help='view package information')
-    p.add_option('-s', '--search', action='store_true',
-                 help='search packages for matching strings')
-    p.add_option('-l', '--list', action='store_true',
-                 help='list the package contents')
-    return p
-
-
-def do_operation_query(pkg_mgr, opts, cli_opts, args):
-    sub_op = tuple(bool(x) for x in [cli_opts.info, cli_opts.list, cli_opts.search])
-    if (False, False, False) == sub_op:
-        list_installed(pkg_mgr, opts, cli_opts, args)
-    elif (True, False, False) == sub_op:
-        info_installed(pkg_mgr, opts, cli_opts, args)
-    elif (False, True, False) == sub_op:
-        list_files_installed(pkg_mgr, opts, cli_opts, args)
-    elif (False, False, True) == sub_op:
-        search_installed(pkg_mgr, opts, cli_opts, args)
-    else:
-        print >>sys.stderr, 'error: invalid query operation'
-        sys.exit(1)
-
-
-REMOVE_USAGE='Usage:  xivo_fetchfw {-R --remove} [options] <package(s)>'
-REMOVE_EPILOG="""\
-Example:
-    xivo_fetchfw -R digium-tc400
-        Remove the digium-tc400 package.
-    xivo_fetchfw -Rs digium-tc400
-        Remove the digium-tc400 and all it's unused dependencies.\
-"""
-
-def new_remove_option_parser():
-    p = new_common_option_parser(usage=REMOVE_USAGE, add_help_option=False,
-                                 epilog=REMOVE_EPILOG)
-    p.add_option('-R', '--remove', action='store_true',
-                 help=optparse.SUPPRESS_HELP)
-    p.add_option('-s', '--recursive', action='store_true',
-                 help='remove unnecessary dependencies')
-    return p
-
-
-def do_operation_remove(pkg_mgr, opts, cli_opts, args):
-    remove(pkg_mgr, opts, cli_opts, args)
-
-
-OPERATIONS = {
-    # (<short_opt>, <long_opt>): (option_parser_factory, do_operatiion_fun>)
-    ('S', 'sync'): (new_sync_option_parser, do_operation_sync),
-    ('Q', 'query'): (new_query_option_parser, do_operation_query),
-    ('R', 'remove'): (new_remove_option_parser, do_operation_remove),
-}
-
-
-def new_option_parser_from_option(opt):
-    return OPERATIONS[opt][0]()
-
-
-def do_fun_from_option(opt):
-    return OPERATIONS[opt][1]
-
-
-GENERIC_HELP_MSG = """\
-Usage:  xivo_fetchfw <operation> [...]
-
-Operations:
-    xivo_fetchfw {-h --help}
-    xivo_fetchfw {-Q --query}  [options] [package(s)]
-    xivo_fetchfw {-R --remove} [options] <package(s)>
-    xivo_fetchfw {-S --sync}   [options] [package(s)]
-
-use 'xivo_fetchfw {-h --help}' with an operation for available options
-
-Examples:
-    xivo_fetchfw -S digium-tc400m
-        Install digium-tc400m package.
-    xivo_fetchfw -Ss digium
-        Return all installable package with the words digium in it
-    xivo_fetchfw -Qs digium
-        Return all installed digium package
-    xivo_fetchfw -R digium-tc400m
-        Uninstall the digium-tc400m package\
-"""
-
-def parse_options():
-    options = get_options(sys.argv[1:])
-    cur_operations = get_option_subset(OPERATIONS, options)
-    if has_option(('h', 'help'), options):
-        if not cur_operations:
-            print >>sys.stderr, GENERIC_HELP_MSG
-        elif len(cur_operations) == 1:
-            p = new_option_parser_from_option(cur_operations.pop())
-            p.print_help(sys.stderr)
-        else:
-            print >>sys.stderr, "error: only one operation may be used at a time"
-        sys.exit(1)
-    else:
-        if not cur_operations:
-            print >>sys.stderr, "error: no operation specified (use -h for help)"
-            sys.exit(1)
-        elif len(cur_operations) == 1:
-            operation = cur_operations.pop()
-            p = new_option_parser_from_option(operation)
-            cli_opts, args = p.parse_args()
-            do_fun = do_fun_from_option(operation)
-            return cli_opts, args, do_fun
-        else:
-            print >>sys.stderr, "error: only one operation may be used at a time"
-            sys.exit(1)
-
-
-def merge_options(opts, cli_opts):
-    # Merge options from cli_opts to opts (when applicable)
-    if cli_opts.root:
-        opts['general.root_dir'] = cli_opts.root
-
-
-def new_package_manager(opts, cli_opts):
-    proxies = params.filter_section(opts, 'proxy')
-    downloaders = download.new_downloaders(proxies)
-    global_vars = params.filter_section(opts, 'global_vars')
-    able_pkg_sto, ed_pkg_sto = storage.new_pkg_storages(opts['general.db_dir'],
-            opts['general.cache_dir'], downloaders, global_vars)
-    pkg_mgr = package.PackageManager(able_pkg_sto, ed_pkg_sto)
-    return pkg_mgr
-
-
-def init_logging():
+def _init_logging():
     logger = logging.getLogger()
     handler = logging.StreamHandler()
     handler.setFormatter(logging.Formatter("%(message)s"))
@@ -441,38 +51,129 @@ def init_logging():
     logger.setLevel(logging.ERROR)
 
 
-if __name__ == '__main__':
-    init_logging()
-    
-    try:
-        cli_opts, args, operation_fun = parse_options()
-        
-        if cli_opts.debug:
+class _XivoFetchfwCommand(commands.AbstractCommand):
+    def configure_parser(self, parser):
+        parser.add_argument('--config', default='/etc/pf-xivo/fetchfw.conf',
+                            help='set an alternate configuration file')
+        parser.add_argument('--debug', action='store_true', default=False,
+                            help='display debug messages')
+        parser.add_argument('--root',
+                            help='set the root directory')
+
+    def configure_subcommands(self, subcommands):
+        subcommands.add_subcommand(_InstallSubcommand('install'))
+        subcommands.add_subcommand(_UpgradeSubcommand('upgrade'))
+        subcommands.add_subcommand(_SearchSubcommand('search'))
+        subcommands.add_subcommand(_RemoveSubcommand('remove'))
+
+    def pre_execute(self, parsed_args):
+        self._process_debug(parsed_args)
+        self._process_config(parsed_args)
+        self._process_root(parsed_args)
+        self._create_pkg_mgr(parsed_args)
+
+    def _process_debug(self, parsed_args):
+        if parsed_args.debug:
             logger = logging.getLogger()
             logger.setLevel(logging.DEBUG)
-        
-        cfg_filename = cli_opts.config or CONFIG_FILE
+
+    def _process_config(self, parsed_args):
+        config_filename = parsed_args.config
         try:
-            opts = config.read_config(cfg_filename)
+            config_dict = config.read_config(config_filename)
         except Exception, e:
-            print >>sys.stderr, "error: config file '%s': %s" % (cfg_filename, e)
-            if cli_opts.debug:
-                traceback.print_exc()
+            print >> sys.stderr, "error: config file '%s': %s" % (cfg_filename, e)
+            logger.debug('Stack trace:', exc_info=True)
             sys.exit(1)
         else:
-            merge_options(opts, cli_opts)
-            pkg_mgr = new_package_manager(opts, cli_opts)
-        
-            operation_fun(pkg_mgr, opts, cli_opts, args)
-    except cli.UserCancellationError:
-        pass
-    except util.FetchfwError, e:
-        print >>sys.stderr, "error:", e
-        if cli_opts.debug:
-            traceback.print_exc()
-        sys.exit(1)
-    except Exception, e:
-        print >>sys.stderr, "Unexpected exception:", e
-        if cli_opts.debug:
-            traceback.print_exc()
-        sys.exit(1)
+            parsed_args.config_dict = config_dict
+
+    def _process_root(self, parsed_args):
+        if not parsed_args.root:
+            parsed_args.root = parsed_args.config_dict['general.root_dir']
+
+    def _create_pkg_mgr(self, parsed_args):
+        config_dict = parsed_args.config_dict
+        proxies = params.filter_section(config_dict, 'proxy')
+        downloaders = download.new_downloaders(proxies)
+        global_vars = params.filter_section(config_dict, 'global_vars')
+        able_pkg_sto, ed_pkg_sto = storage.new_pkg_storages(config_dict['general.db_dir'],
+                config_dict['general.cache_dir'], downloaders, global_vars)
+        parsed_args.pkg_mgr = package.PackageManager(able_pkg_sto, ed_pkg_sto)
+
+
+class _InstallSubcommand(commands.AbstractSubcommand):
+    def configure_parser(self, parser):
+        parser.add_argument('packages', nargs='+',
+                            help='package(s) to install')
+
+    def execute(self, parsed_args):
+        pkg_ids = parsed_args.packages
+        pkg_mgr = parsed_args.pkg_mgr
+        for pkg_id in pkg_ids:
+            if pkg_id in pkg_mgr.installed_pkg_sto and pkg_id in pkg_mgr.installable_pkg_sto:
+                installed_pkg = pkg_mgr.installed_pkg_sto[pkg_id]
+                installed_version = installed_pkg.pkg_info['version']
+                installable_version = pkg_mgr.installable_pkg_sto[pkg_id].pkg_info['version']
+                cmp_result = util.cmp_version(installed_version, installable_version)
+                if cmp_result == 0:
+                    print "warning: %s is up to date -- reinstalling" % installed_pkg
+                else:
+                    print >> sys.stderr, "error: %s is already installed" % installed_pkg
+                    sys.exit(1)
+        ctrl_factory = cli.CliInstallerController.new_factory()
+        pkg_mgr.install(pkg_ids, parsed_args.root, ctrl_factory)
+
+
+class _UpgradeSubcommand(commands.AbstractSubcommand):
+    def execute(self, parsed_args):
+        pkg_mgr = parsed_args.pkg_mgr
+        ctrl_factory = cli.CliUpgraderController.new_factory()
+        pkg_mgr.upgrade(parsed_args.root, ctrl_factory)
+
+
+class _SearchSubcommand(commands.AbstractSubcommand):
+    def configure_parser(self, parser):
+        parser.add_argument('pattern', nargs='?',
+                            help='search pattern')
+
+    def execute(self, parsed_args):
+        search_pattern = parsed_args.pattern
+        pkg_mgr = parsed_args.pkg_mgr
+        if not search_pattern:
+            word = ''
+        else:
+            word = search_pattern.lower()
+        for installable_pkg in _sorted_itervalues(pkg_mgr.installable_pkg_sto):
+            pkg_id = installable_pkg.pkg_info['id']
+            description = installable_pkg.pkg_info['description']
+            if word in pkg_id.lower() or word in description.lower():
+                if pkg_id in pkg_mgr.installed_pkg_sto:
+                    installed_version = pkg_mgr.installed_pkg_sto[pkg_id].pkg_info['version']
+                    if installed_version != installable_pkg.pkg_info['version']:
+                        print installable_pkg, "[installed: %s]" % installed_version
+                    else:
+                        print installable_pkg, "[installed]"
+                else:
+                    print installable_pkg
+                print '   ', installable_pkg.pkg_info['description']
+
+
+def _sorted_itervalues(dict_):
+    return map(itemgetter(1), sorted(dict_.iteritems(), key=itemgetter(0)))
+
+
+class _RemoveSubcommand(commands.AbstractSubcommand):
+    def configure_parser(self, parser):
+        parser.add_argument('packages', nargs='+',
+                            help='package(s) to remove')
+
+    def execute(self, parsed_args):
+        pkg_ids = parsed_args.packages
+        pkg_mgr = parsed_args.pkg_mgr
+        ctrl_factory = cli.CliUninstallerController.new_factory(recursive=True)
+        pkg_mgr.uninstall(pkg_ids, parsed_args.root, ctrl_factory)
+
+
+if __name__ == '__main__':
+    main()

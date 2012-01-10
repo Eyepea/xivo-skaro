@@ -699,7 +699,7 @@ class DefaultUpgraderController(UpgraderController):
 
         installed_version = installed_pkg.pkg_info['version']
         installable_version = installable_pkg.pkg_info['version']
-        return cmp_version(installable_version, installed_version)
+        return cmp_version(installable_version, installed_version) > 0
 
     def preprocess_raw_upgrade_list(self, raw_upgrade_list):
         return filter(self._upgrade_list_filter_function, raw_upgrade_list)
