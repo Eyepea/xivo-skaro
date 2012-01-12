@@ -72,3 +72,12 @@ Horaires
 
 ; fm_col_action
 Action
+
+; col_add
+Ajouter
+
+; opt_disp-delete
+Supprimer
+
+; opt_disp2-delete
+Supprimer

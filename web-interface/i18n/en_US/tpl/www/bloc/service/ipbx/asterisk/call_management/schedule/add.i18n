@@ -173,12 +173,6 @@ Month day
 Month
 
 ; fld-dialaction-inschedule
-In bounds
-
-; fld-dialaction-outschedule
-Out of bounds
-
-; fld-dialaction-inschedule
 In schedule
 
 ; fld-dialaction-outschedule
@@ -217,3 +211,11 @@ Schedule
 ; fm_col_action
 Action
 
+; col_add
+Add
+
+; opt_disp-delete
+Delete
+
+; opt_disp2-delete
+Delete
