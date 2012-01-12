@@ -648,7 +648,7 @@ $array['element']['directmedia']['value'] = array(
 		'nonat'			=> 'nonat',
 		'update'		=> 'update',
 		'update,nonat'	=> 'update,nonat');
-$array['element']['directmedia']['default'] = 'yes';
+$array['element']['directmedia']['default'] = 'no';
 $array['element']['directmedia']['null'] = true;
 
 $array['element']['ignoresdpversion'] = array();
