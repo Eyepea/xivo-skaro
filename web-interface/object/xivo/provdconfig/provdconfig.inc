@@ -31,6 +31,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	protected $_phonefunckey 	= false;
 	protected $_extenumbers  	= false;
 	protected $_linefeatures  	= false;
+	protected $_groupfeatures	= false;
 	protected $_meetmefeatures	= false;
 	protected $_devicefeatures 	= false;
 	protected $_callfiltermember    = false;
@@ -43,6 +44,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		|| ($ipbx = &$_SRE->get('ipbx')) === false
 		|| ($this->_extenumbers = &$ipbx->get_module('extenumbers')) === false
 		|| ($this->_linefeatures = &$ipbx->get_module('linefeatures')) === false
+		|| ($this->_groupfeatures = &$ipbx->get_module('groupfeatures')) === false
 		|| ($this->_meetmefeatures = &$ipbx->get_module('meetmefeatures')) === false
 		|| ($this->_devicefeatures = &$ipbx->get_module('devicefeatures')) === false
 		|| ($this->_userfeatures = &$ipbx->get_module('userfeatures')) === false
@@ -769,11 +771,15 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 					break;
 				case 'user':
 				case 'queue':
-				case 'group':
 					$where = array();
 					$where['iduserfeatures'] = $type['val'];
 					if(($linefeatures = $this->_linefeatures->get_all_where($where)) !== false)
 						$exten = $linefeatures[0]['number'];
+					break;
+				case 'group':
+					$group_id = $type['val'];
+					$group = $this->_groupfeatures->get($group_id);
+					$exten = $group['number'];
 					break;
 				case 'meetme':
 					$meetme_id = $type['val'];
