@@ -30,10 +30,11 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	protected $_confdefault 	= false;
 	protected $_phonefunckey 	= false;
 	protected $_extenumbers  	= false;
-	protected $_linefeatures  	= false;
-	protected $_groupfeatures	= false;
-	protected $_meetmefeatures	= false;
 	protected $_devicefeatures 	= false;
+	protected $_groupfeatures	= false;
+	protected $_linefeatures  	= false;
+	protected $_meetmefeatures	= false;
+	protected $_queuefeatures	= false;
 	protected $_callfiltermember    = false;
 	protected $_callfilter      = false;
 	protected $_appsip 	        = false;
@@ -43,10 +44,11 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		if(($_SRE = &dwho_gct::get('xivo_service')) === false
 		|| ($ipbx = &$_SRE->get('ipbx')) === false
 		|| ($this->_extenumbers = &$ipbx->get_module('extenumbers')) === false
-		|| ($this->_linefeatures = &$ipbx->get_module('linefeatures')) === false
-		|| ($this->_groupfeatures = &$ipbx->get_module('groupfeatures')) === false
-		|| ($this->_meetmefeatures = &$ipbx->get_module('meetmefeatures')) === false
 		|| ($this->_devicefeatures = &$ipbx->get_module('devicefeatures')) === false
+		|| ($this->_groupfeatures = &$ipbx->get_module('groupfeatures')) === false
+		|| ($this->_linefeatures = &$ipbx->get_module('linefeatures')) === false
+		|| ($this->_meetmefeatures = &$ipbx->get_module('meetmefeatures')) === false
+		|| ($this->_queuefeatures = &$ipbx->get_module('queuefeatures')) === false
 		|| ($this->_userfeatures = &$ipbx->get_module('userfeatures')) === false
 		|| ($this->_phonefunckey = &$ipbx->get_module('phonefunckey')) === false
 		|| ($this->_callfiltermember = &$ipbx->get_module('callfiltermember')) === false
@@ -770,11 +772,15 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 					$exten = $ref['exten'];
 					break;
 				case 'user':
-				case 'queue':
 					$where = array();
 					$where['iduserfeatures'] = $type['val'];
 					if(($linefeatures = $this->_linefeatures->get_all_where($where)) !== false)
 						$exten = $linefeatures[0]['number'];
+					break;
+				case 'queue':
+					$queue_id = $type['val'];
+					$queue = $this->_queuefeatures->get($queue_id);
+					$exten = $queue['number'];
 					break;
 				case 'group':
 					$group_id = $type['val'];
