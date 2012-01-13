@@ -374,8 +374,12 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			$this->_set_error('meetmeroom','invalid data');
 			return(false);
 		}
-		else if(($r = $this->_meetmeroom->set_meetmeroom($arr)) === false)
-			$this->_set_error('meetmeroom',$this->_meetmeroom->get_error('meetmeroom'));
+		else if(($r = $this->_meetmeroom->set_meetmeroom($arr)) === false) {
+			$meetmeroom_error = $this->_meetmeroom->get_error('meetmeroom');
+			$this->_set_error('meetmeroom',$meetmeroom_error);
+			if(isset($meetmeroom_error['confno']) === true)
+				$this->_set_error('meetmefeatures',array('confno' => $meetmeroom_error['confno']));
+		}
 
 		$this->_set_result('meetmeroom',$this->_meetmeroom->get_result('meetmeroom'));
 

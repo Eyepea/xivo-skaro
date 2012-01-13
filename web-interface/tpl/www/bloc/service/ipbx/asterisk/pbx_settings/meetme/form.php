@@ -54,7 +54,8 @@ $dhtml->write_js('var jsi18n_no_number_in_context = "'.$this->bbf('no_number_in_
 				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','meetmefeatures','name'))));
 ?>
-<?php 	echo	$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_number'),
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_number'),
 				  'name'	=> 'meetmefeatures[confno]',
 				  'labelid'	=> 'meetmefeatures-confno',
 				  'label'	=> 'lb-meetmefeatures-confno',
