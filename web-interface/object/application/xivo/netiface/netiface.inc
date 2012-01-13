@@ -591,7 +591,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 				$ref = &$r[$key];
 				$ref['netiface']['hwtype'] = $hwtype;
-				$ref['netiface']['identity'] = $this->_xobj->identity('netiface', $ref['netiface']);
 
 				$ref = array_merge($ref, $this->init_state_interface($key, $uuid['uuid'], $val['method']));
 
