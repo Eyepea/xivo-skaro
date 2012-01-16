@@ -70,3 +70,6 @@ Vous devez renseigner un numero pour un canal Local
 
 ; voip_interface_can_not_disabled
 Vous ne pouvez pas désactiver l'interface voix.
+
+; user_need_lines_to_add_voicemail
+Au moins une ligne est requise pour ajouter une boîte vocale

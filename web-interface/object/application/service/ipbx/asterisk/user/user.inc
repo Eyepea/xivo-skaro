@@ -738,28 +738,32 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->set_rightcall($arr['rightcall']);
 
 		if(dwho_issa('voicemail',$arr) === true
-		&& dwho_has_len($arr['voicemail'],'mailbox') === true
-		// getting master line for voicemail
-		&& ($linefeatures = $this->get_result_var('linefeatures',0)) !== null)
-		{
-			$context = $linefeatures['context'];
-
-			if($vmaction === 'add')
-				$arr['voicemail']['context'] = $context;
-
-			$arr['voicemail']['locale'] = $this->get_result_var('userfeatures','language');
-
-			if(isset($arr['voicemail']['deletevoicemail']) === false)
-				$arr['voicemail']['deletevoicemail'] = 0;
-
-			$this->_set_result_var('protocol','mailbox',$arr['voicemail']['mailbox'].'@'.$context);
-
-			if($vmaction !== 'disable')
+		&& dwho_has_len($arr['voicemail'],'mailbox') === true) {
+			// getting master line for voicemail
+			if (($linefeatures = $this->get_result_var('linefeatures',0)) !== null)
 			{
-				if(dwho_issa('voicemailfeatures',$arr) === true)
-					$this->set_voicemail($vmaction,$arr['voicemail'],$arr['voicemailfeatures']);
-				else
-					$this->set_voicemail($vmaction,$arr['voicemail']);
+				$context = $linefeatures['context'];
+
+				if($vmaction === 'add')
+					$arr['voicemail']['context'] = $context;
+
+				$arr['voicemail']['locale'] = $this->get_result_var('userfeatures','language');
+
+				if(isset($arr['voicemail']['deletevoicemail']) === false)
+					$arr['voicemail']['deletevoicemail'] = 0;
+
+				$this->_set_result_var('protocol','mailbox',$arr['voicemail']['mailbox'].'@'.$context);
+
+				if($vmaction !== 'disable')
+				{
+					if(dwho_issa('voicemailfeatures',$arr) === true)
+						$this->set_voicemail($vmaction,$arr['voicemail'],$arr['voicemailfeatures']);
+					else
+						$this->set_voicemail($vmaction,$arr['voicemail']);
+				}
+			}
+			else {
+				$this->_set_error('voicemail', dwho_i18n::babelfish('user_need_lines_to_add_voicemail'));
 			}
 		}
 
