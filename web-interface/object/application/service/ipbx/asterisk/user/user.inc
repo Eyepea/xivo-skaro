@@ -293,7 +293,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(is_object($this->_voicemail) === false
 		|| $voicemailid === 0
-		|| $this->_voicemail->get() === false)
+		|| $this->_voicemail->get($voicemailid) === false)
 			return(false);
 
 		$this->_info['voicemail'] = $this->_voicemail->get_info('voicemail');
