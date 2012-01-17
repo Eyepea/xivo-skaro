@@ -520,21 +520,6 @@ endif;
 							'labelid' => 'cti_parting_astid_ipbx',
 							'checked' => in_array('astid', $parting)));
 ?>
-	<br />
-	<fieldset id="cti-xivo_servers">
-		<legend><?=$this->bbf('cti-xivo_servers');?></legend>
-		<div id="xivoserver" class="fm-paragraph">
-		    <?=$form->jq_select(array('paragraph'	=> false,
-					 	'label'		=> false,
-            			'name'    	=> 'xivoserver[]',
-						'id' 		=> 'it-xivoserver',
-						'key'		=> 'identity',
-				       	'altkey'	=> 'id',
-            			'selected'  => $info['xivoserver']['slt']),
-					$info['xivoserver']['list']);?>
-		</div>
-		<div class="clearboth"></div>
-	</fieldset>
 </div>
 
 <?php
