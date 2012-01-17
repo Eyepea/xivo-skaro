@@ -193,10 +193,10 @@ Use ADSI announces:
 ; fm_generalfeatures_transferdigittimeout
 Dial timeout on transfer:
 
-; fm_generalfeatures_transferdigittimeout-opt1
+; fm_generalfeatures_transferdigittimeout-opt(1)
 1 second
 
-; fm_generalfeatures_transferdigittimeout-opt60
+; fm_generalfeatures_transferdigittimeout-opt(60)
 1 minute
 
 ; fm_generalfeatures_transferdigittimeout-opt
@@ -205,7 +205,7 @@ Dial timeout on transfer:
 ; fm_generalfeatures_featuredigittimeout
 Feature dial timeout:
 
-; fm_generalfeatures_featuredigittimeout-opt1
+; fm_generalfeatures_featuredigittimeout-opt(1)
 1 millisecond
 
 ; fm_generalfeatures_featuredigittimeout-opt

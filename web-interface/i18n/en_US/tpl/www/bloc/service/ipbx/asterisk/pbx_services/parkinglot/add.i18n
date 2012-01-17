@@ -13,7 +13,7 @@ Extension:
 ; fm_parkinglot_positions
 Num of positions:
 
-; hlp_fp_positions
+; hlp_fm_positions
 Positions starts at extension+1
 
 ; fm_parkinglot_next
