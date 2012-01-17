@@ -44,14 +44,6 @@
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-<?php
-$num = 3;
-$info    = $this->get_var('info');
-if(isset($info['protocol']) === true
-&& ($protocol = (string) dwho_ak('protocol',$info['protocol'],true)) !== ''
-&& $protocol === 'sip'):
-$num = 4;
-?>
 		<li id="dwsm-tab-3"
 		    class="dwsm-blur"
 		    onclick="dwho_submenu.select(this,'sb-part-t38');"
@@ -62,10 +54,7 @@ $num = 4;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-<?php
-endif;
-?>
-		<li id="dwsm-tab-<?=$num?>"
+		<li id="dwsm-tab-4"
 		    class="dwsm-blur"
 		    onclick="dwho_submenu.select(this,'sb-part-advanced');"
 		    onmouseout="dwho_submenu.blur(this);"
@@ -76,7 +65,7 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="dwsm-tab-<?=$num+1?>"
+		<li id="dwsm-tab-5"
 		    class="dwsm-blur-last"
 		    onclick="dwho_submenu.select(this,'sb-part-ipbxinfos',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"

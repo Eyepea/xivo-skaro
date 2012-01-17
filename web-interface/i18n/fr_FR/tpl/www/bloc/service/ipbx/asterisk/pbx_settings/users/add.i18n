@@ -814,11 +814,11 @@ INFORMATIONS
 ; col_title_line-rules
 REGLES
 
-; col_line-name
-Canal
-
 ; col_line-protocol
 Protocole
+
+; col_line-name
+Nom
 
 ; col_line-context
 Contexte

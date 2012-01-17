@@ -879,7 +879,7 @@ Rules
 Protocol
 
 ; col_line-name
-Peer
+Name
 
 ; col_line-context
 Context

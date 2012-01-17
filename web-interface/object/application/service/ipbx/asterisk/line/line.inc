@@ -544,12 +544,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					}
 					$this->_set_result_var('protocol','callgroup',$callgroup);
 				}
-
-				break;
-			case XIVO_SRE_IPBX_AST_PROTO_CUSTOM:
-				if (dwho_has_len($musiconhold) === true) {
-					$this->_set_result_var('protocol','mohsuggest',$musiconhold);
-				}
 				break;
 		}
 
