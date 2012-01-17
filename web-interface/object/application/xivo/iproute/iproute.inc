@@ -424,7 +424,10 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 			$route['current'] = ($route['id'] == $curroute['id']);
 		}
 
+		dwho_var_dump($list);
+
 		$ret = (bool) $this->_sysconfd->request_post('/routes', $list);
+
 		return(($this->_return['sysconfnet'] = $ret));
 	}
 

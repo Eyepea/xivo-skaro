@@ -685,8 +685,15 @@ def generate_interfaces(old_lines, conf):
     current configuration
     """
     log.info("ENTERING generate_interfaces()")
+    
+    print '######### %s %s ########' % ('old_lines:', old_lines)
 
     eni = interfaces.parse(old_lines)
+    
+    for block in eni:
+        print '######### %s: %s ' % ('block', block)
+    
+    return
 
     rsvd_base = reserved_netIfaces(conf)
     rmvd_full = removed_netIfaces(conf)
@@ -797,12 +804,16 @@ def generate_interfaces(old_lines, conf):
         for raw_line in block.raw_lines:
             if not raw_line.startswith("# XIVO: "):
                 yield raw_line
+                print '######### %s %s ########' % ('raw_line:', raw_line)
+
+    return
 
     # generate new config for handled interfaces
     #
     for phy, vsTag in conf['netIfaces'].iteritems():
         if not specific(vsTag):
             continue
+
         for vlanId, ipConfs_tag in conf['vlans'][vsTag].iteritems():
             if not specific(ipConfs_tag):
                 continue
@@ -844,12 +855,13 @@ def generate_interfaces(old_lines, conf):
 
                 if 'mtu' in currentconf:
                     yield "\tmtu %d\n" % currentconf['mtu']
+                    
 
             if 'options' in currentconf:
                 for optname, optvalue in unreserved_interfaces_options(currentconf['options']):
                     yield "\t%s %s\n" % (optname, optvalue)
 
-            yield "\n"
+    yield "\n"
 
     log.info("LEAVING generate_interfaces.")
 

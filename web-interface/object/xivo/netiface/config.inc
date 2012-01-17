@@ -46,7 +46,7 @@ $array['element']['family']['default'] = 'inet';
 $array['element']['family']['forcedef'] = true;
 
 $array['element']['method'] = array();
-$array['element']['method']['value'] = array('static','dhcp');
+$array['element']['method']['value'] = array('static','dhcp','manual');
 $array['element']['method']['default'] = 'static';
 
 $array['element']['address'] = array();
@@ -89,10 +89,10 @@ $array['filter']['ifname'] = array('regexp'	=> '/^(?:eth[a-z0-9_]+(?:\.[0-9]+)?(
 				   'minlen'	=> 1,
 				   'maxlen'	=> 64);
 $array['filter']['hwtypeid'] = array('cast' => 'uint','between' => array(0,65535));
-$array['filter']['networktype'] = array('key' => array('data','voip'));
-$array['filter']['type'] = array('set' => false,'key' => array('iface'));
-$array['filter']['family'] = array('set' => false,'key' => array('inet','inet6'));
-$array['filter']['method'] = array('key' => array('static','dhcp'));
+$array['filter']['networktype'] = array('key' => $array['element']['networktype']['value']);
+$array['filter']['type'] = array('set' => false,$array['element']['type']['value']);
+$array['filter']['family'] = array('set' => false,'key' => $array['element']['family']['value']);
+$array['filter']['method'] = array('key' => $array['element']['method']['value']);
 $array['filter']['address'] = array('set'		=> false,
 				    'chk'		=> 2,
 				    'callback'		=> 'dwho_network::valid_host',

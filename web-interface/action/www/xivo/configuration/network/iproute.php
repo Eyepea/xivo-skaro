@@ -51,7 +51,7 @@ switch($act)
 		$_TPL->set_var('element',$appiproute->get_elements());
 		$_TPL->set_var('interfaces',$appiproute->get_interfaces_list(
 									null,
-									array('name' => SORT_ASC)));
+									array('ifname' => SORT_ASC)));
 
 		break;
 	case 'edit':
@@ -82,7 +82,7 @@ switch($act)
 		$_TPL->set_var('element',$appiproute->get_elements());
 		$_TPL->set_var('interfaces',$appiproute->get_interfaces_list(
 									null,
-									array('name' => SORT_ASC)));
+									array('ifname' => SORT_ASC)));
 		break;
 	case 'delete':
 		$param['page'] = $page;

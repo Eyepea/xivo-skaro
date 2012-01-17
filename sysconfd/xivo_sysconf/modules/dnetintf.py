@@ -743,7 +743,7 @@ class DNETIntf:
 
     REPLACE_VIRTUAL_ETH_IPV4_SCHEMA = xys.load("""
     ifname:         !!str vlan42
-    method:         !~~enum(static,dhcp)
+    method:         !~~enum(static,dhcp,manual)
     vlanid?:        !~~between(0,65535) 42
     vlanrawdevice?: !!str eth0
     address?:       !~ipv4_address 172.16.42.1
