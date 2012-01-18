@@ -415,7 +415,8 @@ endif;
 								 'label'	=> false,
 								 'invalid'	=> true,
 								 'key'		=> false,
-								 'size'		=> 15
+								 'size'		=> 15,
+								 'default'	=> 'dock'
 							),
 							$xletslocavail);?>
 				</td>
