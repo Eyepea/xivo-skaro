@@ -433,10 +433,9 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		&& $rs['type'] === 'friend')
 			$rs['username'] = $rs['name'];
 
-		if(dwho_issa('allow',$rs) === true)
+		if($this->_param['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
+		&& dwho_issa('allow',$rs) === true)
 			$rs['allow'] = implode(',',$rs['allow']);
-		else
-			$rs['allow'] = '';
 
 		$this->_set_result('protocol',$rs);
 
