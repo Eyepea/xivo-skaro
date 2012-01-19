@@ -38,8 +38,7 @@ $.widget("ui.multiselect", {
 		dividerLocation: 0.6,
 		onUpdate: null, // Define a callback function when a update
 		nodeComparator: function(node1,node2) {
-			var text1 = node1.text(),
-			    text2 = node2.text();
+			var text1 = node1.text(), text2 = node2.text();
 			return text1 == text2 ? 0 : (text1 < text2 ? -1 : 1);
 		}
 	},
@@ -102,7 +101,7 @@ $.widget("ui.multiselect", {
 			
 					// workaround according to http://dev.jqueryui.com/ticket/4088
 					setTimeout(function() { ui.item.remove(); }, 1);
-				}
+				},
 			});
 		}
 		
@@ -138,6 +137,9 @@ $.widget("ui.multiselect", {
 
 		$.Widget.prototype.destroy.apply(this, arguments);
 	},
+	refresh: function() {
+		this._populateLists(this.element.find('option'));
+	},
 	_populateLists: function(options) {
 		this.selectedList.children('.ui-element').remove();
 		this.availableList.children('.ui-element').remove();
@@ -145,18 +147,18 @@ $.widget("ui.multiselect", {
 
 		var that = this;
 		var items = $(options.map(function(i) {
-	      var item = that._getOptionNode(this).appendTo(this.selected ? that.selectedList : that.availableList).show();
-
+		var item = that._getOptionNode(this).appendTo(
+			this.selected ? that.selectedList : that.availableList).show();
 			if (this.selected) that.count += 1;
 			that._applyItemState(item, this.selected);
 			item.data('idx', i);
 			return item[0];
-    }));
+		}));
 		
 		// update count
 		this._updateCount();
 		that._filter.apply(this.availableContainer.find('input.search'), [that.availableList]);
-  },
+	},
 	_updateCount: function() {
 		this.selectedContainer.find('span.count').text(this.count+" "+$.ui.multiselect.locale.itemsCount);
 		// callback after update
@@ -179,7 +181,9 @@ $.widget("ui.multiselect", {
 		return clone;
 	},
 	_setSelected: function(item, selected) {
-		item.data('optionLink').attr('selected', selected);
+		var addedNode = item.data('optionLink').attr('selected', selected);
+		var parent = addedNode.parent();
+		addedNode.detach().appendTo (parent);
 
 		if (selected) {
 			var selectedItem = this._cloneWithData(item);
@@ -277,7 +281,7 @@ $.widget("ui.multiselect", {
 	},
 	_registerAddEvents: function(elements) {
 		var that = this;
-		elements.click(function() {
+		elements.one("click", function() {
 			var item = that._setSelected($(this).parent(), true);
 			that.count += 1;
 			that._updateCount();
@@ -286,24 +290,24 @@ $.widget("ui.multiselect", {
 		
 		// make draggable
 		if (this.options.sortable) {
-  		elements.each(function() {
-  			$(this).parent().draggable({
-  	      connectToSortable: that.selectedList,
-  				helper: function() {
-  					var selectedItem = that._cloneWithData($(this)).width($(this).width() - 50);
-  					selectedItem.width($(this).width());
-  					return selectedItem;
-  				},
-  				appendTo: that.container,
-  				containment: that.container,
-  				revert: 'invalid'
-  	    });
-  		});		  
+		elements.each(function() {
+			$(this).parent().draggable({
+				connectToSortable: that.selectedList,
+				helper: function() {
+					var selectedItem = that._cloneWithData($(this)).width($(this).width() - 50);
+					selectedItem.width($(this).width());
+					return selectedItem;
+				},
+				appendTo: that.container,
+				containment: that.container,
+				revert: 'invalid'
+		});
+		});
 		}
 	},
 	_registerRemoveEvents: function(elements) {
 		var that = this;
-		elements.click(function() {
+		elements.one("click", function() {
 			that._setSelected($(this).parent(), false);
 			that.count -= 1;
 			that._updateCount();
