@@ -1,0 +1,24 @@
+remplace base-config diverted config file with a patch
+Index: dahdi-tools-2.5.0.2/xpp/genconf_parameters
+===================================================================
+--- dahdi-tools-2.5.0.2.orig/xpp/genconf_parameters
++++ dahdi-tools-2.5.0.2/xpp/genconf_parameters
+@@ -39,15 +39,15 @@
+ # Set tone zone values. This is used for playing tones (busy, dial-tone
+ # and such). The default is 'us'. This sets the value for both loadzone
+ # and defaultzone in system.conf .
+-#lc_country		il
++lc_country		fr
+ 
+ # The dialplan context into which to send trunks in chan_dahdi.conf or
+ # users.conf. The default value is:
+-#context_lines		from-pstn
++context_lines		from-extern
+ #
+ # The dialplan context into which to send extensions in chan_dahdi.conf or
+ # users.conf. The default value is:
+-#context_phones		from-internal
++context_phones		default
+ #
+ # Two extra contexts for the input ports and output ports of an
+ # Astribank. Default values are:
