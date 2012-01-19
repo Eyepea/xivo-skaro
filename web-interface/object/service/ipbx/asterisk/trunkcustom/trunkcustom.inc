@@ -65,10 +65,7 @@ class xivo_service_asterisk_trunkcustom extends xivo_service_asterisk_abstract
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
-		unset($arr['allow']);
-
 		return($arr);
-
 	}
 
 	function add($arr,$id=0)

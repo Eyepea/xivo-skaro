@@ -25,17 +25,11 @@ Temps réel
 ; fm_bindport
 Port :
 
-; cmt_fm_bindport
-Config asterisk: bindport
-
 ; hlp_fm_bindport
 Config asterisk: bindport
 
 ; fm_bindaddr
 Adresse IP :
-
-; cmt_fm_bindaddr
-Config asterisk: bindaddr
 
 ; hlp_fm_bindaddr
 Config asterisk: bindaddr
@@ -43,17 +37,11 @@ Config asterisk: bindaddr
 ; fm_videosupport
 Support vidéo :
 
-; cmt_fm_videosupport
-Config asterisk: videosupport
-
 ; hlp_fm_videosupport
 Config asterisk: videosupport
 
 ; fm_autocreatepeer
 Création automatique d'un utilisateur :
-
-; cmt_fm_autocreatepeer
-Config asterisk: autocreatepeer
 
 ; hlp_fm_autocreatepeer
 Config asterisk: autocreatepeer
@@ -61,17 +49,11 @@ Config asterisk: autocreatepeer
 ; fm_allowguest
 Accepter un appel non authentifié :
 
-; cmt_fm_allowguest
-Config asterisk: allowguest
-
 ; hlp_fm_allowguest
 Config asterisk: allowguest
 
 ; fm_allowsubscribe
 Activer le support des souscriptions :
-
-; cmt_fm_allowsubscribe
-Config asterisk: allowsubscribe
 
 ; hlp_fm_allowsubscribe
 Config asterisk: allowsubscribe
@@ -79,17 +61,11 @@ Config asterisk: allowsubscribe
 ; fm_allowoverlap
 Activer le chevauchement :
 
-; cmt_fm_allowoverlap
-Config asterisk: allowoverlap
-
 ; hlp_fm_allowoverlap
 Config asterisk: allowoverlap
 
 ; fm_promiscredir
 Support des redirections 302 :
-
-; cmt_fm_promiscredir
-Config asterisk: promiscredir
 
 ; hlp_fm_promiscredir
 Config asterisk: promiscredir
@@ -97,17 +73,11 @@ Config asterisk: promiscredir
 ; fm_autodomain
 Domaine automatique :
 
-; cmt_fm_autodomain
-Config asterisk: autodomain
-
 ; hlp_fm_autodomain
 Config asterisk: autodomain
 
 ; fm_domain
 Domaine :
-
-; cmt_fm_domain
-Config asterisk: domain
 
 ; hlp_fm_domain
 Config asterisk: domain
@@ -115,17 +85,11 @@ Config asterisk: domain
 ; fm_allowexternaldomains
 Accepter les domaines externes :
 
-; cmt_fm_allowexternaldomains
-Config asterisk: allowexternaldomains
-
 ; hlp_fm_allowexternaldomains
 Config asterisk: allowexternaldomains
 
 ; fm_usereqphone
 Ajouter ";user=phone" dans l'URI :
-
-; cmt_fm_usereqphone
-Config asterisk: usereqphone
 
 ; hlp_fm_usereqphone
 Config asterisk: usereqphone
@@ -133,17 +97,11 @@ Config asterisk: usereqphone
 ; fm_realm
 Realm :
 
-; cmt_fm_realm
-Config asterisk: realm
-
 ; hlp_fm_realm
 Config asterisk: realm
 
 ; fm_alwaysauthreject
 Rejeter les invitations et enregistrements :
-
-; cmt_fm_alwaysauthreject
-Config asterisk: alwaysauthreject
 
 ; hlp_fm_alwaysauthreject
 Config asterisk: alwaysauthreject
@@ -151,26 +109,17 @@ Config asterisk: alwaysauthreject
 ; fm_limitonpeer
 Activer les limitations sur les appels sortants :
 
-; cmt_fm_limitonpeer
-Config asterisk: limitonpeer
-
 ; hlp_fm_limitonpeer
 Config asterisk: limitonpeer
 
 ; fm_useragent
 User-Agent :
 
-; cmt_fm_useragent
-Config asterisk: useragent
-
 ; hlp_fm_useragent
 Config asterisk: useragent
 
 ; fm_checkmwi
 Vérifier la présence de nouveaux messages :
-
-; cmt_fm_checkmwi
-Config asterisk: checkmwi
 
 ; hlp_fm_checkmwi
 Config asterisk: checkmwi
@@ -181,17 +130,11 @@ Désactivée
 ; fm_checkmwi-opt
 %s secondes
 
-; cmt_fm_checkmwi-opt
-Config asterisk: checkmwi
-
 ; hlp_fm_checkmwi-opt
 Config asterisk: checkmwi
 
 ; fm_buggymwi
 Vérification, non conforme à la RFC, de nouveaux messages :
-
-; cmt_fm_buggymwi
-Config asterisk: buggymwi
 
 ; hlp_fm_buggymwi
 Config asterisk: buggymwi
@@ -199,17 +142,11 @@ Config asterisk: buggymwi
 ; fm_regcontext
 Contexte d'enregistrement :
 
-; cmt_fm_regcontext
-Config asterisk: regcontext
-
 ; hlp_fm_regcontext
 Config asterisk: regcontext
 
 ; fm_callerid
 Nom d'appel :
-
-; cmt_fm_callerid
-Config asterisk: callerid
 
 ; hlp_fm_callerid
 Config asterisk: callerid
@@ -217,17 +154,11 @@ Config asterisk: callerid
 ; fm_fromdomain
 Réécriture du champ From-Domain :
 
-; cmt_fm_fromdomain
-Config asterisk: fromdomain
-
 ; hlp_fm_fromdomain
 Config asterisk: fromdomain
 
 ; fm_sipdebug
 Débogage :
-
-; cmt_fm_sipdebug
-Config asterisk: sipdebug
 
 ; hlp_fm_sipdebug
 Config asterisk: sipdebug
@@ -235,17 +166,11 @@ Config asterisk: sipdebug
 ; fm_dumphistory
 Sauvegarde de l'historique :
 
-; cmt_fm_dumphistory
-Config asterisk: dumphistory
-
 ; hlp_fm_dumphistory
 Config asterisk: dumphistory
 
 ; fm_recordhistory
 Enregistrement de l'historique :
-
-; cmt_fm_recordhistory
-Config asterisk: recordhistory
 
 ; hlp_fm_recordhistory
 Config asterisk: recordhistory
@@ -253,17 +178,11 @@ Config asterisk: recordhistory
 ; fm_callevents
 Evénements des appels (AMI) :
 
-; cmt_fm_callevents
-Config asterisk: callevents
-
 ; hlp_fm_callevents
 Config asterisk: callevents
 
 ; fm_tos-sip
 TOS SIP :
-
-; cmt_fm_tos-sip
-Config asterisk: tos-sip
 
 ; hlp_fm_tos-sip
 Config asterisk: tos-sip
@@ -271,17 +190,11 @@ Config asterisk: tos-sip
 ; fm_tos-audio
 TOS audio :
 
-; cmt_fm_tos-audio
-Config asterisk: tos-audio
-
 ; hlp_fm_tos-audio
 Config asterisk: tos-audio
 
 ; fm_tos-video
 TOS vidéo :
-
-; cmt_fm_tos-video
-Config asterisk: tos-video
 
 ; hlp_fm_tos-video
 Config asterisk: tos-video
@@ -289,26 +202,17 @@ Config asterisk: tos-video
 ; fm_externip
 Adresse IP externe :
 
-; cmt_fm_externip
-Config asterisk: externip
-
 ; hlp_fm_externip
 Config asterisk: externip
 
 ; fm_externhost
 Hôte externe :
 
-; cmt_fm_externhost
-Config asterisk: externhost
-
 ; hlp_fm_externhost
 Config asterisk: externhost
 
 ; fm_externrefresh
 Temps de rafraîchissement du domaine externe :
-
-; cmt_fm_externrefresh
-Config asterisk: externrefresh
 
 ; hlp_fm_externrefresh
 Config asterisk: externrefresh
@@ -334,17 +238,11 @@ Config asterisk: externrefresh
 ; fm_matchexterniplocally
 Remplacer l'IP ou l'hôte externe s'il correspond au réseau local :
 
-; cmt_fm_matchexterniplocally
-Config asterisk: matchexterniplocally
-
 ; hlp_fm_matchexterniplocally
 Config asterisk: matchexterniplocally
 
 ; fm_outboundproxy
 Proxy Outbound :
-
-; cmt_fm_outboundproxy
-Config asterisk: outboundproxy
 
 ; hlp_fm_outboundproxy
 Config asterisk: outboundproxy
@@ -352,17 +250,11 @@ Config asterisk: outboundproxy
 ; fm_outboundproxyport
 Port du proxy Outbound :
 
-; cmt_fm_outboundproxyport
-Config asterisk: outboundproxyport
-
 ; hlp_fm_outboundproxyport
 Config asterisk: outboundproxyport
 
 ; fm_localnet
 Réseau local :
-
-; cmt_fm_localnet
-Config asterisk: localnet
 
 ; hlp_fm_localnet
 Config asterisk: localnet
@@ -379,9 +271,6 @@ Supprimer un ou plusieurs hôtes
 ; fm_t1min
 Délai minimum de l'aller-retour (RTT) des messages :
 
-; cmt_fm_t1min
-Config asterisk: t1min
-
 ; hlp_fm_t1min
 Config asterisk: t1min
 
@@ -391,17 +280,11 @@ Config asterisk: t1min
 ; fm_relaxdtmf
 Relax DTMF :
 
-; cmt_fm_relaxdtmf
-Config asterisk: relaxdtmf
-
 ; hlp_fm_relaxdtmf
 Config asterisk: relaxdtmf
 
 ; fm_rfc2833compensate
 Compenser les DTMF RFC 2833 provenant d'un autre IPBX :
-
-; cmt_fm_rfc2833compensate
-Config asterisk: rfc2833compensate
 
 ; hlp_fm_rfc2833compensate
 Config asterisk: rfc2833compensate
@@ -409,17 +292,11 @@ Config asterisk: rfc2833compensate
 ; fm_compactheaders
 Compacter les en-têtes :
 
-; cmt_fm_compactheaders
-Config asterisk: compactheaders
-
 ; hlp_fm_compactheaders
 Config asterisk: compactheaders
 
 ; fm_rtptimeout
 Délai d'attente pour le RTP :
-
-; cmt_fm_rtptimeout
-Config asterisk: rtptimeout
 
 ; hlp_fm_rtptimeout
 Config asterisk: rtptimeout
@@ -433,9 +310,6 @@ Désactivé
 ; fm_rtpholdtimeout
 Délai du RTP sur attente :
 
-; cmt_fm_rtpholdtimeout
-Config asterisk: rtpholdtimeout
-
 ; hlp_fm_rtpholdtimeout
 Config asterisk: rtpholdtimeout
 
@@ -447,9 +321,6 @@ Désactivé
 
 ; fm_rtpkeepalive
 Présence du RTP :
-
-; cmt_fm_rtpkeepalive
-Config asterisk: rtpkeepalive
 
 ; hlp_fm_rtpkeepalive
 Config asterisk: rtpkeepalive
@@ -463,17 +334,11 @@ Désactivée
 ; fm_directrtpsetup
 Activer le RTP direct :
 
-; cmt_fm_directrtpsetup
-Config asterisk: directrtpsetup
-
 ; hlp_fm_directrtpsetup
 Config asterisk: directrtpsetup
 
 ; fm_notifymimetype
 Notification du type de MIME :
-
-; cmt_fm_notifymimetype
-Config asterisk: notifymimetype
 
 ; hlp_fm_notifymimetype
 Config asterisk: notifymimetype
@@ -481,17 +346,11 @@ Config asterisk: notifymimetype
 ; fm_srvlookup
 Requête DNS :
 
-; cmt_fm_srvlookup
-Config asterisk: srvlookup
-
 ; hlp_fm_srvlookup
 Config asterisk: srvlookup
 
 ; fm_pedantic
 Conforme aux standards :
-
-; cmt_fm_pedantic
-Config asterisk: pedantic
 
 ; hlp_fm_pedantic
 Config asterisk: pedantic
@@ -499,26 +358,17 @@ Config asterisk: pedantic
 ; fm_minexpiry
 Durée minimum pour l'enregistrement :
 
-; cmt_fm_minexpiry
-Config asterisk: minexpiry
-
 ; hlp_fm_minexpiry
 Config asterisk: minexpiry
 
 ; fm_maxexpiry
 Durée maximum pour l'enregistrement :
 
-; cmt_fm_maxexpiry
-Config asterisk: maxexpiry
-
 ; hlp_fm_maxexpiry
 Config asterisk: maxexpiry
 
 ; fm_defaultexpiry
 Durée par défaut pour l'enregistrement :
-
-; cmt_fm_defaultexpiry
-Config asterisk: defaultexpiry
 
 ; hlp_fm_defaultexpiry
 Config asterisk: defaultexpiry
@@ -553,9 +403,6 @@ Config asterisk: defaultexpiry
 ; fm_registertimeout
 Délai d'enregistrement :
 
-; cmt_fm_registertimeout
-Config asterisk: registertimeout
-
 ; hlp_fm_registertimeout
 Config asterisk: registertimeout
 
@@ -577,9 +424,6 @@ Config asterisk: registertimeout
 ; fm_registerattempts
 Nombre de tentative d'enregistrement :
 
-; cmt_fm_registerattempts
-Config asterisk: registerattempts
-
 ; hlp_fm_registerattempts
 Config asterisk: registerattempts
 
@@ -592,17 +436,11 @@ Illimité
 ; fm_notifyringing
 Notification de sonnerie :
 
-; cmt_fm_notifyringing
-Config asterisk: notifyringing
-
 ; hlp_fm_notifyringing
 Config asterisk: notifyringing
 
 ; fm_notifyhold
 Notification de la mise en attente :
-
-; cmt_fm_notifyhold
-Config asterisk: notifyhold
 
 ; hlp_fm_notifyhold
 Config asterisk: notifyhold
@@ -610,17 +448,11 @@ Config asterisk: notifyhold
 ; fm_allowtransfer
 Autoriser les transferts :
 
-; cmt_fm_allowtransfer
-Config asterisk: allowtransfer
-
 ; hlp_fm_allowtransfer
 Config asterisk: allowtransfer
 
 ; fm_maxcallbitrate
 Bit rate maximal pour les appels vidéo :
-
-; cmt_fm_maxcallbitrate
-Config asterisk: maxcallbitrate
 
 ; hlp_fm_maxcallbitrate
 Config asterisk: maxcallbitrate
@@ -628,26 +460,17 @@ Config asterisk: maxcallbitrate
 ; fm_autoframing
 Frame automatique :
 
-; cmt_fm_autoframing
-Config asterisk: autoframing
-
 ; hlp_fm_autoframing
 Config asterisk: autoframing
 
 ; fm_g726nonstandard
 Activer le support du G.726 non standard :
 
-; cmt_fm_g726nonstandard
-Config asterisk: g726nonstandard
-
 ; hlp_fm_g726nonstandard
 Config asterisk: g726nonstandard
 
 ; fm_codec-disallow
 Codecs désactivés :
-
-; cmt_fm_codec-disallow
-Config asterisk: odec-disallow
 
 ; hlp_fm_codec-disallow
 Config asterisk: odec-disallow
@@ -657,9 +480,6 @@ Tous
 
 ; fm_codec-allow
 Codecs activés :
-
-; cmt_fm_codec-allow
-Config asterisk: codec-allow
 
 ; hlp_fm_codec-allow
 Config asterisk: codec-allow
@@ -691,26 +511,17 @@ Config asterisk: t38pt_usertpsource
 ; fm_jbenable
 Activer le Jitter Buffer :
 
-; cmt_fm_jbenable
-Config asterisk: jbenable
-
 ; hlp_fm_jbenable
 Config asterisk: jbenable
 
 ; fm_jbforce
 Forcer le Jitter Buffer :
 
-; cmt_fm_jbforce
-Config asterisk: jbforce
-
 ; hlp_fm_jbforce
 Config asterisk: jbforce
 
 ; fm_jbmaxsize
 Taille maximale du Jitter Buffer :
-
-; cmt_fm_jbmaxsize
-Config asterisk: jbmaxsize
 
 ; hlp_fm_jbmaxsize
 Config asterisk: jbmaxsize
@@ -723,9 +534,6 @@ Désactivée
 
 ; fm_jbresyncthreshold
 Resynchronisation en cas de délai trop important :
-
-; cmt_fm_jbresyncthreshold
-Config asterisk: jbresyncthreshold
 
 ; hlp_fm_jbresyncthreshold
 Config asterisk: jbresyncthreshold
@@ -742,9 +550,6 @@ Désactivée
 ; fm_jbimpl
 Implémentation :
 
-; cmt_fm_jbimpl
-Config asterisk: jbimpl
-
 ; hlp_fm_jbimpl
 Config asterisk: jbimpl
 
@@ -757,26 +562,17 @@ Adaptative
 ; fm_jblog
 Activer la journalisation des frames :
 
-; cmt_fm_jblog
-Config asterisk: jblog
-
 ; hlp_fm_jblog
 Config asterisk: jblog
 
 ; fm_context
 Contexte :
 
-; cmt_fm_context
-Config asterisk: context
-
 ; hlp_fm_context
 Config asterisk: context
 
 ; fm_nat
 NAT :
-
-; cmt_fm_nat
-Config asterisk: nat
 
 ; hlp_fm_nat
 Config asterisk: nat
@@ -795,9 +591,6 @@ Comedia
 
 ; fm_dtmfmode
 DTMF :
-
-; cmt_fm_dtmfmode
-Config asterisk: dtmfmode
 
 ; hlp_fm_dtmfmode
 Config asterisk: dtmfmode
@@ -820,9 +613,6 @@ Auto
 ; fm_qualify
 Supervision de la latence :
 
-; cmt_fm_qualify
-Config asterisk: qualify
-
 ; hlp_fm_qualify
 Config asterisk: qualify
 
@@ -838,17 +628,11 @@ Oui
 ; fm_useclientcode
 Code client :
 
-; cmt_fm_useclientcode
-Config asterisk: useclientcode
-
 ; hlp_fm_useclientcode
 Config asterisk: useclientcode
 
 ; fm_progressinband
 Evénement RING dans la bande :
-
-; cmt_fm_progressinband
-Config asterisk: progressinband
 
 ; hlp_fm_progressinband
 Config asterisk: progressinband
@@ -865,17 +649,11 @@ Jamais
 ; fm_language
 Langue :
 
-; cmt_fm_language
-Config asterisk: language
-
 ; hlp_fm_language
 Config asterisk: language
 
 ; fm_mohinterpret
 Musique d'attente :
-
-; cmt_fm_mohinterpret
-Config asterisk: mohinterpret
 
 ; hlp_fm_mohinterpret
 Config asterisk: mohinterpret
@@ -883,26 +661,17 @@ Config asterisk: mohinterpret
 ; fm_mohsuggest
 Musique d'attente sur un appel sortant :
 
-; cmt_fm_mohsuggest
-Config asterisk: mohsuggest
-
 ; hlp_fm_mohsuggest
 Config asterisk: mohsuggest
 
 ; fm_vmexten
 Numéro de la messagerie vocale :
 
-; cmt_fm_vmexten
-Config asterisk: vmexten
-
 ; hlp_fm_vmexten
 Config asterisk: vmexten
 
 ; fm_trustrpid
 Faire confiance au Remote-Party-ID :
-
-; cmt_fm_trustrpid
-Config asterisk: trustrpid
 
 ; hlp_fm_trustrpid
 Config asterisk: trustrpid
@@ -922,26 +691,17 @@ RPID
 ; fm_sendrpid-opt(pai)
 PAI
 
-; cmt_fm_sendrpid
-Config asterisk: sendrpid
-
 ; hlp_fm_sendrpid
 Config asterisk: sendrpid
 
 ; fm_assertedidentity
 Envoyer le P-Asserted-Identity :
 
-; cmt_fm_assertedidentity
-Config asterisk: assertedidentity
-
 ; hlp_fm_assertedidentity
 Config asterisk: assertedidentity
 
 ; fm_canreinvite
 Invite :
-
-; cmt_fm_canreinvite
-Config asterisk: canreinvite
 
 ; hlp_fm_canreinvite
 Config asterisk: canreinvite
@@ -964,9 +724,6 @@ Mise à jour sans NAT
 ; fm_insecure
 Insécurité :
 
-; cmt_fm_insecure
-Config asterisk: insecure
-
 ; hlp_fm_insecure
 Config asterisk: insecure
 
@@ -985,17 +742,11 @@ Tout
 ; fm_rtcachefriends
 Mise en cache des comptes :
 
-; cmt_fm_rtcachefriends
-Config asterisk: rtcachefriends
-
 ; hlp_fm_rtcachefriends
 Config asterisk: rtcachefriends
 
 ; fm_rtupdate
 Mise à jour du cache :
-
-; cmt_fm_rtupdate
-Config asterisk: rtupdate
 
 ; hlp_fm_rtupdate
 Config asterisk: rtupdate
@@ -1003,26 +754,17 @@ Config asterisk: rtupdate
 ; fm_ignoreregexpire
 Ignorer l'expiration :
 
-; cmt_fm_ignoreregexpire
-Config asterisk: ignoreregexpire
-
 ; hlp_fm_ignoreregexpire
 Config asterisk: ignoreregexpire
 
 ; fm_rtsavesysname
 Sauvegarder le nom du système lors d'un enregistrement :
 
-; cmt_fm_rtsavesysname
-Config asterisk: rtsavesysname
-
 ; hlp_fm_rtsavesysname
 Config asterisk: rtsavesysname
 
 ; fm_rtautoclear
 Suppression automatique du cache :
-
-; cmt_fm_rtautoclear
-Config asterisk: rtautoclear
 
 ; hlp_fm_rtautoclear
 Config asterisk: rtautoclear

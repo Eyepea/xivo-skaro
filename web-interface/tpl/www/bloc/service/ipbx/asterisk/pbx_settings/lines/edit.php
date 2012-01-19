@@ -19,7 +19,8 @@
 #
 
 $form = &$this->get_module('form');
-$info    = $this->get_var('info');
+$info = $this->get_var('info');
+$proto = $info['protocol']['protocol'];
 
 ?>
 <div id="sr-lines" class="b-infos b-form">
@@ -29,7 +30,7 @@ $info    = $this->get_var('info');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 <?php
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/lines/submenu');
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/lines/submenu/'.$proto);
 ?>
 	<div class="sb-content">
 		<form action="#" method="post" accept-charset="utf-8">

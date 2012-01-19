@@ -36,7 +36,17 @@ $element = $this->get_var('element');
 				  'default'	=> $element['protocol']['custom']['interface']['default'],
 				  'value'	=> $this->get_var('info','protocol','interface'),
 				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'interface')) ));
+						   $this->get_var('error', 'protocol', 'interface')) )),
+
+	$form->text(array('desc'	=> $this->bbf('fm_linefeatures_number'),
+					  'name'	=> 'linefeatures[number]',
+					  'labelid'	=> 'linefeatures-number',
+					  'size'	=> 6,
+					  'disabled'	=> true,
+					  'readonly' => true,
+					  'class'    => 'it-disabled',
+					  'value'	=> $this->get_var('info','linefeatures','number'),
+					  'error'	=> $this->bbf_args('error',$this->get_var('error', 'linefeatures', 'number')) ));
 
 	if($context_list !== false):
 		echo	$form->select(array('desc'	=> $this->bbf('fm_protocol_context'),
@@ -68,116 +78,5 @@ $element = $this->get_var('element');
 					    'help'		=> $this->bbf('hlp_fm_pickupcontext'),
 					    'selected'	=> $this->get_var('info', 'protocol', 'pickupcontext')),
 				      $context_list);
-?>
-
-</div>
-
-<div id="sb-part-advanced" class="b-nodisplay">
-<?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_protocol_callerid'),
-				  'name'	=> 'protocol[callerid]',
-				  'labelid'	=> 'protocol-callerid',
-				  'value'	=> $this->get_var('info','protocol','callerid'),
-				  'size'	=> 15,
-				  'notag'	=> false,
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'callerid')) )),
-
-		$form->text(array('desc'	=> '&nbsp;',
-				  'name'	=> 'protocol[host-static]',
-				  'labelid'	=> 'protocol-host-static',
-				  'size'	=> 15,
-				  'value'	=> ($host_static === true ? $host : ''),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'host-static')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_permit'),
-				  'name'	=> 'protocol[permit]',
-				  'labelid'	=> 'protocol-permit',
-				  'size'	=> 20,
-				  'value'	=> $this->get_var('info','protocol','permit'),
-				  'error'   => $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'permit')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_deny'),
-				  'name'	=> 'protocol[deny]',
-				  'labelid'	=> 'protocol-deny',
-				  'size'	=> 20,
-				  'value'	=> $this->get_var('info','protocol','deny'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'deny')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_keepalive'),
-				  'name'	=> 'protocol[keepalive]',
-				  'labelid'	=> 'protocol-keepalive',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','keepalive'),
-				  'help'		=> $this->bbf('hlp_fm_keepalive'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'keepalive')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_imageversion'),
-				  'name'	=> 'protocol[imageversion]',
-				  'labelid'	=> 'protocol-imageversion',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','imageversion'),
-				  'help'		=> $this->bbf('hlp_fm_imageversion'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'imageversion')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_secondary_dialtone_tone'),
-				  'name'	=> 'protocol[secondary_dialtone_tone]',
-				  'labelid'	=> 'protocol-secondary_dialtone_tone',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','secondary_dialtone_tone'),
-				  'help'		=> $this->bbf('hlp_fm_dialtone_tone'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'secondary_dialtone_tone')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_audio_tos'),
-				  'name'	=> 'protocol[audio_tos]',
-				  'labelid'	=> 'protocol-audio_tos',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','audio_tos'),
-				  'help'		=> $this->bbf('hlp_fm_audio_tos'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'audio_tos')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_audio_cos'),
-				  'name'	=> 'protocol[audio_cos]',
-				  'labelid'	=> 'protocol-audio_cos',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','audio_cos'),
-				  'help'		=> $this->bbf('hlp_fm_audio_cos'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'audio_cos')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_video_tos'),
-				  'name'	=> 'protocol[video_tos]',
-				  'labelid'	=> 'protocol-video_tos',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','video_tos'),
-				  'help'		=> $this->bbf('hlp_fm_video_tos'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'video_tos')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_video_cos'),
-				  'name'	=> 'protocol[video_cos]',
-				  'labelid'	=> 'protocol-video_cos',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','video_cos'),
-				  'help'		=> $this->bbf('hlp_fm_video_cos'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'video_cos')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_adhocnumber'),
-				  'name'	=> 'protocol[adhocnumber]',
-				  'labelid'	=> 'protocol-adhocnumber',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','adhocnumber'),
-				  'help'		=> $this->bbf('hlp_fm_adhocnumber'),
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'adhocnumber')) ));
-
 ?>
 </div>

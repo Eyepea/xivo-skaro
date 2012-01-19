@@ -81,3 +81,9 @@ Un nom plus compréhensible
 
 ; cmt_profiles_maxgui
 Mettre -1 pour aucune limite
+
+; opt_preferences-delete
+Supprimer la préférence
+
+; opt_xlets-delete
+Supprimer la Xlet

@@ -28,19 +28,22 @@ $element = $this->get_var('element');
 $context_list = $this->get_var('context_list');
 $ipbxinfos = $this->get_var('info','ipbx');
 
-if(isset($info['protocol']) === true):
-	$allow = explode(',', $info['protocol']['allow']);
+$allow = array();
+if(isset($info['protocol']) === true) {
+	if(isset($info['protocol']['allow']) === true) {
+		$allow = explode(',', $info['protocol']['allow']);
+	}
 	$protocol = (string) dwho_ak('protocol',$info['protocol'],true);
 	$context = (string) dwho_ak('context',$info['protocol'],true);
 	$amaflags = (string) dwho_ak('amaflags',$info['protocol'],true);
 	$qualify = (string) dwho_ak('qualify',$info['protocol'],true);
 	$host = (string) dwho_ak('host',$info['protocol'],true);
 	$number = (string) dwho_ak('number',$info['linefeatures'],true);
-else:
-	$allow = array();
+}
+else {
 	$protocol = $this->get_var('proto');
 	$context = $amaflags = $qualify = $host = $number = '';
-endif;
+}
 
 $codec_active = empty($allow) === false;
 $host_static = ($host !== '' && $host !== 'dynamic');

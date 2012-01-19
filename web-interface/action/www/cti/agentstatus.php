@@ -126,7 +126,6 @@ switch($act)
 				$fm_save = false;
 				$result = $app->get_result();
 				$error = $app->get_error();
-				dwho_var_dump($error);
 			}
 			else
 			{

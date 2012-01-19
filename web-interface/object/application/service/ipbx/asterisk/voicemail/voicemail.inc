@@ -550,7 +550,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		else
 		{
 			$this->unlinks();
-			$this->delete_storage();	
+			$this->delete_storage();
 		}
 
 		$this->_status = '';
@@ -587,11 +587,10 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 	function delete_storage()
 	{
 		$this->_sysconfd->request_get('/delete_voicemail', array(
-			array('context', $this->_info['voicemail']['context']), 
+			array('context', $this->_info['voicemail']['context']),
 			array('name'   , $this->_info['voicemail']['mailbox'])
 		));
 	}
-
 
 	function reverse_delete()
 	{
@@ -644,7 +643,9 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 			$where = array();
 			$where['voicemailid'] = $this->_info['voicemail']['uniqueid'];
 
-			$userfeatures->edit_where($where,array('voicemailid' => null));
+			$userfeatures->edit_where($where,array('voicemailid' => null,
+												'voicemailtype' => null,
+												'enablevoicemail' => 0));
 		}
 
 		if((isset($this->_modules['usersip']) === true
