@@ -27,23 +27,19 @@ $array['tree']['service']['ipbx'] = array();
 $array['tree']['service']['ipbx']['general_settings'] = array();
 $array['tree']['service']['ipbx']['general_settings']['sip'] = true;
 $array['tree']['service']['ipbx']['general_settings']['iax'] = true;
-//$array['tree']['service']['ipbx']['general_settings']['cti'] = false; //	 TO BE REMOVED
 $array['tree']['service']['ipbx']['general_settings']['voicemail'] = true;
 $array['tree']['service']['ipbx']['general_settings']['phonebook'] = true;
 $array['tree']['service']['ipbx']['general_settings']['advanced'] = true;
-$array['tree']['service']['ipbx']['general_settings']['outboundmwi'] = true;
-$array['tree']['service']['ipbx']['general_settings']['dundi'] = true;
-$array['tree']['service']['ipbx']['general_settings']['dahdi'] = true;
 
 $array['tree']['service']['ipbx']['pbx_settings'] = array();
-$array['tree']['service']['ipbx']['pbx_settings']['users'] = true;
-$array['tree']['service']['ipbx']['pbx_settings']['groups'] = true;
-$array['tree']['service']['ipbx']['pbx_settings']['meetme'] = true;
-$array['tree']['service']['ipbx']['pbx_settings']['voicemail'] = true;
-// required to query /ui/ url
-$array['tree']['service']['ipbx']['pbx_settings']['extension'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['devices'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['lines'] = true;
+$array['tree']['service']['ipbx']['pbx_settings']['users'] = true;
+$array['tree']['service']['ipbx']['pbx_settings']['groups'] = true;
+$array['tree']['service']['ipbx']['pbx_settings']['voicemail'] = true;
+$array['tree']['service']['ipbx']['pbx_settings']['meetme'] = true;
+// required to query /ui/ url
+$array['tree']['service']['ipbx']['pbx_settings']['extension'] = true;
 
 
 $array['tree']['service']['ipbx']['call_management'] = array();
@@ -53,34 +49,23 @@ $array['tree']['service']['ipbx']['call_management']['rightcall'] = true;
 $array['tree']['service']['ipbx']['call_management']['callfilter'] = true;
 $array['tree']['service']['ipbx']['call_management']['pickup'] = true;
 $array['tree']['service']['ipbx']['call_management']['schedule'] = true;
-$array['tree']['service']['ipbx']['call_management']['voicemenu'] = true;
 
 $array['tree']['service']['ipbx']['trunk_management'] = array();
 $array['tree']['service']['ipbx']['trunk_management']['sip'] = true;
 $array['tree']['service']['ipbx']['trunk_management']['iax'] = true;
 $array['tree']['service']['ipbx']['trunk_management']['custom'] = true;
 
-$array['tree']['service']['ipbx']['cost_center'] = array();
-$array['tree']['service']['ipbx']['cost_center']['operator'] = true;
-$array['tree']['service']['ipbx']['cost_center']['servicesgroup'] = true;
-
-$array['tree']['service']['ipbx']['dundi'] = array();
-$array['tree']['service']['ipbx']['dundi']['peers'] = true;
-$array['tree']['service']['ipbx']['dundi']['mappings'] = true;
-
 $array['tree']['service']['ipbx']['pbx_services'] = array();
 $array['tree']['service']['ipbx']['pbx_services']['sounds'] = true;
 $array['tree']['service']['ipbx']['pbx_services']['musiconhold'] = true;
 $array['tree']['service']['ipbx']['pbx_services']['extenfeatures'] = true;
 $array['tree']['service']['ipbx']['pbx_services']['paging'] = true;
-//$array['tree']['service']['ipbx']['pbx_services']['parkinglot'] = true;
 $array['tree']['service']['ipbx']['pbx_services']['phonebook'] = true;
 
 $array['tree']['service']['ipbx']['system_management'] = array();
 $array['tree']['service']['ipbx']['system_management']['backupfiles'] = true;
 $array['tree']['service']['ipbx']['system_management']['configfiles'] = true;
 $array['tree']['service']['ipbx']['system_management']['context'] = true;
-//$array['tree']['service']['ipbx']['system_management']['ldapfilter'] = true;
 
 $array['tree']['service']['ipbx']['control_system'] = array();
 $array['tree']['service']['ipbx']['control_system']['logfiles'] = true;
@@ -139,11 +124,6 @@ $array['tree']['service']['callcenter']['settings']['queues'] = true;
 $array['tree']['service']['callcenter']['settings']['queuepenalty'] = true;
 $array['tree']['service']['callcenter']['settings']['queueskills'] = true;
 $array['tree']['service']['callcenter']['settings']['queueskillrules'] = true;
-$array['tree']['service']['callcenter']['registrationcampaign'] = array();
-$array['tree']['service']['callcenter']['registrationcampaign']['general']     = true;
-$array['tree']['service']['callcenter']['registrationcampaign']['tags']        = true;
-$array['tree']['service']['callcenter']['registrationcampaign']['campaigns']   = true;
-
 
 $array['tree']['xivo'] = array();
 
@@ -153,15 +133,12 @@ $array['tree']['xivo']['configuration'] = array();
 $array['tree']['xivo']['configuration']['manage'] = array();
 $array['tree']['xivo']['configuration']['manage']['entity'] = true;
 $array['tree']['xivo']['configuration']['manage']['certificate'] = true;
-$array['tree']['xivo']['configuration']['manage']['dahdihardware'] = true;
 
 $array['tree']['xivo']['configuration']['provisioning'] = array();
 $array['tree']['xivo']['configuration']['provisioning']['general'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['configregistrar'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['confignetwork'] = true;
-$array['tree']['xivo']['configuration']['provisioning']['config'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['plugin'] = true;
-$array['tree']['xivo']['configuration']['provisioning']['configure'] = true;
 
 $array['group'] = array();
 $array['group']['visitor'] = false;

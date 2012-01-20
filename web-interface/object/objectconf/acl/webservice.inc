@@ -33,21 +33,14 @@ $array['tree']['xivo']['configuration']['network']['iproute'] = true;
 $array['tree']['xivo']['configuration']['network']['resolvconf'] = true;
 $array['tree']['xivo']['configuration']['network']['mail'] = true;
 $array['tree']['xivo']['configuration']['network']['dhcp'] = true;
-//$array['tree']['xivo']['configuration']['network']['ha'] = true;
 
 $array['tree']['xivo']['configuration']['support']['monitoring'] = true;
 
 $array['tree']['xivo']['configuration']['provisioning']['general'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['autoprov'] = true;
 
-$array['tree']['xivo']['configuration']['cti'] = array();
-$array['tree']['xivo']['configuration']['cti']['configuration'] = true;
-$array['tree']['xivo']['configuration']['cti']['accounts'] = true;
-
 $array['tree']['service'] = array();
 $array['tree']['service']['ipbx'] = array();
-$array['tree']['service']['ipbx']['ctiserver'] = array();
-$array['tree']['service']['ipbx']['ctiserver']['configuration']   = true;
 $array['tree']['service']['ipbx']['queuelogger']['configuration'] = true;
 
 $array['tree']['service']['ipbx']['general_settings'] = array();
@@ -80,14 +73,9 @@ $array['tree']['service']['ipbx']['trunk_management']['custom'] = true;
 $array['tree']['service']['ipbx']['pbx_services'] = array();
 $array['tree']['service']['ipbx']['pbx_services']['phonebook'] = true;
 $array['tree']['service']['ipbx']['pbx_services']['extenfeatures'] = true;
-//$array['tree']['service']['ipbx']['pbx_services']['parkinglot'] = true;
 
 $array['tree']['service']['ipbx']['system_management'] = array();
 $array['tree']['service']['ipbx']['system_management']['context'] = true;
-
-$array['tree']['service']['ipbx']['dundi'] = array();
-$array['tree']['service']['ipbx']['dundi']['peers'] = true;
-$array['tree']['service']['ipbx']['dundi']['mappings'] = true;
 
 $array['tree']['service']['ipbx']['control_system'] = array();
 $array['tree']['service']['ipbx']['control_system']['reload'] = true;
@@ -95,19 +83,15 @@ $array['tree']['service']['ipbx']['control_system']['restart'] = true;
 
 $array['tree']['statistics'] = array();
 $array['tree']['statistics']['call_center'] = array();
-#$array['tree']['statistics']['call_center']['settings'] = array();
-#$array['tree']['statistics']['call_center']['settings']['genercache'] = true;
 $array['tree']['statistics']['call_center']['data'] = array();
 $array['tree']['statistics']['call_center']['data']['stats1'] = true;
 $array['tree']['statistics']['call_center']['data']['stats2'] = true;
 $array['tree']['statistics']['call_center']['data']['stats3'] = true;
 $array['tree']['statistics']['call_center']['data']['stats4'] = true;
-$array['tree']['statistics']['call_center']['data']['stats5'] = true;
 
 $array['tree']['service']['callcenter'] = array();
 $array['tree']['service']['callcenter']['settings']['agents'] = true;
 $array['tree']['service']['callcenter']['settings']['queues'] = true;
-$array['tree']['service']['callcenter']['settings']['queuepenalties'] = true;
 $array['tree']['service']['callcenter']['settings']['queueskills'] = true;
 $array['tree']['service']['callcenter']['settings']['queueskillrules'] = true;
 $array['tree']['service']['callcenter']['registrationcampaign']['campaigns'] = true;

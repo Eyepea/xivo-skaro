@@ -4,17 +4,14 @@ Services
 ; acl(service-callcenter)
 Centre d'appel
 
-; acl(service-callcenter-campaigns)
-Campagnes
-
-; acl(service-callcenter-general)
-Général
-
 ; acl(service-callcenter-registrationcampaign)
 Campage d'enregistrement
 
 ; acl(service-callcenter-registrationcampaign-campaigns)
 Campagnes
+
+; acl(service-callcenter-general)
+Général
 
 ; acl(service-callcenter-settings)
 Configuration
@@ -22,7 +19,7 @@ Configuration
 ; acl(service-callcenter-settings-agents)
 Agents
 
-; acl(service-callcenter-settings-queuepenalties)
+; acl(service-callcenter-settings-queuepenalty)
 Pénalités
 
 ; acl(service-callcenter-settings-queues)
@@ -34,14 +31,11 @@ Règles de compétences
 ; acl(service-callcenter-settings-queueskills)
 Compétences
 
-; acl(service-callcenter-tags)
-Étiquettes
+; acl(xivo-configuration-check)
+Check
 
 ; acl(service-cti)
 Serveurs CTI
-
-; acl(service-cti-contexts)
-Contexts
 
 ; acl(service-cti-control_system)
 Système de contrôle
@@ -64,14 +58,11 @@ Filtres d'affichage
 ; acl(service-cti-directories-reversedirectories)
 Répertoires inverses
 
-; acl(service-cti-displays)
-Filtre d'affichage
-
-; acl(service-cti-general)
-Général
-
 ; acl(service-cti-general_settings)
 Paramètres globaux
+
+; acl(service-cti-general_settings-agentstatus)
+Agents
 
 ; acl(service-cti-general_settings-general)
 Options générales
@@ -84,27 +75,6 @@ Présences
 
 ; acl(service-cti-general_settings-profiles)
 Profiles
-
-; acl(service-cti-phonehints)
-Présence téléphonique
-
-; acl(service-cti-presences)
-Présences
-
-; acl(service-cti-profiles)
-Profiles
-
-; acl(service-cti-restart)
-Redémarrage du serveur CTI
-
-; acl(service-cti-reversedirectories)
-Répertoires inverse
-
-; acl(service-cti-sheetactions)
-Fiches : Actions
-
-; acl(service-cti-sheetevents)
-Fiches : Événements 
 
 ; acl(service-cti-sheets)
 Fiches
@@ -123,21 +93,6 @@ Graphiques munin
 
 ; acl(service-ipbx)
 IPBX
-
-; acl(service-ipbx-call_center-agents)
-Agents
-
-; acl(service-ipbx-call_center-campaigns)
-Campagnes
-
-; acl(service-ipbx-call_center-queues)
-Files d'attente
-
-; acl(service-ipbx-call_center-queueskillrules)
-Règles
-
-; acl(service-ipbx-call_center-queueskills)
-Compétences
 
 ; acl(service-ipbx-call_management)
 Gestion des appels
@@ -178,29 +133,11 @@ Recharger IPBX
 ; acl(service-ipbx-control_system-restart)
 Redémarrer IPBX
 
-; acl(service-ipbx-cost_center)
-Centre de cout
-
-; acl(service-ipbx-cost_center-operator)
-Opérateur
-
-; acl(service-ipbx-cost_center-servicesgroup)
-Groupe de services
-
 ; acl(service-ipbx-ctiserver)
 Serveurs CTI
 
 ; acl(service-ipbx-ctiserver-configuration)
 Configuration
-
-; acl(service-ipbx-dundi)
-Dundi (Routage dynamique)
-
-; acl(service-ipbx-dundi-mappings)
-Mappings
-
-; acl(service-ipbx-dundi-peers)
-Pairs
 
 ; acl(service-ipbx-general_settings)
 Paramètres globaux
@@ -244,9 +181,6 @@ Fichiers son
 ; acl(service-ipbx-pbx_settings)
 Paramètres IPBX
 
-; acl(service-ipbx-pbx_settings-agents)
-Agents
-
 ; acl(service-ipbx-pbx_settings-devices)
 Terminaisons
 
@@ -262,8 +196,8 @@ Lignes
 ; acl(service-ipbx-pbx_settings-meetme)
 Chambres de conférence
 
-; acl(service-ipbx-pbx_settings-queues)
-Files d'attente
+; acl(service-ipbx-pbx_services-paging)
+Intercom
 
 ; acl(service-ipbx-pbx_settings-users)
 Utilisateurs
@@ -288,18 +222,6 @@ Fichiers de configuration
 
 ; acl(service-ipbx-system_management-context)
 Contextes
-
-; acl(service-ipbx-system_management-isdncard)
-Cartes ISDN
-
-; acl(service-ipbx-system_management-ldapfilter)
-Filtres LDAP
-
-; acl(service-ipbx-system_management-manager)
-Manager
-
-; acl(service-ipbx-system_management-modules)
-Modules
 
 ; acl(service-ipbx-trunk_management)
 Gestion des interconnexions
@@ -334,18 +256,6 @@ Arrêter
 ; acl(service-monitoring-control_system-unmonitor)
 Arrêter le monitoring
 
-; acl(service-statistics)
-Statistiques
-
-; acl(service-statistics-call_center)
-Statistiques centre d'appels
-
-; acl(service-statistics-call_center-configuration)
-Configuration
-
-; acl(statistics)
-Statistiques
-
 ; acl(statistics-call_center)
 Statistiques centre d'appels
 
@@ -364,18 +274,6 @@ Agents détails / durées
 ; acl(statistics-call_center-data-stats4)
 Détails par période
 
-; acl(statistics-call_center-data-stats5)
-Appels entrants
-
-; acl(statistics-call_center-ressources)
-Ressources
-
-; acl(statistics-call_center-ressources-agents)
-Agent
-
-; acl(statistics-call_center-ressources-queues)
-File d'attente
-
 ; acl(statistics-call_center-settings)
 Paramètres
 
@@ -388,28 +286,7 @@ Configuration
 ; acl(statistics-call_center-settings-genercache)
 Génération du cache
 
-; acl(statistics-statistics)
-Statistiques
-
-; acl(statistics-statistics-cel)
-CEL
-
-; acl(xivo)
-XiVO
-
 ; acl(xivo-configuration)
-Configuration
-
-; acl(xivo-configuration-check)
-Check
-
-; acl(xivo-configuration-cti)
-CTI
-
-; acl(xivo-configuration-cti-accounts)
-Compte
-
-; acl(xivo-configuration-cti-configuration)
 Configuration
 
 ; acl(xivo-configuration-manage)
@@ -417,6 +294,9 @@ Gestion
 
 ; acl(xivo-configuration-manage-accesswebservice)
 Accès aux services Web
+
+; acl(xivo-configuration-manage-certificate)
+Certificats SSL
 
 ; acl(xivo-configuration-manage-entity)
 Entités
@@ -457,8 +337,17 @@ Approvisionnement
 ; acl(xivo-configuration-provisioning-autoprov)
 Autoapprovisionnement
 
+; acl(xivo-configuration-provisioning-configregistrar)
+Modèles ligne
+
+; acl(xivo-configuration-provisioning-confignetwork)
+Modèles terminaison
+
 ; acl(xivo-configuration-provisioning-general)
 Général
+
+; acl(xivo-configuration-provisioning-plugin)
+Greffons
 
 ; acl(xivo-configuration-support)
 Monitoring
@@ -468,7 +357,3 @@ Monitoring
 
 ; acl(xivo-monit)
 Monit
-
-; acl(xivo-user)
-Utilisateurs
-

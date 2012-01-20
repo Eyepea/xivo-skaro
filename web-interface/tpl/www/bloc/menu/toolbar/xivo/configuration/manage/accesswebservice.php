@@ -21,12 +21,14 @@
 $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
-$toolbar_js = array();
-$toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-accesswebservice-list\';';
-$toolbar_js[] = 'var xivo_toolbar_form_list = \'accesswebservice[]\';';
-$toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm')).'\';';
+if($this->get_var('act') === 'list') {
+	$toolbar_js = array();
+	$toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-accesswebservice-list\';';
+	$toolbar_js[] = 'var xivo_toolbar_form_list = \'accesswebservice[]\';';
+	$toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm')).'\';';
 
-$dhtml->write_js($toolbar_js);
+	$dhtml->write_js($toolbar_js);
+}
 
 ?>
 <script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo_toolbar.js'));?>"></script>
