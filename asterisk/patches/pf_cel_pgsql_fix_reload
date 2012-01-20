@@ -1,8 +1,8 @@
-Index: asterisk-1.8.8.0/cel/cel_pgsql.c
+Index: asterisk-1.8.8.2/cel/cel_pgsql.c
 ===================================================================
---- asterisk-1.8.8.0.orig/cel/cel_pgsql.c	2011-12-16 09:27:51.423266050 -0500
-+++ asterisk-1.8.8.0/cel/cel_pgsql.c	2011-12-16 09:27:55.923264962 -0500
-@@ -564,7 +564,7 @@
+--- asterisk-1.8.8.2.orig/cel/cel_pgsql.c
++++ asterisk-1.8.8.2/cel/cel_pgsql.c
+@@ -566,7 +566,7 @@ static int load_module(void)
  static int reload(void)
  {
  	my_unload_module();
