@@ -53,6 +53,7 @@ $ldapserverstat = $this->get_var('ldapserverstat');
 					<td class="td-center"><?=$entitystat['disable']?></td>
 					<td class="td-right"><?=$entitystat['total']?></td>
 				</tr>
+				<!-- hide LDAP servers and servers
 				<tr class="l-infos-1on2">
 					<td class="td-left txt-left"><?=$this->bbf('stats_type-server');?></td>
 					<td class="td-center"><?=$serverstat['enable']?></td>
@@ -65,6 +66,7 @@ $ldapserverstat = $this->get_var('ldapserverstat');
 					<td class="td-center"><?=$ldapserverstat['disable']?></td>
 					<td class="td-right"><?=$ldapserverstat['total']?></td>
 				</tr>
+				-->
 			</table>
 		</div>
 		<div id="xivo-logo">
