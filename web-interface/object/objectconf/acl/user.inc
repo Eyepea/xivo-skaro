@@ -76,9 +76,9 @@ $array['tree']['service']['ipbx']['control_system']['restart'] = true;
 $array['tree']['service']['cti'] = array();
 $array['tree']['service']['cti']['general_settings']                  = array();
 $array['tree']['service']['cti']['general_settings']['general']       = true;
+$array['tree']['service']['cti']['general_settings']['profiles']      = true;
 $array['tree']['service']['cti']['general_settings']['presences']     = true;
 $array['tree']['service']['cti']['general_settings']['phonehints']    = true;
-$array['tree']['service']['cti']['general_settings']['profiles']      = true;
 $array['tree']['service']['cti']['general_settings']['agentstatus']   = true;
 $array['tree']['service']['cti']['directories']                       = array();
 $array['tree']['service']['cti']['directories']['directories']        = true;
@@ -133,16 +133,33 @@ $array['tree']['xivo']['configuration'] = array();
 $array['tree']['xivo']['configuration']['manage'] = array();
 $array['tree']['xivo']['configuration']['manage']['user'] = true;
 $array['tree']['xivo']['configuration']['manage']['entity'] = true;
+$array['tree']['xivo']['configuration']['manage']['directories'] = true;
+$array['tree']['xivo']['configuration']['manage']['accesswebservice'] = true;
 $array['tree']['xivo']['configuration']['manage']['certificate'] = true;
+
+$array['tree']['xivo']['configuration']['network'] = array();
+$array['tree']['xivo']['configuration']['network']['interface'] = true;
+$array['tree']['xivo']['configuration']['network']['resolvconf'] = true;
+$array['tree']['xivo']['configuration']['network']['mail'] = true;
+$array['tree']['xivo']['configuration']['network']['dhcp'] = true;
+
+$array['tree']['xivo']['configuration']['support'] = array();
+$array['tree']['xivo']['configuration']['support']['xivo'] = true;
+$array['tree']['xivo']['configuration']['support']['alerts'] = true;
+$array['tree']['xivo']['configuration']['support']['limits'] = true;
 
 $array['tree']['xivo']['configuration']['provisioning'] = array();
 $array['tree']['xivo']['configuration']['provisioning']['general'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['configregistrar'] = true;
-$array['tree']['xivo']['configuration']['provisioning']['confignetwork'] = true;
+$array['tree']['xivo']['configuration']['provisioning']['configdevice'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['plugin'] = true;
 // required to query /ui/ url
-$array['tree']['xivo']['configuration']['provisioning']['config'] = true;
+$array['tree']['xivo']['configuration']['provisioning']['configs'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['configure'] = true;
+
+$array['tree']['xivo']['configuration']['controlsystem'] = array();
+$array['tree']['xivo']['configuration']['controlsystem']['network'] = true;
+$array['tree']['xivo']['configuration']['controlsystem']['commonconf'] = true;
 
 $array['group'] = array();
 $array['group']['visitor'] = false;

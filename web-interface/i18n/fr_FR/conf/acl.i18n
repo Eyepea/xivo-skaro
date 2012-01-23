@@ -4,14 +4,14 @@ Services
 ; acl(service-callcenter)
 Centre d'appel
 
+; acl(service-callcenter-general)
+Général
+
 ; acl(service-callcenter-registrationcampaign)
 Campage d'enregistrement
 
 ; acl(service-callcenter-registrationcampaign-campaigns)
 Campagnes
-
-; acl(service-callcenter-general)
-Général
 
 ; acl(service-callcenter-settings)
 Configuration
@@ -35,7 +35,7 @@ Compétences
 Check
 
 ; acl(service-cti)
-Serveurs CTI
+Serveur CTI
 
 ; acl(service-cti-control_system)
 Système de contrôle
@@ -132,12 +132,6 @@ Recharger IPBX
 
 ; acl(service-ipbx-control_system-restart)
 Redémarrer IPBX
-
-; acl(service-ipbx-ctiserver)
-Serveurs CTI
-
-; acl(service-ipbx-ctiserver-configuration)
-Configuration
 
 ; acl(service-ipbx-general_settings)
 Paramètres globaux
@@ -298,6 +292,9 @@ Accès aux services Web
 ; acl(xivo-configuration-manage-certificate)
 Certificats SSL
 
+; acl(xivo-configuration-manage-directories)
+Répertoires
+
 ; acl(xivo-configuration-manage-entity)
 Entités
 
@@ -337,11 +334,17 @@ Approvisionnement
 ; acl(xivo-configuration-provisioning-autoprov)
 Autoapprovisionnement
 
+; acl(xivo-configuration-provisioning-configs)
+Configs
+
+; acl(xivo-configuration-provisioning-configdevice)
+Modèles terminaison
+
 ; acl(xivo-configuration-provisioning-configregistrar)
 Modèles ligne
 
-; acl(xivo-configuration-provisioning-confignetwork)
-Modèles terminaison
+; acl(xivo-configuration-provisioning-configure)
+Configure
 
 ; acl(xivo-configuration-provisioning-general)
 Général
@@ -352,8 +355,23 @@ Greffons
 ; acl(xivo-configuration-support)
 Monitoring
 
-; acl(xivo-configuration-support-monitoring)
-Monitoring
+; acl(xivo-configuration-support-alerts)
+Gestion des alertes
+
+; acl(xivo-configuration-support-limits)
+Limitations
+
+; acl(xivo-configuration-support-xivo)
+Maintenance XiVO
+
+; acl(xivo-configuration-controlsystem)
+Système de contrôle
+
+; acl(xivo-configuration-controlsystem-commonconf)
+Appliquer les modifications système
+
+; acl(xivo-configuration-controlsystem-network)
+Appliquer les modifications réseau
 
 ; acl(xivo-monit)
 Monit

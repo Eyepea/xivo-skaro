@@ -29,161 +29,191 @@ $dhtml = &$this->get_module('dhtml');
 		<span class="span-right">&nbsp;</span>
 	</dt>
 	<dd>
-		<dl>
-			<dt><?=$this->bbf('mn_left_ti_manage');?></dt>
-			<dd id="mn-manage--user">
-				<?=$url->href_html($this->bbf('mn_left_manage-user'),
-						   'xivo/configuration/manage/user',
-						   'act=list');?>
-			</dd>
-			<dd id="mn-manage--entity">
-				<?=$url->href_html($this->bbf('mn_left_manage-entity'),
-							      'xivo/configuration/manage/entity',
-							      'act=list');?>
-			</dd>
 <?php
-/*
-			<dd id="mn-manage--server">
-				<?=$url->href_html($this->bbf('mn_left_manage-server'),
-						   'xivo/configuration/manage/server',
-						   'act=list');?>
-			</dd>
-*/
-?>
-<?php
-/* LDAP - COMMENTED
-			<dd id="mn-manage--ldapserver">
-				<?=$url->href_html($this->bbf('mn_left_manage-ldapserver'),
-							      'xivo/configuration/manage/ldapserver',
-							      'act=list');?>
-			</dd>
-*/
-?>
-			<dd id="mn-manage--directories">
-				<?=$url->href_html($this->bbf('mn_left_manage-directories'),
-							      'xivo/configuration/manage/directories',
-							      'act=list');?>
-			</dd>
-			<dd id="mn-manage--accesswebservice">
-				<?=$url->href_html($this->bbf('mn_left_manage-accesswebservice'),
-						   'xivo/configuration/manage/accesswebservice',
-						   'act=list');?>
-			</dd>
-			<dd id="mn-manage--certificate">
-				<?=$url->href_html($this->bbf('mn_left_manage-certificate'),
-							      'xivo/configuration/manage/certificate',
-							      'act=list');?>
-			</dd>
-		</dl>
-		<dl>
-			<dt><?=$this->bbf('mn_left_ti_network');?></dt>
-			<dd id="mn-network--interface">
-				<?=$url->href_html($this->bbf('mn_left_network-interface'),
-						   'xivo/configuration/network/interface',
-						   'act=list');?>
-			</dd>
-<?php
-/* IP ROUTE - COMMENTED
-			<dd id="mn-network--iproute">
-				<?=$url->href_html($this->bbf('mn_left_network-iproute'),
-						   'xivo/configuration/network/iproute',
-						   'act=list');?>
-			</dd>
-*/
-?>
-			<dd id="mn-network--resolvconf">
-				<?=$url->href_html($this->bbf('mn_left_network-resolvconf'),
-						   'xivo/configuration/network/resolvconf');?>
-			</dd>
-			<dd id="mn-network--mail">
-				<?=$url->href_html($this->bbf('mn_left_network-mail'),
-						   'xivo/configuration/network/mail');?>
-			</dd>
-			<dd id="mn-network--dhcp">
-				<?=$url->href_html($this->bbf('mn_left_network-dhcp'),
-						   'xivo/configuration/network/dhcp');?>
-			</dd>
-<?php
-	/*
-			<dd id="mn-network--ha">
-				<?=$url->href_html($this->bbf('mn_left_network-ha'),
-						   'xivo/configuration/network/ha');?>
-			</dd>
-	*/
-?>
-		</dl>
-		<dl>
-			<dt><?=$this->bbf('mn_left_ti_support');?></dt>
-			<dd id="mn-support--xivo">
-				<?=$url->href_html($this->bbf('mn_left_support-xivo'),
-						   'xivo/configuration/support/xivo');?>
-			</dd>
-			<dd id="mn-support--alerts">
-				<?=$url->href_html($this->bbf('mn_left_support-alerts'),
-						   'xivo/configuration/support/alerts');?>
-			</dd>
-			<dd id="mn-support--limits">
-				<?=$url->href_html($this->bbf('mn_left_support-limits'),
-						   'xivo/configuration/support/limits');?>
-			</dd>
-		</dl>
-		<dl>
-			<dt><?=$this->bbf('mn_left_ti_provisioning');?></dt>
-			<dd id="mn-provisioning--general">
-				<?=$url->href_html($this->bbf('mn_left_provisioning-general'),
-						   'xivo/configuration/provisioning/general');?>
-			</dd>
-			<dd id="mn-provisioning--configregistrar">
-				<?=$url->href_html($this->bbf('mn_left_provisioning-configregistrar'),
-						   'xivo/configuration/provisioning/configregistrar');?>
-			</dd>
-			<dd id="mn-provisioning--configdevice">
-				<?=$url->href_html($this->bbf('mn_left_provisioning-configdevice'),
-						   'xivo/configuration/provisioning/configdevice');?>
-			</dd>
-			<dd id="mn-provisioning--plugin">
-				<?=$url->href_html($this->bbf('mn_left_provisioning-plugin'),
-						   'xivo/configuration/provisioning/plugin');?>
-			</dd>
-		</dl>
-		<dl>
-			<dt><?=$this->bbf('mn_left_ti_controlsystem');?></dt>
-			<dd id="mn-controlsystem--commonconf">
-<?php
+	if(xivo_user::chk_acl('manage') === true):
+		echo '<dl><dt>',$this->bbf('mn_left_ti_manage'),'</dt>';
 
-	$class_network = file_exists('/var/lib/pf-xivo-web-interface/network.reload')?'active':false;
+		if(xivo_user::chk_acl('manage','user') === true):
+			echo	'<dd id="mn-manage--user">',
+				$url->href_html($this->bbf('mn_left_manage-user'),
+						'xivo/configuration/manage/user',
+						'act=list'),
+				'</dd>';
+		endif;
 
-	echo $url->href_html($this->bbf('mn_left_controlsystem-network'),
-				'xivo/configuration/controlsystem/network',
-				null,
-				'onclick="return(confirm(\''.$dhtml->escape($this->bbf('controlsystem_network_confirm')).'\'));"',
-				null,
-				false,
-				'&amp;',
-				true,
-				true,
-				true,
-				null,
-				$class_network);
+		if(xivo_user::chk_acl('manage','entity') === true):
+			echo	'<dd id="mn-manage--entity">',
+				$url->href_html($this->bbf('mn_left_manage-entity'),
+						'xivo/configuration/manage/entity',
+						'act=list'),
+				'</dd>';
+		endif;
 
-	$class_commonconf = file_exists('/var/lib/pf-xivo-web-interface/commonconf.reload')?'active':false;
+		if(xivo_user::chk_acl('manage','directories') === true):
+			echo	'<dd id="mn-manage--directories">',
+				$url->href_html($this->bbf('mn_left_manage-directories'),
+						'xivo/configuration/manage/directories',
+						'act=list'),
+				'</dd>';
+		endif;
 
-	echo $url->href_html($this->bbf('mn_left_controlsystem-commonconf'),
-				'xivo/configuration/controlsystem/commonconf',
-				null,
-				'onclick="return(confirm(\''.$dhtml->escape($this->bbf('controlsystem_commonconf_confirm')).'\'));"',
-				null,
-				false,
-				'&amp;',
-				true,
-				true,
-				true,
-				null,
-				$class_commonconf
-	);
+		if(xivo_user::chk_acl('manage','accesswebservice') === true):
+			echo	'<dd id="mn-manage--accesswebservice">',
+				$url->href_html($this->bbf('mn_left_manage-accesswebservice'),
+						'xivo/configuration/manage/accesswebservice',
+						'act=list'),
+				'</dd>';
+		endif;
+
+		if(xivo_user::chk_acl('manage','certificate') === true):
+			echo	'<dd id="mn-manage--certificate">',
+				$url->href_html($this->bbf('mn_left_manage-certificate'),
+						'xivo/configuration/manage/certificate',
+						'act=list'),
+				'</dd>';
+		endif;
+
+		echo '</dl>';
+	endif;
+
+	if(xivo_user::chk_acl('network') === true):
+		echo '<dl><dt>',$this->bbf('mn_left_ti_network'),'</dt>';
+
+		if(xivo_user::chk_acl('network','interface') === true):
+			echo	'<dd id="mn-network--interface">',
+				$url->href_html($this->bbf('mn_left_network-interface'),
+						'xivo/configuration/network/interface',
+						'act=list'),
+				'</dd>';
+		endif;
+
+		if(xivo_user::chk_acl('network','resolvconf') === true):
+			echo	'<dd id="mn-network--resolvconf">',
+				$url->href_html($this->bbf('mn_left_network-resolvconf'),
+						'xivo/configuration/network/resolvconf'),
+				'</dd>';
+		endif;
+
+		if(xivo_user::chk_acl('network','mail') === true):
+			echo	'<dd id="mn-network--mail">',
+				$url->href_html($this->bbf('mn_left_network-mail'),
+						'xivo/configuration/network/mail'),
+				'</dd>';
+		endif;
+
+		if(xivo_user::chk_acl('network','dhcp') === true):
+			echo	'<dd id="mn-network--dhcp">',
+				$url->href_html($this->bbf('mn_left_network-dhcp'),
+						'xivo/configuration/network/dhcp'),
+				'</dd>';
+		endif;
+
+		echo '</dl>';
+	endif;
+
+	if(xivo_user::chk_acl('support') === true):
+		echo '<dl><dt>',$this->bbf('mn_left_ti_support'),'</dt>';
+
+		if(xivo_user::chk_acl('support','xivo') === true):
+			echo	'<dd id="mn-support--xivo">',
+				$url->href_html($this->bbf('mn_left_support-xivo'),
+						'xivo/configuration/support/xivo'),
+				'</dd>';
+		endif;
+
+		if(xivo_user::chk_acl('support','alerts') === true):
+			echo	'<dd id="mn-support--alerts">',
+				$url->href_html($this->bbf('mn_left_support-alerts'),
+						'xivo/configuration/support/alerts'),
+				'</dd>';
+		endif;
+
+		if(xivo_user::chk_acl('support','limits') === true):
+			echo	'<dd id="mn-support--limits">',
+				$url->href_html($this->bbf('mn_left_support-limits'),
+						'xivo/configuration/support/limits'),
+				'</dd>';
+		endif;
+
+		echo '</dl>';
+	endif;
+
+	if(xivo_user::chk_acl('provisioning') === true):
+		echo '<dl><dt>',$this->bbf('mn_left_ti_provisioning'),'</dt>';
+
+		if(xivo_user::chk_acl('provisioning','general') === true):
+			echo	'<dd id="mn-provisioning--general">',
+				$url->href_html($this->bbf('mn_left_provisioning-general'),
+						'xivo/configuration/provisioning/general'),
+				'</dd>';
+		endif;
+
+		if(xivo_user::chk_acl('provisioning','configregistrar') === true):
+			echo	'<dd id="mn-provisioning--configregistrar">',
+				$url->href_html($this->bbf('mn_left_provisioning-configregistrar'),
+						'xivo/configuration/provisioning/configregistrar'),
+				'</dd>';
+		endif;
+
+		if(xivo_user::chk_acl('provisioning','configdevice') === true):
+			echo	'<dd id="mn-provisioning--configdevice">',
+				$url->href_html($this->bbf('mn_left_provisioning-configdevice'),
+						'xivo/configuration/provisioning/configdevice'),
+				'</dd>';
+		endif;
+
+		if(xivo_user::chk_acl('provisioning','plugin') === true):
+			echo	'<dd id="mn-provisioning--plugin">',
+				$url->href_html($this->bbf('mn_left_provisioning-plugin'),
+						'xivo/configuration/provisioning/plugin'),
+				'</dd>';
+		endif;
+
+		echo '</dl>';
+	endif;
+
+	if(xivo_user::chk_acl('controlsystem') === true):
+		echo '<dl><dt>',$this->bbf('mn_left_ti_controlsystem'),'</dt>';
+
+		if(xivo_user::chk_acl('controlsystem','network') === true):
+			$class_network = file_exists('/var/lib/pf-xivo-web-interface/network.reload')?'active':false;
+
+			echo	'<dd id="mn-controlsystem--network">',
+				$url->href_html($this->bbf('mn_left_controlsystem-network'),
+						'xivo/configuration/controlsystem/network',
+						null,
+						'onclick="return(confirm(\''.$dhtml->escape($this->bbf('controlsystem_network_confirm')).'\'));"',
+						null,
+						false,
+						'&amp;',
+						true,
+						true,
+						true,
+						null,
+						$class_network);
+		endif;
+
+		if(xivo_user::chk_acl('controlsystem','commonconf') === true):
+			$class_commonconf = file_exists('/var/lib/pf-xivo-web-interface/commonconf.reload')?'active':false;
+
+			echo	'<dd id="mn-controlsystem--commonconf">',
+				 $url->href_html($this->bbf('mn_left_controlsystem-commonconf'),
+						'xivo/configuration/controlsystem/commonconf',
+						null,
+						'onclick="return(confirm(\''.$dhtml->escape($this->bbf('controlsystem_commonconf_confirm')).'\'));"',
+						null,
+						false,
+						'&amp;',
+						true,
+						true,
+						true,
+						null,
+						$class_commonconf);
+		endif;
+
+		echo '</dl>';
+	endif;
 ?>
-			</dd>
-		</dl>
 	</dd>
 	<dd class="b-nosize">
 		<span class="span-left">&nbsp;</span>
@@ -191,36 +221,3 @@ $dhtml = &$this->get_module('dhtml');
 		<span class="span-right">&nbsp;</span>
 	</dd>
 </dl>
-<?php
-	/*
-			<dd id="mn-controlsystem--ha_stop">
-				<?=$url->href_html($this->bbf('mn_left_controlsystem-ha_stop'),
-						   'xivo/configuration/controlsystem/ha_stop',
-						   null,
-						   'onclick="return(confirm(\''.
-						       $dhtml->escape($this->bbf('controlsystem_ha_stop_confirm')).
-						       '\'));"'
-			    );?>
-			</dd>
-			<dd id="mn-controlsystem--ha">
-				<?=$url->href_html($this->bbf('mn_left_controlsystem-ha'),
-						   'xivo/configuration/controlsystem/ha',
-						   null,
-						   'onclick="return(confirm(\''.
-						       $dhtml->escape($this->bbf('controlsystem_ha_confirm')).
-						       '\'));"'
-			    );?>
-			</dd>
-*.
-?>
-		</dl>
-	</dd>
-	<dd class="b-nosize">
-		<span class="span-left">&nbsp;</span>
-		<span class="span-center">&nbsp;</span>
-		<span class="span-right">&nbsp;</span>
-	</dd>
-</dl>
-
-*/
-?>

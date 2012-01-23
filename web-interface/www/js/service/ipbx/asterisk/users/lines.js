@@ -39,7 +39,7 @@ function xivo_http_search_line_from_provd(obj,config,exept)
         return;
     }
     $.ajax({
-        url: '/xivo/configuration/ui.php/provisioning/config?act=getbydeviceid&id='+config,
+        url: '/xivo/configuration/ui.php/provisioning/configs?act=getbydeviceid&id='+config,
         async: false,
         dataType: 'json',
         success: function(data) {

@@ -35,7 +35,7 @@ Skills
 Check
 
 ; acl(service-cti)
-CTI servers
+CTI server
 
 ; acl(service-cti-control_system)
 Control system
@@ -68,7 +68,7 @@ Agents
 General options
 
 ; acl(service-cti-general_settings-phonehints)
-Phone presences
+Phone hints
 
 ; acl(service-cti-general_settings-presences)
 Presences
@@ -132,12 +132,6 @@ Reload IPBX
 
 ; acl(service-ipbx-control_system-restart)
 Restart IPBX
-
-; acl(service-ipbx-ctiserver)
-CTI servers
-
-; acl(service-ipbx-ctiserver-configuration)
-Configuration
 
 ; acl(service-ipbx-general_settings)
 General settings
@@ -290,13 +284,16 @@ Generate cache
 Configuration
 
 ; acl(xivo-configuration-manage)
-Manage
+Management
 
 ; acl(xivo-configuration-manage-accesswebservice)
 Web services access
 
 ; acl(xivo-configuration-manage-certificate)
 Certificates
+
+; acl(xivo-configuration-manage-directories)
+Directories
 
 ; acl(xivo-configuration-manage-entity)
 Entities
@@ -337,11 +334,17 @@ Provisioning
 ; acl(xivo-configuration-provisioning-autoprov)
 Autoprovisioning
 
+; acl(xivo-configuration-provisioning-configs)
+Configs
+
+; acl(xivo-configuration-provisioning-configdevice)
+Template device
+
 ; acl(xivo-configuration-provisioning-configregistrar)
 Template line
 
-; acl(xivo-configuration-provisioning-confignetwork)
-Template device
+; acl(xivo-configuration-provisioning-configure)
+Configure
 
 ; acl(xivo-configuration-provisioning-general)
 General
@@ -350,10 +353,25 @@ General
 Plugins
 
 ; acl(xivo-configuration-support)
-Monitoring
+Support
 
-; acl(xivo-configuration-support-monitoring)
-Monitoring
+; acl(xivo-configuration-support-alerts)
+Alerts
+
+; acl(xivo-configuration-support-limits)
+Limits
+
+; acl(xivo-configuration-support-xivo)
+XiVO
+
+; acl(xivo-configuration-controlsystem)
+Control System
+
+; acl(xivo-configuration-controlsystem-commonconf)
+Apply system configuration
+
+; acl(xivo-configuration-controlsystem-network)
+Apply network configuration
 
 ; acl(xivo-monit)
 Monit

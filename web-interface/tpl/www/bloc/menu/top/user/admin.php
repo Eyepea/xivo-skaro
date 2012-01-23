@@ -29,7 +29,7 @@ $this->file_include('bloc/menu/top/user/loginbox');
 <div class="nav">
 	 <ul>
 <?php
-	if(xivo_user::chk_acl(null,null,'service') === true):
+	if(xivo_user::chk_acl_section('service') === true):
 ?>
 		<li onmouseout="this.className = 'moo';"
 		    onmouseover="this.className = 'mov';">
@@ -99,6 +99,21 @@ $this->file_include('bloc/menu/top/user/loginbox');
 		</li>
 <?php
 	endif;
+
+	if(xivo_user::chk_acl_section('xivo/configuration') === true):
+?>
+		<li onmouseout="this.className = 'moo';"
+			onmouseover="this.className = 'mov';">
+			<?=$url->href_html('<span class="span-left">&nbsp;</span>
+						<span class="span-center">'.$this->bbf('mn_top_configuration').'</span>
+						<span class="span-right">&nbsp;</span>',
+						'xivo/configuration',
+						null,
+						null,
+						$this->bbf('mn_top_configuration'));?>
+		</li>
+<?php
+	endif;
 ?>
 		<li onmouseout="this.className = 'moo';"
 		    onmouseover="this.className = 'mov';">
@@ -129,6 +144,7 @@ $this->file_include('bloc/menu/top/user/loginbox');
 ?>
 </div>
 </div>
+
 <?php if (dwho_report::has('error') === true) : echo dwho_report::get_message('error'); endif; ?>
 <?php if (dwho_report::has('warning') === true) : echo dwho_report::get_message('warning'); endif; ?>
 <?php if (dwho_report::has('info') === true) : echo dwho_report::get_message('info'); endif; ?>

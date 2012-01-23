@@ -55,7 +55,7 @@ $live = $this->get_var('live');
 					'callcenter/settings/agents',
 					'act=list');
 	else:
-		echo $this->bbf('stats_type-agents');
+		echo $this->bbf('stats_type-agent');
 	endif;
 ?>
 					</td>
