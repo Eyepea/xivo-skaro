@@ -131,6 +131,7 @@ $array['tree']['xivo']['monit']  = true;
 
 $array['tree']['xivo']['configuration'] = array();
 $array['tree']['xivo']['configuration']['manage'] = array();
+$array['tree']['xivo']['configuration']['manage']['user'] = true;
 $array['tree']['xivo']['configuration']['manage']['entity'] = true;
 $array['tree']['xivo']['configuration']['manage']['certificate'] = true;
 
@@ -139,6 +140,9 @@ $array['tree']['xivo']['configuration']['provisioning']['general'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['configregistrar'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['confignetwork'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['plugin'] = true;
+// required to query /ui/ url
+$array['tree']['xivo']['configuration']['provisioning']['config'] = true;
+$array['tree']['xivo']['configuration']['provisioning']['configure'] = true;
 
 $array['group'] = array();
 $array['group']['visitor'] = false;
