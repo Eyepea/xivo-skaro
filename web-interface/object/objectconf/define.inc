@@ -50,7 +50,7 @@ define('XIVO_PF_FR_CORP_PHONE'		,'+33 (0) 1 41 38 99 60');
 define('XIVO_PF_FR_CORP_FAX'		,'+33 (0) 1 41 38 99 70');
 
 define('XIVO_PF_CA_CORP_NAME'		,'Avencall inc');
-define('XIVO_PF_CA_CORP_EMAIL'		,'contact@vencall.ca');
+define('XIVO_PF_CA_CORP_EMAIL'		,'contact@avencall.ca');
 define('XIVO_PF_CA_CORP_URL'		,'avencall.ca');
 define('XIVO_PF_CA_CORP_ADDRESS'	,'2590, boul. Laurier, local 770');
 define('XIVO_PF_CA_CORP_ZIPCODE'	,'G1V 4M6');
