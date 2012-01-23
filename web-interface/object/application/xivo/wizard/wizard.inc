@@ -631,7 +631,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		|| isset($data['license-agree']) === false
 		|| (bool) $data['license-agree'] === false)
 		{
-			$this->_set_error('license','disagree');
+			$this->_set_error(dwho_i18n::babelfish('error_fm_license(disagree)'));
 			return(false);
 		}
 
