@@ -756,7 +756,10 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			$conf[$ref['fknum']] = array();
 			$conf[$ref['fknum']]['type'] = ($ref['supervision'] === false) ? 'speeddial' : 'blf';
 			$conf[$ref['fknum']]['line'] = 1;
-			$conf[$ref['fknum']]['label'] = $ref['label'];
+			$label = $ref['label'];
+			if($label !== null) {
+				$conf[$ref['fknum']]['label'] = $label;
+			}
 
 			if(empty($type) === true) {
 				$conf[$ref['fknum']]['value'] = $ref['exten'];
