@@ -130,12 +130,6 @@ Active la messagerie vocale de l'utilisateur :
 ; fm_extenfeatures_enable-enablevmslt
 Active la messagerie vocale de l'utilisateur précisé :
 
-; fm_extenfeatures_enable-enablevmbox
-Active la messagerie vocale :
-
-; fm_extenfeatures_enable-enablevmboxslt
-Active la messagerie vocale précisée :
-
 ; fm_extenfeatures_enable-vmusermsg
 Consultation de la messagerie vocale de l'utilisateur :
 

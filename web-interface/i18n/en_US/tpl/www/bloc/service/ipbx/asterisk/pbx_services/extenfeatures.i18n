@@ -277,9 +277,6 @@ Attended transfer :
 ; fm_extenfeatures_enable-enablevmslt
 Enable voicemail for the specified user :
 
-; fm_extenfeatures_enable-enablevmboxslt
-Enable specified voicemail :
-
 ; fm_extenfeatures_enable-vmusermsg
 Listening to voicemail for the specified user :
 
@@ -341,9 +338,6 @@ phone initialization :
 
 ; fm_generalfeatures_parkingtime-opt-minutes-seconds
 %s min. %s sec.
-
-; fm_extenfeatures_enable-enablevmbox
-Enable voicemail:
 
 
 ; fm_generalfeatures_parkpos

@@ -660,44 +660,6 @@ if(isset($error_js[0]) === true)
 ?>
 		</div>
 <?php
-	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-enablevmbox'),
-				      'name'	=> 'extenfeatures[enablevmbox][enable]',
-				      'labelid'	=> 'extenfeatures-enable-enablevmbox',
-				      'checked'	=> ((bool) $this->get_var('extenfeatures','enablevmbox','commented') === false))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
-				  'name'	=> 'extenfeatures[enablevmbox][exten]',
-				  'labelid'	=> 'extenfeatures-enablevmbox',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('extenfeatures','enablevmbox','exten'),
-				  'default'	=> $element['extenfeatures']['enablevmbox']['default'],
-				  'invalid'	=> isset($invalid['extenfeatures']['enablevmbox']))),
-
-		$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-enablevmboxslt'),
-				      'name'	=> 'extenfeatures[enablevmboxslt][enable]',
-				      'labelid'	=> 'extenfeatures-enable-enablevmboxslt',
-				      'checked'	=> ((bool) $this->get_var('extenfeatures','enablevmboxslt','commented') === false)));
-?>
-		<div class="fm-paragraph">
-<?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
-				  'name'	=> 'extenfeatures[enablevmboxslt][exten]',
-				  'paragraph'	=> false,
-				  'labelid'	=> 'extenfeatures-enablevmboxslt',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('extenfeatures','enablevmboxslt','exten'),
-				  'default'	=> $element['extenfeatures']['enablevmboxslt']['default'],
-				  'invalid'	=> isset($invalid['extenfeatures']['enablevmboxslt']))),
-
-		$form->select(array('paragraph'	=> false,
-				    'name'	=> 'extenfeatures[list-enablevmboxslt]',
-				    'labelid'	=> 'extenfeatures-list-enablevmboxslt',
-				    'empty'	=> true,
-				    'key'	=> false),
-			      array('*',range(3,11)));
-?>
-		</div>
-<?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-vmusermsg'),
 				      'name'	=> 'extenfeatures[vmusermsg][enable]',
 				      'labelid'	=> 'extenfeatures-enable-vmusermsg',

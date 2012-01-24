@@ -717,8 +717,6 @@ INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*666.',1,'GoSub','u
 INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','*36',1,'Directory','${CONTEXT}','directoryaccess');
 INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','*25',1,'GoSub','enablednd,s,1','enablednd');
 INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','*90',1,'GoSub','enablevm,s,1','enablevm');
-INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','*91',1,'GoSub','enablevmbox,s,1','enablevmbox');
-INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*91.',1,'GoSub','enablevmbox,s,1(${EXTEN:3})','enablevmboxslt');
 INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*90.',1,'GoSub','enablevm,s,1(${EXTEN:3})','enablevmslt');
 INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*23.',1,'GoSub','feature_forward,s,1(busy,${EXTEN:3})','fwdbusy');
 INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*22.',1,'GoSub','feature_forward,s,1(rna,${EXTEN:3})','fwdrna');
@@ -798,8 +796,6 @@ INSERT INTO "extenumbers" VALUES (DEFAULT,'_*666.','d7b68f456ddb50215670c5bfca92
 INSERT INTO "extenumbers" VALUES (DEFAULT,'*36','f9b69fe3c361ddfc2ae49e048460ea197ea850c8','','extenfeatures','directoryaccess');
 INSERT INTO "extenumbers" VALUES (DEFAULT,'*25','c0d236c38bf8d5d84a2e154203cd2a18b86c6b2a','','extenfeatures','enablednd');
 INSERT INTO "extenumbers" VALUES (DEFAULT,'*90','2fc9fcda52bd8293da1bfa68cbdb8974fafd409e','','extenfeatures','enablevm');
-INSERT INTO "extenumbers" VALUES (DEFAULT,'*91','880d3330b465056ede825e1fbc8ceb50fd816e1d','','extenfeatures','enablevmbox');
-INSERT INTO "extenumbers" VALUES (DEFAULT,'_*91.','936ec7abe6019d9d47d8be047ef6fc0ebc334c00','','extenfeatures','enablevmboxslt');
 INSERT INTO "extenumbers" VALUES (DEFAULT,'_*90.','9fdaa61ea338dcccf1450949cbf6f7f99f1ccc54','','extenfeatures','enablevmslt');
 INSERT INTO "extenumbers" VALUES (DEFAULT,'_*23.','a1968a70f1d265b8aa263e73c79259961c4f7bbb','','extenfeatures','fwdbusy');
 INSERT INTO "extenumbers" VALUES (DEFAULT,'_*22.','00638af9e028d4cd454c00f43caf5626baa7d84c','','extenfeatures','fwdrna');
