@@ -17,19 +17,19 @@ Plugin
 Legend
 
 ; device-list_legend-opt(link_provd_exist)
-Although existing in the provisioning server
+Existent on the provisioning server
 
 ; device-list_legend-opt(link_provd_not_exist)
-Nonexistent in the provisioning server
+Inexistent on the provisioning server
 
 ; device-list_legend-opt(configured)
 Device properly configured
 
 ; device-list_legend-opt(autoprov-mode)
-Device configured mode (Autoprov)
+Device configured in autoprov mode
 
 ; device-list_legend-opt(not_configured)
-Device not configured (verified if the plugin is installed for this device)
+Device not configured (check if a plugin is installed for this device)
 
 ; no_device
 No device found

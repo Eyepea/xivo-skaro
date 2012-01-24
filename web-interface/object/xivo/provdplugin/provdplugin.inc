@@ -48,7 +48,7 @@ class xivo_object_provdplugin extends xivo_object_provd_abstract
 		|| $this->_status_code !== 200
 		|| empty($rs['plugin_info']) === true)
 		{
-			dwho_report::push('error','error: Can\'t get '.$name.' or plugin doesn\'t installed.');
+			dwho_report::push('error','error: Can\'t get '.$name.' or plugin isn\'t installed.');
 			return(false);
 		}
 
