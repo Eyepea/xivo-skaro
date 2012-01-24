@@ -53,6 +53,10 @@ $page = $url->pager($pager['pages'],
 <?=$form->hidden(array('name' => 'page','value' => $pager['page']))?>
 <?=$form->hidden(array('name' => 'search','value' => ''))?>
 
+<div id="box_installer" class="bi_bg">
+	<div class="bi_loading"><?=$url->img_html('img/site/loading.gif', $this->bbf('loading'), 'height="75" width="75" border="0"')?></div>
+</div>
+
 <table id="table-main-listing">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
@@ -173,7 +177,7 @@ $page = $url->pager($pager['pages'],
 					'service/ipbx/pbx_settings/devices',
 					array('act'	=> 'synchronize',
 					      'id'	=> $ref['id']),
-					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_synchronize_confirm')).'\'));"',
+					'onclick="if(confirm(\''.$dhtml->escape($this->bbf('opt_synchronize_confirm')).'\')){init_synchronize(\''.$ref['id'].'\');}return(false);"',
 					$this->bbf('opt_synchronize')),"\n";
 		echo	$url->href_html($url->img_html('img/site/utils/reset.png',
 						       $this->bbf('opt_reset-autoprov'),

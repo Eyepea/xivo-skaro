@@ -16,6 +16,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+function init_synchronize(id) {
+	var url = '/xivo/configuration/ui.php/provisioning/devices?act=synchronize&id=' + id;
+	$('#box_installer').show();
+	$.get(url, function(data) {
+				if (data === null)
+					return false;
+				ajax_request_oip(data);
+				this.int = setInterval(ajax_request_oip, 1000, data);
+			});
+}
+
+function ajax_request_oip(path) {
+	uri = '/xivo/configuration/ui.php/provisioning/devices?act=request_oip&path=' + path;
+	$.get(uri, function(data) {
+		var str = data.split('::');
+		var box = $('#box_installer').find('div');
+		if (str[0] == 'redirecturi') {
+			box.hide();
+			top.location.href = str[1];
+		}
+		box.html(data);
+	});
+}
+
 function update_sip_srtp_mode() {
 	var it_sipsrtpmode = $('#it-config-sip_srtp_mode');
 	var it_siptrans_val = $('#it-config-sip_transport').val();

@@ -5,6 +5,9 @@ Synchronize successful
 ; error_during_synchronize
 Synchronize error
 
+; send_mass_synchronize
+Mass synchronize send to devices
+
 ; params_successfully_updated
 Successfully updated
 

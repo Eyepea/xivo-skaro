@@ -106,10 +106,12 @@ $array['xivo/configuration/ui/manage/entity/get'] = array(
 	'define'	=> array('XIVO_LOC_UI_ACTION'	=> 'get'));
 $array['xivo/configuration/ui/provisioning/plugin'] = array(
 	'path'		=> 'xivo/configuration/ui/provisioning/plugin');
-$array['xivo/configuration/ui/provisioning/config'] = array(
-	'path'		=> 'xivo/configuration/ui/provisioning/config');
+$array['xivo/configuration/ui/provisioning/configs'] = array(
+	'path'		=> 'xivo/configuration/ui/provisioning/configs');
 $array['xivo/configuration/ui/provisioning/configure'] = array(
 	'path'		=> 'xivo/configuration/ui/provisioning/configure');
+$array['xivo/configuration/ui/provisioning/devices'] = array(
+	'path'		=> 'xivo/configuration/ui/provisioning/devices');
 
 
 $array['xivo/configuration/web_services/restricted/check'] = array(

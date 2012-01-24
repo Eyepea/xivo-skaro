@@ -156,6 +156,7 @@ $array['tree']['xivo']['configuration']['provisioning']['plugin'] = true;
 // required to query /ui/ url
 $array['tree']['xivo']['configuration']['provisioning']['configs'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['configure'] = true;
+$array['tree']['xivo']['configuration']['provisioning']['devices'] = true;
 
 $array['tree']['xivo']['configuration']['controlsystem'] = array();
 $array['tree']['xivo']['configuration']['controlsystem']['network'] = true;

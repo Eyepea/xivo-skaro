@@ -183,12 +183,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		if (isset($decoded['Location']) === false)
 			return(false);
 
-		$this->request_delete($decoded['Location']);
-
-		if ($this->_status_code !== 204)
-			return(false);
-
-		return(true);
+		return(urlencode($decoded['Location']));
 	}
 
 	public function delete($id)

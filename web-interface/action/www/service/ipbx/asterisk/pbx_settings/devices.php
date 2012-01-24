@@ -46,7 +46,7 @@ switch($act)
 			dwho_report::push('info','successfully_reset');
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
 		break;
-	case 'autoprov':
+	case 'mass_synchronize':
 		$param['page'] = $page;
 
 		if(($values = dwho_issa_val('devices',$_QR)) === false)
@@ -59,28 +59,15 @@ switch($act)
 
 		$res = array();
 
+
 		for($i = 0;$i < $nb;$i++)
 		{
 			if(($info = $appdevice->get($values[$i])) !== false)
 			{
-				if($modprovddevice->synchronize($info['devicefeatures']['deviceid']) === false)
-					dwho_report::push('error',$info['devicefeatures']['ip'],'error_during_synchronize');
-				else
-					dwho_report::push('info',$info['devicefeatures']['ip'],'success_during_synchronize');
+				$modprovddevice->synchronize($info['devicefeatures']['deviceid']);
 			}
 		}
-		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
-		break;
-	case 'synchronize':
-		$appdevice = &$ipbx->get_application('device',null,false);
-		$modprovddevice = &$_XOBJ->get_module('provddevice');
-
-		if(isset($_QR['id']) === false || ($info = $appdevice->get($_QR['id'])) === false)
-			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
-		elseif ($modprovddevice->synchronize($info['devicefeatures']['deviceid']) === false)
-			dwho_report::push('error','error_during_synchronize');
-		else
-			dwho_report::push('info','successfully_synchronize');
+		dwho_report::push('info', 'send_mass_synchronize');
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/devices'),$param);
 		break;
 	case 'add':
@@ -263,6 +250,9 @@ switch($act)
 		$_TPL->set_var('list',$list);
 		$_TPL->set_var('search',$search);
 		$_TPL->set_var('sort',$sort);
+
+		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/devices.js');
 }
 
 $_TPL->set_var('act',$act);

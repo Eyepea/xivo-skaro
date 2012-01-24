@@ -130,8 +130,6 @@ dwho.dom.set_onload(function()
 
 	dwho.dom.add_event('click', dwho_eid('toolbar-advanced-menu-autoprov'),
 		function(e) {
-			//document.getElementById('autoprov_reboot').checked = false;
-
 			dialog = document.getElementById('autoprov_dialog');
 			dialog.style.visibility= 'visible';
 		});
@@ -151,7 +149,7 @@ function autoprov_validate()
 	dialog = document.getElementById('autoprov_dialog');
 	dialog.style.visibility= 'hidden';
 
-	dwho.fm[xivo_toolbar_form_name]['act'].value = 'autoprov';
+	dwho.fm[xivo_toolbar_form_name]['act'].value = 'mass_synchronize';
 	//dwho.fm[xivo_toolbar_form_name]['reboot'].value = document.getElementById('autoprov_reboot').checked;
 	dwho.fm[xivo_toolbar_form_name].submit();
 

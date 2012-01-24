@@ -5,6 +5,9 @@ Synchronisation des terminaisons reussies
 ; error_during_synchronize
 Echec de la synchronisation des terminaisons
 
+; send_mass_synchronize
+Synchronisation de masse envoyé au terminaisons
+
 ; params_successfully_updated
 Mise à jour réussi
 
