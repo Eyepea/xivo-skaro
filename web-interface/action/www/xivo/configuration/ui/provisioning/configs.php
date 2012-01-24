@@ -19,7 +19,7 @@
 #
 
 $access_category = 'provisioning';
-$access_subcategory = 'config';
+$access_subcategory = 'configs';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
