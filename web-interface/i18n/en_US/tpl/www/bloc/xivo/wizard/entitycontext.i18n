@@ -7,6 +7,9 @@ Name :
 ; fm_entity_displayname
 Display name :
 
+;error_fm_context_internal_numberbeg
+Empty value
+
 ; error_fm_context_internal_numberend
 Invalid interval
 
