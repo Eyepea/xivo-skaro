@@ -20,8 +20,6 @@
 
 $appwizard = &$_XOBJ->get_application('wizard');
 
-$_TPL->load_i18n_file('tpl/www/bloc/xivo/wizard/errors.i18n','global');
-
 $previous = false;
 $trysave = false;
 $ressave = null;

@@ -295,8 +295,6 @@ abstract class xivo_application_abstract extends xivo_libconfig_abstract
 			$ref = func_get_arg($i);
 		}
 
-		dwho_report::push_generic('error', $this->_error);
-
 		return(true);
 	}
 
