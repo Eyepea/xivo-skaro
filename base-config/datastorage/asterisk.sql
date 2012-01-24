@@ -1005,7 +1005,7 @@ CREATE INDEX "linefeatures__idx__device" ON "linefeatures"("device");
 CREATE INDEX "linefeatures__idx__number" ON "linefeatures"("number");
 CREATE INDEX "linefeatures__idx__context" ON "linefeatures"("context");
 CREATE INDEX "linefeatures__idx__internal" ON "linefeatures"("internal");
-CREATE UNIQUE INDEX "linefeatures__uidx__provisioningid" ON "linefeatures"("provisioningid");
+CREATE INDEX "linefeatures__idx__provisioningid" ON "linefeatures"("provisioningid");
 CREATE UNIQUE INDEX "linefeatures__uidx__name" ON "linefeatures"("name");
 CREATE UNIQUE INDEX "linefeatures__uidx__protocol_protocolid" ON "linefeatures"("protocol","protocolid");
 
