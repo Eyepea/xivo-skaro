@@ -191,6 +191,7 @@ function update_row_infos()
         return(false);
         
     nb_row = $('#list_linefeatures > tbody > tr').length;
+    
     if (nb_row == 0) {
         $('#box-entityid').text('');
         it_userfeatures_entityid.removeAttr('disabled');
@@ -207,7 +208,7 @@ function update_row_infos()
     var grouporder = 0;
     var line_num = 0;
     var idx = 0;
-    $('#list_linefeatures > tbody').find('tr').each(function() {    
+    $('#list_linefeatures > tbody').find('tr').each(function() {
         tr_group = false;
         
         if($(this).attr('id') == 'tr-rules_group') {
@@ -299,7 +300,12 @@ $(document).ready(function() {
         update: update_row_infos
     });
     
-    $('#lnk-add-row').click(function(){
+    $('#lnk-add-row').click(function() {
+    	
+        nb_row = $('#list_linefeatures > tbody > tr').length;
+        if (nb_row > 0)
+        	return false;
+        
         $('#no-linefeatures').hide('fast');
         row = $('#ex-linefeatures').html();
         
