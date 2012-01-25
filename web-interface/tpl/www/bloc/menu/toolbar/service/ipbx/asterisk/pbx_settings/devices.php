@@ -169,7 +169,7 @@ function autoprov_validate()
 				<th class="content-left"><span>&nbsp;</span></th>
 				<th class="content">
 					<form action="#">
-						<!--  <input type="checkbox" id="autoprov_reboot" /><?=$this->bbf('autoprov_reboot_phones');?><br/><br/> -->
+						<?=$this->bbf('opt_synchronize_devices_confirm');?>
 						<input type="submit" value="<?=$this->bbf('autoprov_cancel');?>" onclick="return autoprov_cancel();" />
 						<input type="submit" value="<?=$this->bbf('autoprov_validate');?>" onclick="return autoprov_validate();" />
 					</form>

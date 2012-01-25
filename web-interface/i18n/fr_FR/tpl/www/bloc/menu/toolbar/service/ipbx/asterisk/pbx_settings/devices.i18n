@@ -1,8 +1,11 @@
 ; autoprov_reboot_phones
-Reboot phones
+Redémarrer les téléphones
 
 ; autoprov_cancel
-Cancel
+Annuler
 
 ; autoprov_validate
 OK
+
+; opt_synchronize_devices_confirm
+Confirmer la synchronisation des terminaisons?

@@ -1,8 +1,11 @@
 ; autoprov_reboot_phones
-Redémarrer les téléphones
+Reboot phones
 
 ; autoprov_cancel
-Annuler
+Cancel
 
 ; autoprov_validate
 OK
+
+; opt_synchronize_devices_confirm
+Are you sure you want to synchronise devices?
