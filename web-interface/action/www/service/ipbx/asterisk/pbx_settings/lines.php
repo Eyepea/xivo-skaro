@@ -125,6 +125,7 @@ switch($act)
 		$fm_save = $error = null;
 		$return = &$info;
 
+
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('protocol',$_QR) === true)
 		{
