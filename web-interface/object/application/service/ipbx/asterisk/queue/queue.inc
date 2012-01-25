@@ -1306,7 +1306,6 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		if(($data = $this->_get_data_from_json()) === false
 		|| $this->set_add($data) === false
 		|| $this->add() === false) {
-			var_dump($this->get_error());
 			return(false);
 		}
 
@@ -1318,7 +1317,6 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		if(($data = $this->_get_data_from_json()) === false
 		|| $this->set_edit($data) === false
 		|| $this->edit() === false) {
-			var_dump($this->get_error());
 			return(false);
 		}
 

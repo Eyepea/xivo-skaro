@@ -22,7 +22,6 @@ $form    = &$this->get_module('form');
 $dhtml   = &$this->get_module('dhtml');
 
 $info     = $this->get_var('info');
-//var_dump($info);
 $status   = $this->get_var('status');
 $netifaces = $this->get_var('netifaces');
 
@@ -85,7 +84,7 @@ endif;
 				      'labelid'		=> 'ha_active',
 				      'checked'		=> $info['ha']['active'],
 						)),
-		
+
 	$form->text(array('desc'	=> $this->bbf('fm_ha_netaddr'),
 				  'name'	=> 'ha[netaddr]',
 				  'labelid'	=> 'netaddr',
@@ -98,7 +97,7 @@ endif;
 				  'labelid'	=> 'netmask',
 				  'size'	=> 15,
 				  'value'	=> $this->get_var('info', 'ha', 'netmask'))),
-				  
+
 	$form->text(array('desc'	=> $this->bbf('fm_ha_mcast'),
 				  'name'	=> 'ha[mcast]',
 				  'labelid'	=> 'mcast',
@@ -121,7 +120,7 @@ endif;
 				  'labelid'	=> 'node1_ip',
 				  'size'	=> 15,
 				  'value'	=> $this->get_var('info', 'ha', 'node1_ip')));
-?>		  
+?>
 	</fieldset>
 	<fieldset id="fld-node2">
 		<legend><?=$this->bbf('fld-node2');?></legend>
@@ -139,7 +138,7 @@ endif;
 				  'labelid'	=> 'node2_ip',
 				  'size'	=> 15,
 				  'value'	=> $this->get_var('info', 'ha', 'node2_ip')));
-?>		  
+?>
 	</fieldset>
 
 
@@ -171,7 +170,7 @@ endif;
 				<tr class="fm-paragraph<?=$errdisplay?>">
 					<td class="td-left svc-left">
 <?php
-		
+
 			//echo $form->checkbox(array($this->bbf("fm_ha_service_$k"),
 			echo $form->checkbox(array(
 				'name'		=> "service[$k][active]",
@@ -208,7 +207,7 @@ endif;
 			</tbody>
 		</table>
 	</div>
-	
+
 </div>
 
 <div id="sb-part-network" class="b-nodisplay">
@@ -224,7 +223,7 @@ endif;
 				      'labelid'		=> 'ha_cluster_group',
 				      'checked'		=> $info['ha']['cluster_group'],
 						)),
-		
+
 		$form->select(array(
 					'desc'    => $this->bbf('fm_ha_cluster_itf_data'),
 					'name'		=> 'ha[cluster_itf_data]',
@@ -258,7 +257,7 @@ endif;
 	        'desc'    => $this->bbf('fm_ha_cluster_monitor'),
 					'name'		=> 'ha[cluster_monitor]',
 					'help'    => $this->bbf('hlp_fm_cluster_monitor'),
-//					'error'  	=> $this->bbf_args('error_pf_ha_com_mode', 
+//					'error'  	=> $this->bbf_args('error_pf_ha_com_mode',
 					'size'	  => 5,
 					'value'   => $this->get_var('info','ha','cluster_monitor'))),
 

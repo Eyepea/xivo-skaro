@@ -22,7 +22,6 @@ $form = &$this->get_module('form');
 
 $info 	 = $this->get_var('info');
 $element = $this->get_var('element');
-//var_dump($info, $element);
 $ca_authorities = $this->get_var('ca_authorities');
 
 if($this->get_var('fm_save') === false):

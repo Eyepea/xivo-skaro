@@ -54,7 +54,6 @@ if(isset($_QR['fm_send']) === true)
 		if(!isset($_QR['ha']['cluster_group']))
 			$_QR['ha']['cluster_group'] = 0;
 
-//var_dump($_QR); die(1);		
 		if($appHA->set($_QR) === false)
 		{
 			$fm_save = false;

@@ -53,8 +53,6 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 	{
 		$this->_cnt = 0;
 
-		$s = microtime(true);
-
 		$field = array((object) ('SUM(cast("'.$fieldsum.'" as int))'));
 
 		$this->_dso->new_select($this->_table,$field);
@@ -112,9 +110,6 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 
 		$r = $this->_dso->select_singlecolumn();
 
-		#print ($this->_dso->get_select().'<br>');
-		#dwho_dump(dwho_second_to((microtime(true) - $s),2));
-
 		if(isset($r[0]) === false)
 			$r = false;
 
@@ -124,8 +119,6 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 	public function stats_count_by_type($type,$value,$event,$interval=null,$addwhere=null)
 	{
 		$this->_cnt = 0;
-
-		$s = microtime(true);
 
 		$this->_dso->new_select($this->_table,array('event'));
 
@@ -191,9 +184,6 @@ class xivo_service_asterisk_queue_log_postgresql extends xivo_service_asterisk_a
 
 		if(($this->_cnt = $this->_dso->select_count()) === false)
 			$this->_cnt = 0;
-
-		#print ($this->_dso->get_select().'<br>');
-		#dwho_dump(dwho_second_to((microtime(true) - $s),2));
 
 		return($this->_cnt);
 	}

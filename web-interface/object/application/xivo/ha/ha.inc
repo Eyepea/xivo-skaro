@@ -55,27 +55,27 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
     return $arr;
 	}
 
-	
+
 	function get_netifaces()
 	{
 	    $netifaces = $this->_sysconfd->request_get('/discover_netifaces');
 	    if($netifaces === false)
 	    { return false; }
-	    
+
 	    $netifaces = array_keys($netifaces);
 	    asort($netifaces);
 	    return $netifaces;
 	}
-	
+
 	function get_status()
     {
 	    $status = $this->_sysconfd->request_get('/ha_status');
 	    if($status === false)
 	    { return false; }
-	    
+
 	    return $status;
 	}
-	
+
 	function _set_check($conf)
 	{
 		foreach($conf['service'] as $key => &$val) {
@@ -106,21 +106,21 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
         foreach($conf['cnodes'] as $cnode)
 					if($this->_cnodes_svc->add($cnode) === false)
 						return false;
-        
+
         if($this->get_errnb() > 0)
             return false;
-        
+
 				return true;
 	}
-	
+
 	function set($arr)
 	{
 		$this->_reset();
 		$this->_set_result('ha', $arr);
-		
+
 		if(!$this->_set_check(&$arr))
 			return false;
-	
+
 		// IF ALL IT'S OK, SAVE DATA
 		if($this->_set_save($arr) === false)
 			return false;
@@ -177,11 +177,10 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 				'ip'             => $arr['ha']['node2_ip'],
 			)
 		);
-		//var_dump($conf); return(true);	
 
 		if($this->_sysconfd->request_post('/ha_generate', $conf) === false)
 			return false;
-        
+
 		// update commonconf
         	if(($_commonconf = &$this->_xobj->get_module('commonconf')) === false)
 			return $false;
@@ -204,7 +203,7 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 
 		return($subnet);
 	}
-	
+
 }
 
 ?>

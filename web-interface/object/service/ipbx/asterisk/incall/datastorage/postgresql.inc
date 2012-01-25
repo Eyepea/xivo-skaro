@@ -199,9 +199,6 @@ class xivo_service_asterisk_cel_postgresql extends xivo_service_asterisk_abstrac
 
 		$r = $this->_dso->select_singlecolumn();
 
-		#print ($this->_dso->get_select().'<br>');
-		#dwho_dump(dwho_second_to((microtime(true) - $s),2));
-
 		if(isset($r[0]) === false)
 			$r = false;
 
@@ -258,9 +255,6 @@ class xivo_service_asterisk_cel_postgresql extends xivo_service_asterisk_abstrac
 
 		if(($this->_cnt = $this->_dso->select_count()) === false)
 			$this->_cnt = 0;
-
-		#print ($this->_dso->get_select().'<br>');
-		#dwho_dump(dwho_second_to((microtime(true) - $s),2));
 
 		return($this->_cnt);
 	}
