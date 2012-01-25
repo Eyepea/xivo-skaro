@@ -18,9 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$access_category = 'settings';
-$access_subcategory = 'genercache';
-
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'stats','stats.inc'));

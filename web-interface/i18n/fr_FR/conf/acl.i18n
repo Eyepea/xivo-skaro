@@ -334,17 +334,11 @@ Approvisionnement
 ; acl(xivo-configuration-provisioning-autoprov)
 Autoapprovisionnement
 
-; acl(xivo-configuration-provisioning-configs)
-Configs
-
 ; acl(xivo-configuration-provisioning-configdevice)
 Modèles terminaison
 
 ; acl(xivo-configuration-provisioning-configregistrar)
 Modèles ligne
-
-; acl(xivo-configuration-provisioning-configure)
-Configure
 
 ; acl(xivo-configuration-provisioning-general)
 Général
@@ -360,6 +354,9 @@ Gestion des alertes
 
 ; acl(xivo-configuration-support-limits)
 Limitations
+
+; acl(xivo-configuration-support-monitoring)
+Monitoring
 
 ; acl(xivo-configuration-support-xivo)
 Maintenance XiVO

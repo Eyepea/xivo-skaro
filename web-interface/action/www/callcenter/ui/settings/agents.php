@@ -19,9 +19,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$access_category = 'settings';
-$access_subcategory = 'agents';
-
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 if(defined('XIVO_LOC_UI_ACTION') === true)

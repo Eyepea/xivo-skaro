@@ -22,14 +22,20 @@ define('XIVO_TPL_AREA','ui');
 
 require_once('xivo.php');
 
+dwho::load_class('dwho_http');
+$http_response = dwho_http::factory('response');
+
+if($_USR->mk_active() === false) {
+	$http_response->set_status_line(403);
+	$http_response->send(true);
+}
+
 $ipbx = &$_SRE->get('ipbx');
 
 $action_path = $_LOC->get_action_path('callcenter/ui/',3);
 
 if($action_path === false)
 {
-    dwho::load_class('dwho_http');
-    $http_response = dwho_http::factory('response');
     $http_response->set_status_line(404);
     $http_response->send(true);
 }

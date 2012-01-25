@@ -18,9 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$access_category = 'manage';
-$access_subcategory = 'entity';
-
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 if(defined('XIVO_LOC_UI_ACTION') === true)

@@ -18,9 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$access_category = 'provisioning';
-$access_subcategory = 'plugin';
-
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $act = $_QRY->get('act');

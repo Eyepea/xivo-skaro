@@ -17,9 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-$access_category = 'call_center';
-$access_subcategory = 'queues';
-
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 if(defined('XIVO_LOC_UI_ACTION') === true)

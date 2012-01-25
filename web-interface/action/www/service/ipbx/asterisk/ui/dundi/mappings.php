@@ -18,9 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$access_category = 'dundi';
-$access_subcategory = 'mappings';
-
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $apppeer = &$ipbx->get_application('dundimapping');
@@ -33,7 +30,7 @@ switch($act)
 	case 'list':
 	default:
 		$act = 'list';
-		
+
 		$moddundi = &$ipbx->get_module('dundi');
 
 		if($serverid === null)

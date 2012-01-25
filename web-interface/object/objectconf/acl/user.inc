@@ -38,8 +38,6 @@ $array['tree']['service']['ipbx']['pbx_settings']['users'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['groups'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['voicemail'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['meetme'] = true;
-// required to query /ui/ url
-$array['tree']['service']['ipbx']['pbx_settings']['extension'] = true;
 
 
 $array['tree']['service']['ipbx']['call_management'] = array();
@@ -153,10 +151,6 @@ $array['tree']['xivo']['configuration']['provisioning']['general'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['configregistrar'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['configdevice'] = true;
 $array['tree']['xivo']['configuration']['provisioning']['plugin'] = true;
-// required to query /ui/ url
-$array['tree']['xivo']['configuration']['provisioning']['configs'] = true;
-$array['tree']['xivo']['configuration']['provisioning']['configure'] = true;
-$array['tree']['xivo']['configuration']['provisioning']['devices'] = true;
 
 $array['tree']['xivo']['configuration']['controlsystem'] = array();
 $array['tree']['xivo']['configuration']['controlsystem']['network'] = true;

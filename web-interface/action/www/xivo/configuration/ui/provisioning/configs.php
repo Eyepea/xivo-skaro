@@ -18,9 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$access_category = 'provisioning';
-$access_subcategory = 'configs';
-
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $ipbx = &$_SRE->get('ipbx');

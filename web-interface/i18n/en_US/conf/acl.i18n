@@ -334,17 +334,11 @@ Provisioning
 ; acl(xivo-configuration-provisioning-autoprov)
 Autoprovisioning
 
-; acl(xivo-configuration-provisioning-configs)
-Configs
-
 ; acl(xivo-configuration-provisioning-configdevice)
 Template device
 
 ; acl(xivo-configuration-provisioning-configregistrar)
 Template line
-
-; acl(xivo-configuration-provisioning-configure)
-Configure
 
 ; acl(xivo-configuration-provisioning-general)
 General
@@ -360,6 +354,9 @@ Alerts
 
 ; acl(xivo-configuration-support-limits)
 Limits
+
+; acl(xivo-configuration-support-monitoring)
+Monitoring
 
 ; acl(xivo-configuration-support-xivo)
 XiVO
