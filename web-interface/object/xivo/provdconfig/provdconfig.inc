@@ -860,7 +860,20 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 							$exten = str_replace('.', $exten, $rsexten);
 							break;
 						default:
-							$exten = str_replace('.', $ref['typevalextenumbersright'], $rsexten);
+							if($ref['progfunckey'] === true)
+							{
+								$where = array('typeval' => 'phoneprogfunckey');
+								if (($progfunckey = $this->_extenumbers->get_where($where)) === false)
+									break;
+								$exten = $this->_phonefunckey->fkey_extension($progfunckey['extenbrut'],
+									array($ref['iduserfeatures'],
+										$rsexten)
+								);
+							}
+							else
+							{
+								$exten = str_replace('.', $ref['typevalextenumbersright'], $rsexten);
+							}
 					}
 			}
 
