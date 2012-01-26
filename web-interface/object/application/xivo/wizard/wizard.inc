@@ -1499,7 +1499,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		if($this->_sysconfd->request_post('/modify_eth_ipv4',
 		$args,
-		array(array('ifname',$voip_iface['name']))) === false)
+		array(array('ifname',$voip_iface['ifname']))) === false)
 		{
 			$this->_set_error('netiface','save');
 			return(false);
