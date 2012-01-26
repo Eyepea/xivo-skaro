@@ -762,9 +762,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 						$this->set_voicemail($vmaction,$arr['voicemail']);
 				}
 			}
-			else {
-				$this->_set_error('voicemail', dwho_i18n::babelfish('user_need_lines_to_add_voicemail'));
-			}
 		}
 
 		if(dwho_issa('phonefunckey',$arr) === true)
