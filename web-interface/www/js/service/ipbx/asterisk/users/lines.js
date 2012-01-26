@@ -189,7 +189,9 @@ function update_row_infos()
 {
     if ((entityid_val = get_entityid_val()) === false)
         return(false);
-        
+    
+    enable_disable_add_button();
+    
     nb_row = $('#list_linefeatures > tbody > tr').length;
     
     if (nb_row == 0) {
@@ -286,6 +288,17 @@ function update_row_infos()
     });
 }
 
+function enable_disable_add_button() {
+    nb_row = $('#list_linefeatures > tbody > tr').length;
+    if (nb_row > 0) {
+    	$('#lnk-add-row').hide();
+    	return false;
+    }
+	$('#lnk-add-row').show();
+    return true;
+}
+
+
 $(document).ready(function() {
     
     xivo_http_search_context_from_entity(get_entityid_val());
@@ -302,9 +315,8 @@ $(document).ready(function() {
     
     $('#lnk-add-row').click(function() {
     	
-        nb_row = $('#list_linefeatures > tbody > tr').length;
-        if (nb_row > 0)
-        	return false;
+    	if (!enable_disable_add_button())
+    		return false;
         
         $('#no-linefeatures').hide('fast');
         row = $('#ex-linefeatures').html();
