@@ -47,9 +47,7 @@ Wdc = {'templates_path':                        os.path.join(os.path.sep, 'usr',
        'agid_config_path':                      None,
        'asterisk_modules_config_filename':      "modules.conf",
        'asterisk_extconfig_config_filename':    "extconfig.conf",
-       'asterisk_res_mysql_config_filename':    "res_config_mysql.conf",
        'asterisk_res_postgresql_config_filename': "res_pgsql.conf",
-       'asterisk_res_sqlite_config_filename':   "res_config_sqlite.conf",
        'asterisk_config_path':                  os.path.join(os.path.sep, 'etc', 'asterisk'),
        'asterisk_tpl_directory':                'asterisk',
        'webinterface_xivo_config_filename':     "xivo.ini",
@@ -64,20 +62,8 @@ WIZARD_ASTERISK_EXTCONFIG_RE    = re.compile(r'^([^,]*)(?:,(".*"|[^,]*)(?:,(.*))
 WIZARD_IPBX_ENGINES         = {'asterisk':
                                 {'extconfig':   {'queue_log': 'queue_log'},
                                 'database':
-                                    {'mysql':
+                                    {'postgresql':
                                         {'params':  {'charset':    'utf8'},
-
-                                         'res':     {'dbname':  'dbname',
-                                                     'dbuser':  'dbuser',
-                                                     'dbpass':  'dbpass',
-                                                     'dbhost':  'dbhost',
-                                                     'dbport':  'dbport',
-                                                     'charset': 'dbcharset'},
-
-                                         'modules': ('res_config_mysql.so',)},
-                                    'postgresql':
-                                        {'params':  {'charset':    'utf8'},
-
                                          'res':     {'dbname':  'dbname',
                                                      'dbuser':  'dbuser',
                                                      'dbpass':  'dbpass',
@@ -86,17 +72,9 @@ WIZARD_IPBX_ENGINES         = {'asterisk':
                                                      'charset': 'dbcharset',
                                                      'encoding': 'dbcharset'},
 
-                                         'modules': ('res_config_pgsql.so',)},
-                                     'sqlite':
-                                        {'params':  {'timeout_ms':  150},
-                                         'modules': ('res_config_sqlite.so',)}}}}
+                                         'modules': ('res_config_pgsql.so',)}}}}
 
-WIZARD_XIVO_DB_ENGINES      = {'mysql':
-                                    {'params':  {'charset': 'utf8'}},
-                               'postgresql':
-                                    {'params':  {'encoding': 'utf8'}},
-                               'sqlite':
-                                    {'params':  {'timeout_ms': 150}}}
+WIZARD_XIVO_DB_ENGINES      = {'postgresql': {'params': {'encoding': 'utf8'}}}
 
 POSTGRES_LOCALE = 'en_US.UTF-8'
 POSTGRES_CHARSET = 'UTF-8'
@@ -279,44 +257,6 @@ def asterisk_extconfig(tplfilename, customtplfilename, newfilename, extconfig, d
 
     _write_config_file(newfilename, newcfg, filestat)
 
-def asterisk_mysql_config(authority, database, params, options):
-    """
-    Return MySQL options for Asterisk
-    """
-    rs = {}
-
-    xdict = dict(options)
-
-    if isinstance(authority, (tuple, list)):
-        if authority[0]:
-            rs[xdict['dbuser']] = authority[0]
-
-        if authority[1]:
-            rs[xdict['dbpass']] = authority[1]
-
-        if authority[2]:
-            rs[xdict['dbhost']] = authority[2]
-
-        if authority[3]:
-            rs[xdict['dbport']] = authority[3]
-
-    if database:
-        rs[xdict['dbname']] = database
-
-    del(xdict['dbuser'],
-        xdict['dbpass'],
-        xdict['dbhost'],
-        xdict['dbport'],
-        xdict['dbname'])
-
-    if params:
-        for k, v in params.iteritems():
-            if xdict.has_key(k):
-                rs[xdict[k]] = v
-            else:
-                rs[k] = v
-
-    return rs
 
 def asterisk_postgresql_config(authority, database, params, options):
     """
@@ -373,26 +313,7 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
     dbname = 'asterisk'
     dbtype = dburi[0]
 
-    # MYSQL
-    if dburi[0] == 'mysql':
-        if dburi[2]:
-            if dburi[2][0] == '/':
-                dbname = dburi[2][1:]
-            else:
-                dbname = dburi[2]
-
-        merge_config_file(Wdc['asterisk_res_mysql_tpl_file'],
-                          Wdc['asterisk_res_mysql_custom_tpl_file'],
-                          Wdc['asterisk_res_mysql_file'],
-                          {'general':
-                                asterisk_mysql_config(dburi[1],
-                                                      dbname,
-                                                      dbparams,
-                                                      dbinfo['res'])},
-                          ipbxengine='asterisk')
-
-    # POSTGRESQL
-    elif dburi[0] == 'postgresql':
+    if dburi[0] == 'postgresql':
         if dburi[2]:
             if dburi[2][0] == '/':
                 dbname = dburi[2][1:]
@@ -411,15 +332,6 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
 
         # change db type for asterisk compatibility
         dbtype = 'pgsql'
-
-    # SQLITE
-    elif dburi[0] == 'sqlite':
-        merge_config_file(Wdc['asterisk_res_sqlite_tpl_file'],
-                          Wdc['asterisk_res_sqlite_custom_tpl_file'],
-                          Wdc['asterisk_res_sqlite_file'],
-                          {'general':
-                                {'dbfile':   dburi[2]}},
-                          ipbxengine='asterisk')
 
     if 'modules' in dbinfo:
         asterisk_modules_config(Wdc['asterisk_modules_tpl_file'],
@@ -623,36 +535,9 @@ def exec_db_file(args, options):
         except (OSError, subprocess.CalledProcessError), e:
             log.exception('error')
             raise HttpReqError(500, "Can't create IPBX DB with postgresql")
+    else:
+        raise HttpReqError(415, "invalid db backend")
 
-    if args['backend'] == 'mysql':
-        try:
-            subprocess.check_call(["apt-get", "install", "--yes",
-                                   "php5-mysql", "mysql-server"])
-        except (OSError, subprocess.CalledProcessError), e:
-            log.exception('error')
-            raise HttpReqError(500, "Can't install mysql packages")
-        try:
-            subprocess.check_call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['xivoscript']], shell=True)
-        except (OSError, subprocess.CalledProcessError), e:
-            log.exception('error')
-            raise HttpReqError(500, "Can't create xivo DB with mysql")
-        try:
-            subprocess.check_call(["mysql --defaults-file=/etc/mysql/debian.cnf < /%s" % args['ipbxscript']], shell=True)
-        except (OSError, subprocess.CalledProcessError), e:
-            log.exception('error')
-            raise HttpReqError(500, "Can't create IPBX DB with mysql")
-
-    if args['backend'] == 'sqlite':
-        try:
-            subprocess.check_call(["sqlite %s < /%s" % (args['xivodb'], args['xivoscript'])], shell=True)
-        except (OSError, subprocess.CalledProcessError), e:
-            log.exception('error')
-            raise HttpReqError(500, "Can't create xivo DB with sqlite")
-        try:
-            subprocess.check_call(["sqlite %s < /%s" % (args['xivodb'], args['ipbxscript'])], shell=True)
-        except (OSError, subprocess.CalledProcessError), e:
-            log.exception('error')
-            raise HttpReqError(500, "Can't create IPBX DB with sqlite")
 
 http_json_server.register(exec_db_file, CMD_RW, name="exec_db_file")
 
@@ -689,7 +574,7 @@ def safe_init(options):
                                                             Wdc["%s_tpl_directory" % x],
                                                             Wdc["%s_config_filename" % x])
 
-    for x in ('modules', 'extconfig', 'res_mysql', 'res_postgresql', 'res_sqlite'):
+    for x in ('modules', 'extconfig', 'res_postgresql'):
         Wdc["asterisk_%s_file" % x] = os.path.join(Wdc['asterisk_config_path'],
                                                    Wdc["asterisk_%s_config_filename" % x])
 
