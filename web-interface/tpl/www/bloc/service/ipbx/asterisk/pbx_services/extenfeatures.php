@@ -138,7 +138,7 @@ if(isset($error_js[0]) === true)
 		    class="dwsm-blur-last"
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
-			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-last',1);">
+			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-4'),'sb-part-last',1);">
 				<div class="tab">
 					<span class="span-center"><a href="#last"><?=$this->bbf('smenu_advanced');?></a></span>
 				</div>
