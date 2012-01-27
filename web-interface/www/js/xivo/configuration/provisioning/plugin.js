@@ -17,13 +17,6 @@
  */
 
 $(function() {
-	mt = ($('#tb-list-pkgs').height() / 2)
-			- ($('#box_installer').find('div').height() / 2);
-	$('#box_installer').css('height', $('#tb-list-pkgs').height() + 'px');
-	$('#box_installer').css('width', $('#tb-list-pkgs').width() + 'px');
-	$('#box_installer').find('div').css('margin-top', mt + 'px');
-	$('#box_installer').hide();
-
 	$('input[id="configure-ajax"]').each(
 			function() {
 				$(this).keyup(

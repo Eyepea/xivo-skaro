@@ -55,10 +55,8 @@ if (empty($pkgs) === true):
 	echo $this->bbf('no_package');
 else:
 ?>
-	<div id="box_installer" style="position: absolute;z-index: 99;background: #bbb;opacity: 0.8;filter: alpha(opacity=80);border: 1px solid #000;display: none;">
-		<div style="z-index: 100;margin: auto;width: 500px;height: 150px;background: #eee;border: 1px solid #333;
-		opacity: 0.9;filter: alpha(opacity=90);font-size: 12px;padding: 10px;text-align: center;font-weight: bold;">
-		</div>
+	<div id="box_installer" class="bi_bg">
+		<div class="bi_message"></div>
 	</div>
 
 	<div class="sb-list">
