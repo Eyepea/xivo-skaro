@@ -226,7 +226,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		else
 		{
 			$this->_set_error('outcalltrunk','invalid data');
-			dwho_report::push('error', array('you_must_selected_a_trunk'));
+			dwho_report::push('error', array('you_must_select_a_trunk'));
 		}
 
 		if(dwho_issa('outcalldundipeer',$arr) === true)
