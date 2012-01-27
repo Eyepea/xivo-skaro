@@ -29,5 +29,5 @@ Erreur durant la mise à jour de l'interface voix
 ; error_during_update_voip_default_line_registrar
 Erreur durant la mise à jour de la configuration des lignes par défaut
 
-; you_must_selected_a_trunk
+; you_must_select_a_trunk
 Vous devez selectionner une interconnexion

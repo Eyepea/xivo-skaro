@@ -29,5 +29,5 @@ Error during update voip interface
 ; error_during_update_voip_default_line_registrar
 Error during update voip default line registrar
 
-; you_must_selected_a_trunk
-You must selected a Trunk
+; you_must_select_a_trunk
+You must select a trunk
