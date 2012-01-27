@@ -487,17 +487,17 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		$context = (string) $this->get_result_var('protocol','context');
 
-		$arr['linefeatures']['name'] = $name;
-		$arr['linefeatures']['context'] = $context;
-
 		if (dwho_issa('linefeatures',$arr) === false)
 		{
-			$arr['linefeatures']['protocol'] = $protocolname;
 			$arr['linefeatures']['protocolid'] = 0;
 			$arr['linefeatures']['rules_order'] = 0;
 			$arr['linefeatures']['rules_group'] = '';
 			$arr['linefeatures']['iduserfeatures'] = 0;
 		}
+
+		$arr['linefeatures']['protocol'] = $protocolname;
+		$arr['linefeatures']['name'] = $name;
+		$arr['linefeatures']['context'] = $context;
 
 		if (dwho_issa('userfeatures',$arr) === false)
 		{
