@@ -72,7 +72,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			return(false);
 
 		$this->_origin['outcall'] = $this->_outcall->get_origin();
-		
+
 		$this->_get_dialpattern();
 
 		if($this->_components === false)
@@ -96,15 +96,15 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		return($this->_info);
 	}
-	
+
 	function _get_dialpattern()
 	{
 		if(($this->_info['dialpattern'] = $this->_dialpattern->get_list($this->_info['outcall']['id'])) === false)
 			return(false);
-			
+
 		$this->_origin_list['dialpattern'] = $this->_dialpattern->get_origin();
 	}
-	
+
 	function _get_outcalldundipeer()
 	{
 		$this->_info['outcalldundipeer'] = false;
@@ -118,7 +118,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		return($this->_info['outcalldundipeer']);
 	}
-	
+
 	function _get_outcalltrunk()
 	{
 		$this->_info['outcalltrunk'] = false;
@@ -224,7 +224,10 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		if(dwho_issa('outcalltrunk',$arr) === true)
 			$this->set_outcalltrunk($arr['outcalltrunk']);
 		else
+		{
 			$this->_set_error('outcalltrunk','invalid data');
+			dwho_report::push('error', array('you_must_selected_a_trunk'));
+		}
 
 		if(dwho_issa('outcalldundipeer',$arr) === true)
 			$this->set_outcalldundipeer($arr['outcalldundipeer']);
@@ -237,6 +240,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		// schedule
 		if(array_key_exists('schedule_id', $arr))
 			$this->_set_result('schedule_id', intval($arr['schedule_id']));
+
 		return(($this->get_errnb() < 1));
 	}
 
@@ -262,7 +266,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		return(true);
 	}
-	
+
 	function set_dialpattern($action,$arr)
 	{
 		if(is_array($arr) === false
@@ -294,7 +298,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		for($i = 0;$i < count($reslist);$i++)
 		{
 			$ref = &$reslist[$i];
-		
+
 			$ref['type'] = 'outcall';
 			$ref['typeid'] = 0;
 			$context = (string) $this->get_result_var('outcall','context');
@@ -308,7 +312,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			} else {
 				$act = 'add';
 			}
-			
+
 			if($this->_dialpattern->set($act,$ref,$context,$ref['id']) === false)
 			{
 				$errnb++;
@@ -462,7 +466,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 	{
 		if(($rs = $this->get_result('outcalldundipeer')) === null)
 			return($rs);
-		
+
 		if(($outcallid = dwho_ulongint($outcallid)) === 0
 		|| $rs === false)
 			return(false);
@@ -583,7 +587,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		$this->_status = 'edit';
 		$this->_return = array();
-		
+
 		if($this->get_errnb() > 0
 		|| $this->edit_outcall() === false
 		|| $this->edit_dialpattern($this->_info['outcall']['id']) === false
@@ -620,7 +624,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		|| ($outcallid = dwho_ulongint($outcallid)) === 0)
 			return($rs);
 		$context = (string) $this->get_result_var('outcall','context');
-		
+
 		$dialpattern = array();
 		$dialpattern['list'] = array();
 		if(($infolist = $this->_info['dialpattern']) !== false)
@@ -671,7 +675,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			} else {
 				$act = 'add';
 			}
-			
+
 			if($this->_dialpattern->set($act,$ref,$context,$outcallid) === false
 			|| $this->_dialpattern->$act() === false)
 			{
@@ -814,7 +818,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 	{
 		if(dwho_issa('outcall',$this->_info) === false)
 			return(false);
-		
+
 		$r = $this->_outcall->delete($this->_info['outcall']['id']);
 
 		if($this->_status === 'delete')
@@ -822,7 +826,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		return($r);
 	}
-	
+
 	function _delete_dialpattern($patterns,$context)
 	{
 		if(empty($patterns) === true)
