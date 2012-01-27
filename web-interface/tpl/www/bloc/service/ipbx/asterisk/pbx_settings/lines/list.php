@@ -106,7 +106,7 @@ $page = $url->pager($pager['pages'],
 
 			$phone = 'green';
 			if((int) ($ref['device']) === 0)
-			    $phone = 'red';
+				$phone = 'red';
 
 			if($ref['commented'] === true):
 				$icon = 'disable';
@@ -130,8 +130,8 @@ $page = $url->pager($pager['pages'],
 		<td class="txt-left" title="<?=dwho_alttitle($ref['identity']);?>">
 			<label for="it-lines-<?=$i?>" id="lb-lines-<?=$i?>">
 <?php
-                echo $url->img_html('img/site/utils/phone-'.$phone.'.png',null,'class="icons-list"');
-				#echo	$url->img_html('img/site/phone/'.$icon.'.gif',null,'class="icons-list"');
+				echo $url->img_html('img/site/phone/'.$icon.'.gif',null,'class="icons-list"');
+				echo $url->img_html('img/site/utils/phone-'.$phone.'.png',null,'class="icons-list"');
 				echo dwho_htmlen(dwho_trunc($ref['identity'],25,'...',false));
 ?>
 			</label>
