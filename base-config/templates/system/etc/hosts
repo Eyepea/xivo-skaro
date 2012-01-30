@@ -4,13 +4,6 @@
 127.0.0.1	localhost
 127.0.1.1	#XIVO_HOSTNAME#.#XIVO_DOMAIN#	localhost.localdomain	#XIVO_HOSTNAME#
 
-# required for HA
-#HA_MASTER_IP#	#HA_MASTER_NAME#
-#HA_SLAVE_IP#	#HA_SLAVE_NAME#
-
-#HA_CSYNC2_MASTER#
-#HA_CSYNC2_SLAVE#
-
 # The following lines are desirable for IPv6 capable hosts
 ::1     ip6-localhost ip6-loopback
 fe00::0 ip6-localnet

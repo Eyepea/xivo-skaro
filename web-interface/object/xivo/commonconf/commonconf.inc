@@ -221,57 +221,11 @@ class xivo_object_commonconf extends xivo_object_abstract
 		$ifaces = trim($ifaces);
 		$subnet = $this->_ip2subnet($list[$cidr_id]['netiface']['address'], $list[$cidr_id]['netiface']['netmask']);
 
-		// HA
-		$rawdata = $this->_ha->get(1);
-		$conf['xivo.ha'] = intval($rawdata['active']);
-
-		//
-		$conf['ha.master.ip'] = '';
-		$conf['ha.master.name'] = '';
-		$conf['ha.slave.ip'] = '';
-		$conf['ha.slave.name'] = '';
-		//
-
-		if($rawdata['active'] == 1)
-		{
-			$conf = array_merge($conf, array(
-				'ha.master.ip'		=> strlen($rawdata['node1_ip']) == 0?null:$rawdata['node1_ip'],
-				'ha.master.name'	=> strlen($rawdata['node1_name']) == 0?null:$rawdata['node1_name'],
-				'ha.slave.ip'		=> strlen($rawdata['node2_ip']) == 0?null:$rawdata['node2_ip'],
-				'ha.slave.name'		=> strlen($rawdata['node2_name']) == 0?null:$rawdata['node2_name'],
-				'ha.data.iface'		=> strlen($rawdata['cluster_itf_data']) == 0?null:$rawdata['cluster_itf_data'],
-				'ha.data.master.ip'	=> strlen($rawdata['cluster_itf_master_ip']) == 0?null:$rawdata['cluster_itf_master_ip'] ,
-				'ha.data.slave.ip'	=> strlen($rawdata['cluster_itf_slave_ip']) == 0?null:$rawdata['cluster_itf_slave_ip']
-			));
-
-			$vips = $this->_ha_vips->get_all();
-			if(count($vips) == 0) {
-				$content = 'no VIP declared in HA configuration'; return false;
-			}
-
-			$ifaces = $vips[0]['device'];
-			$subnet = $this->_ip2subnet($rawdata['netaddr'], $rawdata['netmask']);
-			$net = array(
-				'ipaddr'    => $vips[0]['address'],
-				'netmask'   => $rawdata['netmask'],
-				'broadcast'	=> $this->_ip2bcast($rawdata['netaddr'], $rawdata['netmask'])
-			);
-
-			// search vlan matching HA iface
-			if(array_key_exists($ifaces, $_netifaces)) {
-				$_iface = $_netifaces[$ifaces];
-				if($_iface['netinfo']['vlanif']) {
-					$vlanid = intval($_iface['netiface']['vlanid']);
-				}
-			}
-		}
-
 		$conf = array_merge($conf, array(
 			'xivo.voip.ifaces'      => $ifaces,
 			'xivo.voip.vlan.id'     => $vlanid,
 			'xivo.net4.ip'          => $net['ipaddr'],
 			'xivo.net4.netmask'     => $net['netmask'],
-			'xivo.net4.broadcast'   => $net['broadcast'],
 			'xivo.net4.subnet'      => $subnet
 		));
 
