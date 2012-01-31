@@ -54,7 +54,7 @@ $page = $url->pager($pager['pages'],
 <?=$form->hidden(array('name' => 'search','value' => ''))?>
 
 <div id="box_installer" class="bi_bg">
-	<div class="bi_loading"><?=$url->img_html('img/site/loading.gif', $this->bbf('loading'), 'height="75" width="75" border="0"')?></div>
+	<div class="bi_loading"><?=$url->img_html('img/site/loading.gif', $this->bbf('img_loading'), 'height="75" width="75" border="0"')?></div>
 </div>
 
 <table id="table-main-listing">

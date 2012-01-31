@@ -62,3 +62,7 @@ Device successfully synchronize
 
 ; error_during_synchronize
 Error during device synchronize
+
+; img_loading
+Loading...
+
