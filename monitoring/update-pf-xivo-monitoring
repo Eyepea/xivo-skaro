@@ -5,15 +5,9 @@
 MONIT_CHECKS=/usr/share/pf-xivo-monitoring/checks
 MONIT_CONF_DIR=/etc/monit/conf.d
 
-is_installed()
-{
-  package=$1
-  dpkg -l $package >/dev/null 2>/dev/null;
-}
-
 activate_check()
 {
-  check=$1
+  local check=$1
 
   if [ ! -L $MONIT_CONF_DIR/$check ]; then
     rm $MONIT_CONF_DIR/$check
@@ -24,32 +18,12 @@ activate_check()
   fi
 }
 
-deactivate_check()
-{
-  check=$1
-  rm -f $MONIT_CONF_DIR/$check
-}
-
-activate_if_installed()
-{
-  package=$1
-
-  if is_installed $package; then
-    activate_check $package
-  else
-    deactivate_check $package
-  fi
-}
-
-# commun sys checks
-activate_check base-system
-
 # known services
 for check in $MONIT_CHECKS/*; do
   service=$(basename $check)
   if [ "$service" != "isc-dhcp-server" ]; then
     # isc-dhcp will be updated by sysconfd
-    activate_if_installed $service
+    activate_check $service
   fi
 done
 
@@ -70,4 +44,3 @@ fi
 
 # restart service to take changes into account
 invoke-rc.d monit restart >/dev/null
-
