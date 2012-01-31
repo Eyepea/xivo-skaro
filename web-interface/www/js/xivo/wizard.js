@@ -70,8 +70,7 @@ var apply_wizard = {
 	lang : 'en',
 
 	init : function(lang) {
-		$('#boxee').show();
-
+		$('#box_installer').show();
 		apply_wizard.lang = lang;
 		apply_wizard.request_post(undefined,false,lang);
 	},
@@ -102,6 +101,8 @@ var apply_wizard = {
 					me.next = str[1];
 					me.populate_infos('',true);
 					me.send_redirect(str[2],str[3]);
+				} else if (str[0] == 'redirecturi_on_success') {
+					me.send_redirect(str[1]);
 				} else {
 					me.populate_infos('fatal error',true);
 				}
@@ -111,7 +112,7 @@ var apply_wizard = {
 	},
 
 	populate_infos : function(msg, last) {
-		$('#boxee').find('div').append(msg + '<br>');
+		$('#box_installer').find('div').append(msg + '<br>');
 		if (last === 'async')
 			apply_wizard.request_post(apply_wizard.next,true,apply_wizard.lang);
 		else if (last === undefined)
@@ -119,11 +120,15 @@ var apply_wizard = {
 	},
 
 	send_redirect : function(url,timeredirect) {
-		if (timeredirect == undefined)
-			timeredirect = 10000;
-		window.setTimeout(function() {
-			window.location = url;
-		}, timeredirect);
+		if (timeredirect == undefined) {
+			window.setTimeout(function() {
+				window.location = url;
+			});
+		} else {
+			window.setTimeout(function() {
+				window.location = url;
+			}, timeredirect);
+		}
 	}
 };
 

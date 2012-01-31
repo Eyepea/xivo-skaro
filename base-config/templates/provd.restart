@@ -1,3 +1,4 @@
 #!/bin/sh
+
 invoke-rc.d pf-xivo-provd restart
 invoke-rc.d pf-xivo-dxtora restart

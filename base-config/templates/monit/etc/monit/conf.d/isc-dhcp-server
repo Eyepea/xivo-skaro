@@ -1,6 +1,0 @@
-check process isc-dhcp-server with pidfile /var/run/dhcpd.pid
-	mode #_XIVO_MONIT_MODE#
-  start program = "/etc/init.d/isc-dhcp-server start"
-  stop  program = "/etc/init.d/isc-dhcp-server stop"
-  if failed host 127.0.0.1 port 67 type udp then alert
-  if 5 restarts within 5 cycles then timeout

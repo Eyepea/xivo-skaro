@@ -36,14 +36,40 @@ class CommonConf(jsoncore.JsonCore):
             safe_init=self.safe_init,
             name='commonconf_generate')
         http_json_server.register(self.apply, CMD_R, name='commonconf_apply')
-        
+
+    def enable_disable_dhcpd(self, args):
+        if 'xivo.dhcp.active' in args:
+            if args['xivo.dhcp.active']:
+                cmd = ['ln',
+                      '-s',
+                      '%s/isc-dhcp-server' % self.monit_checks_dir,
+                      '%s/isc-dhcp-server' % self.monit_conf_dir]
+            else:
+                cmd = ['rm', '-f', '%s/isc-dhcp-server' % self.monit_conf_dir]
+            try:
+                p = subprocess.Popen(cmd,
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.STDOUT,
+                                     close_fds=True)
+                ret = p.wait()
+                output = p.stdout.read()
+            except OSError:
+                traceback.print_exc()
+                raise HttpReqError(500, "can't apply ha changes")
+
+    def generate(self, args, options):
+        self.enable_disable_dhcpd(args)
+        super(CommonConf, self).generate(args, options)
+
     def safe_init(self, options):
         super(CommonConf, self).safe_init(options)
 
         self.file = options.configuration.get('commonconf', 'commonconf_file')
         self.cmd = options.configuration.get('commonconf', 'commonconf_cmd')
         self.monit = options.configuration.get('commonconf', 'commonconf_monit')
-   
+        self.monit_checks_dir = options.configuration.get('monit', 'monit_checks_dir')
+        self.monit_conf_dir = options.configuration.get('monit', 'monit_conf_dir')
+
     SECTIONS = {
         '1. VoIP'       : ['xivo.voip.ifaces'],
         '2. Network'    : [
@@ -84,7 +110,9 @@ class CommonConf(jsoncore.JsonCore):
     def apply(self, args, options):
         ret = -1
         try:
-            p = subprocess.Popen([self.cmd], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            p = subprocess.Popen([self.cmd], 
+                                 stdout=subprocess.PIPE, 
+                                 stderr=subprocess.STDOUT,
                                  close_fds=True)
             ret = p.wait()
             output = p.stdout.read()
@@ -94,7 +122,9 @@ class CommonConf(jsoncore.JsonCore):
                 raise HttpReqError(500, output)
 
             # monit configuration also need to be updated (if emails changed)
-            p = subprocess.Popen([self.monit], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            p = subprocess.Popen([self.monit], 
+                                 stdout=subprocess.PIPE, 
+                                 stderr=subprocess.STDOUT,
                                  close_fds=True)
             ret = p.wait()
             output += '\n' + p.stdout.read()

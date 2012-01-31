@@ -45,20 +45,19 @@ switch($step)
 	case 'set_default_provisioning_values':
 		if($appwizard->set_default_provisioning_values() !== false)
 			$code = 200;
-		$uri = $appwizard->discover_finish_uri();
-		echo 'nexturi::commit_finished::'.$uri.'::',
+		echo 'next::commit_finished::',
 			$_TPL->bbf('commit_netinfos'),
 			'<br />',
 			$_TPL->bbf('commit_commonconf'),
 			'<br />',
-			$_TPL->bbf('redirect_message',10);
+			$_TPL->bbf('redirect_message');
 		break;
 	case 'commit_finished':
 		if($appwizard->commit_netinfos() !== false
 		&& $appwizard->commit_commonconf() !== false)
 			$code = 200;
 		$uri = $appwizard->discover_finish_uri();
-		echo 'nexturi::commit_finished::'.$uri.'::0';
+		echo 'redirecturi_on_success::'.$uri;
 		break;
 	default:
 		$code = 200;

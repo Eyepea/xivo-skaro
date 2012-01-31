@@ -3,7 +3,6 @@
 . /usr/sbin/pf-common-read-config
 
 MONIT_CHECKS=/usr/share/pf-xivo-monitoring/checks
-MONIT_SPC_CHECKS=/usr/share/pf-xivo-monitoring/checks-spc
 MONIT_CONF_DIR=/etc/monit/conf.d
 
 is_installed()
@@ -40,23 +39,13 @@ activate_if_installed()
   ${ACT} ${PKG}
 }
 
-
 # commun sys checks
 activate_check base-system
-
-# fs checks
-DEV_LIST=$(mount | awk '{if (substr($5, 1, 3) == "ext") {print $1}}')
-CONFIG=base-fs
-rm -f ${MONIT_CONF_DIR}/${CONFIG}
-for DEV in ${DEV_LIST}; do
-  NAME=$(echo "${DEV}" | sed -r 's#^.*/([^/]+)$#\1#')
-  cat ${MONIT_SPC_CHECKS}/${CONFIG} | sed -e "s@#DEV_PATH#@${DEV}@g" -e "s@#DEV_NAME#@${NAME}@g" >>${MONIT_CONF_DIR}/${CONFIG}
-done
 
 # known services
 for CHECK in ${MONIT_CHECKS}/*; do
   SRV=$(basename ${CHECK})
-  if [ "${SRV:0:5}" != "base-" ]; then
+  if [ "${SRV}" != "isc-dhcp-server" ]; then
     activate_if_installed ${SRV}
   fi
 done

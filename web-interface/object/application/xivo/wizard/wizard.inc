@@ -1704,17 +1704,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			$content = str_replace("\n", "<br/>\n", $content);
 			$content = $commonconf->apply();
 
-			$_SRE = dwho_gct::get('xivo_service');
-			$monitoring = &$_SRE->get('monitoring');
-			$monitoring->disable_monitor('isc-dhcp-server');
-
-			// restart provisioning service
-			$this->_sysconfd->request_post('/services', array('pf-xivo-provd' => 'restart'));
-
-			// restart asterisk service
 			$this->_sysconfd->request_post('/services', array('asterisk' => 'restart'));
-
-			// dhcpd_update
 			$this->_sysconfd->request_get('/dhcpd_update');
 
 			unlink($this->_savetmpfile);
