@@ -7,61 +7,64 @@ MONIT_CONF_DIR=/etc/monit/conf.d
 
 is_installed()
 {
-  PKG=$1
-  dpkg -l ${PKG} >/dev/null 2>/dev/null;
+  package=$1
+  dpkg -l $package >/dev/null 2>/dev/null;
 }
 
 activate_check()
 {
-  PL=$1
+  check=$1
 
-  if [ ! -e ${MONIT_CONF_DIR}/${PL} ]; then
-    ln -s ${MONIT_CHECKS}/${PL} ${MONIT_CONF_DIR}/${PL}
+  if [ ! -L $MONIT_CONF_DIR/$check ]; then
+    rm $MONIT_CONF_DIR/$check
+  fi
+
+  if [ ! -e $MONIT_CONF_DIR/$check ]; then
+    ln -s $MONIT_CHECKS/$check $MONIT_CONF_DIR/$check
   fi
 }
 
 deactivate_check()
 {
-  PL=$1
-  rm -f ${MONIT_CONF_DIR}/${PL}
+  check=$1
+  rm -f $MONIT_CONF_DIR/$check
 }
 
 activate_if_installed()
 {
-  PKG=$1
+  package=$1
 
-  if is_installed ${PKG}; then
-    ACT=activate_check
+  if is_installed $package; then
+    activate_check $package
   else
-    ACT=deactivate_check
+    deactivate_check $package
   fi
-
-  ${ACT} ${PKG}
 }
 
 # commun sys checks
 activate_check base-system
 
 # known services
-for CHECK in ${MONIT_CHECKS}/*; do
-  SRV=$(basename ${CHECK})
-  if [ "${SRV}" != "isc-dhcp-server" ]; then
-    activate_if_installed ${SRV}
+for check in $MONIT_CHECKS/*; do
+  service=$(basename $check)
+  if [ "$service" != "isc-dhcp-server" ]; then
+    # isc-dhcp will be updated by sysconfd
+    activate_if_installed $service
   fi
 done
 
 # Server config
 # (backup old file)
 if [ -e /etc/monit/monitrc ]; then
-  DATE=$(date +%Y%m%d%H%M%S)
-  cp /etc/monit/monitrc /etc/monit/monitrc.${DATE}
+  today=$(date +%Y%m%d%H%M%S)
+  cp /etc/monit/monitrc /etc/monit/monitrc.$today
 fi
-sed "s/#PRODUCT#/${PRODUCT}/g" /etc/monit/monitrc.tmpl >/etc/monit/monitrc
+sed "s/#PRODUCT#/${PRODUCT}/g" /etc/monit/monitrc.tmpl > /etc/monit/monitrc
 
-EMAILS=$(get_full_email_alerts "monit")
-if [ -n "${EMAILS}" ]; then
-  for EM in ${EMAILS}; do
-    echo "set alert ${EM} but not on { instance changed }" >>/etc/monit/monitrc
+emails=$(get_full_email_alerts "monit")
+if [ -n "$emails" ]; then
+  for email in $emails; do
+    echo "set alert $email but not on { instance changed }" >> /etc/monit/monitrc
   done
 fi
 
