@@ -1,7 +1,3 @@
-[dhcpd3]
-env.leasefile /var/lib/dhcp/dhcpd.leases
-env.configfile /etc/dhcp/dhcpd.conf
-
 [asterisk_*]
 env.username xivo_munin_user
 env.secret jeSwupAd0
