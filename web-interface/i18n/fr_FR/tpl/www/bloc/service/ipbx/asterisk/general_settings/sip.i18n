@@ -1111,11 +1111,11 @@ Certificat CA :
 ; hlp_fm_tlscafile
 Config Asterisk: tlscafile
 
-; fm_srtp
-SRTP :
+; fm_encryption
+Chiffrement :
 
-; hlp_fm_srtp
-Active l'encodage des flux audio
+; hlp_fm_encryption
+Config asterisk: encryption
 
 ; fm_media_address
 Addresse pour les flux media : 

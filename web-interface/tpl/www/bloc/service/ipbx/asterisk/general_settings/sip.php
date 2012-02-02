@@ -775,12 +775,12 @@ endif;
 				  'error'		=> $this->bbf_args('error',
 					   		$this->get_var('error', 'tlscipher')) )),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_srtp'),
-				      'name'	  	=> 'srtp',
-				      'labelid'		=> 'srtp',
-  					  'help'  		=> $this->bbf('hlp_fm_srtp'),
-				      'checked'		=> $this->get_var('info','srtp','var_val'),
-							'default'		=> $element['srtp']['default']));
+		$form->checkbox(array('desc'	=> $this->bbf('fm_encryption'),
+					'name'		=> 'encryption',
+					'labelid'	=> 'encryption',
+					'help'		=> $this->bbf('hlp_fm_encryption'),
+					'checked'	=> $this->get_var('info','encryption','var_val'),
+					'default'	=> $element['encryption']['default']));
 ?>
 <div class="clearboth"></div>
 </div>

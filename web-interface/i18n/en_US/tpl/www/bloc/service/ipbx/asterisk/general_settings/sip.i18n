@@ -1308,12 +1308,11 @@ Dialogs hash size:
 ; hlp_fm_hash_dialogs
 Config Asterisk: hash_dialogs
 
-; fm_srtp
-SRTP: 
+; fm_encryption
+Encryption:
 
-; hlp_fm_srtp
-Enable Audio stream cipher
-
+; hlp_fm_encryption
+Asterisk config: encryption
 
 ; fm_media_address
 Media streams address:

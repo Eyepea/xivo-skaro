@@ -717,12 +717,10 @@ $array['element']['auth_options_requests']['value'] = array('no','yes');
 $array['element']['auth_options_requests']['default'] = 'no';
 $array['element']['auth_options_requests']['set'] = true;
 
-
-// this is not a real sip option
-$array['element']['srtp'] = array();
-$array['element']['srtp']['value']    = array('no', 'yes');
-$array['element']['srtp']['default']  = 'no';
-$array['element']['srtp']['set']      = true;
+$array['element']['encryption'] = array();
+$array['element']['encryption']['value'] = array('no', 'yes');
+$array['element']['encryption']['default'] = 'no';
+$array['element']['encryption']['set'] = true;
 
 $array['element']['transport'] = array();
 $array['element']['transport']['value'] = array('udp','tcp','tls', 'udp,tcp', 'tcp,tls', 'udp,tcp,tls');
@@ -928,7 +926,7 @@ $array['filter']['videosupport'] = array('set' => false, 'chk' => 2, 'key' => ar
 $array['filter']['auth_options_requests'] = array('bool' => true);
 
 
-$array['filter']['srtp'] = array('bool' => true);
+$array['filter']['encryption'] = array('bool' => true);
 $array['filter']['transport'] = array('set' => false, 'key' => array('udp','tcp','tls', 'udp,tcp', 'tcp,tls', 'udp,tcp,tls'));
 
 ?>
