@@ -28,16 +28,15 @@ $act = $_QRY->get('act');
 switch($act)
 {
 	case 'edit':
-	    $data = $app->_get_data_from_json();
-        $data['active']         = $data['active']?1:0;
-        $data['extra_ifaces']   = implode(' ', $data['extra_ifaces']);
-	    
-		$status = ($data !== false && $app->set($data) === true) ? 200 : 400;
+		$data = $app->_get_data_from_json();
+		$data['active'] = $data['active']?1:0;
+		$data['extra_ifaces'] = implode(' ', $data['extra_ifaces']);
+
+		$status = ($app->set($data) === true) ? 200 : 400;
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);
 		break;
-
 	default:
 		$act = 'view';
 
@@ -47,11 +46,11 @@ switch($act)
 			$http_response->send(true);
 		}
 
-        $info['active']         = $info['active'] == 0?False:True;
-        $info['extra_ifaces']   = split(' ', $info['extra_ifaces']);
-        if(count($info['extra_ifaces']) == 1 && strlen($info['extra_ifaces'][0]) == 0)
-            $info['extra_ifaces'] = array();
-            
+		$info['active']         = $info['active'] == 0?False:True;
+		$info['extra_ifaces']   = split(' ', $info['extra_ifaces']);
+		if(count($info['extra_ifaces']) == 1 && strlen($info['extra_ifaces'][0]) == 0)
+			$info['extra_ifaces'] = array();
+
 		$_TPL->set_var('info',$info);
 }
 

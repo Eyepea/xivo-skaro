@@ -307,8 +307,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 		if($entity === ''
 		&& ($action === 'add'
-		   || (isset($this->_info['deletable']) === true
-		      && $this->_info['deletable'] === true)) === true)
+		|| (isset($this->_info['deletable']) === true
+			&& $this->_info['deletable'] === true)) === true)
 		{
 			if(dwho_issa('contextinclude',$arr) === true)
 				$this->set_contextinclude($name,$arr['contextinclude']);

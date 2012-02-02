@@ -43,7 +43,6 @@ switch($act)
 		$_TPL->set_var('info',$info);
 		break;
 	case 'add':
-	    echo 'ADD\n';
 		$appincall = &$ipbx->get_application('incall');
 		$status = $appincall->add_from_json() === true ? 200 : 400;
 
@@ -59,6 +58,26 @@ switch($act)
 			$status = 200;
 		else
 			$status = 500;
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
+	case 'deleteall':
+		$appincall = &$ipbx->get_application('incall');
+
+		if(($list = $appincall->get_incalls_list()) === false
+		|| ($nb = count($list)) === 0)
+		{
+			$http_response->set_status_line(204);
+			$http_response->send(true);
+		}
+		for ($i=0; $i<$nb; $i++)
+		{
+			$ref = &$list[$i];
+			$appincall->get($ref['id']);
+			$appincall->delete();
+		}
+		$status = 200;
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);

@@ -28,11 +28,11 @@ $act = $_QRY->get('act');
 switch($act)
 {
 	case 'view':
-	    if ($_QRY->get('id') === null)
-	    {
+		if ($_QRY->get('id') === null)
+		{
 			$http_response->set_status_line(404);
 			$http_response->send(true);
-	    }
+		}
 		$appagent = &$ipbx->get_application('agent');
 
 		$nocomponents = array('contextmember' => true);
@@ -76,6 +76,28 @@ switch($act)
 		}
 		else
 			$status = 500;
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
+	case 'deleteall':
+		$appagent = &$ipbx->get_application('agent');
+
+		if(($list = $appagent->get_agents_list()) === false
+		|| ($nb = count($list)) === 0)
+		{
+			$http_response->set_status_line(204);
+			$http_response->send(true);
+		}
+		for ($i=0; $i<$nb; $i++)
+		{
+			$ref = &$list[$i];
+			$appagent->get($ref['id']);
+			$appagent->delete();
+		}
+		$status = 200;
+		$ipbx->discuss('module reload chan_agent.so');
+		$ipbx->discuss('xivo[agentlist,update]');
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);

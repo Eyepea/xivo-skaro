@@ -91,7 +91,7 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 			}
 		}
-		
+
 		if($contextinc['list'] !== false && dwho_issa('contextinclude',$result) === true
 		&& ($contextinc['slt'] = dwho_array_intersect_key($result['contextinclude'],$contextinc['list'],'include')) !== false)
 			$contextinc['slt'] = array_keys($contextinc['slt']);
@@ -179,7 +179,7 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 			}
 		}
-		
+
 		if($contextinc['list'] !== false && dwho_issa('contextinclude',$return) === true
 		&& ($contextinc['slt'] = dwho_array_intersect_key($return['contextinclude'],$contextinc['list'],'include')) !== false)
 			$contextinc['slt'] = array_keys($contextinc['slt']);
@@ -207,7 +207,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 
 		$appcontext->delete();
-		
+
 		$ipbx->discuss(array('dialplan reload'));
 		$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 		break;

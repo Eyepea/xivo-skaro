@@ -61,6 +61,27 @@ switch($act)
 		$http_response->set_status_line($status);
 		$http_response->send(true);
 		break;
+	case 'deleteall':
+		$appentity = &$_XOBJ->get_application('entity');
+
+		if(($list = $appentity->get_entities_list()) === false
+		|| ($nb = count($list)) === 0)
+		{
+			$http_response->set_status_line(204);
+			$http_response->send(true);
+		}
+		for ($i=0; $i<$nb; $i++)
+		{
+			$ref = &$list[$i];
+			$entity = $ref['entity'];
+			if (($info = $appentity->get($entity['id'])) !== false)
+				$appentity->delete();
+		}
+		$status = 200;
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
 	case 'search':
 		$appentity = &$_XOBJ->get_application('entity');
 

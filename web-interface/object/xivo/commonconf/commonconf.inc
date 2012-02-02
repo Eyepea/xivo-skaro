@@ -259,6 +259,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 	function notify_changes()
 	{
 		touch('/var/lib/pf-xivo-web-interface/commonconf.reload');
+		return(true);
 	}
 }
 
