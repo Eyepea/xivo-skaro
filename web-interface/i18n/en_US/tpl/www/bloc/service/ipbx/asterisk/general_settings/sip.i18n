@@ -1011,37 +1011,37 @@ Asterisk config: tlscafile
 UDP address: 
 
 ; hlp_fm_udpbindaddr
-Config asterisk: udpbindaddr
+Asterisk config: udpbindaddr
 
 ; fm_tcpenable
 Allow TCP connections: 
 
 ; hlp_fm_tcpenable
-Config asterisk: tcpenable
+Asterisk config: tcpenable
 
 ; fm_tcpbindaddr
 TCP address : 
 
 ; hlp_fm_tcpbindaddr
-Config asterisk: tcpbindaddr
+Asterisk config: tcpbindaddr
 
 ; fm_match_auth_username
 Match users with 'username' field:
 
 ; hlp_fm_match_auth_username
-Config asterisk: match_auth_username
+Asterisk config: match_auth_username
 
 ; fm_regextenonqualify
 Force 'regexten' extension deactivation:
 
 ; hlp_fm_regextenonqualify
-Config asterisk: regextenonqualify
+Asterisk config: regextenonqualify
 
 ; fm_authfailureevents
 Trigger 'peerstatus' event on auth failure:
 
 ; hlp_fm_authfailureevents
-Config asterisk: authfailureevents
+Asterisk config: authfailureevents
 
 ; fm_tos-text
 TOS text : 
@@ -1080,25 +1080,25 @@ Asterisk config: cos-text
 STUN address: 
 
 ; hlp_fm_stunaddr
-Config asterisk: stunaddr
+Asterisk config: stunaddr
 
 ; fm_dynamic_exclude_static
 Deny dynamic ip address for static users and hosts:
 
 ; hlp_fm_dynamic_exclude_static
-Config asterisk: dynamic_exclude_static
+Asterisk config: dynamic_exclude_static
 
 ; fm_contactdeny
 Denied address/network:
 
 ; hlp_fm_contactdeny
-Config asterisk: contactdeny
+Asterisk config: contactdeny
 
 ; fm_contactpermit
 Allowed address/network:
 
 ; hlp_fm_contactpermit
-Config asterisk: contactpermit
+Asterisk config: contactpermit
 
 ;;; security
 ; smenu_security
@@ -1108,25 +1108,25 @@ Security
 Allow TLS connections:
 
 ; hlp_fm_tlsenable
-Config asterisk: tlsenable
+Asterisk config: tlsenable
 
 ; fm_tlsbindaddr
 Listening address:
 
 ; hlp_fm_tlsbindaddr
-Config asterisk: tlsbindaddr
+Asterisk config: tlsbindaddr
 
 ; fm_tlsdontverifyserver
 Don't verify server certificate:
 
 ; hlp_fm_tlsdontverifyserver
-Config asterisk: tlsdontverifyserver
+Asterisk config: tlsdontverifyserver
 
 ; fm_tlscipher
 TLS cipher:
 
 ; hlp_fm_tlscipher
-Config asterisk: tlscipher
+Asterisk config: tlscipher
 
 ;;; signaling
 
@@ -1134,68 +1134,68 @@ Config asterisk: tlscipher
 T1 timer:
 
 ; hlp_fm_timert1
-Config asterisk: timert1
+Asterisk config: timert1
 
 ; fm_timerb
 Configuration timer:
 
 ; hlp_fm_timerb
-Config asterisk: timerb
+Asterisk config: timerb
 
 ; fm_mwiexpiry
 MWI expiry:
 
 ; hlp_fm_mwiexpiry
-Config asterisk: mwiexpiry
+Asterisk config: mwiexpiry
 
 ; fm_notifycid
 Set caller-id in dialog-info+xml notify:
 
 ; hlp_fm_notifycid
-Config asterisk: notifycid
+Asterisk config: notifycid
 
 ; fm_callcounter
 Calls counter:
 
 ; hlp_fm_callcounter
-Config asterisk: callcounter
+Asterisk config: callcounter
 
 
 ; fm_prematuremedia
 ISDN compatibility:
 
 ; hlp_fm_prematuremedia
-Config asterisk: prematuremedia
+Asterisk config: prematuremedia
 
 ; fm_sdpsession
 SDP session name:
 
 ; hlp_fm_sdpsession
-Config asterisk: sdpsession
+Asterisk config: sdpsession
 
 ; fm_sdpowner
 SDP owner 'username' field:
 
 ; hlp_fm_sdpowner
-Config asterisk: sdpowner
+Asterisk config: sdpowner
 
 ; fm_ignoresdpversion
 Ignore SDP version:
 
 ; hlp_fm_ignoresdpversion
-Config asterisk: ignoresdpversion
+Asterisk config: ignoresdpversion
 
 ; fm_shrinkcallerid
 Shrink caller-id:
 
 ; hlp_fm_shrinkcallerid
-Config asterisk: shrinkcallerid
+Asterisk config: shrinkcallerid
 
 ; fm_session-timers
 Enable session-timers : 
 
 ; hlp_fm_session-timers
-Config asterisk: session-timers
+Asterisk config: session-timers
 
 ; session-timers-opt(originate)
 Always
@@ -1211,19 +1211,19 @@ Never
 Maximum session refresh interval:
 
 ; hlp_fm_session-expires
-Config asterisk: session-expires
+Asterisk config: session-expires
 
 ; fm_session-minse
 Minimul session refresh interval:
 
 ; hlp_fm_session-minse
-Config asterisk: session-minse
+Asterisk config: session-minse
 
 ; fm_session-refresher
 Session refresher:
 
 ; hlp_fm_session-refresher
-Config asterisk: session-refresher
+Asterisk config: session-refresher
 
 ; refresher-opt(uas)
 Server
@@ -1245,25 +1245,25 @@ Asterisk config: jbtargetextra
 Qualify frequency:
 
 ; hlp_fm_qualifyfreq
-Config Asterisk: qualifyfreq
+Asterisk config: qualifyfreq
 
 ; fm_qualifygap
 Qualify gap:
 
 ; hlp_fm_qualifygap
-Config Asterisk: qualifygap
+Asterisk config: qualifygap
 
 ; fm_qualifypeers
 Num. of peers qualified at the same time (per group):
 
 ; hlp_fm_qualifypeers
-Config Asterisk: qualifypeers
+Asterisk config: qualifypeers
 
 ; fm_directmedia
 Redirect media streams:
 
 ; hlp_fm_directmedia
-Config Asterisk: directmedia
+Asterisk config: directmedia
 
 ; fm_directmedia-opt(no)
 No
@@ -1284,7 +1284,7 @@ Using UPDATE not behind NAT
 Parking lot:
 
 ; hlp_fm_parkinglot
-Config Asterisk: parkinglot
+Asterisk config: parkinglot
 
 ;;; internals
 ; smenu_internals
@@ -1294,19 +1294,19 @@ Internals
 Users hash size:
 
 ; hlp_fm_hash_users
-Config Asterisk: hash_users
+Asterisk config: hash_users
 
 ; fm_hash_peers
 Peers hash size:
 
 ; hlp_fm_hash_peers
-Config Asterisk: hash_peers
+Asterisk config: hash_peers
 
 ; fm_hash_dialogs
 Dialogs hash size:
 
 ; hlp_fm_hash_dialogs
-Config Asterisk: hash_dialogs
+Asterisk config: hash_dialogs
 
 ; fm_encryption
 Encryption:
@@ -1318,25 +1318,25 @@ Asterisk config: encryption
 Media streams address:
 
 ; hlp_fm_media_address
-Config asterisk: media_address
+Asterisk config: media_address
 
 ; fm_externtcpport
 External TCP port: 
 
 ; hlp_fm_externtcpport
-Config asterisk: externtcpport
+Asterisk config: externtcpport
 
 ; fm_externtlsport
 External TLS port: 
 
 ; hlp_fm_externtlsport
-Config asterisk: externtlsport
+Asterisk config: externtlsport
 
 ; fm_auth_options_requests
 Authentify OPTIONS requests: 
 
 ; hlp_fm_auth_options_requests
-Config asterisk: auth_options_requests
+Asterisk config: auth_options_requests
 
 
 

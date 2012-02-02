@@ -165,7 +165,7 @@ Public RSA key :
 Private RSA key : 
 
 ; hlp_fm_protocol-outkey
-Config asterisk: outkey
+Asterisk config: outkey
 
 ; fm_protocol_encryption
 Encryption : 
@@ -313,13 +313,13 @@ All
 Immediate off-hook : 
 
 ; hlp_fm_protocol-immediate
-Config asterisk: immediate
+Asterisk config: immediate
 
 ; fm_protocol-keyrotate
 Deactivate key rotation with encryption :
 
 ; hlp_fm_protocol-keyrotate
-Config asterisk: keyrotate
+Asterisk config: keyrotate
 
 ; fm_protocol-keyrotate-opt(on)
 Yes

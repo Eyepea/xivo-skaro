@@ -507,7 +507,7 @@ Max number of waiting calls to play position announce:
 Penalties applied:
 
 ; hlp_fm_queue_timeoutpriority
-Config asterisk: timeoutpriority
+Asterisk config: timeoutpriority
 
 ; fm_queue_timeoutpriority-opt(app)
 Dialplan
@@ -516,31 +516,31 @@ Dialplan
 Configuration
 
 ; hlp_fm_queue_autofill
-Config asterisk: autofill
+Asterisk config: autofill
 
 ; hlp_fm_queue_autopause
-Config asterisk: autopause
+Asterisk config: autopause
 
 ; hlp_fm_queue_setinterfacevar
-Config asterisk: setinterfacevar
+Asterisk config: setinterfacevar
 
 ; hlp_fm_queue_setqueueentryvar
-Config asterisk: setqueueentryvar
+Asterisk config: setqueueentryvar
 
 ; hlp_fm_queue_setqueuevar
-Config asterisk: setqueuevar
+Asterisk config: setqueuevar
 
 ; hlp_fm_queue_membermacro
-Config asterisk: membermacro
+Asterisk config: membermacro
 
 ; hlp_fm_queue_min-announce-frequency
-Config asterisk: min-announce-frequency
+Asterisk config: min-announce-frequency
 
 ; hlp_fm_queue_random-periodic-announce
-Config asterisk: random-periodic-announce
+Asterisk config: random-periodic-announce
 
 ; hlp_fm_queue_announce-position
-Config asterisk: announce-position
+Asterisk config: announce-position
 
 ; fm_queue_announce-position-opt(yes)
 Yes
@@ -555,121 +555,121 @@ Limit
 More
 
 ; hlp_fm_queue_announce-position-limit
-Config asterisk: announce-position-limit
+Asterisk config: announce-position-limit
 
 ; hlp_fm_queue_defaultrule
-Config asterisk: defaultrule
+Asterisk config: defaultrule
 
 ; hlp_fm_queue-queue
-Config asterisk: queue
+Asterisk config: queue
 
 ; hlp_fm_queue-announce
-Config asterisk: announce
+Asterisk config: announce
 
 ; hlp_fm_queue-announce-frequency
-Config asterisk: announce-frequency
+Asterisk config: announce-frequency
 
 ; hlp_fm_queue-announce-holdtime
-Config asterisk: announce-holdtime
+Asterisk config: announce-holdtime
 
 ; hlp_fm_queue-announce-round-seconds
-Config asterisk: announce-round-seconds
+Asterisk config: announce-round-seconds
 
 ; hlp_fm_queue-category
-Config asterisk: category
+Asterisk config: category
 
 ; hlp_fm_queue-context
-Config asterisk: context
+Asterisk config: context
 
 ; hlp_fm_queue-eventmemberstatus
-Config asterisk: eventmemberstatus
+Asterisk config: eventmemberstatus
 
 ; hlp_fm_queue-eventwhencalled
-Config asterisk: eventwhencalled
+Asterisk config: eventwhencalled
 
 ; hlp_fm_queue-joinempty
-Config asterisk: joinempty
+Asterisk config: joinempty
 
 ; hlp_fm_queue-leavewhenempty
-Config asterisk: leavewhenempty
+Asterisk config: leavewhenempty
 
 ; hlp_fm_queue-maxlen
-Config asterisk: maxlen
+Asterisk config: maxlen
 
 ; hlp_fm_queue-memberdelay
-Config asterisk: memberdelay
+Asterisk config: memberdelay
 
 ; hlp_fm_queue-monitor-format
-Config asterisk: monitor-format
+Asterisk config: monitor-format
 
 ; hlp_fm_queue-monitor-type
-Config asterisk: monitor-type
+Asterisk config: monitor-type
 
 ; hlp_fm_queue-musicclass
-Config asterisk: musicclass
+Asterisk config: musicclass
 
 ; hlp_fm_queue-name
-Config asterisk: name
+Asterisk config: name
 
 ; hlp_fm_queue-periodic-announce
-Config asterisk: periodic-announce
+Asterisk config: periodic-announce
 
 ; hlp_fm_queue-periodic-announce-frequency
-Config asterisk: periodic-announce-frequency
+Asterisk config: periodic-announce-frequency
 
 ; hlp_fm_queue-queue-callswaiting
-Config asterisk: queue-callswaiting
+Asterisk config: queue-callswaiting
 
 ; hlp_fm_queue-queue-holdtime
-Config asterisk: queue-holdtime
+Asterisk config: queue-holdtime
 
 ; hlp_fm_queue-queue-lessthan
-Config asterisk: queue-lessthan
+Asterisk config: queue-lessthan
 
 ; hlp_fm_queue-queue-minutes
-Config asterisk: queue-minutes
+Asterisk config: queue-minutes
 
 ; hlp_fm_queue-queue-reporthold
-Config asterisk: queue-reporthold
+Asterisk config: queue-reporthold
 
 ; hlp_fm_queue-queue-seconds
-Config asterisk: queue-seconds
+Asterisk config: queue-seconds
 
 ; hlp_fm_queue-queue-thankyou
-Config asterisk: queue-thankyou
+Asterisk config: queue-thankyou
 
 ; hlp_fm_queue-queue-thereare
-Config asterisk: queue-thereare
+Asterisk config: queue-thereare
 
 ; hlp_fm_queue-queue-youarenext
-Config asterisk: queue-youarenext
+Asterisk config: queue-youarenext
 
 ; hlp_fm_queue-reportholdtime
-Config asterisk: reportholdtime
+Asterisk config: reportholdtime
 
 ; hlp_fm_queue-retry
-Config asterisk: retry
+Asterisk config: retry
 
 ; hlp_fm_queue-ringinuse
-Config asterisk: ringinuse
+Asterisk config: ringinuse
 
 ; hlp_fm_queue-servicelevel
-Config asterisk: servicelevel
+Asterisk config: servicelevel
 
 ; hlp_fm_queue-strategy
-Config asterisk: strategy
+Asterisk config: strategy
 
 ; hlp_fm_queue-timeout
-Config asterisk: timeout
+Asterisk config: timeout
 
 ; hlp_fm_queue-timeoutrestart
-Config asterisk: timeoutrestart
+Asterisk config: timeoutrestart
 
 ; hlp_fm_queue-weight
-Config asterisk: weight
+Asterisk config: weight
 
 ; hlp_fm_queue-wrapuptime
-Config asterisk: wrapuptime
+Asterisk config: wrapuptime
 
 
 ; smenu_schedule

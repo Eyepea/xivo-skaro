@@ -832,7 +832,7 @@ Transport:
 Expiry: 
 
 ; hlp_fm_register-expiry
-Config asterisk: expiry
+Asterisk config: expiry
 
 ; fm_register-callbackextension
 Use callback extension: 

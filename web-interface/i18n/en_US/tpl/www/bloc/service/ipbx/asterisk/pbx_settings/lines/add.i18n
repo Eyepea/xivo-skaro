@@ -101,7 +101,7 @@ Comedia
 Parking:
 
 ; hlp_fm_parkinglot
-Config Asterisk: parkinglot
+Asterisk config: parkinglot
 
 ; fm_protocol_context
 Context:
@@ -1106,19 +1106,19 @@ Timezone:
 Transport: 
 
 ; hlp_fm_protocol-transport
-Config asterisk: transport
+Asterisk config: transport
 
 ; fm_protocol-remotesecret
 Remote password: 
 
 ; hlp_fm_protocol-remotesecret
-Config asterisk: remotesecret
+Asterisk config: remotesecret
 
 ; fm_protocol-directmedia
 Redirect media streams:
 
 ; hlp_fm_protocol-directmedia
-Config asterisk: directmedia
+Asterisk config: directmedia
 
 ; fm_protocol-directmedia-opt(no)
 No
@@ -1139,25 +1139,25 @@ Using UPDATE not behind NAT
 Enable calls counter:
 
 ; hlp_fm_protocol-callcounter
-Config asterisk: callcounter
+Asterisk config: callcounter
 
 ; fm_protocol-busylevel
 Send BUSY up to num. calls:
 
 ; hlp_fm_protocol-busylevel
-Config asterisk: busylevel
+Asterisk config: busylevel
 
 ; fm_protocol-ignoresdpversion
 Ignore SDP packets version:
 
 ; hlp_fm_protocol-ignoresdpversion
-Config asterisk: ignoresdpversion
+Asterisk config: ignoresdpversion
 
 ; fm_protocol-session-timers
 Session-timers mode: 
 
 ; hlp_fm_protocol-session-timers
-Config asterisk: session-timers
+Asterisk config: session-timers
 
 ; fm_protocol-session-timers-opt(originate)
 Originate
@@ -1172,19 +1172,19 @@ Refuse
 Maximum session refresh interval: 
 
 ; hlp_fm_protocol-session-expires
-Config asterisk: session-expires
+Asterisk config: session-expires
 
 ; fm_protocol-session-minse
 Minimum session refresh interval:
 
 ; hlp_fm_protocol-session-minse
-Config asterisk: session-minse
+Asterisk config: session-minse
 
 ; fm_protocol-session-refresher
 Session refresher:
 
 ; hlp_fm_protocol-session-refresher
-Config asterisk: session-refresher
+Asterisk config: session-refresher
 
 ; fm_protocol-session-refresher-opt(uas)
 Server
@@ -1196,43 +1196,43 @@ Client
 Callback extension:
 
 ; hlp_fm_protocol-callbackextension
-Config asterisk: callbackextension
+Asterisk config: callbackextension
 
 ; fm_protocol-registertrying
 Send «100 Trying» when register: 
 
 ; hlp_fm_protocol-registertrying
-Config asterisk: registertrying
+Asterisk config: registertrying
 
 ; fm_protocol-timert1
 Minimum time of the round trip (RTT) messages:
 
 ; hlp_fm_protocol-timert1
-Config asterisk: timert1
+Asterisk config: timert1
 
 ; fm_protocol-timerb
 Call setup timer: 
 
 ; hlp_fm_protocol-timerb
-Config asterisk: timerb
+Asterisk config: timerb
 
 ; fm_protocol-qualifyfreq
 Qualify frequency: 
 
 ; hlp_fm_protocol-qualifyfreq
-Config asterisk: qualifyfreq
+Asterisk config: qualifyfreq
 
 ; fm_protocol-contactpermit
 Authorised contact addresses: 
 
 ; hlp_fm_protocol-contactpermit
-Config asterisk: contactpermit
+Asterisk config: contactpermit
 
 ; fm_protocol-contactdeny
 Rejected contact addresses: 
 
 ; hlp_fm_protocol-contactdeny
-Config asterisk: contactdeny
+Asterisk config: contactdeny
 
 
 ; fm_register-transport
@@ -1244,7 +1244,7 @@ Transport:
 Expiry: 
 
 ; hlp_fm_register-expiry
-Config asterisk: expiry
+Asterisk config: expiry
 
 ; fm_register-callbackextension
 Use callback extension: 
@@ -1254,59 +1254,59 @@ Use callback extension:
 Immediate off-hook: 
 
 ; hlp_fm_protocol-immediate
-Config asterisk: immediate
+Asterisk config: immediate
 
 
 ; fm_protocol-unsolicited_mailbox
 Unsolicited mailbox : 
 
 ; hlp_fm_protocol-unsolicited_mailbox
-Config asterisk: unsolicited_mailbox
+Asterisk config: unsolicited_mailbox
 
 ; fm_protocol-use_q850_reason
 Use «Reason» header: 
 
 ; hlp_fm_protocol-use_q850_reason
-Config asterisk: use_q850_reason
+Asterisk config: use_q850_reason
 
 ; fm_protocol-encryption
 Encryption:
 
 ; hlp_fm_protocol-encryption
-Config asterisk: encryption
+Asterisk config: encryption
 
 ; fm_protocol-forceencryption
 Force encryption:
 
 ; hlp_fm_protocol-forceencryption
-Config asterisk: forceencryption
+Asterisk config: forceencryption
 
 ; fm_protocol-snom_aoc_enabled
 Send AOC-D/AOC-E to Snom devices: 
 
 ; hlp_fm_protocol-snom_aoc_enabled
-Config asterisk: snom_aoc_enabled
+Asterisk config: snom_aoc_enabled
 
 ; fm_protocol-disallowed_methods
 Disallow SIP methods:
 
 ; hlp_fm_protocol-disallowed_methods
-Config asterisk: disallowed_methods
+Asterisk config: disallowed_methods
 
 ; fm_protocol-maxforwards
 Max forward:
 
 ; hlp_fm_protocol-maxforwards
-Config asterisk: maxforwards
+Asterisk config: maxforwards
 
 ; fm_protocol-textsupport
 Text support:
 
 ; hlp_fm_protocol-textsupport
-Config asterisk: textsupport
+Asterisk config: textsupport
 
 ; hlp_fm_protocol-videosupport
-Config asterisk: videosupport
+Asterisk config: videosupport
 
 ; fm_protocol-videosupport-opt(no)
 No

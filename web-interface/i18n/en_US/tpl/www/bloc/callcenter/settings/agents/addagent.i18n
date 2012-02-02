@@ -134,20 +134,20 @@ Disabled
 %s seconds
 
 ; hlp_fm_agentfeatures_ackcall
-Config asterisk: ackcall
+Asterisk config: ackcall
 
 ; hlp_fm_agentfeatures_acceptdtmf
-Config asterisk: acceptdtmf
+Asterisk config: acceptdtmf
 
 ; hlp_fm_agentfeatures_enddtmf
-Config asterisk: enddtmf
+Asterisk config: enddtmf
 
 ; hlp_fm_agentfeatures_autologoff
-Config asterisk: autologoff
+Asterisk config: autologoff
 
 ; hlp_fm_agentfeatures_wrapuptime
-Config asterisk: wrapuptime
+Asterisk config: wrapuptime
 
 ; hlp_fm_agentfeatures_musiconhold
-Config asterisk: musiconhold
+Asterisk config: musiconhold
 

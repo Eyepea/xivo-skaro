@@ -99,109 +99,109 @@ E-mail
 Subject: 
 
 ; hlp_fm_voicemail-emailsubject
-Config asterisk: emailsubject
+Asterisk config: emailsubject
 
 ; fm_voicemail-emailbody
 Body: 
 
 ; hlp_fm_voicemail-emailbody
-Config asterisk: emailbody
+Asterisk config: emailbody
 
 ; fm_voicemail-imapuser
 IMAP user:
 
 ; hlp_fm_voicemail-imapuser
-Config asterisk: imapuser
+Asterisk config: imapuser
 
 ; fm_voicemail-imappassword
 IMAP password:
 
 ; hlp_fm_voicemail-imappassword
-Config asterisk: imappassword
+Asterisk config: imappassword
 
 ; fm_voicemail-imapfolder
 IMAP directory:
 
 ; hlp_fm_voicemail-imapfolder
-Config asterisk: imapfolder
+Asterisk config: imapfolder
 
 ; fm_voicemail-imapvmsharedid
 Shared mailbox ID:
 
 ; hlp_fm_voicemail-imapvmsharedid
-Config asterisk: imapvmsharedid
+Asterisk config: imapvmsharedid
 
 ; fm_voicemail-attachfmt
 Attachment audio format: 
 
 ; hlp_fm_voicemail-attachfmt
-Config asterisk: attachfmt
+Asterisk config: attachfmt
 
 ; fm_voicemail-serveremail
 «From» header:
 
 ; hlp_fm_voicemail-serveremail
-Config asterisk: serveremail
+Asterisk config: serveremail
 
 ; fm_voicemail-locale
 Locale:
 
 ; hlp_fm_voicemail-locale
-Config asterisk: locale
+Asterisk config: locale
 
 ; fm_voicemail-tempgreetwarn
 Report temporary greeting activation:
 
 ; hlp_fm_voicemail-tempgreetwarn
-Config asterisk: tempgreetwarn
+Asterisk config: tempgreetwarn
 
 ; fm_voicemail-messagewrap
 Message wrap:
 
 ; hlp_fm_voicemail-messagewrap
-Config asterisk: messagewrap
+Asterisk config: messagewrap
 
 ; fm_voicemail-moveheard
 Move listened messages to «Old» folder:
 
 ; hlp_fm_voicemail-moveheard
-Config asterisk: moveheard
+Asterisk config: moveheard
 
 ; fm_voicemail-minsecs
 Minimum duration of a message:
 
 ; hlp_fm_voicemail-minsecs
-Config asterisk: minsecs
+Asterisk config: minsecs
 
 ; fm_voicemail-maxsecs
 Maximum duration of a message:
 
 ; hlp_fm_voicemail-maxsecs
-Config asterisk: maxsecs
+Asterisk config: maxsecs
 
 ; fm_voicemail-nextaftercmd
 Lecture automatique du message suivant :
 
 ; hlp_fm_voicemail-nextaftercmd
-Config asterisk: nextaftercmd
+Asterisk config: nextaftercmd
 
 ; fm_voicemail-backupdeleted
 Max number of messages allowed in «Deleted» folder:
 
 ; hlp_fm_voicemail-backupdeleted
-Config asterisk: backupdeleted
+Asterisk config: backupdeleted
 
 ; fm_voicemail-volgain
 Increase/Decrease attached message audio volume:
 
 ; hlp_fm_voicemail-volgain
-Config asterisk: volgain
+Asterisk config: volgain
 
 ; fm_voicemail-passwordlocation
 Password stored in:
 
 ; hlp_fm_voicemail-passwordlocation
-Config asterisk: passwordlocation
+Asterisk config: passwordlocation
 
 ; fm_voicemail-passwordlocation-opt(spooldir)
 Messages store directory

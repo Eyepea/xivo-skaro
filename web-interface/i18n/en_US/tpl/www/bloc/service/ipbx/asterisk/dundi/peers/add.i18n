@@ -98,10 +98,10 @@ Asterisk config: order
 No include:
 
 ; hlp_fm_dundipeer-noinclude
-Config asterisk: noinclude
+Asterisk config: noinclude
 
 ; fm_dundipeer_deny
 Deny:
 
 ; hlp_fm_dundipeer-deny
-Config asterisk: deny
+Asterisk config: deny
