@@ -161,14 +161,12 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_abst
 			$this->_dso->orwherecontain('description',$value,true,$this->_table['incall']);
 			$this->_dso->orwherecontain('firstname',$value,true,$this->_table['userfeatures']);
 			$this->_dso->orwherecontain('lastname',$value,true,$this->_table['userfeatures']);
-			$this->_dso->orwherecontain('number',$value,true,$this->_table['userfeatures']);
-			$this->_dso->orwherecontain('name',$value,true,$this->_table['userfeatures']);
 			$this->_dso->orwherecontain('name',$value,true,$this->_table['groupfeatures']);
 			$this->_dso->orwherecontain('number',$value,true,$this->_table['groupfeatures']);
 			$this->_dso->orwherecontain('name',$value,true,$this->_table['queuefeatures']);
 			$this->_dso->orwherecontain('number',$value,true,$this->_table['queuefeatures']);
 			$this->_dso->orwherecontain('name',$value,true,$this->_table['meetmefeatures']);
-			$this->_dso->orwherecontain('number',$value,true,$this->_table['meetmefeatures']);
+			$this->_dso->orwherecontain('confno',$value,true,$this->_table['meetmefeatures']);
 			$this->_dso->orwherecontain('fullname',$value,true,$this->_table['voicemail']);
 			$this->_dso->orwherecontain('mailbox',$value,true,$this->_table['voicemail']);
 			$this->_dso->orwherecontain('email',$value,true,$this->_table['voicemail']);
