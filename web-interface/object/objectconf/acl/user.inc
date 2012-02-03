@@ -137,7 +137,7 @@ $array['tree']['xivo']['configuration']['manage']['certificate'] = true;
 
 $array['tree']['xivo']['configuration']['network'] = array();
 $array['tree']['xivo']['configuration']['network']['interface'] = true;
-$array['tree']['xivo']['configuration']['network']['iproute'] = true;
+#$array['tree']['xivo']['configuration']['network']['iproute'] = true;
 $array['tree']['xivo']['configuration']['network']['resolvconf'] = true;
 $array['tree']['xivo']['configuration']['network']['mail'] = true;
 $array['tree']['xivo']['configuration']['network']['dhcp'] = true;
