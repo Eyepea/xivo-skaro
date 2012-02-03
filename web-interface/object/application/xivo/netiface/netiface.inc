@@ -1009,7 +1009,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		&& $this->_netiface->exists_link($this->_info['netiface']['ifname'], $this->_info['netiface']['uuid']) !== false)
 			return(false);
 
-		if ($this->_info['netiface']["vlanrawdevice"] === $rs["vlanrawdevice"]
+		if ($this->_info['netiface']["vlanrawdevice"] !== null
+		&& $this->_info['netiface']["vlanrawdevice"] !== $rs["vlanrawdevice"]
 		&& $this->_netiface->delete($this->_info['netiface']['id']) === false)
 			return(false);
 
@@ -1250,16 +1251,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			return(false);
 		}
 
-/*
-		# Enable / Disable
-		$r = (bool) $this->_sysconfd->request_post('/change_state_eth_ipv4',
-							   array('state' => ($disable === false)),
-							   array(array('ifname',$this->_info['netiface']['ifname'])));
-
-		if($this->_sysconfd->last_status_code() === 404)
-			$r = null;
-*/
-
 		$res = array();
 		$nb = count($interfaces);
 		for($i = 0;$i < $nb;$i++)
@@ -1270,6 +1261,13 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			if ($netiface === false) {
 				$this->_sysconfd->request_get('/delete_eth_ipv4',
 									   array(array('ifname', $netinfo['interface'])));
+				continue;
+			}
+
+			if ($netiface['disable'] === true) {
+				 $this->_sysconfd->request_post('/change_state_eth_ipv4',
+							   array('state' => false),
+							   array(array('ifname', $netiface['ifname'])));
 				continue;
 			}
 
