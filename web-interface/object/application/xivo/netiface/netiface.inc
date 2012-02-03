@@ -1009,6 +1009,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		&& $this->_netiface->exists_link($this->_info['netiface']['ifname'], $this->_info['netiface']['uuid']) !== false)
 			return(false);
 
+		if ($this->_info['netiface']["vlanrawdevice"] === $rs["vlanrawdevice"]
+		&& $this->_netiface->delete($this->_info['netiface']['id']) === false)
+			return(false);
+
 		$this->make_voip_interface($rs);
 
 		if($this->_netiface->edit($this->_info['netiface']['id'],$rs) !== false)
@@ -1059,8 +1063,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$this->_status = 'delete';
 		$this->_return = array();
 
-		if($this->delete_netiface() === false
-		|| $this->delete_sysconfnet() === false)
+		if($this->delete_netiface() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -1084,23 +1087,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		if($this->_status === 'delete')
 			$this->_return['netiface'] = $r;
-
-		return($r);
-	}
-
-	function delete_sysconfnet()
-	{
-		if(dwho_issa('netiface',$this->_info) === false)
-			return(false);
-
-		$r = (bool) $this->_sysconfd->request_get('/delete_eth_ipv4',
-							   array(array('ifname',$this->_info['netiface']['ifname'])));
-
-		if($this->_sysconfd->last_status_code() === 404)
-			$r = null;
-
-		if($this->_status === 'enable' || $this->_status === 'disable')
-			$this->_return['sysconfnet'] = $r;
 
 		return($r);
 	}
@@ -1143,8 +1129,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$this->_return = array();
 
 		if($this->enable_netiface() === false)
-			$r = false;
-		else if($this->enable_sysconfnet() === false)
 		{
 			$r = false;
 			$this->_reverse_enable_disable();
@@ -1173,8 +1157,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$this->_return = array();
 
 		if($this->disable_netiface() === false)
-			$r = false;
-		else if($this->disable_sysconfnet() === false)
 		{
 			$r = false;
 			$this->_reverse_enable_disable();
@@ -1211,34 +1193,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		if($this->_status === 'enable' || $this->_status === 'disable')
 			$this->_return['netiface'] = $r;
-
-		return($r);
-	}
-
-	function enable_sysconfnet()
-	{
-		return($this->_enable_disable_sysconfnet(false));
-	}
-
-	function disable_sysconfnet()
-	{
-		return($this->_enable_disable_sysconfnet(true));
-	}
-
-	function _enable_disable_sysconfnet($disable=false)
-	{
-		if(dwho_issa('netiface',$this->_info) === false)
-			return(false);
-
-		$r = (bool) $this->_sysconfd->request_post('/change_state_eth_ipv4',
-							   array('state' => ($disable === false)),
-							   array(array('ifname',$this->_info['netiface']['ifname'])));
-
-		if($this->_sysconfd->last_status_code() === 404)
-			$r = null;
-
-		if($this->_status === 'enable' || $this->_status === 'disable')
-			$this->_return['sysconfnet'] = $r;
 
 		return($r);
 	}
@@ -1296,6 +1250,16 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			return(false);
 		}
 
+/*
+		# Enable / Disable
+		$r = (bool) $this->_sysconfd->request_post('/change_state_eth_ipv4',
+							   array('state' => ($disable === false)),
+							   array(array('ifname',$this->_info['netiface']['ifname'])));
+
+		if($this->_sysconfd->last_status_code() === 404)
+			$r = null;
+*/
+
 		$res = array();
 		$nb = count($interfaces);
 		for($i = 0;$i < $nb;$i++)
@@ -1304,6 +1268,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			$netiface = &$interfaces[$i]['netiface'];
 
 			if ($netiface === false) {
+				$this->_sysconfd->request_get('/delete_eth_ipv4',
+									   array(array('ifname', $netinfo['interface'])));
 				continue;
 			}
 

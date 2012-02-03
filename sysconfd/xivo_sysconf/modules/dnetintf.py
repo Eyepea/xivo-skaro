@@ -45,10 +45,10 @@ log = logging.getLogger('xivo_sysconf.modules.dnetintf') # pylint: disable-msg=C
 
 
 class InetxParser:
-    MATCH_SINGLEARG     = re.compile('^\s*([^\s]+)\s+([^\s#]+)').match
-    MATCH_MULTIARGS     = re.compile('^\s*([^\s]+)\s+([^#]+)').match
-    MATCH_HWADDRESS     = re.compile('^\s*hwaddress\s+(\w+)\s+([a-fA-F0-9:]+)').match
-    OPTIONS             = {}
+    MATCH_SINGLEARG = re.compile('^\s*([^\s]+)\s+([^\s#]+)').match
+    MATCH_MULTIARGS = re.compile('^\s*([^\s]+)\s+([^#]+)').match
+    MATCH_HWADDRESS = re.compile('^\s*hwaddress\s+(\w+)\s+([a-fA-F0-9:]+)').match
+    OPTIONS = {}
 
     @staticmethod
     def parse_multiargs(line):
@@ -69,17 +69,17 @@ class InetxParser:
             return ' '.join(match.groups())
 
     def __init__(self, filename):
-        self.OPTIONS    = {'hwaddress': self.parse_hwaddress}
+        self.OPTIONS = {'hwaddress': self.parse_hwaddress}
 
-        self.filename   = filename
-        self.fp         = file(filename)
+        self.filename = filename
+        self.fp = file(filename)
         self.interfaces = None
 
     def reloadfile(self):
         if self.fp and not self.fp.closed:
             self.fp.close()
 
-        self.fp         = file(self.filename)
+        self.fp = file(self.filename)
         self.interfaces = {}
 
     def ifaces(self, reloadfile=False):
@@ -138,13 +138,13 @@ class NetworkConfig(dumbnet.intf):
     Network configuration class.
     """
 
-    INTF_TYPES  = dict((getattr(dumbnet, x), x[10:].lower())
+    INTF_TYPES = dict((getattr(dumbnet, x), x[10:].lower())
                        for x in dir(dumbnet) if x.startswith("INTF_TYPE_"))
 
     def __init__(self):
         dumbnet.intf.__init__(self)
-        self.route              = dumbnet.route()
-        self.default_dst_ipv4   = dumbnet.addr('0.0.0.0/0')
+        self.route = dumbnet.route()
+        self.default_dst_ipv4 = dumbnet.addr('0.0.0.0/0')
 
     def __realloc__(self):
         dumbnet.intf.__init__(self)
@@ -153,9 +153,9 @@ class NetworkConfig(dumbnet.intf):
         """
         Return the default gateway if it belongs to the interface
         """
-        defgw   = self.route.get(self.default_dst_ipv4)
-        xaddr   = dumbnet.intf.get(self, ifname)['addr']
-        route   = self.route.get(xaddr)
+        defgw = self.route.get(self.default_dst_ipv4)
+        xaddr = dumbnet.intf.get(self, ifname)['addr']
+        route = self.route.get(xaddr)
 
         if not defgw \
            or (route and defgw != route):
@@ -181,10 +181,10 @@ class NetworkConfig(dumbnet.intf):
         ret = {'name': ifent['name']}
 
         if not ifent.has_key('addr'):
-            ret['mtu']          = ifent['mtu']
-            ret['flags']        = ifent['flags']
-            ret['type']         = self.INTF_TYPES[ifent['type']]
-            ret['typeid']       = ifent['type']
+            ret['mtu'] = ifent['mtu']
+            ret['flags'] = ifent['flags']
+            ret['type'] = self.INTF_TYPES[ifent['type']]
+            ret['typeid'] = ifent['type']
 
             if ret['type'] == 'eth':
                 ret['family'] = 'inet'
@@ -198,16 +198,16 @@ class NetworkConfig(dumbnet.intf):
 
         xaddr = ifent['addr']
         if xaddr.addrtype == dumbnet.ADDR_TYPE_IP:
-            ret['address']      = dumbnet.ip_ntoa(xaddr.ip)
-            ret['netmask']      = network.format_ipv4(
+            ret['address'] = dumbnet.ip_ntoa(xaddr.ip)
+            ret['netmask'] = network.format_ipv4(
                                         network.bitmask_to_mask_ipv4(xaddr.bits))
-            ret['broadcast']    = str(xaddr.bcast())
-            ret['network']      = str(xaddr.net())
-            ret['mtu']          = ifent['mtu']
-            ret['flags']        = ifent['flags']
-            ret['type']         = self.INTF_TYPES[ifent['type']]
-            ret['typeid']       = ifent['type']
-            ret['family']       = 'inet'
+            ret['broadcast'] = str(xaddr.bcast())
+            ret['network'] = str(xaddr.net())
+            ret['mtu'] = ifent['mtu']
+            ret['flags'] = ifent['flags']
+            ret['type'] = self.INTF_TYPES[ifent['type']]
+            ret['typeid'] = ifent['type']
+            ret['family'] = 'inet'
 
             gw = self._intf_ipv4_gateway(ifent['name'])
 
@@ -220,13 +220,13 @@ class NetworkConfig(dumbnet.intf):
             if ifent.has_key('link_addr'):
                 ret['hwaddress'] = str(ifent['link_addr'])
         elif xaddr.addrtype == dumbnet.ADDR_TYPE_IP6:
-            ret['address']      = dumbnet.ip6_ntoa(xaddr.ip6)
-            ret['netmask']      = xaddr.bits
-            ret['broadcast']    = str(xaddr.bcast())
-            ret['mtu']          = ifent['mtu']
-            ret['flags']        = ifent['flags']
-            ret['type']         = self.INTF_TYPES[ifent['type']]
-            ret['family']       = 'inet6'
+            ret['address'] = dumbnet.ip6_ntoa(xaddr.ip6)
+            ret['netmask'] = xaddr.bits
+            ret['broadcast'] = str(xaddr.bcast())
+            ret['mtu'] = ifent['mtu']
+            ret['flags'] = ifent['flags']
+            ret['type'] = self.INTF_TYPES[ifent['type']]
+            ret['family'] = 'inet6'
 
             if ifent.has_key('link_addr'):
                 ret['hwaddress'] = str(ifent['link_addr'])
@@ -348,19 +348,20 @@ class DNETIntf:
     Network Interfaces class.
     """
 
-    LOCK    = RWLock()
-    CONFIG  = {'interfaces_file':       os.path.join(os.path.sep, 'etc', 'network', 'interfaces'),
+    LOCK = RWLock()
+    CONFIG = {'interfaces_file':       os.path.join(os.path.sep, 'etc', 'network', 'interfaces'),
                'interfaces_tpl_file':   os.path.join('network', 'interfaces'),
                'netiface_up_cmd':       "sudo /sbin/ifup",
                'netiface_down_cmd':     "sudo /sbin/ifdown",
+               'netiface_ip_delete_cmd':     "sudo /bin/ip link delete",
                'lock_timeout':          60}
 
     def __init__(self):
-        self.netcfg         = NetworkConfig()
-        self.inetxparser    = InetxParser(self.CONFIG['interfaces_file'])
+        self.netcfg = NetworkConfig()
+        self.inetxparser = InetxParser(self.CONFIG['interfaces_file'])
 
-        self.args       = {}
-        self.options    = {}
+        self.args = {}
+        self.options = {}
 
     def _netiface_from_address(self, function):
         """
@@ -396,23 +397,23 @@ class DNETIntf:
         if not info or not info.has_key('family'):
             return False
 
-        info['carrier']             = False
-        info['physicalif']          = False
-        info['vlanif']              = False
-        info['vlan-id']             = None
-        info['vlan-raw-device']     = None
-        info['aliasif']             = False
-        info['alias-raw-device']    = None
-        info['hwtypeid']            = None
-        info['options']             = None
+        info['carrier'] = False
+        info['physicalif'] = False
+        info['vlanif'] = False
+        info['vlan-id'] = None
+        info['vlan-raw-device'] = None
+        info['aliasif'] = False
+        info['alias-raw-device'] = None
+        info['hwtypeid'] = None
+        info['options'] = None
 
         if network.is_linux_netdev_if(iface):
-            info['carrier']     = network.is_interface_plugged(iface)
-            info['flags']       = network.get_interface_flags(iface)
-            info['physicalif']  = network.is_linux_phy_if(iface)
-            info['dummyif']     = network.is_linux_dummy_if(iface)
-            info['vlanif']      = network.is_linux_vlan_if(iface)
-            info['hwtypeid']    = network.get_interface_hwtypeid(iface)
+            info['carrier'] = network.is_interface_plugged(iface)
+            info['flags'] = network.get_interface_flags(iface)
+            info['physicalif'] = network.is_linux_phy_if(iface)
+            info['dummyif'] = network.is_linux_dummy_if(iface)
+            info['vlanif'] = network.is_linux_vlan_if(iface)
+            info['hwtypeid'] = network.get_interface_hwtypeid(iface)
 
             if not info['physicalif'] and info.has_key('gateway'):
                 del info['gateway']
@@ -437,8 +438,8 @@ class DNETIntf:
                         except OSError:
                             pass
 
-                    info['carrier']     = network.is_interface_plugged(phyifname)
-                    info['hwtypeid']    = network.get_interface_hwtypeid(phyifname)
+                    info['carrier'] = network.is_interface_plugged(phyifname)
+                    info['hwtypeid'] = network.get_interface_hwtypeid(phyifname)
 
             if not info.has_key('flags'):
                 info['flags'] = None
@@ -454,9 +455,9 @@ class DNETIntf:
             if inetxparsed:
                 info['options'] = xivo_config.unreserved_interfaces_options(inetxparsed)
 
-                xdict                   = dict(inetxparsed)
-                info['method']          = xdict.get('method')
-                info['vlan-id']         = xdict.get('vlan-id')
+                xdict = dict(inetxparsed)
+                info['method'] = xdict.get('method')
+                info['vlan-id'] = xdict.get('vlan-id')
                 info['vlan-raw-device'] = xdict.get('vlan-raw-device')
 
                 if 'address' not in info \
@@ -485,7 +486,7 @@ class DNETIntf:
 
         if info['vlanif']:
             vconfig = network.get_vlan_info(iface)
-            info['vlan-id']         = vconfig.get('vlan-id', info['vlan-id'])
+            info['vlan-id'] = vconfig.get('vlan-id', info['vlan-id'])
             info['vlan-raw-device'] = vconfig.get('vlan-raw-device', info['vlan-raw-device'])
 
         return info
@@ -494,9 +495,9 @@ class DNETIntf:
         """Load parameters, etc"""
         cfg = options.configuration
 
-        tpl_path        = cfg.get('general', 'templates_path')
+        tpl_path = cfg.get('general', 'templates_path')
         custom_tpl_path = cfg.get('general', 'custom_templates_path')
-        backup_path     = cfg.get('general', 'backup_path')
+        backup_path = cfg.get('general', 'backup_path')
 
         if cfg.has_section('network'):
             for x in self.CONFIG.iterkeys():
@@ -521,8 +522,8 @@ class DNETIntf:
         """
         GET /discover_netifaces
         """
-        self.args       = args
-        self.options    = options
+        self.args = args
+        self.options = options
 
         if not self.LOCK.acquire_read(self.CONFIG['lock_timeout']):
             raise HttpReqError(503, "unable to take LOCK for reading after %s seconds" % self.CONFIG['lock_timeout'])
@@ -535,7 +536,7 @@ class DNETIntf:
                 info = self.get_netiface_info(iface)
                 if info:
                     rs[iface] = info
-                    
+
             return rs
         finally:
             self.LOCK.release()
@@ -549,8 +550,8 @@ class DNETIntf:
         >>> netiface({}, {'ifname': {0: 'eth0', 1: 'eth1'}})
         >>> netiface({}, {'ifname': ['eth0', 'eth1']})
         """
-        self.args       = args
-        self.options    = options
+        self.args = args
+        self.options = options
 
         if 'ifname' in self.options:
             ifaces = helpers.extract_scalar(self.options['ifname'])
@@ -579,8 +580,8 @@ class DNETIntf:
         >>> netiface_from_dst_address({}, {'address':   {0: '192.168.0.1', 1: '172.16.1.1'}})
         >>> netiface_from_dst_address({}, {'address':   ['192.168.0.1', '172.16.1.1']})
         """
-        self.args       = args
-        self.options    = options
+        self.args = args
+        self.options = options
 
         return self._netiface_from_address(self.netcfg.get_dst)
 
@@ -592,8 +593,8 @@ class DNETIntf:
         >>> netiface_from_src_address({}, {'address':   {0: '192.168.0.1', 1: '172.16.1.1'}})
         >>> netiface_from_src_address({}, {'address':   ['192.168.0.1', '172.16.1.1']})
         """
-        self.args       = args
-        self.options    = options
+        self.args = args
+        self.options = options
 
         return self._netiface_from_address(self.netcfg.get_src)
 
@@ -633,7 +634,7 @@ class DNETIntf:
 
     def get_interface_filecontent(self, conf):
         backupfilepath = None
-
+        
         if not os.path.isdir(self.CONFIG['interfaces_backup_path']):
             os.makedirs(self.CONFIG['interfaces_backup_path'])
 
@@ -686,8 +687,8 @@ class DNETIntf:
                                       'auto':   True},
                                      {'ifname': 'eth0'})
         """
-        self.args       = args
-        self.options    = options
+        self.args = args
+        self.options = options
 
         if not xys.validate(self.args, self.MODIFY_PHYSICAL_ETH_IPV4_SCHEMA):
             raise HttpReqError(415, "invalid arguments for command")
@@ -705,7 +706,7 @@ class DNETIntf:
         elif not self.LOCK.acquire_read(self.CONFIG['lock_timeout']):
             raise HttpReqError(503, "unable to take LOCK for reading after %s seconds" % self.CONFIG['lock_timeout'])
 
-        self.args['auto']   = self.args.get('auto', True)
+        self.args['auto'] = self.args.get('auto', True)
         self.args['family'] = 'inet'
 
         conf = {'netIfaces':        {},
@@ -721,9 +722,9 @@ class DNETIntf:
             for iface in netifaces.interfaces():
                 conf['netIfaces'][iface] = 'reserved'
 
-            conf['netIfaces'][eth['name']]      = eth['name']
-            conf['vlans'][eth['name']]          = {0: eth['name']}
-            conf['customipConfs'][eth['name']]  = self.args
+            conf['netIfaces'][eth['name']] = eth['name']
+            conf['vlans'][eth['name']] = {0: eth['name']}
+            conf['customipConfs'][eth['name']] = self.args
 
             filecontent, netifacesbakfile = self.get_interface_filecontent(conf)
 
@@ -766,10 +767,10 @@ class DNETIntf:
                                       'auto':   True},
                                      {'ifname': 'eth0:0'})
         """
-        self.args       = args
-        self.options    = options
-        phyifname       = None
-        phyinfo         = None
+        self.args = args
+        self.options = options
+        phyifname = None
+        phyinfo = None
 
         if 'ifname' not in self.options \
            or not isinstance(self.options['ifname'], basestring) \
@@ -783,8 +784,8 @@ class DNETIntf:
         if info and info['physicalif']:
             raise HttpReqError(415, "invalid interface, it is a physical interface")
         elif network.is_alias_if(self.args['ifname']):
-            phyifname   = network.phy_name_from_alias_if(self.args['ifname'])
-            phyinfo     = self.get_netiface_info(phyifname)
+            phyifname = network.phy_name_from_alias_if(self.args['ifname'])
+            phyinfo = self.get_netiface_info(phyifname)
             if not phyinfo or True not in (phyinfo['physicalif'], phyinfo['vlanif']):
                 raise HttpReqError(415, "invalid interface, it is not an alias interface")
             elif self.args['method'] != 'static':
@@ -800,8 +801,8 @@ class DNETIntf:
             if not 'vlanid' in self.args:
                 raise HttpReqError(415, "invalid arguments for command, missing vlanid")
 
-            phyifname   = self.args['vlanrawdevice']
-            phyinfo     = self.get_netiface_info(phyifname)
+            phyifname = self.args['vlanrawdevice']
+            phyinfo = self.get_netiface_info(phyifname)
             if not phyinfo or not phyinfo['physicalif']:
                 raise HttpReqError(415, "invalid vlanrawdevice, it is not a physical interface")
 
@@ -814,8 +815,8 @@ class DNETIntf:
             elif vconfig.get('vlan-raw-device', self.args['vlanrawdevice']) != self.args['vlanrawdevice']:
                 raise HttpReqError(415, "invalid vlanrawdevice")
 
-            self.args['vlan-id']            = self.args.pop('vlanid')
-            self.args['vlan-raw-device']    = self.args.pop('vlanrawdevice')
+            self.args['vlan-id'] = self.args.pop('vlanid')
+            self.args['vlan-raw-device'] = self.args.pop('vlanrawdevice')
         else:
             raise HttpReqError(415, "invalid ifname argument for command")
 
@@ -831,7 +832,7 @@ class DNETIntf:
         elif not self.LOCK.acquire_read(self.CONFIG['lock_timeout']):
             raise HttpReqError(503, "unable to take LOCK for reading after %s seconds" % self.CONFIG['lock_timeout'])
 
-        self.args['auto']   = self.args.get('auto', True)
+        self.args['auto'] = self.args.get('auto', True)
         self.args['family'] = 'inet'
 
         conf = {'netIfaces':        {},
@@ -848,9 +849,9 @@ class DNETIntf:
                 if self.options['ifname'] != iface:
                     conf['netIfaces'][iface] = 'reserved'
 
-            conf['netIfaces'][self.args['ifname']]      = self.args['ifname']
-            conf['vlans'][self.args['ifname']]          = {self.args.get('vlan-id', 0): self.args['ifname']}
-            conf['customipConfs'][self.args['ifname']]  = self.args
+            conf['netIfaces'][self.args['ifname']] = self.args['ifname']
+            conf['vlans'][self.args['ifname']] = {self.args.get('vlan-id', 0): self.args['ifname']}
+            conf['customipConfs'][self.args['ifname']] = self.args
 
             filecontent, netifacesbakfile = self.get_interface_filecontent(conf)
 
@@ -895,8 +896,8 @@ class DNETIntf:
                                              ['dns-nameservers', '127.0.0.1 192.168.0.254']]},
                             {'ifname':  'eth0'})
         """
-        self.args       = args
-        self.options    = options
+        self.args = args
+        self.options = options
 
         eth = self._get_valid_eth_ipv4()
 
@@ -946,10 +947,10 @@ class DNETIntf:
             for iface in netifaces.interfaces():
                 conf['netIfaces'][iface] = 'reserved'
 
-            eth['ifname']                   = eth['name']
-            conf['netIfaces'][eth['name']]  = eth['name']
-            conf['vlans'][eth['name']]      = {eth.get('vlan-id', 0): eth['name']}
-            conf['ipConfs'][eth['name']]    = eth
+            eth['ifname'] = eth['name']
+            conf['netIfaces'][eth['name']] = eth['name']
+            conf['vlans'][eth['name']] = {eth.get('vlan-id', 0): eth['name']}
+            conf['ipConfs'][eth['name']] = eth
 
             filecontent, netifacesbakfile = self.get_interface_filecontent(conf)
 
@@ -985,8 +986,8 @@ class DNETIntf:
         >>> change_state_eth_ipv4({'state': True},
                                   {'ifname':    'eth0'})
         """
-        self.args       = args
-        self.options    = options
+        self.args = args
+        self.options = options
 
         eth = self._get_valid_eth_ipv4()
 
@@ -1021,10 +1022,10 @@ class DNETIntf:
                    and subprocess.call(self.CONFIG['netiface_down_cmd'].strip().split() + [eth['name']]) == 0:
                     ret = True
 
-            eth['ifname']                       = eth['name']
-            conf['netIfaces'][eth['name']]      = eth['name']
-            conf['vlans'][eth['name']]          = {eth.get('vlan-id', 0): eth['name']}
-            conf['customipConfs'][eth['name']]  = eth
+            eth['ifname'] = eth['name']
+            conf['netIfaces'][eth['name']] = eth['name']
+            conf['vlans'][eth['name']] = {eth.get('vlan-id', 0): eth['name']}
+            conf['customipConfs'][eth['name']] = eth
 
             filecontent, netifacesbakfile = self.get_interface_filecontent(conf)
 
@@ -1050,8 +1051,8 @@ class DNETIntf:
         >>> delete_eth_ipv4({},
                             {'ifname':  'eth0'})
         """
-        self.args       = args
-        self.options    = options
+        self.args = args
+        self.options = options
 
         eth = None
 
@@ -1066,9 +1067,9 @@ class DNETIntf:
 
         conf = {'netIfaces':    {}}
 
-        ret                 = False
-        netifacesbakfile    = None
-        ifname              = self.options['ifname']
+        ret = False
+        netifacesbakfile = None
+        ifname = self.options['ifname']
 
         try:
             for iface in netifaces.interfaces():
@@ -1076,8 +1077,8 @@ class DNETIntf:
 
             conf['netIfaces'][ifname] = 'removed'
 
-            if self.CONFIG['netiface_down_cmd'] \
-               and subprocess.call(self.CONFIG['netiface_down_cmd'].strip().split() + [ifname]) == 0:
+            if self.CONFIG['netiface_ip_delete_cmd'] \
+               and subprocess.call(self.CONFIG['netiface_ip_delete_cmd'].strip().split() + [ifname]) == 0:
                 ret = True
 
             filecontent, netifacesbakfile = self.get_interface_filecontent(conf)

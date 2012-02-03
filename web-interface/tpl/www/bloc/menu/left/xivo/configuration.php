@@ -87,6 +87,14 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
+		if(xivo_user::chk_acl('network','iproute') === true):
+			echo	'<dd id="mn-iproute--interface">',
+				$url->href_html($this->bbf('mn_left_network-iproute'),
+						'xivo/configuration/network/iproute',
+						'act=list'),
+				'</dd>';
+		endif;
+
 		if(xivo_user::chk_acl('network','resolvconf') === true):
 			echo	'<dd id="mn-network--resolvconf">',
 				$url->href_html($this->bbf('mn_left_network-resolvconf'),
