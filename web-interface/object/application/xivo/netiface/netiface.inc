@@ -753,7 +753,9 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			$this->_set_error('netiface',dwho_i18n::babelfish('voip_interface_can_not_configured_in_dhcp'));
 		}
 
-		if ((bool) $arr['disable'] === true && $arr['networktype'] === 'voip')
+		if (isset($arr['disable']) === true
+		&& (bool) $arr['disable'] === true
+		&& $arr['networktype'] === 'voip')
 		{
 			$this->_set_result('netiface', $arr);
 			$this->_set_error('netiface',dwho_i18n::babelfish('voip_interface_can_not_disabled'));
@@ -1010,9 +1012,13 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			return(false);
 
 		if ($this->_info['netiface']["vlanrawdevice"] !== null
-		&& $this->_info['netiface']["vlanrawdevice"] !== $rs["vlanrawdevice"]
-		&& $this->_netiface->delete($this->_info['netiface']['id']) === false)
-			return(false);
+		&& $this->_info['netiface']["vlanrawdevice"] !== $rs["vlanrawdevice"])
+		{
+			if ($this->_netiface->delete($this->_info['netiface']['id']) === false
+			|| $this->add_netiface() === false)
+				return(false);
+			return($this->_return['netiface']);
+		}
 
 		$this->make_voip_interface($rs);
 

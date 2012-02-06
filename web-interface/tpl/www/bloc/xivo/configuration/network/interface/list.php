@@ -191,7 +191,11 @@ $page = $url->pager($pager['pages'],
 <?php
 			if($hwtypeid !== 1 || $list[$i]['actionable'] === false):
 				echo	$url->img_html('/z.gif',null,'width="15" height="15"');
-			elseif(empty($netiface) === true):
+			elseif(empty($netiface) === true
+			&& $vlanid):
+				echo	$url->img_html('/z.gif',null,'width="15" height="15"');
+			elseif(empty($netiface) === true
+			&& !$vlanid):
 				echo	$url->href_html($url->img_html('img/site/button/add.gif',
 										$this->bbf('opt_add'),
 										'border="0"'),
