@@ -314,7 +314,7 @@ endif;
 			           'key'       => false,
 			           'empty'     => $this->bbf('fm_userfeatures_voicemailtype-opt(none)'),
 			           'bbf'       => 'fm_userfeatures_voicemailtype-opt',
-								 'bbfopt'	   => array('argmode' => 'paramvalue'),
+						'bbfopt'	   => array('argmode' => 'paramvalue'),
 			           'selected'  => $info['userfeatures']['voicemailtype'],
 			           'default'   => $element['userfeatures']['voicemailtype']['default']),
 			       $element['userfeatures']['voicemailtype']['value']),

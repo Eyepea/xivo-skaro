@@ -313,6 +313,8 @@ $(document).ready(function() {
         update: update_row_infos
     });
     
+    enable_disable_add_button();
+    
     $('#lnk-add-row').click(function() {
     	
     	if (!enable_disable_add_button())

@@ -373,7 +373,7 @@ var xivo_ast_fm_user_voicemail = {
 		}, {
 			disabled : true,
 			className : 'it-disabled'
-		} ]
+		} ],
 	}
 };
 
@@ -596,7 +596,7 @@ function xivo_ast_user_chg_voicemail(option) {
 
 		for (property in xivo_ast_fm_user_enablevoicemail)
 			dwho.form.reset_field(dwho_eid(property), false);
-
+		
 		xivo_chg_attrib(
 				'ast_fm_user_enablevoicemail',
 				'it-voicemail-fullname',
@@ -610,12 +610,14 @@ function xivo_ast_user_chg_voicemailtype(type) {
 
 	switch (type) {
 	case 'asterisk':
+		dwho_eid('it-userfeatures-enablevoicemail').disabled = false;
 		return (xivo_ast_user_chg_voicemail(dwho_eid('it-voicemail-option').value));
 
 	case 'exchange':
 		return (xivo_ast_user_chg_voicemail('m$exchangeserver2010'));
 
-	default:
+	default:		
+		dwho_eid('it-userfeatures-enablevoicemail').disabled = true;
 		return (xivo_ast_user_chg_voicemail('none'));
 	}
 }

@@ -705,6 +705,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			$this->set_linefeatures($arr['linefeatures'],$iduserfeatures);
 
+			if(dwho_issa('voicemail',$arr) === true
+			&& dwho_empty($this->get_result('linefeatures')))
+			{
+				$this->_set_error('voicemail', dwho_i18n::babelfish('user_need_lines_to_add_voicemail'));
+				dwho_report::push('error', dwho_i18n::babelfish('user_need_lines_to_add_voicemail'));
+				return(false);
+			}
+
 			if(dwho_issa('queue',$arr) === true
 			&& dwho_issa('queue-select',$arr) === true)
 			{
@@ -717,31 +725,20 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$this->_set_result('group',$arr['group']);
 				$this->_set_result('group-select',$arr['group-select']);
 			}
-		}
 
-		$simultcalls = (int) $this->get_result_var('userfeatures','simultcalls');
-		$musiconhold = (string) $this->get_result_var('userfeatures','musiconhold');
+			switch($this->get_result_var('userfeatures','voicemailtype'))
+			{
+				case 'asterisk':
+				break;
+				default:
+					$vmaction = 'none';
+					$this->_set_result_var('userfeatures','voicemailid',null);
+				break;
+			}
 
-		switch($this->get_result_var('userfeatures','voicemailtype'))
-		{
-			case 'asterisk':
-			break;
-			default:
-				$vmaction = 'none';
-				$this->_set_result_var('userfeatures','voicemailid',null);
-			break;
-		}
-
-		if(dwho_issa('dialaction',$arr) === true)
-			$this->set_dialaction($arr['dialaction']);
-
-		if(dwho_issa('rightcall',$arr) === true)
-			$this->set_rightcall($arr['rightcall']);
-
-		if(dwho_issa('voicemail',$arr) === true
-		&& dwho_has_len($arr['voicemail'],'mailbox') === true) {
-			// getting master line for voicemail
-			if (($linefeatures = $this->get_result_var('linefeatures',0)) !== null)
+			if(dwho_issa('voicemail',$arr) === true
+			&& dwho_has_len($arr['voicemail'],'mailbox') === true
+			&& ($linefeatures = $this->get_result_var('linefeatures',0)) !== null)
 			{
 				$context = $linefeatures['context'];
 
@@ -763,7 +760,20 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 						$this->set_voicemail($vmaction,$arr['voicemail']);
 				}
 			}
+			else
+			{
+				$this->_set_result_var('userfeatures','voicemailtype',null);
+				$this->_set_result_var('userfeatures','enablevoicemail',false);
+				$this->_set_result_var('userfeatures','voicemailid',null);
+			}
 		}
+
+
+		if(dwho_issa('dialaction',$arr) === true)
+			$this->set_dialaction($arr['dialaction']);
+
+		if(dwho_issa('rightcall',$arr) === true)
+			$this->set_rightcall($arr['rightcall']);
 
 		if(dwho_issa('phonefunckey',$arr) === true)
 			$this->set_phonefunckey($arr['phonefunckey']);
