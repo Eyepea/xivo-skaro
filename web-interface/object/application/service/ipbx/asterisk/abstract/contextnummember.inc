@@ -88,13 +88,13 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 		if(dwho_has_len($number) === false)
 		{
 			$info['number'] = '';
-			$chkerror = 'invalid context';
+			$chkerror = 'invalid_context';
 
 			$chk = $this->_context->get_where(array('name' => $context));
 		}
 		else
 		{
-			$chkerror = dwho_i18n::babelfish('number_out_of_context_interval');
+			$chkerror = 'number_out_of_context_interval';
 			$info['number'] = $this->_service->display_extension($this->_service->clean_extension($number));
 
 			$chk = $this->_contextnumbers->interval_number_exists($context,

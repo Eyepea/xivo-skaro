@@ -55,7 +55,7 @@ if($context_list !== false):
 				    'altkey'	=> 'name',
 				    'default'	=> $element['incall']['context']['default'],
 				    'selected'	=> $this->get_var('incall','context'),
-					'error'	=> $this->bbf_args('context',
+					'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','contextnummember'))),
 			      $context_list);
 else:

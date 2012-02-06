@@ -50,14 +50,17 @@ La valeur n'est pas dans l'intervalle
 ; error(invalidpwd)
 Mot de passe incorrect
 
+; error(number_out_of_context_interval)
+Le numero est hors interval du contexte
+
+; error(invalid_context)
+Contexte invalide
+
 ; invalid_name_context
 Nom du contexte invalide (%s)
 
 ; reserved_context
 Liste des contextes résérvés: %s
-
-; number_out_of_context_interval
-Le numero est hors interval du contexte
 
 ; already_exist
 %s existe déjà

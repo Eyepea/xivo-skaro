@@ -105,7 +105,7 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 				continue;
 			else if(($context = $this->_context->get_primary($list[$i]['context'])) === false)
 			{
-				$this->_set_error('invalid context');
+				$this->_set_error('invalid_context');
 				continue;
 			}
 
@@ -124,7 +124,7 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 
 			if(($rs = $this->_contextmember->chk_values($info)) === false)
 			{
-				$this->_set_error('invalid context');
+				$this->_set_error('invalid_context');
 				continue;
 			}
 			else if(isset($tmp[$uniq]) === true)

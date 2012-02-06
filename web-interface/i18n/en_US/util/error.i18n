@@ -50,17 +50,17 @@ Value not in interval
 ; error(invalidpwd)
 Invalid password
 
-; number_out_of_context_interval
-Number is out of context interval
+; error(number_out_of_context_interval)
+Number outside of context's interval
+
+; error(invalid_context)
+Invalid context
 
 ; invalid_name_context
 Context name invalid (%s)
 
 ; reserved_context
 Reserved context: %s
-
-; number_out_of_context_interval
-Number out of context interval
 
 ; already_exist
 %s already exists
