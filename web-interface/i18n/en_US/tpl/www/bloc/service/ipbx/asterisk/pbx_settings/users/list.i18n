@@ -10,6 +10,12 @@ Protocol
 ; col_nb_line
 Nb Lines
 
+; col_provisioning
+Provisioning
+
+; col_phone
+Phone number
+
 ; no_user
 No user found
 

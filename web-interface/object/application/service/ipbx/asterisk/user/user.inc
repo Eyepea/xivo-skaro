@@ -525,6 +525,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			$where = array('iduserfeatures' => $userfeatures['id']);
 			$r[$userfeatures['id']]['nb_line'] = $this->_linefeatures->get_nb($where);
+			$r[$userfeatures['id']]['masterline'] = $this->_linefeatures->get_user_masterline($userfeatures['id']);
 		}
 
 		if(empty($r) === true)

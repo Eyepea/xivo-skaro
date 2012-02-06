@@ -7,6 +7,12 @@ Trier par nom
 ; col_protocol
 Protocole
 
+; col_provisioning
+Approvisionnement
+
+; col_phone
+N° Téléphone
+
 ; no_user
 Aucun utilisateur trouvé
 

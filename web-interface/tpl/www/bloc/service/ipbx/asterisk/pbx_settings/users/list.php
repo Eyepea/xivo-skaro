@@ -69,6 +69,8 @@ $page = $url->pager($pager['pages'],
 					$this->bbf('col_sort_fullname'));
 ?>
 		</th>
+		<th class="th-center xspan"><?=$this->bbf('col_provisioning');?></th>
+		<th class="th-center xspan"><?=$this->bbf('col_phone');?></th>
 		<th class="th-center xspan"><?=$this->bbf('col_nb_line');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
@@ -77,12 +79,14 @@ $page = $url->pager($pager['pages'],
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="5" class="td-single"><?=$this->bbf('no_user');?></td>
+		<td colspan="7" class="td-single"><?=$this->bbf('no_user');?></td>
 	</tr>
 <?php
 	else:
 		for($i = 0;$i < $nb;$i++):
 			$ref = &$list[$i];
+
+			$line = $ref['masterline'];
 
 			if($ref['commented'] === true):
 				$icon = 'disable';
@@ -107,9 +111,9 @@ $page = $url->pager($pager['pages'],
 			<?=dwho_htmlen(dwho_trunc($ref['fullname'],25,'...',false))?>
 			</label>
 		</td>
-		<td class="txt-center">
-			<?=($ref['nb_line']);?>
-		</td>
+		<td class="txt-center"><?=(!isset($line['provisioningid'])) ? '-' : $line['provisioningid']?></td>
+		<td class="txt-center"><?=(!isset($line['number'])) ? '-' : $line['number']?></td>
+		<td class="txt-center"><?=($ref['nb_line']);?></td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',
@@ -139,7 +143,7 @@ $page = $url->pager($pager['pages'],
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="3"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="5"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>
