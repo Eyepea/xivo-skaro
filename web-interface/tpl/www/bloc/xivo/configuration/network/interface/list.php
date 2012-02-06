@@ -89,6 +89,8 @@ $page = $url->pager($pager['pages'],
 			$vlanid		= '-';
 			$icon		= 'unavailable';
 
+			$disableable = isset($list[$i]['disableable']) ? $list[$i]['disableable'] : false;
+
 			if(empty($netinfo) === false):
 				$ifname = $netinfo['interface'];
 
@@ -170,7 +172,7 @@ $page = $url->pager($pager['pages'],
 						 'id'		=> 'it-netiface-'.$i,
 						 'checked'	=> false,
 						 'paragraph'	=> false,
-						 'disabled'	=> ($hwtypeid !== 1 || $list[$i]['disableable'] === false)));?>
+						 'disabled'	=> ($hwtypeid !== 1 || $disableable === false)));?>
 		</td>
 		<td class="txt-left" title="<?=dwho_alttitle($ifname);?>">
 			<label for="it-ifname-<?=$i?>" id="lb-ifname-<?=$i?>">
