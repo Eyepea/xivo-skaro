@@ -165,3 +165,6 @@ Create a schedule
 
 ; incall-exten(empty)
 Empty value
+
+; incall-exten(regexp)
+Invalid value

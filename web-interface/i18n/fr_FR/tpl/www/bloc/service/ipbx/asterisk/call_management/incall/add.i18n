@@ -54,3 +54,6 @@ Créer un horaire
 
 ; incall-exten(empty)
 Valeur vide
+
+; incall-exten(regexp)
+Valeur invalide
