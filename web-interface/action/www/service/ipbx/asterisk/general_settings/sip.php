@@ -108,15 +108,22 @@ $_TPL->set_var('moh_list',$appgeneralsip->get_musiconhold());
 $_TPL->set_var('context_list',$appgeneralsip->get_context_list());
 //$_TPL->set_var('parking_list', $modpark->get_all());
 
-function cafilter($cert)
-{	return count($cert['types']) == 1 && $cert['types'][0] == 'certificate' && array_key_exists('CA', $cert) && $cert['CA']; }
+function tlscafiles_filter($cert)
+{
+	return count($cert['types']) == 1 && $cert['types'][0] == 'certificate' &&
+			array_key_exists('CA', $cert) && $cert['CA'];
+}
 
-function certfilter($cert)
-{	return count($cert['types']) == 1 && $cert['types'][0] == 'certificate' && array_key_exists('CA', $cert) && !$cert['CA']; }
+function tlscertfiles_filter($cert)
+{
+	return count($cert['types']) == 2 && $cert['types'][0] == 'certificate' &&
+			$cert['types'][1] == 'privkey' && array_key_exists('CA', $cert) &&
+			!$cert['CA'];
+}
 
 $allcerts = $modcert->get_all();
-$_TPL->set_var('tlscertfiles', array_filter($allcerts, "certfilter"));
-$_TPL->set_var('tlscafiles'  , array_filter($allcerts, "cafilter"));
+$_TPL->set_var('tlscertfiles', array_filter($allcerts, "tlscertfiles_filter"));
+$_TPL->set_var('tlscafiles'  , array_filter($allcerts, "tlscafiles_filter"));
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
