@@ -3,7 +3,6 @@ set -e
 monit_default="/etc/default/monit"
 xivo_installed_version=$(sed 's/-rc.*//' /usr/share/pf-xivo/XIVO-VERSION)
 xivo_candidate=$(apt-cache policy pf-xivo | grep Candidate | awk '{print $2}' | cut -d: -f2)
-confgen_version=$(apt-cache policy xivo-confgen | grep Installed | awk '{print $2}')
 upgrading_tool="apt-get"
 
 stop_monit () {
@@ -14,23 +13,6 @@ stop_monit () {
 start_monit () {
     sed -i 's/startup=0/startup=1/' $monit_default
     invoke-rc.d monit start
-}
-
-upgrading_confgen() {
-    echo "upgrading confgen"
-    confgen_candidate=$(apt-cache policy xivo-confgen | grep $xivo_candidate | awk '{print $1}')
-    $upgrading_tool install xivo-libconfgend=$confgen_candidate xivo-confgend=$confgen_candidate xivo-confgen=$confgen_candidate
-}
-
-upgrading_ctid() {
-    echo "upgrading ctid"
-    ctiserver_init_file="/etc/init.d/pf-xivo-cti-server"
-    if [ -f $ctiserver_init_file ]; then
-        rm -rf $ctiserver_init_file
-        insserv
-    fi
-    rm -rf /etc/pf-xivo/ctiservers rm -rf /var/log/pf-xivo-cti-server
-    rm -rf /var/lib/pf-xivo-cti-server
 }
 
 restart_xivo () {
@@ -49,10 +31,6 @@ upgrading_xivo () {
     apt-get update
     echo "upgrading package"
     $upgrading_tool dist-upgrade
-    if [ $confgen_version = "1:squeeze-xivo-skaro-1.2-alpha-6-rc1-1" ]; then
-        upgrading_confgen
-    fi
-    upgrading_ctid
     restart_xivo
 }
 
