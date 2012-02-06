@@ -708,8 +708,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if(dwho_issa('voicemail',$arr) === true
 			&& dwho_empty($this->get_result('linefeatures')))
 			{
-				$this->_set_error('voicemail', dwho_i18n::babelfish('user_need_lines_to_add_voicemail'));
-				dwho_report::push('error', dwho_i18n::babelfish('user_need_lines_to_add_voicemail'));
+				$this->_set_error('voicemail', dwho_i18n::babelfish('user_need_lines_to_have_voicemail'));
+				dwho_report::push('error', dwho_i18n::babelfish('user_need_lines_to_have_voicemail'));
 				return(false);
 			}
 
