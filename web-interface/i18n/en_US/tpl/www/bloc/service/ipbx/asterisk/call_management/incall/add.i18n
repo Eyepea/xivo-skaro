@@ -163,3 +163,5 @@ Schedules:
 ; create_schedules
 Create a schedule
 
+; incall-exten(empty)
+Empty value

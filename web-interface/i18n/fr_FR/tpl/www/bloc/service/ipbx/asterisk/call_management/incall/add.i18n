@@ -51,3 +51,6 @@ Horaires :
 
 ; create_schedules
 Créer un horaire
+
+; incall-exten(empty)
+Valeur vide
