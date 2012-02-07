@@ -29,13 +29,11 @@ class xivo_object_certificate extends xivo_object_abstract
 
 	var $_sysconfd  = false;
 
-	function xivo_object_certificate(&$sre)
+	function xivo_object_certificate(&$xobj)
 	{
-		if(is_object($sre) === false)
-			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
+		$this->xivo_object_abstract(&$xobj);
 
-		$this->_sre = &$sre;
-		$this->_sysconfd = $this->_sre->get_module('sysconfd');
+		$this->_sysconfd = $this->_xobj->get_module('sysconfd');
 		return $this->_sysconfd !== false;
 	}
 

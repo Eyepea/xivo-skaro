@@ -20,8 +20,9 @@
 
 $form = &$this->get_module('form');
 
-$info 	 = $this->get_var('info');
-$element = $this->get_var('element');
+//keep the old behaviour where $element was false
+//$element = $this->get_var('element');
+$element = false;
 $ca_authorities = $this->get_var('ca_authorities');
 
 if($this->get_var('fm_save') === false):
@@ -95,7 +96,7 @@ endif;
 						'altkey' => 'name',
 				    'selected'	=> $this->get_var('info','cipher'),
 				    'default'	=> $element['cipher']['default']),
-							array('aes','des','des3','idea')),
+							array('aes')),
 
 	$form->text(array('desc'	=> $this->bbf('fm_fingerprint'),
 			  'name'	=> 'fingerprint',
@@ -114,7 +115,7 @@ endif;
 						'key' => false,
 				    'selected'	=> $this->get_var('info','length'),
 				    'default'	=> 1024),//$element['length']['default']),
-			      array(128,256,512,1024,2048,4096,8192)),//$element['length']['value']),
+			      array(1024,2048)),//$element['length']['value']),
 
 	  $form->text(array('desc'	=> $this->bbf('fm_length'),
 			  'name'	=> 'length_text',

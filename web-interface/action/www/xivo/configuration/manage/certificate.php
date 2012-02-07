@@ -19,7 +19,7 @@
 #
 $modcert = &$_XOBJ->get_module('certificate');
 
-$act 		  = isset($_QR['act']) === true ? $_QR['act'] : '';
+$act 		= isset($_QR['act']) === true ? $_QR['act'] : '';
 $page 		= isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 $search 	= isset($_QR['search']) === true ? strval($_QR['search']) : '';
 $context 	= isset($_QR['context']) === true ? strval($_QR['context']) : '';
@@ -91,7 +91,7 @@ switch($act)
 
 		function cafilter($cert)
 		{
-			return isset($cert['CA']) ? $cert['CA'] : null;
+			return isset($cert['CA']) && $cert['CA'] && count($cert['types']) == 2;
 		}
 
 		$authorities = array_filter($modcert->get_all(), "cafilter");

@@ -39,7 +39,7 @@ $array['element']['password'] = array();
 $array['element']['password']['default'] = '';
 
 $array['element']['length'] = array();
-$array['element']['length']['value'] = range(128,256,512,1024,2048,4086,8192);
+$array['element']['length']['value'] = array(1024,2048);
 $array['element']['length']['default'] = '';
 
 $array['element']['validity'] = array();
@@ -74,7 +74,7 @@ $array['element']['ca_password'] = array();
 $array['element']['ca_password']['default'] = '';
 
 $array['element']['cipher'] = array();
-$array['element']['cipher']['value'] = array('aes','des','des3','idea');
+$array['element']['cipher']['value'] = array('aes');
 $array['element']['cipher']['default'] = 'aes';
 $array['element']['cipher']['null'] = true;
 
