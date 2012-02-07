@@ -387,10 +387,10 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 
 		if (substr($exten, 0, 1) === '_') {
 			$exten = substr($exten, 1);
-			if (preg_match('/[\[NXZ!\.]/',$exten,$out) > 0) {
-				$pos = strpos($exten, $out[0]);
-				$exten = substr($exten, 0, $pos);
-			}
+		}
+		if (preg_match('/[\[NXZ!\.]/',$exten,$out) > 0) {
+			$pos = strpos($exten, $out[0]);
+			$exten = substr($exten, 0, $pos);
 		}
 
 		return($exten);

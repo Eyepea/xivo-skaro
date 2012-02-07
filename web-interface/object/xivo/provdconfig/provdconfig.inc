@@ -867,7 +867,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 									break;
 								$exten = $this->_phonefunckey->fkey_extension($progfunckey['extenbrut'],
 									array($ref['iduserfeatures'],
-										$rsexten)
+										$rsexten,
+										$ref['exten'])
 								);
 							}
 							else
