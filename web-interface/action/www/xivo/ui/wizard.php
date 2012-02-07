@@ -53,11 +53,11 @@ switch($step)
 			$_TPL->bbf('redirect_message');
 		break;
 	case 'commit_finished':
+		$url = $appwizard->discover_finish_uri();
 		if($appwizard->commit_netinfos() !== false
 		&& $appwizard->commit_commonconf() !== false)
 			$code = 200;
-		$uri = $appwizard->discover_finish_uri();
-		echo 'redirecturi_on_success::'.$uri;
+		echo 'redirecturi_on_success::'.$url;
 		break;
 	default:
 		$code = 200;

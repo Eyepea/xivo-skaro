@@ -121,9 +121,7 @@ var apply_wizard = {
 
 	send_redirect : function(url,timeredirect) {
 		if (timeredirect == undefined) {
-			window.setTimeout(function() {
-				window.location = url;
-			});
+			window.location = url;
 		} else {
 			window.setTimeout(function() {
 				window.location = url;

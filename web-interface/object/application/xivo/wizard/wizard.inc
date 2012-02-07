@@ -267,7 +267,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 	{
 		if (($wizsess = $this->_get_save_data_tmp()) === false)
 		{
-			dwho_report::push('error', 'Can\'t get data for provd');
+			dwho_report::push('error', 'Can\'t get data wizard');
 			return false;
 		}
 		elseif(isset($_SERVER['SERVER_ADDR'],$_SERVER['SERVER_PORT']) === false)
@@ -285,8 +285,8 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		$uri .= ':'.$_SERVER['SERVER_PORT'];
 		// append lang
-		if(isset($_REQUEST['hl']))
-			$uri .= '?hl='.$_REQUEST['hl'];
+		if(isset($wizsess['welcome']['language']))
+			$uri .= '?hl='.$wizsess['welcome']['language'];
 
 		$scheme = 'http';
 
