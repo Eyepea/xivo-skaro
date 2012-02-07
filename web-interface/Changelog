@@ -1,9 +1,0 @@
-                --- XiVO 1.2
-
-SIP
-  * tls connexions
-      cert files and ca files storage directory is defined in ipbx.ini (section [tls], key 'certdir')
-        cert files ends with '.pem' extensions, ca files are all others
-        cadir is defined in ipbx.ini (section [tls], key 'cadir')
-
-        defaulf directories are respectively /var/lib/asterisk/certs and /var/lib/asterisk/certs/cadir
