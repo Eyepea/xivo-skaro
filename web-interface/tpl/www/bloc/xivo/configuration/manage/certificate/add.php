@@ -21,7 +21,7 @@
 $form = &$this->get_module('form');
 
 ?>
-<div id="sr-accesswebservice" class="b-infos b-form">
+<div class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>

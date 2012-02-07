@@ -39,10 +39,7 @@ $info  = $this->get_var('info');
 	<div class="sb-content">
 <?php
 		$this->file_include('bloc/xivo/configuration/manage/certificate/form');
-
-
 ?>
-		</form>
 	</div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>
@@ -50,6 +47,7 @@ $info  = $this->get_var('info');
 		<span class="span-right">&nbsp;</span>
 	</div>
 </div>
+
 <script type="text/javascript">
 		$(document).ready(function() {
 			certinit('edit');

@@ -4,9 +4,6 @@ function certinit(mode) {
 
     if(mode == "add")
     {
-        $('#dwsm-tab-2').css('display','none');
-        $('#dwsm-tab-1').addClass('dwsm-blur-last').removeClass('dwsm-blur').unbind('click');
-
         $('#fd-validity-start').css('display','none');
         $('#fd-fingerprint').css('display','none');
         $('#fd-length_text').css('display','none');
@@ -46,13 +43,6 @@ function certinit(mode) {
         $('#fd-password').css('display','none');
         $('#fd-length').css('display','none');
         $('#fd-cipher').css('display','none');
-
-        if ($('#it-autosigned').attr('checked'))
-        {
-            $('#dwsm-tab-2').css('display','none');
-            console.log('plop');
-            $('#dwsm-tab-1').unbind('click').removeClass('dwsm-blur').removeClass('dwsm-select').addClass('dwsm-select-last');
-        }
 
         if ($('#it-CA').attr('checked'))
             $('#fd-autosigned').css('visibility','hidden');
