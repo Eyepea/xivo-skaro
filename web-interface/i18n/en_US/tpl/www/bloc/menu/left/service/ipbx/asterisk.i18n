@@ -158,7 +158,7 @@ Manager
 Control
 
 ; mn_left_controlsystem-logfiles
-Log Files
+Asterisk Log Files
 
 ; mn_left_controlsystem-ipbxreload(unknown)
 Reload

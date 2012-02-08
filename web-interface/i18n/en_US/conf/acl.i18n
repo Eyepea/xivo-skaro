@@ -125,7 +125,7 @@ Voice menus
 Control system
 
 ; acl(service-ipbx-control_system-logfiles)
-Log files
+Asterisk Log Files
 
 ; acl(service-ipbx-control_system-reload)
 Reload IPBX
