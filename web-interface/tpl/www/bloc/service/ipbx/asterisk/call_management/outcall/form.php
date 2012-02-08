@@ -100,6 +100,7 @@ endif;
 			      $element['outcall']['hangupringtime']['value']);
 ?>
 <?php
+/* hide dundi peers until it's readded
 if($dundipeer['list'] !== false):
 ?>
 <div id="dundipeerlist" class="fm-paragraph fm-description">
@@ -124,6 +125,7 @@ else:
 				'act=add'),
 		'</div>';
 endif;
+*/
 ?>
 <?php
 if($outcalltrunk['list'] !== false):
