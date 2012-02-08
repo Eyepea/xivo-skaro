@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf8 -*-
 
 """Tests for xivo_config
@@ -673,7 +672,6 @@ services:
 
 import logging
 
-
 logging.basicConfig(level=logging.CRITICAL)
 
 
@@ -689,6 +687,3 @@ class TestXysXivoConfigValidation(unittest.TestCase):
         exec \
          """def test_invalid_%s(self):
                 self.assertRaises(xivo_config.InvalidConfigurationError, xivo_config.load_configuration, INVALID_CONFIGS[%d][1])""" % (test_title, p)
-
-
-unittest.main()

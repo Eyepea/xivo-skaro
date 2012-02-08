@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf8 -*-
 
 """Tests for xivo.udev
@@ -34,7 +33,7 @@ from xivo import udev
 
 
 class TestRulesParser(unittest.TestCase):
-    
+
     def test_iter_multilines(self):
         lines = [
             "# a comment\n",
@@ -84,14 +83,14 @@ class TestRulesParser(unittest.TestCase):
             "",
             "can we parse this at end of file? "
         ]
-        
+
         calc_mlines = list(udev.iter_multilines(lines))
-        
+
         for p, mline in enumerate(calc_mlines):
             self.assertEqual((p, mline), (p, multilines[p]))
         self.assertEqual(len(calc_mlines), len(multilines))
         self.assertEqual(calc_mlines, multilines)
-    
+
     def test_parse_udev_rule(self):
         mline = 'SUBSYSTEM=="net", DRIVERS=="?*", ATTRS{address}=="00:04:55:e3:91:77", NAME="eth0"'
         recons = [
@@ -167,5 +166,3 @@ class TestRulesParser(unittest.TestCase):
 # import tracer
 # import time
 # tracer.enable_tofp(open("traces.%s" % time.time(), 'w'))
-
-unittest.main()

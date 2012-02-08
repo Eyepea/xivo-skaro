@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf8 -*-
 
 """Tests for shvar
@@ -319,6 +318,3 @@ class TestShVar(unittest.TestCase):
         self.format_helper([
             'A="\xe9"\n',
         ])
-
-
-unittest.main()
