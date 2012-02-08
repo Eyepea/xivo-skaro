@@ -42,15 +42,17 @@ endif;
 <div class="sb-smenu">
 	<ul>
 		<li id="dwsm-tab-1"
-		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-first');"
-		    onmouseout="dwho_submenu.blur(this);"
-		    onmouseover="dwho_submenu.focus(this);">
+			class="dwsm-blur-last"
+			onclick="dwho_submenu.select(this,'sb-part-first',1);"
+			onmouseout="dwho_submenu.blur(this,1);"
+			onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center"><a href="#first"><?=$this->bbf('smenu_access');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
+<?php
+/* Hide XiVO server until it's readded
 		<li id="dwsm-tab-2"
 		    class="dwsm-blur-last"
 		    onclick="dwho_submenu.select(this,'sb-part-xivoserver',1);"
@@ -61,6 +63,8 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
+*/
+?>
 <?php
 /* LDAP - COMMENTED
 		<li id="dwsm-tab-3"
