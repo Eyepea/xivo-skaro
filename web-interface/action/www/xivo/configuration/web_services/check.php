@@ -23,6 +23,8 @@ $access_subcategory = '';
 
 include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
+echo 'OK';
+
 $http_response->set_status_line(200);
 $http_response->send(true);
 
