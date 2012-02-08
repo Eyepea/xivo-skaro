@@ -206,6 +206,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 	{
 		$this->_info['deviceprovd'] = $this->_provddevice->get($deviceid);
 		$this->_origin['deviceprovd'] = $this->_provddevice->get_origin();
+		return($this->_info['deviceprovd']);
 	}
 
 	public function get_capabilities()
@@ -355,6 +356,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			if (isset($listupdate[$devicefeatures['deviceid']]) === true)
 				$devicefeatures['provdexist'] = true;
 			$r[$devicefeatures['id']] = $devicefeatures;
+			$r[$devicefeatures['id']]['provdconfig'] = $this->_provdconfig->get($devicefeatures['deviceid']);
 		}
 
 		if(empty($r) === true)

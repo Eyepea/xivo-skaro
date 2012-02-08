@@ -73,6 +73,7 @@ $page = $url->pager($pager['pages'],
 					$this->bbf('col_sort_mac'));
 ?>
 		</th>
+		<th class="th-center"><?=$this->bbf('col_phonenumber');?></th>
 		<th class="th-center">
 			<span class="title <?= $sort[1]=='ip'?'underline':''?>">
 				<?=$this->bbf('col_ip');?>
@@ -120,7 +121,7 @@ $page = $url->pager($pager['pages'],
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="8" class="td-single"><?=$this->bbf('no_device');?></td>
+		<td colspan="9" class="td-single"><?=$this->bbf('no_device');?></td>
 	</tr>
 <?php
 	else:
@@ -137,6 +138,16 @@ $page = $url->pager($pager['pages'],
 					$icon = 'yellow';
 				else
 					$icon = 'green';
+			endif;
+
+			$phonenumber = '';
+			if(isset($ref['provdconfig'])):
+				$provdconfig = $ref['provdconfig'];
+				$raw_config = $provdconfig['raw_config'];
+				if (isset($raw_config['sip_lines'])):
+					$siplines = $raw_config['sip_lines'];
+					$phonenumber = isset($siplines[1]) ? $siplines[1]['number'] : '';
+				endif;
 			endif;
 
 			if($ref['provdexist'] === true):
@@ -165,6 +176,7 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
+		<td><?=(dwho_has_len($phonenumber) === true ? $phonenumber : '-')?></td>
 		<td><?=$ref['ip'];?></td>
 		<td><?=(dwho_has_len($ref['vendor']) === true ? $ref['vendor'] : '-')?></td>
 		<td><?=(dwho_has_len($ref['model']) === true ? $ref['model'] : '-')?></td>
@@ -214,7 +226,7 @@ $page = $url->pager($pager['pages'],
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="6"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="7"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>

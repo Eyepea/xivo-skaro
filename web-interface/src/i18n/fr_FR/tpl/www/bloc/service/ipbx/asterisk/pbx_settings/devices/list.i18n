@@ -4,6 +4,9 @@ MAC
 ; col_ip
 IP
 
+; col_phonenumber
+N de tel.
+
 ; col_vendor
 Marque
 
