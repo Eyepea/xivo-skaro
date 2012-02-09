@@ -193,7 +193,14 @@ $page = $url->pager($pager['pages'],
 				echo	$url->img_html('/z.gif',null,'width="15" height="15"');
 			elseif(empty($netiface) === true
 			&& is_int($vlanid)):
-				echo	$url->img_html('/z.gif',null,'width="15" height="15"');
+				echo	$url->href_html($url->img_html('img/site/button/add.gif',
+										$this->bbf('opt_add'),
+										'border="0"'),
+							'xivo/configuration/network/interface',
+							array('act'		=> 'add',
+								'devname'	=> $ifname),
+							null,
+							$this->bbf('opt_add'));
 			elseif(empty($netiface) === true
 			&& $vlanid === '-'):
 				echo	$url->href_html($url->img_html('img/site/button/add.gif',
