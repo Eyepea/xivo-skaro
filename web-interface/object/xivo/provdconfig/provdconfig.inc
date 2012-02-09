@@ -566,10 +566,10 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 				&& $raw['sip_transport'] === 'tls'
 				&& $tlsenable['general']['var_val'] === 'yes')
 				{
-					$tlscertfile = $appgeneralsip->get('tlscertfile');
-					$crt = str_replace('.pem', '.crt', $tlscertfile['general']['var_val']);
+					$tlscafile = $appgeneralsip->get('tlscafile');
+					$crt = $tlscafile['general']['var_val'];
 					$raw['sip_servers_root_and_intermediate_certificates'] =
-					file_get_contents($crt);
+						file_get_contents($crt);
 				}
 				else
 				{
