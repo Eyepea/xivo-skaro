@@ -210,7 +210,7 @@ $incall_err = $this->get_var('error','contextnumbers','incall');
 	</div>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-incall" class="b-nodisplay">
 	<div class="sb-list">
 	<table>
 		<thead>
