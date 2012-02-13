@@ -361,6 +361,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$base['raw_config']['ntp_enabled'] = true;
 		$base['raw_config']['ntp_ip'] = $confregistrar['proxy_main'];
 
+		$base['raw_config']['X_xivo_phonebook_ip'] = $confregistrar['proxy_main'];
+
 		$base['raw_config']['sip_lines'][1]['proxy_ip'] = $confregistrar['proxy_main'];
 
 		$base['raw_config']['sccp_call_managers'][1] = array();

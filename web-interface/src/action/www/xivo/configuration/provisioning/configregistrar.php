@@ -33,7 +33,6 @@ $result = $fm_save = $error = null;
 $ipbx = &$_SRE->get('ipbx');
 
 $appprovdconfig = &$_XOBJ->get_application('provdconfig');
-$modprovdconfig = &$_XOBJ->get_module('provdconfig');
 
 switch($act)
 {
