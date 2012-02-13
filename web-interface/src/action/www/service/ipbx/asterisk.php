@@ -62,10 +62,10 @@ if(($recvactivecalls = $ipbx->discuss('core show channels',true)) !== false
 
 $appsip = &$ipbx->get_application('trunk',array('protocol' => XIVO_SRE_IPBX_AST_PROTO_SIP));
 
-if(($enablesip = $appsip->get_nb(true,true)) !== false)
+if(($enablesip = $appsip->get_nb(true,false)) !== false)
 	$sipstat['enable'] = $enablesip;
 
-if(($disablesip = $appsip->get_nb(true,false)) !== false)
+if(($disablesip = $appsip->get_nb(true,true)) !== false)
 	$sipstat['disable'] = $disablesip;
 	
 $sipstat['total'] = $sipstat['enable'] + $sipstat['disable'];
