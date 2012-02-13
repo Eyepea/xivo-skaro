@@ -51,7 +51,7 @@ switch($act)
 	case 'add':
 		$appuser = &$ipbx->get_application('user');
 
-		if($appuser->add_from_json() === true)
+		if(($userid = $appuser->add_from_json()) !== false)
 		{
 			$status = 200;
 			$ipbx->discuss(array('dialplan reload',
@@ -60,12 +60,13 @@ switch($act)
 								'module reload app_queue.so',
 								'sip reload'
 			));
-		}
-		else
-			$status = 400;
 
-		$http_response->set_status_line($status);
-		$http_response->send(true);
+			$_TPL->set_var('list',$userid);
+		}	else {
+			$http_response->set_status_line(400);
+			$http_response->send(true);
+		}
+
 		break;
 	case 'edit':
 		$appuser = &$ipbx->get_application('user');

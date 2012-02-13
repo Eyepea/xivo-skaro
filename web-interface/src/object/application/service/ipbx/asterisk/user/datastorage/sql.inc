@@ -87,6 +87,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 			$this->_dso->aggregate_where();
 			$this->_dso->wherecontain('firstname',$value,true,$this->_table['userfeatures']);
 			$this->_dso->orwherecontain('lastname',$value,true,$this->_table['userfeatures']);
+			$this->_dso->orwhereexact('userfield',$value,true,$this->_table['userfeatures']);
 
 			if(($concat = $this->_dso->concat(array((object) ($this->_table['userfeatures'].'.firstname'),
 								' ',

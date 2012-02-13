@@ -255,6 +255,7 @@ $array['service/ipbx/system_management/context'] = 'service/ipbx/index.php/syste
 //$array['service/ipbx/system_management/ldapfilter'] = 'service/ipbx/index.php/system_management/ldapfilter/';
 
 $array['service/ipbx/json/restricted/system_management/context'] = 'service/ipbx/json.php/restricted/system_management/context/';
+$array['service/ipbx/json/restricted/system_management/extensions'] = 'service/ipbx/json.php/restricted/system_management/extensions/';
 
 $array['service/ipbx/json/private/system_management/context'] = 'service/ipbx/json.php/private/system_management/context/';
 

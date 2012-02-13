@@ -56,7 +56,14 @@ class xivo_application_service_asterisk_device_sql extends xivo_application_abst
 
 		$this->_dso->andwhere($arr,$this->_table['devicefeatures']);
 
-		$this->_dso->aggregate_where(false,'AND');
+		//$this->_dso->aggregate_where(false,'AND');
+		$this->_dso->aggregate_where();
+		if(dwho_has_len($value) === true)
+		{
+			$this->_dso->aggregate_where();
+			$this->_dso->whereexact('ip'   ,$value,true,$this->_table['devicefeatures']);
+			$this->_dso->orwhereexact('mac',$value,true,$this->_table['devicefeatures']);
+		}
 
 		$this->_dso->new_order($order,null,$this->_table['devicefeatures']);
 		$this->_dso->limit($limit);

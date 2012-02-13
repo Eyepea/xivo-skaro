@@ -76,6 +76,7 @@ $array['tree']['service']['ipbx']['pbx_services']['extenfeatures'] = true;
 
 $array['tree']['service']['ipbx']['system_management'] = array();
 $array['tree']['service']['ipbx']['system_management']['context'] = true;
+$array['tree']['service']['ipbx']['system_management']['extensions'] = true;
 
 $array['tree']['service']['ipbx']['control_system'] = array();
 $array['tree']['service']['ipbx']['control_system']['reload'] = true;

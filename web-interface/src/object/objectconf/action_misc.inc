@@ -397,6 +397,10 @@ $array['service/ipbx/asterisk/web_services/restricted/system_management/context'
 	'path'		=> 'service/ipbx/asterisk/web_services/system_management/context',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 
+$array['service/ipbx/asterisk/web_services/restricted/system_management/extensions'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/system_management/extensions',
+	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
 $array['service/ipbx/asterisk/web_services/private/system_management/context'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/system_management/context',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));

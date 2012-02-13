@@ -2123,7 +2123,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->add() === false)
 			return(false);
 
-		return(true);
+		return($this->_return['userfeatures']);
 	}
 
 	function array_merge_recursive($arr1, $arr2)
