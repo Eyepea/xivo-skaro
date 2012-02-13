@@ -38,7 +38,7 @@
 
 		sliderOptions: {
 			orientation: 'vertical',
-			step: 1,
+			step: 5,
 			min: 0,
 			max: 1439, //24*60
 			range: true,
@@ -201,7 +201,7 @@
 				if(jQuery.isFunction($(elt).mousewheel)) {
 					$(elt).mousewheel(function(e, d, dX, dY) {
 						value = slider.slider('values')[idx];
-						slider.slider('values', idx, value + dY);
+						slider.slider('values', idx, value + dY*slider.slider( "option", "step" ));
 					});
 				};
 			});
