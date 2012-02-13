@@ -1023,7 +1023,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$this->make_voip_interface($rs);
 
 		if($this->_netiface->edit($this->_info['netiface']['id'],$rs) !== false)
-			$this->_return['netiface'] = $rs['id'];
+			$this->_return['netiface'] = $this->_info['netiface']['id'];
 		else
 			$this->_return['netiface'] = false;
 
