@@ -929,6 +929,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$this->_set_config_var($conf,$raw,'vlan_id');
 		$this->_set_config_var($conf,$raw,'vlan_priority');
 		$this->_set_config_var($conf,$raw,'vlan_pc_port_id');
+		$this->_set_config_var($conf,$raw,'syslog_enabled');
 		$this->_set_config_var($conf,$raw,'syslog_ip');
 		$this->_set_config_var($conf,$raw,'syslog_port');
 		$this->_set_config_var($conf,$raw,'syslog_level');

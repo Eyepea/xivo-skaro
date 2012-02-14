@@ -51,8 +51,14 @@ server {
         deny all;
     }
 
-
+    location /service/ipbx/web_services.php/phonebook/search {
+        allow all;
+    }
     
+    location /service/ipbx/web_services.php/phonebook/menu {
+        allow all;
+    }
+
     ## for debug purpose
     #location /pgadmin {
     #    alias /usr/share/phppgadmin;
