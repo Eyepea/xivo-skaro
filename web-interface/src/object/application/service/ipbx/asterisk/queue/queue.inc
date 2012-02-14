@@ -341,18 +341,10 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| dwho_issa('queue',$arr) === false)
 			return(false);
 
-		if (isset($arr['queuefeatures']['displayname']) === false)
+		if (empty($arr['queuefeatures']['displayname']) === true)
 			$arr['queuefeatures']['displayname'] = $arr['queuefeatures']['name'];
 
-		if($action !== 'edit')
-		{
-			$name = strtolower($arr['queuefeatures']['displayname']);
-			$name = str_replace(' ','-',$name);
-			$arr['queuefeatures']['name'] = $name;
-			$arr['queue']['name'] = $name;
-		}
-		else
-			$arr['queue']['name'] = $arr['queuefeatures']['name'];
+		$arr['queue']['name'] = $arr['queuefeatures']['name'];
 
 		$name = $arr['queue']['name'];
 		$this->set_queuefeatures($arr['queuefeatures']);
