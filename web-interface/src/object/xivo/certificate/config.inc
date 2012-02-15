@@ -42,33 +42,38 @@ $array['element']['length'] = array();
 $array['element']['length']['value'] = array(1024,2048);
 $array['element']['length']['default'] = '';
 
+$array['element']['validity-end'] = array();
+$array['element']['validity-end']['default'] = '';
+
 $array['element']['validity'] = array();
 $array['element']['validity']['value'] = range(0,3650);
 $array['element']['validity']['default'] = '';
 
-$array['element']['CN'] = array();
-$array['element']['CN']['default'] = '';
+$array['element']['subject'] = array();
 
-$array['element']['C'] = array();
-$array['element']['C']['default'] = '';
+$array['element']['subject']['CN'] = array();
+$array['element']['subject']['CN']['default'] = '';
 
-$array['element']['ST'] = array();
-$array['element']['ST']['default'] = '';
+$array['element']['subject']['C'] = array();
+$array['element']['subject']['C']['default'] = '';
 
-$array['element']['L'] = array();
-$array['element']['L']['default'] = '';
+$array['element']['subject']['ST'] = array();
+$array['element']['subject']['ST']['default'] = '';
 
-$array['element']['O'] = array();
-$array['element']['O']['default'] = '';
+$array['element']['subject']['L'] = array();
+$array['element']['subject']['L']['default'] = '';
 
-$array['element']['OU'] = array();
-$array['element']['OU']['default'] = '';
+$array['element']['subject']['O'] = array();
+$array['element']['subject']['O']['default'] = '';
 
-$array['element']['emailAddress'] = array();
-$array['element']['emailAddress']['default'] = '';
+$array['element']['subject']['OU'] = array();
+$array['element']['subject']['OU']['default'] = '';
 
-$array['element']['ca'] = array();
-$array['element']['ca']['default'] = '';
+$array['element']['subject']['emailAddress'] = array();
+$array['element']['subject']['emailAddress']['default'] = '';
+
+$array['element']['ca_authority'] = array();
+$array['element']['ca_authority']['default'] = '';
 
 $array['element']['ca_password'] = array();
 $array['element']['ca_password']['default'] = '';

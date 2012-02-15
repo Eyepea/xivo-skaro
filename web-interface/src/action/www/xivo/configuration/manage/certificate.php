@@ -59,7 +59,7 @@ switch($act)
 					'validity' => $end->diff($now)->days
 				);
 
-				if(!array_key_exists('CA', $_QR) || $_QR['CA'] != 1)
+				if(!array_key_exists('is_ca', $_QR) || $_QR['is_ca'] != 1)
 				{
 					$cert['autosigned'] = isset($_QR['autosigned']);
 
@@ -71,7 +71,7 @@ switch($act)
 				{ $cert[$k] = $v; }
 
 				// save item
-				if(($ret = $modcert->add(array_key_exists('CA',$_QR) && $_QR['CA'] == 1, $cert)) === true)
+				if(($ret = $modcert->add(array_key_exists('is_ca',$_QR) && $_QR['is_ca'] == 1, $cert)) === true)
 					$_QRY->go($_TPL->url('xivo/configuration/manage/certificate'), $param);
 			}
 
@@ -91,7 +91,7 @@ switch($act)
 
 		function cafilter($cert)
 		{
-			return isset($cert['CA']) && $cert['CA'] && count($cert['types']) == 2;
+			return isset($cert['is_ca']) && $cert['is_ca'] && count($cert['types']) == 2;
 		}
 
 		$authorities = array_filter($modcert->get_all(), "cafilter");

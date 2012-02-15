@@ -20,9 +20,7 @@
 
 $form = &$this->get_module('form');
 
-//keep the old behaviour where $element was false
-//$element = $this->get_var('element');
-$element = false;
+$element = $this->get_var('element');
 $ca_authorities = $this->get_var('ca_authorities');
 
 if($this->get_var('fm_save') === false):
@@ -42,13 +40,13 @@ endif;
 			  'error'	=> $this->bbf_args('error',
 				$this->get_var('error', 'name')) )),
 
-	$form->checkbox(array('desc'	=> $this->bbf('fm_CA'),
-				      'name'		=> 'CA',
-				      'labelid'		=> 'CA',
-					  //'help'		=> $this->bbf('hlp_fm_CA'),
+	$form->checkbox(array('desc'	=> $this->bbf('fm_is_ca'),
+				      'name'		=> 'is_ca',
+				      'labelid'		=> 'is_ca',
+					  //'help'		=> $this->bbf('hlp_fm_is_ca'),
 					  'required'	=> false,
-				      'checked'		=> $this->get_var('info','CA'),
-							'default'		=> $element['CA']['default'])),
+				      'checked'		=> $this->get_var('info','is_ca'),
+							'default'		=> $element['is_ca']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_autosigned'),
 				      'name'		=> 'autosigned',
@@ -98,15 +96,6 @@ endif;
 				    'default'	=> $element['cipher']['default']),
 							array('aes')),
 
-	$form->text(array('desc'	=> $this->bbf('fm_fingerprint'),
-			  'name'	=> 'fingerprint',
-			  'labelid'	=> 'fingerprint',
-			  'size'	=> 40,
-			  'default'	=> $element['fingerprint']['default'],
-			  'value'	=> $this->get_var('info','fingerprint'),
-			  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'fingerprint')) )),
-
 	$form->select(array('desc'	=> $this->bbf('fm_length'),
 				    'name'	=> 'length',
 				    'labelid'	=> 'length',
@@ -125,15 +114,6 @@ endif;
 			  'value'	=> $this->get_var('info','length'),
 			  'error'	=> $this->bbf_args('error',
 				$this->get_var('error', 'length')) )),
-
-	  $form->text(array('desc'	=> $this->bbf('fm_validity-start'),
-			  'name'	=> 'validity-start',
-			  'labelid'	=> 'validity-start',
-			  'size'	=> 25,
-			  'default'	=> $element['validity-start']['default'],
-			  'value'	=> $this->get_var('info','validity-start'),
-			  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'validity-start')) )),
 
 	  $form->text(array('desc'	=> $this->bbf('fm_validity-end'),
 			  'name'	=> 'validity-end',

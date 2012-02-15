@@ -10,7 +10,7 @@ Issuer
 ; fm_name
 Name:
 
-; fm_CA
+; fm_is_ca
 Certification authority:
 
 ; fm_autosigned
