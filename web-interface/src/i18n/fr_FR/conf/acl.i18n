@@ -217,6 +217,9 @@ Fichiers de configuration
 ; acl(service-ipbx-system_management-context)
 Contextes
 
+; acl(service-ipbx-system_management-extensions)
+Extensions
+
 ; acl(service-ipbx-trunk_management)
 Gestion des interconnexions
 
