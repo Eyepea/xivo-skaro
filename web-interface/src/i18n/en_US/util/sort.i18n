@@ -1,0 +1,54 @@
+
+; col_sort_exten
+Sort by DID
+
+; col_sort_context
+Sort by context
+
+; col_sort_destination
+Sort by destination
+
+; col_sort_identity
+Sort by identity
+
+; col_sort_fullname
+Sort by name
+
+; col_sort_name
+Sort by name
+
+; col_sort_displayname
+Sort by display name
+
+; col_sort_confno
+Sort by number
+
+; col_sort_number
+Sort by number
+
+; col_sort_identity
+Sort by identity
+
+; col_sort_protocol
+Sort by protocol
+
+; col_sort_mailbox
+Sort by mailbox
+
+; col_sort_email
+Sort by e-mail
+
+; col_sort_interface
+Sort by interface
+
+; col_sort_intfsuffix
+Sort by interface suffix
+
+; col_sort_host
+Sort by host
+
+; col_sort_type
+Sort by connection type
+
+; col_sort_call-limit
+Sort by number of calls
