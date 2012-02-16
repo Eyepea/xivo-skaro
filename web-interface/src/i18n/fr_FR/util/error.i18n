@@ -65,6 +65,9 @@ Liste des contextes résérvés: %s
 ; already_exist
 %s existe déjà
 
+; exten_already_exist
+L'extension %s existe déjà
+
 ; default_gateway_already_exist
 Une passerelle par défaut existe déjà sur l'interface %s
 

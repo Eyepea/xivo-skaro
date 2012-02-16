@@ -107,9 +107,9 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 
 			if($exists === false)
 				$this->_set_error($this->_extenumbers->get_filter_error());
-			else 
+			else
 			{
-				$chkerror = dwho_i18n::babelfish('already_exist',array($number));
+				$chkerror = dwho_i18n::babelfish('exten_already_exist',array($number));
 				$this->_set_error($chkerror);
 			}
 

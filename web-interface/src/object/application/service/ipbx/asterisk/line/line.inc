@@ -457,10 +457,15 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			$arr['protocol']['secret'] = $this->gen_password(6);
 		}
 
+		$callerid = '';
 		if(isset($arr['protocol']['callerid']) === true) {
 			$callerid =$arr['protocol']['callerid'];
 		} elseif(isset($arr['linefeatures']['callerid']) === true) {
 			$callerid = $arr['linefeatures']['callerid'];
+		}
+
+		if(isset($arr['linefeatures']['mailbox']) === true) {
+			$arr['protocol']['mailbox'] = $arr['linefeatures']['mailbox'];
 		}
 
 		$arr['protocol']['callerid'] = $this->_service->mk_callerid($callerid, '', $protocolname);
@@ -521,7 +526,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		$number = (string) $arr['linefeatures']['number'];
 		$numhaslen = dwho_has_len($number);
-
 		$musiconhold = (string) $userfeatures['musiconhold'];
 
 		switch ($this->_protocolname)

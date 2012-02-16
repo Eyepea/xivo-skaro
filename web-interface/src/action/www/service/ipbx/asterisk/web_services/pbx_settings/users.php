@@ -93,6 +93,25 @@ switch($act)
 		$http_response->set_status_line($status);
 		$http_response->send(true);
 		break;
+	case 'import':
+		$appuser = &$ipbx->get_application('user');
+
+		if($appuser->import_from_csv() === true)
+		{
+			$status = 200;
+			$ipbx->discuss(array('dialplan reload',
+								'xivo[userlist,update]',
+								'xivo[phonelist,update]',
+								'module reload app_queue.so',
+								'sip reload'
+			));
+		}
+		else
+			$status = 400;
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
 	case 'delete':
 		$appuser = &$ipbx->get_application('user');
 

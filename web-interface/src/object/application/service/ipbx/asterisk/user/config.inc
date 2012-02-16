@@ -26,13 +26,13 @@ $array['picture']['file']['mime'] = array('image/jpeg','image/png');
 
 $array['import'] = array();
 $array['import']['file'] = array();
-#$array['import']['file']['name'] = '/^[a-z0-9_-]{1,50}(?:\.[a-z]{1,10})?$/i';
 $array['import']['file']['mime'] = array('text/plain','text/csv');
 
 $array['import']['field'] = array();
 $array['import']['field']['entityid'] = array('userfeatures','entityid');
 $array['import']['field']['firstname'] = array('userfeatures','firstname');
 $array['import']['field']['lastname'] = array('userfeatures','lastname');
+$array['import']['field']['language'] = array('userfeatures','language');
 $array['import']['field']['outcallerid'] = array('userfeatures','outcallerid');
 $array['import']['field']['enableclient'] = array('userfeatures','enableclient');
 $array['import']['field']['username'] = array('userfeatures','loginclient');
@@ -47,14 +47,7 @@ $array['import']['field']['phonenumber'] = array('linefeatures','number',0);
 $array['import']['field']['context'] = array('linefeatures','context',0);
 $array['import']['field']['callerid'] = array('linefeatures','callerid',0);
 $array['import']['field']['protocol'] = array('linefeatures','protocol',0);
-/*
-$array['import']['field']['interface'] = array('protocol','interface');
-$array['import']['field']['protocol'] = array('protocol','protocol');
-$array['import']['field']['context'] = array('protocol','context');
-$array['import']['field']['subscribemwi'] = array('protocol','subscribemwi');
-$array['import']['field']['accountcode'] = array('protocol','accountcode');
-$array['import']['field']['amaflags'] = array('protocol','amaflags');
-*/
+
 $array['import']['field']['voicemailname'] = array('voicemail','fullname');
 $array['import']['field']['voicemailmailbox'] = array('voicemail','mailbox');
 $array['import']['field']['voicemailpassword'] = array('voicemail','password');
