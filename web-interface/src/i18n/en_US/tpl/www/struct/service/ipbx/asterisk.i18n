@@ -48,8 +48,8 @@ G.722 (Audio)
 ; ast_codec_name_type(g722.1)
 G.722.1 (Audio)
 
-; ast_codec_name_type(g722.1C)
-G.722.1C (Audio)
+; ast_codec_name_type(siren14)
+Siren14 (Audio)
 
 ; ast_codec_name_type(jpeg)
 JPEG (Image)

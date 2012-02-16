@@ -473,8 +473,10 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if ($this->_protocol !== false
 		&& ($protocol = $this->_protocol->get($arr['linefeatures']['protocolid'])) !== false) {
 			$arr['protocol'] = array_merge($protocol, $arr['protocol']);
-			$arr['protocol']['callgroup'] = implode(',', $arr['protocol']['callgroup']);
-			$arr['protocol']['pickupgroup'] = implode(',', $arr['protocol']['pickupgroup']);
+			if (dwho_issa('callgroup', $arr['protocol']) === true)
+				$arr['protocol']['callgroup'] = implode(',', $arr['protocol']['callgroup']);
+			if (dwho_issa('pickupgroup', $arr['protocol']) === true)
+				$arr['protocol']['pickupgroup'] = implode(',', $arr['protocol']['pickupgroup']);
 		}
 		if (dwho_issa('userfeatures',$arr) === true) {
 			if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP) {

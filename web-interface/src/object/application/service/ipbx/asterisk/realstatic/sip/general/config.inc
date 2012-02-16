@@ -187,27 +187,7 @@ $array['element']['disallow']['default'] = 'all';
 $array['element']['disallow']['unset'] = true;
 
 $array['element']['allow'] = array();
-$array['element']['allow']['value'] = array(
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G723,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ULAW,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ALAW,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ADPCM,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_SLIN,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_LPC10,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G729,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_SPEEX,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_ILBC,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722_1,
-					XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722_1C,
-					XIVO_SRE_IPBX_AST_CODEC_IMAGE_JPEG,
-					XIVO_SRE_IPBX_AST_CODEC_IMAGE_PNG,
-					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
-					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263,
-					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P,
-					XIVO_SRE_IPBX_AST_CODEC_VIDEO_H264);
+$array['element']['allow']['value'] = xivo_service_asterisk::get_codecs_list();
 $array['element']['allow']['default'] = '';
 $array['element']['allow']['null'] = true;
 
@@ -800,27 +780,7 @@ $array['filter']['outboundproxy'] = array('set'		=> false,
 					  'maxlen'	=> 64);
 $array['filter']['g726nonstandard'] = array('bool' => true);
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
-$array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => array(
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G723,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ULAW,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ALAW,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ADPCM,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_SLIN,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_LPC10,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G729,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_SPEEX,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ILBC,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722_1,
-						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G722_1C,
-						XIVO_SRE_IPBX_AST_CODEC_IMAGE_JPEG,
-						XIVO_SRE_IPBX_AST_CODEC_IMAGE_PNG,
-						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
-						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263,
-						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P,
-						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H264));
+$array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => xivo_service_asterisk::get_codecs_list());
 $array['filter']['t1min'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,
 						 200,300,400,500,600,700,800,900,
 						 1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,
