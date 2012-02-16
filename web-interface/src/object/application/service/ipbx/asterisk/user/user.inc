@@ -1065,7 +1065,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		for($i = $j = 0;$i < $nb;$i++)
 		{
 			$ref = &$list[$i];
-			$ref['iduserfeatures'] = 0;
+			if(isset($this->_info['userfeatures']) === false
+				|| isset($this->_info['userfeatures']['id']) === false) {
+				return(false);
+			}
+			$ref['iduserfeatures'] = (int) $this->_info['userfeatures']['id'];
 
 			if(($val = $this->_phonefunckey->mk_values_array($ref)) === false)
 				continue;
