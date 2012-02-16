@@ -45,11 +45,11 @@ G.726 RFC3551 (Audio)
 ; ast_codec_name_type(g722)
 G.722 (Audio)
 
-; ast_codec_name_type(g722.1)
-G.722.1 (Audio)
+; ast_codec_name_type(siren7)
+Siren7 (G.722.1) (Audio)
 
 ; ast_codec_name_type(siren14)
-Siren14 (Audio)
+Siren14 (G.722.1C) (Audio)
 
 ; ast_codec_name_type(jpeg)
 JPEG (Image)
@@ -80,9 +80,6 @@ GSM Data
 
 ; ast_format_name_info(ogg)
 OGG/Vorbis
-
-; ast_format_name_info(ulaw)
-uLaw 8khz
 
 ; ast_format_name_info(ulaw)
 uLaw 8khz
