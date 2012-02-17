@@ -119,34 +119,31 @@ Ad libitum
 
 
 ; xlet-agents
-Agents (liste)
+Agents (liste) (expérimental)
 
 ; xlet-agentsnext
-Agents (liste, next)
+Agents (liste, next) (expérimental)
 
 ; xlet-agentdetails
-Agents (détail)
+Agents (détail) (expérimental)
 
 ; xlet-queues
-Files d'attente (liste)
+Files d'attente (liste) (expérimental)
 
 ; xlet-queuedetails
-Files d'attente (détail)
+Files d'attente (détail) (expérimental)
 
 ; xlet-queueentrydetails
-Files d'attente (détail des entrées)
+Files d'attente (détail des entrées) (expérimental)
 
 ; xlet-calls
-Appels
-
-; xlet-parking
-Parking
+Appels (expérimental)
 
 ; xlet-switchboard
-Switchboard
+Switchboard (expérimental)
 
 ; xlet-customerinfo
-Fiches clients
+Fiches clients (expérimental)
 
 ; xlet-datetime
 Date et heure
@@ -176,31 +173,13 @@ Contacts
 Chambres de conférence
 
 ; xlet-operator
-Opérateur
+Opérateur (expérimental)
 
 ; xlet-mylocaldir
 Mon répertoire local
 
 ; xlet-callcampaign
-Campagnes d'appel
-
-; xlet-records
-Campagnes d'enregistrements
+Campagnes d'appel (expérimental)
 
 ; xlet-tabber
 Tabber
-
-; xlet-xletweb
-Web
-
-; xlet-xletproto
-Prototype
-
-; xlet-messages
-Messages
-
-; xlet-popcaastra
-POPC Aastra
-
-; xlet-video
-Video

@@ -24,7 +24,7 @@ $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $idprofiles = isset($_QR['idprofiles']) === true ? dwho_uint($_QR['idprofiles'],1) : 1;
 $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
-# for ce loading translation file
+// force loading translation file
 $_TPL->load_i18n_file('tpl/www/bloc/cti/profiles/list-values.i18n', 'global');
 
 /** list values */

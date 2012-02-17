@@ -119,34 +119,31 @@ Ad libitum
 
 
 ; xlet-agents
-Agents (list)
+Agents (list) (experimental)
 
 ; xlet-agentsnext
-Agents (list, next)
+Agents (list, next) (experimental)
 
 ; xlet-agentdetails
-Agents (detail)
+Agents (detail) (experimental)
 
 ; xlet-queues
-Queues (list)
+Queues (list) (experimental)
 
 ; xlet-queuedetails
-Queues (detail)
+Queues (detail) (experimental)
 
 ; xlet-queueentrydetails
-Queues (entries detail)
+Queues (entries detail) (experimental)
 
 ; xlet-calls
-Calls
-
-; xlet-parking
-Parking
+Calls (experimental)
 
 ; xlet-switchboard
-Switchboard
+Switchboard (experimental)
 
 ; xlet-customerinfo
-Customer info
+Customer info (experimental)
 
 ; xlet-datetime
 Datetime
@@ -176,31 +173,13 @@ Search
 Conference rooms
 
 ; xlet-operator
-Operator
+Operator (experimental)
 
 ; xlet-mylocaldir
 MyDirectory
 
 ; xlet-callcampaign
-Call campaigns
-
-; xlet-records
-Record campaigns
+Call campaigns (experimental)
 
 ; xlet-tabber
 Tabber
-
-; xlet-xletweb
-Web
-
-; xlet-xletproto
-Prototype
-
-; xlet-messages
-Messages
-
-; xlet-popcaastra
-Aastra POPC
-
-; xlet-video
-Video
