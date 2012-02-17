@@ -36,10 +36,10 @@ Export
 Device successfully "Autoprov" mode reset
 
 ; successfully_apply
-%s successfully apply
+%s successfully applied
 
 ; error_during_apply
-Error during apply %s
+Error during applying %s
 
 ; successfully_installed
 %s successfully installed
@@ -60,11 +60,10 @@ Error during update
 Successfully updated
 
 ; successfully_synchronize
-Device successfully synchronize
+Device successfully synchronized
 
 ; error_during_synchronize
-Error during device synchronize
+Error during device synchronization
 
 ; img_loading
 Loading...
-
