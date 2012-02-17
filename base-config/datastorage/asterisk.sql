@@ -1464,7 +1464,6 @@ DROP TABLE IF EXISTS "rightcall";
 CREATE TABLE "rightcall" (
  "id" SERIAL,
  "name" varchar(128) NOT NULL DEFAULT '',
- "context" varchar(39) NOT NULL,
  "passwd" varchar(40) NOT NULL DEFAULT '',
  "authorization" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN

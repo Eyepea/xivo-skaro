@@ -24,7 +24,6 @@ $dhtml = &$this->get_module('dhtml');
 
 $info = $this->get_var('info');
 $element = $this->get_var('element');
-$context_list = $this->get_var('context_list');
 
 $rcalluser = $this->get_var('rcalluser');
 $rcallgroup = $this->get_var('rcallgroup');
@@ -48,23 +47,6 @@ endif;
 				  'value'	=> $info['rightcall']['name'],
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'rightcall', 'name')) ));
-
-if($context_list !== false):
-	echo	$form->select(array('desc'	=> $this->bbf('fm_rightcall_context'),
-				    'name'	=> 'rightcall[context]',
-				    'labelid'	=> 'rightcall-context',
-				    'key'	=> 'identity',
-				    'altkey'	=> 'name',
-				    'default'	=> $element['rightcall']['context']['default'],
-				    'selected'	=> $info['rightcall']['context']),
-			      $context_list);
-else:
-	echo	'<div id="fd-rightcall-context" class="txt-center">',
-		$url->href_htmln($this->bbf('create_context'),
-				'service/ipbx/system_management/context',
-				'act=add'),
-		'</div>';
-endif;
 
 	echo	$form->text(array('desc'	=> $this->bbf('fm_rightcall_passwd'),
 				  'name'	=> 'rightcall[passwd]',

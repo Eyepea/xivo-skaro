@@ -80,19 +80,19 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-		
+
 		if($rcalluser['list'] !== false && dwho_issa('rightcalluser',$result) === true
 		&& ($rcalluser['slt'] = dwho_array_intersect_key($result['rightcalluser'],$rcalluser['list'],'typeval')) !== false)
 			$rcalluser['slt'] = array_keys($rcalluser['slt']);
-		
+
 		if($rcallgroup['list'] !== false && dwho_issa('rightcallgroup',$result) === true
 		&& ($rcallgroup['slt'] = dwho_array_intersect_key($result['rightcallgroup'],$rcallgroup['list'],'typeval')) !== false)
 			$rcallgroup['slt'] = array_keys($rcallgroup['slt']);
-		
+
 		if($rcallincall['list'] !== false && dwho_issa('rightcallincall',$result) === true
 		&& ($rcallincall['slt'] = dwho_array_intersect_key($result['rightcallincall'],$rcallincall['list'],'typeval')) !== false)
 			$rcallincall['slt'] = array_keys($rcallincall['slt']);
-		
+
 		if($rcalloutcall['list'] !== false && dwho_issa('rightcalloutcall',$result) === true
 		&& ($rcalloutcall['slt'] = dwho_array_intersect_key($result['rightcalloutcall'],$rcalloutcall['list'],'typeval')) !== false)
 			$rcalloutcall['slt'] = array_keys($rcalloutcall['slt']);
@@ -111,7 +111,6 @@ switch($act)
 		$_TPL->set_var('rcallincall',$rcallincall);
 		$_TPL->set_var('rcalloutcall',$rcalloutcall);
 		$_TPL->set_var('rcallexten',$rcallexten);
-		$_TPL->set_var('context_list',$apprightcall->get_context_list());
 		$_TPL->set_var('element',$apprightcall->get_elements());
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('error',$error);
@@ -177,19 +176,19 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-		
+
 		if($rcalluser['list'] !== false && dwho_issa('rightcalluser',$return) === true
 		&& ($rcalluser['slt'] = dwho_array_intersect_key($return['rightcalluser'],$rcalluser['list'],'typeval')) !== false)
 			$rcalluser['slt'] = array_keys($rcalluser['slt']);
-		
+
 		if($rcallgroup['list'] !== false && dwho_issa('rightcallgroup',$return) === true
 		&& ($rcallgroup['slt'] = dwho_array_intersect_key($return['rightcallgroup'],$rcallgroup['list'],'typeval')) !== false)
 			$rcallgroup['slt'] = array_keys($rcallgroup['slt']);
-		
+
 		if($rcallincall['list'] !== false && dwho_issa('rightcallincall',$return) === true
 		&& ($rcallincall['slt'] = dwho_array_intersect_key($return['rightcallincall'],$rcallincall['list'],'typeval')) !== false)
 			$rcallincall['slt'] = array_keys($rcallincall['slt']);
-		
+
 		if($rcalloutcall['list'] !== false && dwho_issa('rightcalloutcall',$return) === true
 		&& ($rcalloutcall['slt'] = dwho_array_intersect_key($return['rightcalloutcall'],$rcalloutcall['list'],'typeval')) !== false)
 			$rcalloutcall['slt'] = array_keys($rcalloutcall['slt']);
@@ -214,7 +213,6 @@ switch($act)
 		$_TPL->set_var('rcallincall',$rcallincall);
 		$_TPL->set_var('rcalloutcall',$rcalloutcall);
 		$_TPL->set_var('rcallexten',$rcallexten);
-		$_TPL->set_var('context_list',$apprightcall->get_context_list());
 		$_TPL->set_var('element',$apprightcall->get_elements());
 		$_TPL->set_var('info',$return);
 		$_TPL->set_var('error',$error);

@@ -25,8 +25,6 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 	var $_rightcall		= false;
 	var $_rightcallmember	= false;
 	var $_rightcallexten	= false;
-	var $_contextmember	= false;
-	var $_contextlist	= array();
 
 	function xivo_application_service_asterisk_rightcall(&$service,$param=null,$components=true)
 	{
@@ -44,8 +42,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		$this->_components = true;
 
 		if(($this->_rightcallmember = &$this->_service->get_module('rightcallmember')) === false
-		|| ($this->_rightcallexten = &$this->_service->get_module('rightcallexten')) === false
-		|| ($this->_contextmember = $this->get_abstract('contextmember',array('type' => 'rightcall'))) === false)
+		|| ($this->_rightcallexten = &$this->_service->get_module('rightcallexten')) === false)
 			return(false);
 
 		return(true);
@@ -65,7 +62,6 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		$this->_get_rightcallincall();
 		$this->_get_rightcalloutcall();
 		$this->_get_rightcallexten();
-		$this->_get_contextmember($this->_info['rightcall']['id']);
 
 		return($this->_info);
 	}
@@ -209,8 +205,6 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 			$this->_set_error('rightcallexten','invalid data');
 		}
 
-		$this->set_contextmember();
-
 		return(($this->get_errnb() < 1));
 	}
 
@@ -348,16 +342,6 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		return(true);
 	}
 
-	function set_contextmember()
-	{
-		$rs = array();
-		$rs['rightcall-context']['context'] = (string) $this->get_result_var('rightcall','context');
-		$rs['rightcall-context']['typeval'] = 0;
-		$rs['rightcall-context']['varname'] = 'context';
-
-		return(parent::set_contextmember($rs));
-	}
-
 	function add()
 	{
 		$r = true;
@@ -372,8 +356,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		|| $this->add_rightcallgroup($rightcallid) === false
 		|| $this->add_rightcallincall($rightcallid) === false
 		|| $this->add_rightcalloutcall($rightcallid) === false
-		|| $this->add_rightcallexten($rightcallid) === false
-		|| $this->add_contextmember($rightcallid) === false)
+		|| $this->add_rightcallexten($rightcallid) === false)
 		{
 			$r = false;
 			if($rightcallid !== null)
@@ -510,9 +493,6 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 							$this->_rightcallexten->delete($extenval);
 					}
 					break;
-				case 'contextmember':
-					$this->_contextmember->reverse_add();
-					break;
 			}
 		}
 
@@ -532,8 +512,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		|| $this->edit_rightcallgroup() === false
 		|| $this->edit_rightcallincall() === false
 		|| $this->edit_rightcalloutcall() === false
-		|| $this->edit_rightcallexten() === false
-		|| $this->edit_contextmember() === false)
+		|| $this->edit_rightcallexten() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -661,14 +640,6 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		return(true);
 	}
 
-	function edit_contextmember()
-	{
-		if(dwho_issa('rightcall',$this->_info) === false)
-			return(false);
-
-		return(parent::edit_contextmember($this->_info['rightcall']['id']));
-	}
-
 	function _reverse_edit()
 	{
 		if($this->get_errnb() > 0
@@ -708,9 +679,6 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 					&& $this->_origin['rightcallexten'] !== false)
 						$this->_rightcallexten->add_origin_list($this->_origin['rightcallexten']);
 					break;
-				case 'contextmember':
-					$this->_contextmember->reverse_edit($this->_status);
-					break;
 			}
 		}
 
@@ -729,8 +697,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		|| $this->delete_rightcallgroup() === false
 		|| $this->delete_rightcallincall() === false
 		|| $this->delete_rightcalloutcall() === false
-		|| $this->delete_rightcallexten() === false
-		|| $this->delete_contextmember() === false)
+		|| $this->delete_rightcallexten() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -846,9 +813,6 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 					if(isset($this->_origin['rightcallexten']) === true
 					&& $this->_origin['rightcallexten'] !== false)
 						$this->_rightcallexten->add_origin_list($this->_origin['rightcallexten']);
-					break;
-				case 'contextmember':
-					$this->_contextmember->add_origin_list();
 					break;
 			}
 		}

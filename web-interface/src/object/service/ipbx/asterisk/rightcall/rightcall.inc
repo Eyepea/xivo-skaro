@@ -44,7 +44,7 @@ class xivo_service_asterisk_rightcall extends xivo_service_asterisk_abstract
 	function _prepare($data)
 	{
 		$data['id'] = (int) $data['id'];
-		$data['identity'] = $data['name'].' ('.$data['context'].')';
+		$data['identity'] = $data['name'];
 		$data['authorization'] = (bool) $data['authorization'];
 		$data['commented'] = (bool) $data['commented'];
 
