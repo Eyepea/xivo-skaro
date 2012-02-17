@@ -126,6 +126,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 			return(false);
 
 		$this->_dso->new_select($this->_table['userfeatures'],null);
+		$this->_dso->where(array('id' => $id, 'bsfilter' => 'boss'), $this->_table['userfeatures']);
 
 		// NOTE: userfeatures.id is an integer, callfiltermember.typeval a string
 		// we must cast the second to allow comparison (required by PostgreSQL)
