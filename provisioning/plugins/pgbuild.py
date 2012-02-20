@@ -1,9 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-"""A tool for managing provd plugins. 
-
-"""
+"""A tool for building provd plugins."""
 
 __license__ = """
     Copyright (C) 2010-2011  Avencall
