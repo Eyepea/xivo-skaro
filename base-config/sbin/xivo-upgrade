@@ -2,8 +2,6 @@
 set -e
 monit_default="/etc/default/monit"
 fai="pf-fai-xivo-1.2-skaro"
-xivo_candidate=$(apt-cache policy pf-xivo | grep Candidate | grep -oE 1.[2-9].[0-9]\{1,2\})
-xivo_installed=$(apt-cache policy pf-xivo | grep Installed | grep -oE 1.[2-9].[0-9]\{1,2\})
 services="postgresql dahdi xivo-confgend pf-xivo-agid asterisk xivo-ctid"
 upgrading_tool="apt-get"
 
@@ -37,7 +35,24 @@ return_xivo_states() {
     done
 }
 
+upgrading_version() {
+    if [ ! -z $version ]; then
+        if [ $version = 'rc' ] || [ $version = 'dev' ]; then
+            echo "Updating sources.list files to install skaro-$version"
+            $upgrading_tool install $fai-$version -y > /dev/null
+        else
+            echo "This version of xivo does't exist"
+            exit
+        fi
+        $upgrading_tool update > /dev/null
+    fi
+}
+
 proposed_upgrade() {
+    echo "updating packages list"
+    $upgrading_tool update > /dev/null
+    xivo_candidate=$(apt-cache policy pf-xivo | grep Candidate | grep -oE 1.[2-9].[0-9]\{1,2\})
+    xivo_installed=$(apt-cache policy pf-xivo | grep Installed | grep -oE 1.[2-9].[0-9]\{1,2\})
 	echo "installed version : $xivo_installed"
 	echo "proposed update   : $xivo_candidate"
     if [ $xivo_candidate = $xivo_installed ]; then
@@ -48,17 +63,6 @@ proposed_upgrade() {
     fi
 }
 
-upgrading_version() {
-    if [ ! -z $version ]; then
-        if [ $version = 'rc' ] || [ $version = 'dev' ]; then
-            apt-get install $fai-$version > /dev/null
-        else
-            echo "This version of xivo does't exist"
-            exit
-        fi
-        apt-get update > /dev/null
-    fi
-}
 upgrading_xivo() {
     upgrading_version
     proposed_upgrade
@@ -68,10 +72,7 @@ upgrading_xivo() {
 		exit
 	fi
     echo "upgrading xivo"
-    echo "updating packages list"
-    apt-get update > /dev/null
-    echo "upgrading packages"
-    $upgrading_tool dist-upgrade -y > /dev/null
+    $upgrading_tool dist-upgrade -y
     restart_xivo
     return_xivo_states
 }
