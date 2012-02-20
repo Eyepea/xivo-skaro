@@ -1,41 +1,112 @@
 #!/bin/bash
 set -e
 monit_default="/etc/default/monit"
-xivo_installed_version=$(sed 's/-rc.*//' /usr/share/pf-xivo/XIVO-VERSION)
-xivo_candidate=$(apt-cache policy pf-xivo | grep Candidate | awk '{print $2}' | cut -d: -f2)
+fai="pf-fai-xivo-1.2-skaro"
+xivo_candidate=$(apt-cache policy pf-xivo | grep Candidate | grep -oE 1.[2-9].[0-9]\{1,2\})
+xivo_installed=$(apt-cache policy pf-xivo | grep Installed | grep -oE 1.[2-9].[0-9]\{1,2\})
+services="postgresql dahdi xivo-confgend pf-xivo-agid asterisk xivo-ctid"
 upgrading_tool="apt-get"
 
-stop_monit () {
+stop_monit() {
     sed -i 's/startup=1/startup=0/' $monit_default
-    invoke-rc.d monit stop
+    invoke-rc.d monit stop > /dev/null
 }
 
-start_monit () {
+start_monit() {
     sed -i 's/startup=0/startup=1/' $monit_default
-    invoke-rc.d monit start
+    invoke-rc.d monit start > /dev/null
 }
 
-restart_xivo () {
+restart_xivo() {
     echo "Restarting xivo"
-    services="postgresql dahdi xivo-confgend pf-xivo-agid asterisk xivo-ctid"
     for service in $services; do
-        invoke-rc.d $service stop
-        invoke-rc.d $service start
+        invoke-rc.d $service stop > /dev/null
+        invoke-rc.d $service start > /dev/null
     done
-
 }
 
-upgrading_xivo () {
+return_xivo_states() {
+    echo "checking services"
+    for service in $services; do
+        /etc/init.d/$service status &> /dev/null
+        if [ $? -eq 0 ]; then
+            echo -e "\tOK\t$service"
+        else
+            echo -e "\tNOK\t$service"
+        fi
+    done
+}
+
+proposed_upgrade() {
+	echo "installed version : $xivo_installed"
+	echo "proposed update   : $xivo_candidate"
+    if [ $xivo_candidate = $xivo_installed ]; then
+        echo "You're systeme is up-to-date, nothing to do."
+	    exit
+    else
+        echo "Upgrades are available, use $(basename $0) -a upgrade to install them"
+    fi
+}
+
+upgrading_version() {
+    if [ ! -z $version ]; then
+        if [ $version = 'rc' ] || [ $version = 'dev' ]; then
+            apt-get install $fai-$version > /dev/null
+        else
+            echo "This version of xivo does't exist"
+            exit
+        fi
+        apt-get update > /dev/null
+    fi
+}
+upgrading_xivo() {
+    upgrading_version
+    proposed_upgrade
+	echo "Would you like to upgrade your system ? y/n"
+	read answer
+	if [ $answer != 'y' ]; then
+		exit
+	fi
     echo "upgrading xivo"
-    echo "updating package list"
-    apt-get update
-    echo "upgrading package"
-    $upgrading_tool dist-upgrade
+    echo "updating packages list"
+    apt-get update > /dev/null
+    echo "upgrading packages"
+    $upgrading_tool dist-upgrade -y > /dev/null
     restart_xivo
+    return_xivo_states
 }
 
-stop_monit
+upgrading_system() {
+    stop_monit
+    upgrading_xivo
+    start_monit
+}
 
-upgrading_xivo
+usage() {
+    cat << EOF
+    This tool is designed to automatically upgrade XiVO
+    usage:
+    $(basename $0) -a action [-v version]
+        action:  proposed or upgrade
+        version: rc or dev (for devel purpose, do not use in production)
+EOF
+}
 
-start_monit
+while getopts :a:v: opt
+do
+  case ${opt} in
+    a)   action=${OPTARG};;
+    v)   version=${OPTARG};;
+    '?') echo "${0} : option ${OPTARG} is not valid" >&2
+         usage
+    ;;
+  esac
+done
+
+version="${version:-""}"
+
+case $action in
+    'upgrade')  upgrading_xivo;;
+    'proposed') proposed_upgrade;;
+    *) echo "error: action not available"; usage;;
+esac
