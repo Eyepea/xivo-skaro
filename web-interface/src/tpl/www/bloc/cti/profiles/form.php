@@ -152,7 +152,9 @@ endif;
 <?php
 	$type = 'preferences';
 	$count = count($info['preferences']['slt']);
-  $keys = array_keys($info['preferences']['slt']);
+	$keys = array();
+if(dwho_issa('slt', $info['preferences']))
+		$keys = array_keys($info['preferences']['slt']);
 ?>
 </div>
 <div id="sb-part-last" class="b-nodisplay">
