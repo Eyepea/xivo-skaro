@@ -212,7 +212,8 @@ $array['element']['forceencryption']['value'] = array('no','yes');
 $array['element']['forceencryption']['default'] = 'no';
 
 $array['element']['trunkmaxsize'] = array();
-$array['element']['trunkmaxsize']['default'] = 128000;
+$array['element']['trunkmaxsize']['default'] = '';
+$array['element']['trunkmaxsize']['null'] = true;
 
 $array['element']['trunkmtu'] = array();
 $array['element']['trunkmtu']['value'] = range(0,4000);
@@ -231,10 +232,12 @@ $array['element']['parkinglot']['default'] = '';
 $array['element']['parkinglot']['null'] = true;
 
 $array['element']['maxcallnumbers'] = array();
-$array['element']['maxcallnumbers']['default'] = 2048;
+$array['element']['maxcallnumbers']['default'] = '';
+$array['element']['maxcallnumbers']['null'] = true;
 
 $array['element']['maxcallnumbers_nonvalidated'] = array();
-$array['element']['maxcallnumbers_nonvalidated']['default'] = 8192;
+$array['element']['maxcallnumbers_nonvalidated']['default'] = '';
+$array['element']['maxcallnumbers_nonvalidated']['null'] = true;
 
 $array['element']['shrinkcallerid'] = array();
 $array['element']['shrinkcallerid']['value'] = array('no','yes');
@@ -290,8 +293,8 @@ $array['filter']['calltokenoptional'] = array('set' => false,'chk' => 2);
 $array['filter']['shrinkcallerid'] = array('bool' => true);
 $array['filter']['allowfwdownload'] = array('bool' => true);
 $array['filter']['srvlookup'] = array('bool' => true);
-$array['filter']['trunkmaxsize'] = array('cast' => 'uint','between' => array(0,512000));
-$array['filter']['maxcallnumbers'] = array('cast' => 'uint', 'between' => array(0,65535));
-$array['filter']['maxcallnumbers_nonvalidated'] = array('cast' => 'uint', 'between' => array(0,65535));
+$array['filter']['trunkmaxsize'] = array('set' =>false, 'chk' => 2, 'cast' => 'uint','between' => array(0,512000));
+$array['filter']['maxcallnumbers'] = array('set' =>false, 'chk' => 2, 'cast' => 'uint', 'between' => array(0,65535));
+$array['filter']['maxcallnumbers_nonvalidated'] = array('set' =>false, 'chk' => 2, 'cast' => 'uint', 'between' => array(0,65535));
 
 ?>
