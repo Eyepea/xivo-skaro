@@ -62,6 +62,7 @@ switch($act)
         $config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'cti.ini');
         $db_cti = $config['general']['datastorage'];
         $db_queuelogger = $config['queuelogger']['datastorage'];
+        $db_ctilog = $config['queuelogger']['datastorage'];
 
         // 2. asterisk
         $config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
@@ -281,6 +282,7 @@ switch($act)
         $out['main']['updates_period'] = $load_ctimain['updates_period'];
         $out['main']['logintimeout'] = $load_ctimain['login_timeout'];
         $out['main']['asterisk_queuestat_db'] = $db_queuelogger;
+        $out['main']['ctilog_db_uri'] = $db_ctilog;
         $out['main']['parting_astid_context'] = array();
 
         if($load_ctimain['parting_astid_context'] != "")
