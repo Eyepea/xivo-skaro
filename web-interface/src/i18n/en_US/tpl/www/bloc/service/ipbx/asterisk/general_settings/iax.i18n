@@ -576,7 +576,7 @@ Asterisk config: forceencryption
 Trunks max size:
 
 ; hlp_fm_trunkmaxsize
-Asterisk config: trunkmaxsize
+Asterisk config: trunkmaxsize [0,512000] (default: 128000)
 
 ; fm_trunkmtu
 Trunks MTU:
@@ -627,13 +627,13 @@ Asterisk config: parkinglot
 Max call numbers (per remote IP):
 
 ; hlp_fm_maxcallnumbers
-Asterisk config: maxcallnumbers
+Asterisk config: maxcallnumbers [0,65535] (default: 2048)
 
 ; fm_maxcallnumbers_nonvalidated
 Max call numbers (total calls, when tokens validation activated):
 
 ; hlp_fm_maxcallnumbers_nonvalidated
-Asterisk config: maxcallnumbers_nonvalidated
+Asterisk config: maxcallnumbers_nonvalidated (default: 8192)
 
 ; fm_shrinkcallerid
 Shrink CallerID:
