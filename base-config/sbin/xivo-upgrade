@@ -68,8 +68,8 @@ proposed_upgrade() {
 
 upgrading_xivo() {
     upgrading_version
-    proposed_upgrade yes
-    if [ $force -eq 0 ]; then
+    proposed_upgrade $force
+    if [ $force = 'no' ]; then
 	    echo "Would you like to upgrade your system ? y/n"
 	    read answer
 	    if [ $answer != 'y' ]; then
@@ -98,11 +98,11 @@ usage() {
 EOF
 }
 
-while getopts :a:v: opt
+while getopts :a:f:v: opt
 do
   case ${opt} in
     a)   action=${OPTARG};;
-    f)   force=1;;
+    f)   force="yes";;
     v)   version=${OPTARG};;
     '?') echo "${0} : option ${OPTARG} is not valid" >&2
          usage
@@ -110,7 +110,7 @@ do
   esac
 done
 
-force="${force:-0}"
+force="${force:-"no"}"
 version="${version:-""}"
 action="${action:-"upgrade"}"
 
