@@ -1,0 +1,72 @@
+
+; title_content_name
+Provisioning general settings
+
+; fld_provd_server
+General settings
+
+; fm_configure_locale
+Locale: 
+
+; fm_configure_plugin_server
+Url:  
+
+; fm_configure_ftp_proxy
+FTP Proxy:
+
+; fm_configure_http_proxy
+HTTP Proxy:
+
+; fm_configure_https_proxy
+HTTPS Proxy:
+
+; fm_hlp_plugin_server
+The plugins repository URL
+
+; fm_hlp_http_proxy
+The proxy for HTTP requests. Format is "http://[user:password@]host:port"
+
+; fm_hlp_ftp_proxy
+The proxy for FTP requests. Format is "http://[user:password@]host:port"
+
+; fm_hlp_https_proxy
+The proxy for HTTPS requests. Format is "host:port"
+
+; fm_hlp_locale
+The current locale. Example: fr_FR
+
+; fld_provd_general_configuration
+Local provd configuration
+
+; fld_provd_rest_configuration
+API REST configuration
+
+; fm_provd_net4_ip
+External IP:
+
+; fm_hlp_provd_net4_ip
+Leave blank to use VoIP interface IP address
+
+; fm_provd_http_port
+HTTP port: 
+
+; fm_provd_dhcp_integration
+DHCP integration: 
+
+; fm_provd_private
+Authenfication: 
+
+; fm_provd_username
+Username: 
+
+; fm_provd_password
+Password: 
+
+; fm_provd_secure_rest
+PORT REST secure (https): 
+
+; fm_provd_net4_ip_rest
+API REST IP: 
+
+; fm_provd_rest_port
+API REST port: 

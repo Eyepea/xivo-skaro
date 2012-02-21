@@ -438,7 +438,7 @@ CREATE TABLE "ctimain" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctimain" VALUES(DEFAULT, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '127.0.0.1', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 1, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', '', 3600, 10, 5, 'context');
+INSERT INTO "ctimain" VALUES(DEFAULT, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '127.0.0.1', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 0, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', '', 3600, 10, 5, '');
 
 
 DROP TABLE IF EXISTS "ctiphonehints";
@@ -717,8 +717,6 @@ INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*666.',1,'GoSub','u
 INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','*36',1,'Directory','${CONTEXT}','directoryaccess');
 INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','*25',1,'GoSub','enablednd,s,1','enablednd');
 INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','*90',1,'GoSub','enablevm,s,1','enablevm');
-INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','*91',1,'GoSub','enablevmbox,s,1','enablevmbox');
-INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*91.',1,'GoSub','enablevmbox,s,1(${EXTEN:3})','enablevmboxslt');
 INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*90.',1,'GoSub','enablevm,s,1(${EXTEN:3})','enablevmslt');
 INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*23.',1,'GoSub','feature_forward,s,1(busy,${EXTEN:3})','fwdbusy');
 INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*22.',1,'GoSub','feature_forward,s,1(rna,${EXTEN:3})','fwdrna');
@@ -798,8 +796,6 @@ INSERT INTO "extenumbers" VALUES (DEFAULT,'_*666.','d7b68f456ddb50215670c5bfca92
 INSERT INTO "extenumbers" VALUES (DEFAULT,'*36','f9b69fe3c361ddfc2ae49e048460ea197ea850c8','','extenfeatures','directoryaccess');
 INSERT INTO "extenumbers" VALUES (DEFAULT,'*25','c0d236c38bf8d5d84a2e154203cd2a18b86c6b2a','','extenfeatures','enablednd');
 INSERT INTO "extenumbers" VALUES (DEFAULT,'*90','2fc9fcda52bd8293da1bfa68cbdb8974fafd409e','','extenfeatures','enablevm');
-INSERT INTO "extenumbers" VALUES (DEFAULT,'*91','880d3330b465056ede825e1fbc8ceb50fd816e1d','','extenfeatures','enablevmbox');
-INSERT INTO "extenumbers" VALUES (DEFAULT,'_*91.','936ec7abe6019d9d47d8be047ef6fc0ebc334c00','','extenfeatures','enablevmboxslt');
 INSERT INTO "extenumbers" VALUES (DEFAULT,'_*90.','9fdaa61ea338dcccf1450949cbf6f7f99f1ccc54','','extenfeatures','enablevmslt');
 INSERT INTO "extenumbers" VALUES (DEFAULT,'_*23.','a1968a70f1d265b8aa263e73c79259961c4f7bbb','','extenfeatures','fwdbusy');
 INSERT INTO "extenumbers" VALUES (DEFAULT,'_*22.','00638af9e028d4cd454c00f43caf5626baa7d84c','','extenfeatures','fwdrna');
@@ -1005,7 +1001,7 @@ CREATE INDEX "linefeatures__idx__device" ON "linefeatures"("device");
 CREATE INDEX "linefeatures__idx__number" ON "linefeatures"("number");
 CREATE INDEX "linefeatures__idx__context" ON "linefeatures"("context");
 CREATE INDEX "linefeatures__idx__internal" ON "linefeatures"("internal");
-CREATE UNIQUE INDEX "linefeatures__uidx__provisioningid" ON "linefeatures"("provisioningid");
+CREATE INDEX "linefeatures__idx__provisioningid" ON "linefeatures"("provisioningid");
 CREATE UNIQUE INDEX "linefeatures__uidx__name" ON "linefeatures"("name");
 CREATE UNIQUE INDEX "linefeatures__uidx__protocol_protocolid" ON "linefeatures"("protocol","protocolid");
 
@@ -1468,7 +1464,6 @@ DROP TABLE IF EXISTS "rightcall";
 CREATE TABLE "rightcall" (
  "id" SERIAL,
  "name" varchar(128) NOT NULL DEFAULT '',
- "context" varchar(39) NOT NULL,
  "passwd" varchar(40) NOT NULL DEFAULT '',
  "authorization" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
@@ -1763,7 +1758,7 @@ INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreate_m
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreate_maxexpiry','300');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreate_defaultexpiry','120');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','autocreate_type','friend');
-INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','allowautoprov','no');
+INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','allowguest','no');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','allowsubscribe','yes');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','allowoverlap','yes');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','promiscredir','no');
@@ -1884,10 +1879,10 @@ INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','hash_dialogs
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','notifycid','no');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','callcounter','no');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','stunaddr',NULL);
-INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','directmedia','yes');
+INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','directmedia','no');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','ignoresdpversion','no');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','jbtargetextra',NULL);
-INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','srtp','no');
+INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','encryption','no');
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','externtcpport',NULL);
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','externtlsport',NULL);
 INSERT INTO "staticsip" VALUES (DEFAULT,0,0,0,'sip.conf','general','media_address',NULL);
@@ -1949,7 +1944,7 @@ INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,0,'voicemail.conf','general','
 INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,0,'voicemail.conf','general','serveremail','xivo');
 INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,0,'voicemail.conf','general','charset','UTF-8');
 INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,0,'voicemail.conf','general','fromstring','XiVO PBX');
-INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,0,'voicemail.conf','general','emaildateformat','%A %d %B %Y à %H:%M:%S %Z');
+INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,0,'voicemail.conf','general','emaildateformat','%Y-%m-%d à %H:%M:%S');
 INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,0,'voicemail.conf','general','pbxskip','no');
 INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,0,'voicemail.conf','general','emailsubject','Messagerie XiVO');
 INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,0,'voicemail.conf','general','emailbody',E'Bonjour ${VM_NAME},\n\nVous avez reçu un message d''une durée de ${VM_DUR} minute(s), il vous reste actuellement ${VM_MSGNUM} message(s) non lu(s) sur votre messagerie vocale : ${VM_MAILBOX}.\n\nLe dernier a été envoyé par ${VM_CALLERID}, le ${VM_DATE}. Si vous le souhaitez vous pouvez l''écouter ou le consulter en tapant le *98 sur votre téléphone.\n\nMerci.\n\n-- Messagerie XiVO --');

@@ -142,7 +142,7 @@ DROP TYPE  IF EXISTS "netiface_method";
 CREATE TYPE "netiface_networktype" AS ENUM ('data','voip');
 CREATE TYPE "netiface_type" AS ENUM ('iface');
 CREATE TYPE "netiface_family" AS ENUM ('inet','inet6');
-CREATE TYPE "netiface_method" AS ENUM ('static','dhcp');
+CREATE TYPE "netiface_method" AS ENUM ('static','dhcp','manual');
 CREATE TABLE "netiface" ( 
  "id" SERIAL,
  "uuid" varchar(64) NOT NULL,

@@ -25,6 +25,7 @@ from provd.operation import parse_oip, OIP_SUCCESS, OIP_FAIL, OIP_WAITING, \
     OIP_PROGRESS, OperationInProgress
 from provd.persist.common import ID_KEY
 from provd.rest.client.client import new_provisioning_client
+from provd.util import norm_mac
 
 
 class _Options(object):
@@ -442,6 +443,38 @@ class Devices(object):
 
     def count(self):
         return len(self._dev_mgr.find(fields=[ID_KEY]))
+
+    def using_plugin(self, plugin_id):
+        return self._new_device_group_from_selector({u'plugin': plugin_id})
+
+    def _new_device_group_from_selector(self, selector):
+        devices = self._dev_mgr.find(selector, fields=[ID_KEY])
+        device_ids = [device[ID_KEY] for device in devices]
+        return DeviceGroup(self._dev_mgr, device_ids)
+
+    def using_mac(self, mac):
+        normalized_mac = norm_mac(mac)
+        return self._new_device_group_from_selector({u'mac': normalized_mac})
+
+
+class DeviceGroup(object):
+    def __init__(self, dev_mgr, device_ids):
+        self._dev_mgr = dev_mgr
+        self._device_ids = device_ids
+
+    def reconfigure(self):
+        for device_id in self._device_ids:
+            print 'Reconfiguring device %s' % device_id
+            self._dev_mgr.reconfigure(device_id)
+
+    def synchronize(self):
+        for device_id in self._device_ids:
+            print 'Synchronizing device %s' % device_id
+            client_oip = self._dev_mgr.synchronize(device_id)
+            try:
+                _display_operation_in_progress(client_oip)
+            finally:
+                client_oip.delete()
 
 
 class Device(object):

@@ -1,0 +1,185 @@
+; mn_left_name
+IPBX
+
+; mn_left_ti_generalsettings
+General settings
+
+; mn_left_generalsettings-sip
+SIP Protocol
+
+; mn_left_generalsettings-iax
+IAX Protocol
+
+; mn_left_generalsettings-dundi
+Dundi Protocol
+
+; mn_left_generalsettings-voicemail
+Voicemails
+
+; mn_left_generalsettings-phonebook
+Phonebook
+
+; mn_left_generalsettings-advanced
+Advanced
+
+; mn_left_generalsettings-outboundmwi
+Outbound MWIs
+
+; mn_left_ti_pbxsettings
+IPBX settings
+
+; mn_left_pbxsettings-devices
+Devices
+
+; mn_left_pbxsettings-lines
+Lines
+
+; mn_left_pbxsettings-agents
+Agents
+
+; mn_left_pbxsettings-users
+Users
+
+; mn_left_pbxsettings-groups
+Groups
+
+; mn_left_pbxsettings-queues
+Queues
+
+; mn_left_pbxsettings-meetme
+Conference rooms
+
+; mn_left_pbxsettings-voicemail
+Voicemails
+
+; mn_left_ti_callmanagement
+Call management
+
+; mn_left_callmanagement-incall
+Incoming calls
+
+; mn_left_callmanagement-outcall
+Outgoing calls
+
+; mn_left_callmanagement-rightcall
+Call permissions
+
+; mn_left_callmanagement-callfilter
+Call filters
+
+; mn_left_callmanagement-pickup
+Call pickups
+
+; mn_left_callmanagement-schedule
+Schedules
+
+; mn_left_callmanagement-voicemenu
+Voice menus
+
+; mn_left_ti_trunkmanagement
+Trunk management
+
+; mn_left_trunkmanagement-sip
+SIP Protocol
+
+; mn_left_trunkmanagement-iax
+IAX Protocol
+
+; mn_left_trunkmanagement-custom
+Customized
+
+; mn_left_ti_dundi
+Dundi
+
+; mn_left_dundi-general
+General
+
+; mn_left_dundi-mappings
+Mappings
+
+; mn_left_dundi-peers
+Peers
+
+; mn_left_ti_cost_center
+Cost Center
+
+; mn_left_cost_center-operator
+Operator
+    
+; mn_left_cost_center-servicesgroup
+Services group
+
+; mn_left_ti_pbxservices
+IPBX services
+
+; mn_left_pbx_services-sounds
+Audio files
+
+; mn_left_pbx_services-musiconhold
+On-hold Music
+
+; mn_left_pbx_services-extenfeatures
+Extensions
+
+; mn_left_pbx_services-parkinglot
+Parkings
+
+; mn_left_pbx_services-paging
+Paging
+
+; mn_left_pbx_services-phonebook
+Phonebook
+
+; mn_left_ti_systemmanagement
+IPBX configuration
+
+; mn_left_systemmanagement-backupfiles
+Backup Files
+
+; mn_left_systemmanagement-configfiles
+Configuration files
+
+; mn_left_systemmanagement-context
+Contexts
+
+; mn_left_systemmanagement-ldapfilter
+LDAP filters
+
+; mn_left_systemmanagement-systemhardware
+ISDN Cards
+
+; mn_left_systemmanagement-modulessettings
+Modules
+
+; mn_left_systemmanagement-manager
+Manager
+
+; mn_left_ti_controlsystem
+Control
+
+; mn_left_controlsystem-logfiles
+Asterisk Log Files
+
+; mn_left_controlsystem-ipbxreload(unknown)
+Reload
+
+; mn_left_controlsystem-ipbxreload
+Reload %s
+
+; controlsystem_ipbxreload_confirm(unknown)
+Are you sure you want to reload?
+
+; controlsystem_ipbxreload_confirm
+Are you sure you want to reload %s?
+
+; mn_left_controlsystem-ipbxrestart(unknown)
+Restart
+
+; mn_left_controlsystem-ipbxrestart
+Restart %s
+
+; controlsystem_ipbxrestart_confirm(unknown)
+Are you sure you want to restart?
+
+; controlsystem_ipbxrestart_confirm
+Are you sure you want to restart %s?

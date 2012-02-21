@@ -1,7 +1,8 @@
 #!/bin/sh
 
+dhcpd-update -nri
+
 if [ "${XIVO_DHCP_ACTIVE}" = "1" ]; then
-  dhcpd-update -nri
   invoke-rc.d isc-dhcp-server restart
 else
   invoke-rc.d isc-dhcp-server stop

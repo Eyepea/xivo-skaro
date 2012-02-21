@@ -5,7 +5,6 @@ Copyright (C) 2008-2010  Avencall
 
 """
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2008-2010  Avencall
 
@@ -29,8 +28,6 @@ import logging
 import ConfigParser
 
 from xivo import anysql
-from xivo.BackSQL import backsqlite
-from xivo.BackSQL import backmysql
 from xivo.BackSQL import backpostgresql
 
 log = logging.getLogger("xivo.xivo_helpers")

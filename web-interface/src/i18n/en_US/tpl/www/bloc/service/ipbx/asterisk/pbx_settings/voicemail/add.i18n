@@ -1,0 +1,211 @@
+; title_content_name
+Voicemails > Add
+
+; smenu_general
+General
+
+; smenu_advanced
+Advanced
+
+; fm_voicemail_fullname
+Full name:
+
+; fm_voicemail_mailbox
+Voicemail number:
+
+; fm_voicemail_password
+Password:
+
+; fm_voicemail_email
+E-mail:
+
+; fm_voicemail_context
+Context:
+
+; create_context
+Create a context
+
+; fm_voicemail_tz
+Time zone:
+
+; fm_voicemail_language
+Language :
+
+; fm_voicemailfeatures_skipcheckpass
+Disable password checking:
+
+; fm_voicemail_maxmsg
+Maximum number of messages:
+
+; fm_voicemail_attach
+Attach the audio file:
+
+; fm_voicemail_deletevoicemail
+Delete message after notification:
+
+; fm_voicemail_pager
+Pager:
+
+; fm_voicemail_saycid
+Announce caller ID:
+
+; fm_voicemail_review
+Review / record again a message:
+
+; fm_voicemail_operator
+Get transfered to an operator:
+
+; fm_voicemail_envelope
+Announce date and time:
+
+; fm_voicemail_sayduration
+Announce duration:
+
+; fm_voicemail_saydurationm
+Minimum time to announce duration:
+
+; fm_voicemail_saydurationm-opt(1)
+1 minute
+
+; fm_voicemail_saydurationm-opt
+%s minutes
+
+; fm_voicemail_sendvoicemail
+Forward a message:
+
+; fm_voicemail_forcename
+Force the recording of name:
+
+; fm_voicemail_forcegreetings
+Force the recording of greeting message:
+
+; fm_voicemail_hidefromdir
+Hide from the directory:
+
+; fm_voicemail_dialout
+Call context:
+
+; fm_voicemail_callback
+Callback context:
+
+; fm_voicemail_exitcontext
+Exit context:
+
+;;; asterisk 1.8 Fields
+; smenu_email
+E-mail
+
+; fm_voicemail-emailsubject
+Subject: 
+
+; hlp_fm_voicemail-emailsubject
+Asterisk config: emailsubject
+
+; fm_voicemail-emailbody
+Body: 
+
+; hlp_fm_voicemail-emailbody
+Asterisk config: emailbody
+
+; fm_voicemail-imapuser
+IMAP user:
+
+; hlp_fm_voicemail-imapuser
+Asterisk config: imapuser
+
+; fm_voicemail-imappassword
+IMAP password:
+
+; hlp_fm_voicemail-imappassword
+Asterisk config: imappassword
+
+; fm_voicemail-imapfolder
+IMAP directory:
+
+; hlp_fm_voicemail-imapfolder
+Asterisk config: imapfolder
+
+; fm_voicemail-imapvmsharedid
+Shared mailbox ID:
+
+; hlp_fm_voicemail-imapvmsharedid
+Asterisk config: imapvmsharedid
+
+; fm_voicemail-attachfmt
+Attachment audio format: 
+
+; hlp_fm_voicemail-attachfmt
+Asterisk config: attachfmt
+
+; fm_voicemail-serveremail
+«From» header:
+
+; hlp_fm_voicemail-serveremail
+Asterisk config: serveremail
+
+; fm_voicemail-locale
+Locale:
+
+; hlp_fm_voicemail-locale
+Asterisk config: locale
+
+; fm_voicemail-tempgreetwarn
+Report temporary greeting activation:
+
+; hlp_fm_voicemail-tempgreetwarn
+Asterisk config: tempgreetwarn
+
+; fm_voicemail-messagewrap
+Message wrap:
+
+; hlp_fm_voicemail-messagewrap
+Asterisk config: messagewrap
+
+; fm_voicemail-moveheard
+Move listened messages to «Old» folder:
+
+; hlp_fm_voicemail-moveheard
+Asterisk config: moveheard
+
+; fm_voicemail-minsecs
+Minimum duration of a message:
+
+; hlp_fm_voicemail-minsecs
+Asterisk config: minsecs
+
+; fm_voicemail-maxsecs
+Maximum duration of a message:
+
+; hlp_fm_voicemail-maxsecs
+Asterisk config: maxsecs
+
+; fm_voicemail-nextaftercmd
+Lecture automatique du message suivant :
+
+; hlp_fm_voicemail-nextaftercmd
+Asterisk config: nextaftercmd
+
+; fm_voicemail-backupdeleted
+Max number of messages allowed in «Deleted» folder:
+
+; hlp_fm_voicemail-backupdeleted
+Asterisk config: backupdeleted
+
+; fm_voicemail-volgain
+Increase/Decrease attached message audio volume:
+
+; hlp_fm_voicemail-volgain
+Asterisk config: volgain
+
+; fm_voicemail-passwordlocation
+Password stored in:
+
+; hlp_fm_voicemail-passwordlocation
+Asterisk config: passwordlocation
+
+; fm_voicemail-passwordlocation-opt(spooldir)
+Messages store directory
+
+; fm_voicemail-passwordlocation-opt(voicemail)
+Configuration
+

@@ -1,0 +1,188 @@
+; enablevm
+Enable voicemail
+
+; callrecord
+Call record
+
+; incallrec
+Incall record
+
+; incallfilter
+Call filter
+
+; enablednd
+Enable DND
+
+; fwdunc
+Unconditional transfer to a number
+
+; fwdbusy
+Transfer on busy
+
+; fwdrna
+Transfer on no-answer
+
+
+
+; func-presence 
+Presence permission
+
+; func-switchboard 
+Switchboard
+
+; func-customerinfo 
+Customer info permission
+
+; func-agents
+Agents
+
+; func-search 
+Search
+
+; func-dial 
+Dialing permission
+
+; func-chitchat
+Instant messaging
+
+; func-conference
+Conference room permission
+
+; func-directory
+Directory
+
+; func-fax
+Fax permission
+
+; func-features
+Features permission
+
+; func-history
+History permission
+
+; func-database
+Database write permission
+
+; func-supervisor
+Grant a supervisor right for records campaigns
+
+; func-administrator
+Grant an administrator right for records campaigns
+
+
+
+; pref-loginwindow-url
+Url to send once connected
+
+; pref-xlet-identity-logagent
+(Dis)Connect one's agent ("Identity" xlet)
+
+; pref-xlet-identity-pauseagent
+(Un)Pause one's agent ("Identity" xlet)
+
+; pref-xlet-agentsnext-fontname
+Font name ("Agent Groups" xlet)
+
+; pref-xlet-agentsnext-fontsize
+Font size ("Agent groups" xlet)
+
+; pref-xlet-agentsnext-blinktime
+Blinking period ("Agent groups" xlet)
+
+; pref-xlet-agentdetails-noqueueaction
+No action on queues by agents ("Agent details" xlet)
+
+; pref-xlet-agentdetails-hideastid
+Hide the XiVO name ("Agent details" xlet)
+
+; pref-xlet-agentdetails-hidecontext
+Hide the context name ("Agent details" xlet)
+
+; pref-xlet-agents-fontname
+Font name ("Agents list" xlet)
+
+; pref-xlet-agents-fontsize
+Font size ("Agents list" xlet)
+
+; pref-xlet-agents-iconsize
+Icons size ("Agents list" xlet)
+
+; pref-xlet-queues-statsfetchperiod
+Statistics fetch period ("Queues list" xlet)
+
+; pref-presence-autochangestate
+Automatic transitions between presence states
+
+; pref-adlibitum
+Ad libitum
+
+
+
+; xlet-agents
+Agents (list) (experimental)
+
+; xlet-agentsnext
+Agents (list, next) (experimental)
+
+; xlet-agentdetails
+Agents (detail) (experimental)
+
+; xlet-queues
+Queues (list) (experimental)
+
+; xlet-queuedetails
+Queues (detail) (experimental)
+
+; xlet-queueentrydetails
+Queues (entries detail) (experimental)
+
+; xlet-calls
+Calls (experimental)
+
+; xlet-switchboard
+Switchboard (experimental)
+
+; xlet-customerinfo
+Customer info (experimental)
+
+; xlet-datetime
+Datetime
+
+; xlet-dial
+Dialer
+
+; xlet-directory
+Directory
+
+; xlet-fax
+Fax
+
+; xlet-features
+Features
+
+; xlet-history
+History
+
+; xlet-identity
+Identity
+
+; xlet-search
+Search
+
+; xlet-conference
+Conference rooms
+
+; xlet-operator
+Operator (experimental)
+
+; xlet-mylocaldir
+MyDirectory
+
+; xlet-callcampaign
+Call campaigns (experimental)
+
+; xlet-tabber
+Tabber
+
+; xlet-xletweb
+Web

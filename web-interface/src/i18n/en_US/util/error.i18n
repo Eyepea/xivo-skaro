@@ -1,0 +1,81 @@
+
+; error
+%s
+
+; error_generic(invalidvalue)
+Invalid value
+
+; error_generic(notempty)
+Non empty value
+
+; error_generic(empty)
+Empty value
+
+; error_generic(cast)
+Invalid Type
+
+; error_generic(minimumlength)
+Value too short
+
+; error_generic(maximumlength)
+Value too long
+
+; error_generic(between)
+Invalid interval
+
+; error_generic(callback)
+Invalid value
+
+; error_generic(regexp)
+Invalid value
+
+; error_generic(undefined)
+Undefined value
+
+; error_generic(notegal)
+Values not equal
+
+; error_generic(invalid)
+Invalid value
+
+; error_generic(missing)
+Missing value
+
+; error_generic(cast)
+Invalid type
+
+; error(between)
+Value not in interval
+
+; error(invalidpwd)
+Invalid password
+
+; error(number_out_of_context_interval)
+Number outside of context's interval
+
+; error(invalid_context)
+Invalid context
+
+; invalid_name_context
+Context name invalid (%s)
+
+; reserved_context
+Reserved context: %s
+
+; already_exist
+%s already exists
+
+; exten_already_exist
+Extension %s already exists
+
+; default_gateway_already_exist
+A default gateway already exists on the interface %s
+
+; line_need_number_if_chan_is_local
+You must enter a number to a Local channel
+
+; voip_interface_can_not_disabled
+VOiP Interface can't disabled
+
+; user_need_lines_to_have_voicemail
+Need at least one line to have a voicemail

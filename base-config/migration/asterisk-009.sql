@@ -20,6 +20,6 @@
 BEGIN;
 
 UPDATE "extensions" SET "commented" = '1' WHERE
-    "exten" LIKE '\_*5_.';
+    "exten" LIKE E'\_*5_.';
 
 COMMIT;

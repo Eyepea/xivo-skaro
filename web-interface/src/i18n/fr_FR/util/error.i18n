@@ -1,0 +1,81 @@
+
+; error
+%s
+
+; error_generic(invalidvalue)
+Valeur invalide
+
+; error_generic(notempty)
+Valeur non vide
+
+; error_generic(empty)
+Valeur vide
+
+; error_generic(cast)
+Type invalide
+
+; error_generic(minimumlength)
+Taille minimale non atteinte
+
+; error_generic(maximumlength)
+Taille maximale atteinte
+
+; error_generic(between)
+Intervalle invalide
+
+; error_generic(callback)
+Valeur invalide
+
+; error_generic(regexp)
+Valeur invalide
+
+; error_generic(undefined)
+Valeur non défini
+
+; error_generic(notegal)
+Valeurs différentes
+
+; error_generic(invalid)
+Valeur invalide
+
+; error_generic(missing)
+Valeur manquante
+
+; error_generic(cast)
+Type de la valeur incorrect
+
+; error(between)
+La valeur n'est pas dans l'intervalle
+
+; error(invalidpwd)
+Mot de passe incorrect
+
+; error(number_out_of_context_interval)
+Le numero est hors interval du contexte
+
+; error(invalid_context)
+Contexte invalide
+
+; invalid_name_context
+Nom du contexte invalide (%s)
+
+; reserved_context
+Liste des contextes résérvés: %s
+
+; already_exist
+%s existe déjà
+
+; exten_already_exist
+L'extension %s existe déjà
+
+; default_gateway_already_exist
+Une passerelle par défaut existe déjà sur l'interface %s
+
+; line_need_number_if_chan_is_local
+Vous devez renseigner un numero pour un canal Local
+
+; voip_interface_can_not_disabled
+Vous ne pouvez pas désactiver l'interface voix.
+
+; user_need_lines_to_have_voicemail
+Au moins une ligne est requise pour avoir une boîte vocale

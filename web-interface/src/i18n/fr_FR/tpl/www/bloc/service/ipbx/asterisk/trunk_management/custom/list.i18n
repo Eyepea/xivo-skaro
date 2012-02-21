@@ -1,0 +1,23 @@
+; col_name
+Nom
+
+; col_sort_name
+Trier par nom
+
+; col_interface
+Interface
+
+; col_sort_interface
+Trier par interface
+
+; col_intfsuffix
+Suffixe de l'interface
+
+; col_sort_intfsuffix
+Trier par suffixe de l'interface
+
+; no_trunk
+Aucune interconnexion personnalisée trouvée
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cette interconnexion ?

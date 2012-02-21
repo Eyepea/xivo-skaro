@@ -51,8 +51,6 @@ server {
         deny all;
     }
 
-
-    
     ## for debug purpose
     #location /pgadmin {
     #    alias /usr/share/phppgadmin;

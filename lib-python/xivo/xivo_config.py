@@ -687,7 +687,6 @@ def generate_interfaces(old_lines, conf):
     log.info("ENTERING generate_interfaces()")
 
     eni = interfaces.parse(old_lines)
-
     rsvd_base = reserved_netIfaces(conf)
     rmvd_full = removed_netIfaces(conf)
     rsvd_full = reserved_vlans(conf)
@@ -803,6 +802,7 @@ def generate_interfaces(old_lines, conf):
     for phy, vsTag in conf['netIfaces'].iteritems():
         if not specific(vsTag):
             continue
+
         for vlanId, ipConfs_tag in conf['vlans'][vsTag].iteritems():
             if not specific(ipConfs_tag):
                 continue
@@ -844,12 +844,13 @@ def generate_interfaces(old_lines, conf):
 
                 if 'mtu' in currentconf:
                     yield "\tmtu %d\n" % currentconf['mtu']
+                    
 
             if 'options' in currentconf:
                 for optname, optvalue in unreserved_interfaces_options(currentconf['options']):
                     yield "\t%s %s\n" % (optname, optvalue)
 
-            yield "\n"
+    yield "\n"
 
     log.info("LEAVING generate_interfaces.")
 

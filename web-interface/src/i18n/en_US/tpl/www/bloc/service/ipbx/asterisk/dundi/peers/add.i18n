@@ -1,0 +1,107 @@
+; title_content_name
+Peer > Add
+
+; fm_dundipeer_macaddr
+MAC address:
+
+; fm_dundipeer_model
+Type:
+
+; fm_dundipeer_host
+Host:
+
+; fm_dundipeer_inkey
+Key (incoming calls): 
+
+; fm_dundipeer_outkey
+Key (outgoing calls):
+
+; fm_dundipeer_include
+Include : 
+
+; fm_dundipeer_permit
+Permit : 
+
+; fm_dundipeer_qualify
+Monitoring:
+
+; fm_dundipeer_order
+Order:
+ 
+; fm_dundipeer_precache
+Precache:
+ 
+; fm_dundipeer_description
+Description : 
+
+; fm_dundipeer_model-opt(none)
+None
+
+; fm_dundipeer_model-opt(symmetric)
+Symmetric
+
+; fm_dundipeer_model-opt(inbound)
+Incoming
+
+; fm_dundipeer_model-opt(outbound)
+Outgoing
+
+; fm_dundipeer_order-opt(primary)
+Primary
+
+; fm_dundipeer_order-opt(secondary)
+Secondary
+
+; fm_dundipeer_order-opt(tertiary)
+Tertiary
+
+; fm_dundipeer_order-opt(quartiary)
+Quartiary
+
+; fm_dundipeer_precache-opt(none)
+None
+
+; fm_dundipeer_precache-opt(symmetric)
+Symmetric
+
+; fm_dundipeer_precache-opt(inbound)
+Incoming
+
+; fm_dundipeer_precache-opt(outbound)
+Outgoing
+
+; hlp_fm_dundipeer-precache
+Asterisk config: precache
+ 
+; hlp_fm_dundipeer-model
+Asterisk config: model
+ 
+; hlp_fm_dundipeer-inkey
+Asterisk config: inkey
+
+; hlp_fm_dundipeer-outkey
+Asterisk config: outkey
+ 
+; hlp_fm_dundipeer-include
+Asterisk config: include
+ 
+; hlp_fm_dundipeer-permit
+Asterisk config: permit
+ 
+; hlp_fm_dundipeer-qualify
+Asterisk config: qualify
+ 
+; hlp_fm_dundipeer-order
+Asterisk config: order
+
+; fm_dundipeer_noinclude
+No include:
+
+; hlp_fm_dundipeer-noinclude
+Asterisk config: noinclude
+
+; fm_dundipeer_deny
+Deny:
+
+; hlp_fm_dundipeer-deny
+Asterisk config: deny

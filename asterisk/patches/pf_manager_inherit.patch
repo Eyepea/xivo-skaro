@@ -1,8 +1,8 @@
-Index: asterisk-1.8.8.0/main/channel.c
+Index: asterisk-1.8.8.2/main/channel.c
 ===================================================================
---- asterisk-1.8.8.0.orig/main/channel.c	2011-12-16 09:26:44.963264235 -0500
-+++ asterisk-1.8.8.0/main/channel.c	2011-12-16 09:27:31.633262647 -0500
-@@ -6035,6 +6035,13 @@
+--- asterisk-1.8.8.2.orig/main/channel.c
++++ asterisk-1.8.8.2/main/channel.c
+@@ -6035,6 +6035,13 @@ void ast_channel_inherit_variables(const
  	struct ast_var_t *current, *newvar;
  	const char *varname;
  

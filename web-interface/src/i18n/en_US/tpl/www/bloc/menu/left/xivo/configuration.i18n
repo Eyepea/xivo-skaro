@@ -1,0 +1,101 @@
+; mn_left_name
+Configuration
+
+; mn_left_ti_manage
+Management
+
+; mn_left_manage-user
+Users
+
+; mn_left_manage-entity
+Entities
+
+; mn_left_manage-server
+XiVO Servers
+
+; mn_left_manage-ldapserver
+LDAP Servers
+
+; mn_left_manage-directories 
+Directories
+
+; mn_left_manage-accesswebservice 
+Web Services Access
+
+; mn_left_manage-certificate
+Certificates
+
+; mn_left_ti_network
+Network
+
+; mn_left_network-interface 
+Interfaces
+
+; mn_left_network-iproute
+Routes
+
+; mn_left_network-resolvconf
+Resolver
+
+; mn_left_network-mail 
+Mail
+
+; mn_left_network-dhcp 
+DHCP
+
+; mn_left_network-ha 
+High Availability
+
+; mn_left_ti_support
+Support
+
+; mn_left_support-xivo
+XiVO
+
+; mn_left_support-alerts 
+Alerts
+
+; mn_left_support-limits
+Limits
+
+; mn_left_ti_controlsystem
+Control System
+
+; mn_left_controlsystem-commonconf 
+Apply system configuration
+
+; mn_left_controlsystem-network 
+Apply network configuration
+
+; mn_left_controlsystem-ha 
+Reload HA
+
+; mn_left_controlsystem-ha_stop
+Stop HA
+
+; controlsystem_commonconf_confirm
+Are you sure you want to apply the changes ?
+
+; controlsystem_network_confirm
+Are you sure you want to apply the changes ?
+
+; controlsystem_ha_confirm
+Are you sure you want to apply the HA configuration ?
+
+; controlsystem_ha_stop_confirm
+Are you sure you want to stop HA ?
+
+; mn_left_ti_provisioning
+Provisioning
+
+; mn_left_provisioning-general
+General
+
+; mn_left_provisioning-configregistrar
+Template line
+
+; mn_left_provisioning-configdevice 
+Template device
+
+; mn_left_provisioning-plugin 
+Plugins

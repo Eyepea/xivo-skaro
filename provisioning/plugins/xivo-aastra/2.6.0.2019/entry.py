@@ -1,19 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-"""Plugin for Aastra phones using the 2.6.0.2019 software.
-
-The following Aastra phones are supported:
-- 6730i
-- 6731i
-- 6751i
-- 6753i
-- 6755i
-- 6757i / 6757i CT
-- 9143i
-- 9480i / 9480i CT
-
-"""
-
 common = {}
 execfile_('common.py', common)
 
@@ -26,6 +12,6 @@ VERSION = u'2.6.0.2019'
 
 class AastraPlugin(common['BaseAastraPlugin']):
     IS_PLUGIN = True
-    
+
     pg_associator = common['BaseAastraPgAssociator'](MODELS, VERSION,
                                                      COMPAT_MODELS)

@@ -1,2 +1,0 @@
-#!/bin/sh
-invoke-rc.d monit restart

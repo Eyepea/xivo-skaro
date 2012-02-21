@@ -1,0 +1,62 @@
+; fld-mainconfig-hostname
+Configuration du nom du serveur
+
+; fm_mainconfig_hostname
+Nom d'hôte :
+
+; fld-mainconfig-domain
+Configuration du domaine du serveur
+
+; fm_mainconfig_domain
+Domaine :
+
+; fld-mainconfig-adminpasswd
+Configuration du mot de passe administrateur
+
+; fm_mainconfig_adminpasswd
+Mot de passe :
+
+; fm_mainconfig_confirmadminpasswd
+Confirmation du mot de passe :
+
+; fld-mainconfig-netiface
+Configuration de l'interface réseau
+
+; fm_netiface_address
+Adresse :
+
+; fm_netiface_netmask
+Masque de sous-réseau :
+
+; fm_netiface_gateway
+Passerelle par défaut :
+
+; fld-mainconfig-resolvconf
+Configuration des serveurs DNS
+
+; fm_resolvconf_nameserver1
+Serveur primaire :
+
+; fm_resolvconf_nameserver2
+Serveur secondaire :
+
+; cmt_fm_mainconfig_hostname
+
+; cmt_fm_mainconfig_domain
+
+; cmt_fm_mainconfig_adminpasswd
+
+; cmt_fm_mainconfig_confirmadminpasswd
+
+; cmt_fm_netiface_address
+
+; cmt_fm_netiface_netmask
+
+; cmt_fm_netiface_gateway
+
+; cmt_fm_resolvconf_nameserver1
+
+; cmt_fm_resolvconf_nameserver2
+
+; hlp_fm_netiface_address
+Vérifiez bien que cette adresse n'est pas déjà attribuée

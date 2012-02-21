@@ -100,7 +100,7 @@ check_drive()
   fi
   smartctl -i -d 3ware,${DISK_NUMBER} /dev/${DEVICE_NAME_3WARE}${CONTROLLER_NUMBER} >/dev/null 2>/dev/null
 }
-#
+
 gen_conf_name()
 {
   echo "${DEVICE_NAME_3WARE}${2}-${3}"
@@ -186,7 +186,6 @@ if [ -n "${HDDTEMP_DRIVES}" ]; then
 fi
 
 # known services
-activate_if_installed isc-dhcp-server dhcpd3
 activate_if_installed asterisk asterisk_channels asterisk_channelstypes asterisk_codecs asterisk_iaxchannels asterisk_iaxlag asterisk_iaxpeers asterisk_meetme asterisk_meetmeusers asterisk_sipchannels asterisk_sippeers asterisk_voicemail
 activate_if_installed postfix postfix_mailqueue postfix_mailvolume postfix_mailstats
 activate_if_installed ntp ntp_offset ntp_states

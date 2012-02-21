@@ -1,0 +1,329 @@
+; title_content_name
+IAX trunk > Add
+
+; smenu_general
+General
+
+; smenu_register
+Register
+
+; smenu_codecs
+Codecs
+
+; smenu_signalling
+Signalling
+
+; smenu_advanced
+Advanced
+
+; fm_protocol_name
+Name:
+
+; fm_protocol_username
+Username:
+
+; fm_protocol_secret
+Password:
+
+; fm_protocol_callerid
+Caller ID:
+
+; fm_protocol_context
+Context:
+
+; fm_protocol_calllimit
+Call limit:
+
+; fm_protocol_host-type
+IP Addressing type:
+
+
+; fm_protocol_host-type-opt(dynamic)
+Dynamic
+
+; fm_protocol_host-type-opt(static)
+Static
+
+; fm_protocol_port
+Port:
+
+; fm_protocol_dtmfmode
+DTMF:
+
+; fm_protocol_type
+Connection type:
+
+; fm_protocol_type-user
+Incoming
+
+; fm_protocol_type-peer
+Outgoing
+
+; fm_protocol_type-friend
+Incoming/Outgoing
+
+; fm_protocol_nat
+NAT:
+
+; fm_protocol_qualify
+Monitoring:
+
+; fm_protocol_canreinvite
+Invite:
+
+; fm_protocol_insecure
+Authentication:
+
+; fm_codec-custom
+Customize:
+
+; fm_protocol_codec-disallow
+Disable:
+
+; fm_protocol_codec-disallow-opt-all
+All
+
+; fm_protocol_codec-allow
+Enable:
+
+; bt_upcodec
+Up one or more codecs
+
+; bt_downcodec
+Down one or more codecs
+
+; bt_incodec
+Add one or more codecs ->
+
+; bt_outcodec
+<- Remove one or more codecs
+
+; fm_register
+Register:
+
+; fm_register_username
+Username:
+
+; fm_register_password
+Password:
+
+; fm_register_authuser
+Authentication:
+
+; fm_register_host
+Remote server:
+
+; fm_register_port
+Port:
+
+; fm_register_contact
+Contact:
+
+; fm_protocol_notransfer
+Forbid transfers:
+
+; fm_protocol_trunk
+Trunk mode activation:
+
+; fm_protocol_type-opt(peer)
+Outgoing
+
+; fm_protocol_type-opt(user)
+Incoming
+
+; fm_protocol_type-opt(friend)
+Incoming/Outgoing
+
+; fm_protocol_language
+Language:
+
+; fm_protocol_sendani
+Send call name/number presentation : 
+
+; fm_protocol_transfer
+Transfer : 
+
+; fm_protocol_permit
+Authorized IP or subnet : 
+
+; fm_protocol_transfer
+Activate transfer : 
+
+; fm_protocol_mask
+Netmask : 
+
+; fm_protocol_deny
+Forbidden IP or subnet :
+
+; fm_protocol_auth
+Authentication mechanismes : 
+
+; fm_protocol_inkeys
+Public RSA key : 
+
+; fm_protocol_outkey
+Private RSA key : 
+
+; hlp_fm_protocol-outkey
+Asterisk config: outkey
+
+; fm_protocol_encryption
+Encryption : 
+
+; fm_protocol_maxauthreq
+Maximum authentication attempts:
+
+; fm_protocol_maxauthreq-opt(0)
+Disabled
+
+; fm_protocol_maxauthreq-opt
+%s
+
+; fm_protocol_adsi
+Activate ADSI support
+
+; fm_protocol_amaflags
+Billing flag:
+
+; fm_protocol_accountcode
+Account code:
+
+; fm_protocol_requirecalltoken
+Calltoken validation : 
+
+; fm_trunkfeatures_description 
+Description : 
+
+; fm_protocol_auth-opt(plaintext)
+Plaintext
+
+; fm_protocol_auth-opt(md5)
+MD5
+
+; fm_protocol_auth-opt(rsa)
+RSA
+
+; fm_protocol_auth-opt(plaintext-md5)
+Plaintext or MD5
+
+; fm_protocol_auth-opt(plaintext-rsa)
+Plaintext or RSA
+
+; fm_protocol_auth-opt(md5-rsa)
+MD5 or RSA
+
+; fm_protocol_auth-opt(plaintext-md5-rsa)
+Plaintext, MD5 or RSA
+
+; ast_requirecalltoken(auto)
+auto
+
+; ast_requirecalltoken(yes)
+yes
+
+; ast_requirecalltoken(no)
+no
+
+; fm_protocol_encryption-opt(aes128)
+AES128
+
+; fm_protocol_encryption-opt(yes)
+yes
+
+; fm_protocol_encryption-opt(no)
+no
+
+; fm_protocol_transfer-opt(mediaonly)
+Media only
+
+; fm_protocol_transfer-opt(yes)
+yes
+
+; fm_protocol_transfer-opt(no)
+no
+
+; fm_protocol_qualifysmoothing
+Quality smoothing : 
+
+; fm_protocol_qualifyfreqok
+Qualify frequency when ok : 
+
+; fm_protocol_qualifyfreqnotok
+Qualify frequency when fail : 
+
+; fm_protocol_jitterbuffer
+Activate jitterbuffer : 
+
+; fm_protocol_forcejitterbuffer
+Force jitterbuffer : 
+
+; fm_protocol_timezone
+Timezone : 
+
+; fm_protocol_codecpriority
+Codecs priority:
+
+; fm_protocol_codecpriority-opt(disabled)
+Disabled
+
+; fm_protocol_codecpriority-opt(host)
+Host
+
+; fm_protocol_codecpriority-opt(caller)
+Caller
+
+; fm_protocol_codecpriority-opt(reqonly)
+Request only
+
+; fm_protocol_qualify-opt(no)
+no
+
+; fm_protocol_qualify-opt(yes)
+yes
+
+; fm_protocol_qualify-opt
+%s milliseconds
+
+; fm_protocol_qualifyfreq-opt-milliseconds
+%s milliseconds
+
+; fm_protocol_qualifyfreq-opt-second
+1 second
+
+; fm_protocol_qualifyfreq-opt-seconds
+%s seconds
+
+; fm_protocol_qualifyfreq-opt-minute
+1 minute
+
+; fm_protocol_qualifyfreq-opt-minute-seconds
+%s min. %s sec.
+
+; fm_protocol_qualifyfreq-opt-minutes
+%s minutes
+
+; fm_protocol_qualifyfreq-opt-minutes-seconds
+%s min. %s sec.
+
+; fm_protocol_codec-disallow-opt(all)
+All
+
+;;; asterisk 1.8
+; fm_protocol-immediate
+Immediate off-hook : 
+
+; hlp_fm_protocol-immediate
+Asterisk config: immediate
+
+; fm_protocol-keyrotate
+Deactivate key rotation with encryption :
+
+; hlp_fm_protocol-keyrotate
+Asterisk config: keyrotate
+
+; fm_protocol-keyrotate-opt(on)
+Yes
+
+; fm_protocol-keyrotate-opt(off)
+No
+

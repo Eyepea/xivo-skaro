@@ -1,0 +1,72 @@
+
+; title_content_name
+Approvisionnement: configuration
+
+; fld_provd_server
+Paramètres généraux
+
+; fm_configure_locale
+Locale: 
+
+; fm_configure_plugin_server
+Url:  
+
+; fm_configure_ftp_proxy
+Proxy FTP :
+
+; fm_configure_http_proxy
+Proxy HTTP :
+
+; fm_configure_https_proxy
+Proxy HTTPS :
+
+; fm_hlp_plugin_server
+L'addresse (URL) du dépôt de plugins
+
+; fm_hlp_http_proxy
+Le proxy pour les requêtes HTTP. Le format est "http://[user:password@]host:port"
+
+; fm_hlp_ftp_proxy
+Le proxy pour les requêtes FTP. Le format est "http://[user:password@]host:port"
+
+; fm_hlp_https_proxy
+Le proxy pour les requêtes HTTPS. Le format est "host:port"
+
+; fm_hlp_locale
+La locale courante. Exemple: en_CA
+
+; fld_provd_general_configuration
+Configuration locale de provd
+
+; fld_provd_rest_configuration
+Configuration de l'API REST
+
+; fm_provd_net4_ip
+IP externe:
+
+; fm_hlp_provd_net4_ip
+Laisser vide pour utiliser l'adresse IP de l'interface VoIP
+
+; fm_provd_http_port
+Port HTTP: 
+
+; fm_provd_dhcp_integration
+Intégration du DHCP: 
+
+; fm_provd_private
+Authenfication: 
+
+; fm_provd_username
+Identifiant: 
+
+; fm_provd_password
+Mot de passe: 
+
+; fm_provd_secure_rest
+PORT REST secure (https): 
+
+; fm_provd_net4_ip_rest
+API REST IP: 
+
+; fm_provd_rest_port
+Port API REST: 

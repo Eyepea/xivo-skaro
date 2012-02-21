@@ -1,0 +1,54 @@
+
+; col_sort_exten
+Trier par SDA
+
+; col_sort_context
+Trier par contexte
+
+; col_sort_destination
+Trier par destination
+
+; col_sort_identity
+Trier par identité
+
+; col_sort_fullname
+Trier par nom
+
+; col_sort_name
+Trier par nom
+
+; col_sort_displayname
+Trier par nom affiché
+
+; col_sort_confno
+Trier par numéro
+
+; col_sort_number
+Trier par numéro
+
+; col_sort_identity
+Trier par identité
+
+; col_sort_protocol
+Trier par protocole
+
+; col_sort_mailbox
+Trier par mailbox
+
+; col_sort_email
+Trier par e-mail
+
+; col_sort_interface
+Trier par interface
+
+; col_sort_intfsuffix
+Trier par suffixe de l'interface
+
+; col_sort_host
+Trier par hôte
+
+; col_sort_type
+Trier par type de connexion
+
+; col_sort_call-limit
+Trier par nombre d'appels

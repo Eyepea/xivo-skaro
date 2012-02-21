@@ -1,0 +1,4 @@
+check device data-system with path /
+  if space usage > 90% then alert
+check device data-var with path /var
+  if space usage > 90% then alert

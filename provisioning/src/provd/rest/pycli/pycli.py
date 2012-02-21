@@ -53,6 +53,8 @@ parser.add_option('-u', '--user', default=DEFAULT_USER,
                   help='user name for server authentication')
 parser.add_option('-p', '--port', default=DEFAULT_PORT,
                   help='port number of the REST API')
+parser.add_option('-c', '--command',
+                  help='specify the command to execute')
 parser.add_option('--tests', action='store_true', default=False,
                   help='import the tests module')
 
@@ -506,8 +508,11 @@ except EnvironmentError:
 
 
 # create interpreter and interact with user
-cli = code.InteractiveConsole(cli_globals)
-cli.interact('')
+if opts.command:
+    exec opts.command in cli_globals
+else:
+    cli = code.InteractiveConsole(cli_globals)
+    cli.interact('')
 
 
 # save history file

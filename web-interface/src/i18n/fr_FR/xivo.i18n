@@ -1,0 +1,69 @@
+; load conf/acl
+
+; load conf/user
+
+; load util/date
+
+; load util/size
+
+; load util/error
+
+; load util/network
+
+; load util/sort
+
+; load tpl/tpl
+
+; xivo_service_label(ipbx)
+IPBX
+
+; xivo_service_ipbx_engine_label(asterisk)
+Asterisk
+
+; xivo_service_label(monitoring)
+Monitoring
+
+; xivo_service_monitoring_engine_label(monit)
+Monit
+
+; ms_seek
+Rechercher
+
+; report_export
+Exporter
+
+; successfully_reset
+Terminaison réinitialisée en mode "Autoprov" 
+
+; successfully_apply
+%s correctement executé
+
+; error_during_apply
+%s à rencontré une erreur durant l'execution
+
+; successfully_installed
+%s correctement installé
+
+; error_during_installation
+%s a rencontré une erreur durant l'installation
+
+; successfully_uninstalled
+%s correctement désinstallé
+
+; error_during_uninstallation
+%s à rencontré une erreur durant la désinstallation
+
+; error_during_update
+Une erreur est survenu durant la mise a jour
+
+; successfully_updated
+Mise à jour réussi
+
+; successfully_synchronize
+Synchronisation de la terminaison réussi
+
+; error_during_synchronize
+Une erreur est survenu durant la synchronisation de la terminaison
+
+; img_loading
+Chargement...

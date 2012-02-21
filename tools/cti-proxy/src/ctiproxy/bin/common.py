@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import functools
 
 
 def _port_number(value):
@@ -38,3 +39,15 @@ def init_logging(verbose=False):
         logger.setLevel(logging.INFO)
     else:
         logger.setLevel(logging.ERROR)
+
+
+def hide_exception(exception_class):
+    def hide_exception_decorator(original_function):
+        @functools.wraps(original_function)
+        def decorated_function(*args, **kwargs):
+            try:
+                return original_function(*args, **kwargs)
+            except exception_class:
+                pass
+        return decorated_function
+    return hide_exception_decorator

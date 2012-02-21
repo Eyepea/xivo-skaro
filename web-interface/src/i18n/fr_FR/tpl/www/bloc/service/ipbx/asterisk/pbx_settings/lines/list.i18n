@@ -1,0 +1,47 @@
+; col_identity
+Identité
+
+; col_sort_identity
+Trier par identité
+
+; col_protocol
+Protocole
+
+; col_sort_protocol
+Trier par protocole
+
+; col_name
+Identifiant
+
+; col_phone
+N° Téléphone
+
+; col_provisioning
+Approvisionnement
+
+; col_user
+Utilisateur
+
+; line_protocol-sip
+SIP
+
+; line_protocol-iax
+IAX
+
+; line_protocol-custom
+Personnalisé
+
+; no_line
+Aucune ligne trouvée
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cette ligne ?
+
+; lines-list_legend
+Légende
+
+; line-list_legend-opt(line_assoc_device_exist)
+Ligne associées à une terminaison
+
+; line-list_legend-opt(line_assoc_device_not_exist)
+Ligne non associées à une terminaison

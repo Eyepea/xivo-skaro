@@ -1,4 +1,0 @@
-DEST_PATH=tarballs
-GIT_URL="git://git.proformatique.com/official/chan_sccp.git"
-PKG_NAME="asterisk-chan-sccp"
-DFSG_EXCLUDE_PATTERNS=

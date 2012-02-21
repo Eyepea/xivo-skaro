@@ -1,0 +1,726 @@
+; title_content_name
+Queues > Add
+
+; smenu_general
+General
+
+; smenu_announces
+Announces
+
+; smenu_members
+Members
+
+; smenu_application
+Application
+
+; smenu_dialaction
+No answer
+
+; smenu_advanced
+Advanced
+
+; add_announce
+Add an announce
+
+; fld-users
+Users
+
+; fld-agents
+Agents
+
+; bt_inuser
+Add one or more users ->
+
+; bt_outuser
+<- Remove one or more users
+
+; create_agent-queue
+Create an agent queue
+
+; fm_agentgroup
+Groups:
+
+; bt_inagentqueue
+Add one or more agent queues
+
+; bt_outagentqueue
+<- Remove one or more agent queues
+
+; create_agent
+Create an agent
+
+; fm_agent
+Agents:
+
+; bt_inagent
+Add one or more agents ->
+
+; bt_outagent
+<- Remove one or more agents
+
+; fm_queuefeatures_name
+Name:
+
+; fm_queuefeatures_displayname
+Display name:
+
+; fm_queuefeatures_number
+Number:
+
+; fm_queuefeatures_context
+Context:
+
+; create_context
+Create a context
+
+; fm_queue_strategy
+Ring strategy:
+
+; fm_queue_strategy-opt(leastrecent)
+Least recent
+
+; fm_queue_strategy-opt(fewestcalls)
+Fewest calls
+
+; fm_queue_strategy-opt(roundrobin)
+Round robin
+
+; fm_queue_strategy-opt(rrmemory)
+Round robin memory
+
+; fm_queue_strategy-opt(random)
+Random
+
+; fm_queue_strategy-opt(ringall)
+Ring all
+
+; fm_queuefeatures_timeout
+Ringing time:
+
+; fm_queuefeatures_timeout-opt(0)
+Unlimited
+
+; fm_queuefeatures_timeout-opt-seconds
+%s seconds
+
+; fm_queuefeatures_timeout-opt-minute
+1 minute
+
+; fm_queuefeatures_timeout-opt-minute-seconds
+%s min. %s sec.
+
+; fm_queuefeatures_timeout-opt-minutes
+%s minutes
+
+; fm_queuefeatures_data-quality
+Data quality:
+
+; fm_queuefeatures_hitting-callee
+Allow caller to pass calls with *:
+
+; fm_queuefeatures_hitting-caller
+Allow callee to pass call with *:
+
+; fm_queuefeatures_retries
+No retry when time has elapsed:
+
+; fm_queuefeatures_ring
+Ring instead of On-Hold Music:
+
+; fm_queuefeatures_transfer-user
+Allow callee to transfer the caller:
+
+; fm_queuefeatures_transfer-call
+Allow callee to transfer the call:
+
+; fm_queuefeatures_write-caller
+Allow callee to record the call:
+
+; fm_queuefeatures_write-calling
+Allow caller to record the call:
+
+; fm_queue_musicclass
+On-Hold Music:
+
+; fm_queue_announce
+Announce when a member picks up the call:
+
+; fm_queue_announce-frequency-opt(0)
+Disabled
+
+; fm_queue_announce-frequency-opt-seconds
+%s seconds
+
+; fm_queue_announce-frequency-opt-minute
+1 minute
+
+; fm_queue_announce-frequency-opt-minute-seconds
+%s min. %s sec.
+
+; fm_queue_announce-frequency-opt-minutes
+%s minutes
+
+; fm_queue_announce-frequency-opt-minutes-seconds
+%s min. %s sec.
+
+; fm_callerid_mode
+Customize the name of the caller:
+
+; fm_callerid_mode-opt(prepend)
+Prefix
+
+; fm_callerid_mode-opt(overwrite)
+Overwrite
+
+; fm_callerid_mode-opt(append)
+Append
+
+; fm_queuefeatures_preprocess-subroutine
+Subroutine pretreatment:
+
+; fm_queue_context
+Exit context:
+
+; fm_queue_servicelevel
+Service level:
+
+; fm_queue_weight
+Weight:
+
+; fm_queue_timeout
+Member reachability timeout:
+
+; fm_queue_timeout-opt(0)
+Disabled
+
+; fm_queue_timeout-opt
+%s seconds
+
+; fm_queue_retry
+Time before retrying a call to a member:
+
+; fm_queue_retry-opt(1)
+1 second
+
+; fm_queue_retry-opt
+%s seconds
+
+; fm_queue_wrapuptime
+Delay before reassigning a call:
+
+; fm_queue_wrapuptime-opt(0)
+Disabled
+
+; fm_queue_wrapuptime-opt
+%s seconds
+
+; fm_queue_maxlen
+Maximum number of people allowed to wait:
+
+; fm_queue_announce-frequency
+Position announce frequency:
+
+; fm_queue_announce-frequency-opt(0)
+Disabled
+
+; fm_queue_announce-frequency-opt15
+15 sec.
+
+; fm_queue_announce-frequency-opt30
+30 sec.
+
+; fm_queue_announce-frequency-opt45
+45 sec.
+
+; fm_queue_announce-frequency-opt60
+1 min.
+
+; fm_queue_announce-frequency-opt75
+1 min. 15 sec.
+
+; fm_queue_announce-frequency-opt90
+1 min. 30 sec.
+
+; fm_queue_announce-frequency-opt105
+1 min. 45 sec.
+
+; fm_queue_announce-frequency-opt120
+2 min.
+
+; fm_queue_announce-frequency-opt180
+3 min.
+
+; fm_queue_announce-frequency-opt240
+4 min.
+
+; fm_queue_announce-frequency-opt300
+5 min.
+
+; fm_queue_announce-frequency-opt
+%s min. %s sec.
+
+; fm_queue_periodic-announce-frequency-opt(0)
+Disabled
+
+; fm_queue_periodic-announce-frequency-opt15
+15 sec.
+
+; fm_queue_periodic-announce-frequency-opt30
+30 sec.
+
+; fm_queue_periodic-announce-frequency-opt45
+45 sec.
+
+; fm_queue_periodic-announce-frequency-opt60
+1 min.
+
+; fm_queue_periodic-announce-frequency-opt75
+1 min. 15 sec.
+
+; fm_queue_periodic-announce-frequency-opt90
+1 min. 30 sec.
+
+; fm_queue_periodic-announce-frequency-opt105
+1 min. 45 sec.
+
+; fm_queue_periodic-announce-frequency-opt120
+2 min.
+
+; fm_queue_periodic-announce-frequency-opt180
+3 min.
+
+; fm_queue_periodic-announce-frequency-opt240
+4 min.
+
+; fm_queue_periodic-announce-frequency-opt300
+5 min.
+
+; fm_queue_periodic-announce-frequency-opt
+%s min. %s sec.
+
+; fm_queue_announce-holdtime
+Announce hold time:
+
+; fm_queuefeatures_announce_holdtime
+Announce hold time before entering queue:
+
+; fm_queue_announce-holdtime-opt(no)
+No
+
+; fm_queue_announce-holdtime-opt(yes)
+Yes
+
+; fm_queue_announce-holdtime-opt(once)
+Just once
+
+; fm_queue_announce-round-seconds
+Round up the hold time:
+
+; fm_queue_announce-round-seconds-opt(0)
+Disabled
+
+; fm_queue_announce-round-seconds-opt
+%s seconds
+
+; fm_queue_monitor-format
+Recording format:
+
+; fm_queue_monitor-type
+Recording:
+
+; fm_queue_monitor-type-opt(no)
+No
+
+; fm_queue_monitor-type-opt(mixmonitor)
+MixMonitor
+
+; fm_queue_joinempty
+Join an empty queue:
+
+; fm_queue_joinempty-opt(no)
+No
+
+; fm_queue_joinempty-opt(yes)
+Yes
+
+; fm_queue_joinempty-opt(strict)
+Strict
+
+; fm_queue_ringinuse
+Call a member already on:
+
+; fm_queue_leavewhenempty
+Remove callers if there are no agents:
+
+; fm_queue_leavewhenempty-opt(no)
+No
+
+; fm_queue_leavewhenempty-opt(yes)
+Yes
+
+; fm_queue_leavewhenempty-opt(strict)
+Strict
+
+; fm_queue_eventwhencalled
+Enable events (AMI):
+
+; fm_queue_eventmemberstatus
+Enable member events (AMI):
+
+; fm_queue_reportholdtime
+Enable caller hold time reporting:
+
+; fm_queue_memberdelay
+Delay before passing the call:
+
+; fm_queue_memberdelay-opt(0)
+Disabled
+
+; fm_queue_memberdelay-opt
+%s seconds
+
+; fm_queue_timeoutrestart
+Delay before resetting a member response time:
+
+; fm_queue_queue-youarenext
+You are next:
+
+; fm_queue_queue-youarenext-opt(default)
+Default
+
+; fm_queue_queue-thereare
+There are:
+
+; fm_queue_queue-thereare-opt(default)
+Default
+
+; fm_queue_queue-callswaiting
+Calls waiting:
+
+; fm_queue_queue-callswaiting-opt(default)
+Default
+
+; fm_queue_queue-holdtime
+Hold time is:
+
+; fm_queue_queue-holdtime-opt(default)
+Default
+
+; fm_queue_queue-minutes
+Minutes:
+
+; fm_queue_queue-minutes-opt(default)
+Default
+
+; fm_queue_queue-seconds
+Seconds:
+
+; fm_queue_queue-seconds-opt(default)
+Default
+
+; fm_queue_queue-thankyou
+Thank you for your patience:
+
+; fm_queue_queue-thankyou-opt(default)
+Default
+
+; fm_queue_queue-lessthan
+Less than:
+
+; fm_queue_queue-lessthan-opt(default)
+Default
+
+; fm_queue_queue-reporthold
+The Hold time of a caller:
+
+; fm_queue_queue-reporthold-opt(default)
+Default
+
+; fm_queue_periodic-announce
+Periodic announces:
+
+; bt_uppannounce
+Up one or more announces
+
+; bt_downpannounce
+Down one or more announces
+
+; bt_inpannounce
+Add one or more announces ->
+
+; bt_outpannounce
+<- Remove one or more announces
+
+; fm_queue_periodic-announce-opt(default)
+Default
+
+; fm_queue_periodic-announce-frequency
+Periodic announces frequency:
+
+
+; fm_queue_strategy-opt(linear)
+Linear
+
+; fm_queue_strategy-opt(wrandom)
+Weight random
+
+
+;;; options 1.8
+
+; fm_queue_timeoutpriority
+Timeout priority:
+
+; fm_queue_autofill
+Autofill system:
+
+; fm_queue_autopause
+Autopause agents:
+
+; fm_queue_setinterfacevar
+Set interface variables in dialplan:
+
+
+; fm_queue_setqueueentryvar
+Set queue entry variables in diaplan:
+
+; fm_queue_setqueuevar
+Set queue variables in dialplan:
+
+
+; fm_queue_membermacro
+Macro executed at member connection:
+
+; fm_queue_min-announce-frequency
+Min time between positions and hold time announces:
+
+
+; fm_queue_random-periodic-announce
+Play periodic announces in random order:
+
+; fm_queue_announce-position
+Announce position in the queue:
+
+; fm_queue_announce-position-limit
+Max number of waiting calls to play position announce:
+
+; fm_queue_defaultrule
+Penalties applied:
+
+; hlp_fm_queue_timeoutpriority
+Asterisk config: timeoutpriority
+
+; fm_queue_timeoutpriority-opt(app)
+Dialplan
+
+; fm_queue_timeoutpriority-opt(conf)
+Configuration
+
+; hlp_fm_queue_autofill
+Asterisk config: autofill
+
+; hlp_fm_queue_autopause
+Asterisk config: autopause
+
+; hlp_fm_queue_setinterfacevar
+Asterisk config: setinterfacevar
+
+; hlp_fm_queue_setqueueentryvar
+Asterisk config: setqueueentryvar
+
+; hlp_fm_queue_setqueuevar
+Asterisk config: setqueuevar
+
+; hlp_fm_queue_membermacro
+Asterisk config: membermacro
+
+; hlp_fm_queue_min-announce-frequency
+Asterisk config: min-announce-frequency
+
+; hlp_fm_queue_random-periodic-announce
+Asterisk config: random-periodic-announce
+
+; hlp_fm_queue_announce-position
+Asterisk config: announce-position
+
+; fm_queue_announce-position-opt(yes)
+Yes
+
+; fm_queue_announce-position-opt(no)
+No
+
+; fm_queue_announce-position-opt(limit)
+Limit
+
+; fm_queue_announce-position-opt(more)
+More
+
+; hlp_fm_queue_announce-position-limit
+Asterisk config: announce-position-limit
+
+; hlp_fm_queue_defaultrule
+Asterisk config: defaultrule
+
+; hlp_fm_queue-queue
+Asterisk config: queue
+
+; hlp_fm_queue-announce
+Asterisk config: announce
+
+; hlp_fm_queue-announce-frequency
+Asterisk config: announce-frequency
+
+; hlp_fm_queue-announce-holdtime
+Asterisk config: announce-holdtime
+
+; hlp_fm_queue-announce-round-seconds
+Asterisk config: announce-round-seconds
+
+; hlp_fm_queue-category
+Asterisk config: category
+
+; hlp_fm_queue-context
+Asterisk config: context
+
+; hlp_fm_queue-eventmemberstatus
+Asterisk config: eventmemberstatus
+
+; hlp_fm_queue-eventwhencalled
+Asterisk config: eventwhencalled
+
+; hlp_fm_queue-joinempty
+Asterisk config: joinempty
+
+; hlp_fm_queue-leavewhenempty
+Asterisk config: leavewhenempty
+
+; hlp_fm_queue-maxlen
+Asterisk config: maxlen
+
+; hlp_fm_queue-memberdelay
+Asterisk config: memberdelay
+
+; hlp_fm_queue-monitor-format
+Asterisk config: monitor-format
+
+; hlp_fm_queue-monitor-type
+Asterisk config: monitor-type
+
+; hlp_fm_queue-musicclass
+Asterisk config: musicclass
+
+; hlp_fm_queue-name
+Asterisk config: name
+
+; hlp_fm_queue-periodic-announce
+Asterisk config: periodic-announce
+
+; hlp_fm_queue-periodic-announce-frequency
+Asterisk config: periodic-announce-frequency
+
+; hlp_fm_queue-queue-callswaiting
+Asterisk config: queue-callswaiting
+
+; hlp_fm_queue-queue-holdtime
+Asterisk config: queue-holdtime
+
+; hlp_fm_queue-queue-lessthan
+Asterisk config: queue-lessthan
+
+; hlp_fm_queue-queue-minutes
+Asterisk config: queue-minutes
+
+; hlp_fm_queue-queue-reporthold
+Asterisk config: queue-reporthold
+
+; hlp_fm_queue-queue-seconds
+Asterisk config: queue-seconds
+
+; hlp_fm_queue-queue-thankyou
+Asterisk config: queue-thankyou
+
+; hlp_fm_queue-queue-thereare
+Asterisk config: queue-thereare
+
+; hlp_fm_queue-queue-youarenext
+Asterisk config: queue-youarenext
+
+; hlp_fm_queue-reportholdtime
+Asterisk config: reportholdtime
+
+; hlp_fm_queue-retry
+Asterisk config: retry
+
+; hlp_fm_queue-ringinuse
+Asterisk config: ringinuse
+
+; hlp_fm_queue-servicelevel
+Asterisk config: servicelevel
+
+; hlp_fm_queue-strategy
+Asterisk config: strategy
+
+; hlp_fm_queue-timeout
+Asterisk config: timeout
+
+; hlp_fm_queue-timeoutrestart
+Asterisk config: timeoutrestart
+
+; hlp_fm_queue-weight
+Asterisk config: weight
+
+; hlp_fm_queue-wrapuptime
+Asterisk config: wrapuptime
+
+
+; smenu_schedule
+Schedules
+
+; fm_queue_schedule
+Schedules:
+
+; create_schedules
+Create a schedule
+
+; smenu_diversion
+Diversions
+
+; fld-diversion-ctipresence
+On CTI status presence
+
+; fld-diversion-nonctipresence
+On CTI status absence
+
+; fld-diversion-waittime
+On estimated wait time overrun
+
+;  fm_queuefeatures_waittime
+Threshold (estimated wait time):
+
+; fld-diversion-waitratio
+On waiting calls / available agents ratio overrun
+
+; fm_queuefeatures_waitratio
+Threshold (percent ratio):
+
+; hlp_fm_queuefeatures_waitratio
+In percent (i.e 100 for 100%)
+
+
+; ctipresence_col1
+Status
+
+; ctipresence_col2
+Agents count >= to
+
+; nonctipresence_col1
+Status
+
+; nonctipresence_col2
+Agents count <= to
+
+; no_ctipresence-disp
+No rules
+
+; no_nonctipresence-disp
+No rules
+

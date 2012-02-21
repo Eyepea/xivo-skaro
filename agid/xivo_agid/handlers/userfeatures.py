@@ -7,7 +7,7 @@ import time
 
 
 class UserFeatures(Handler):
-    
+
     PATH_TYPE = 'user'
 
     def __init__(self, agi, cursor, args):
@@ -103,7 +103,10 @@ class UserFeatures(Handler):
         try:
             curline = [line for line in self._lines.lines if str(line['id']) == self._lineid][0]
             self._set_xivo_iface_nb(1)
-            self._agi.set_variable('XIVO_INTERFACE_0', "%s/%s" % (curline['protocol'], curline['name']))
+            if curline['protocol'].lower() == 'custom':
+                self._agi.set_variable('XIVO_INTERFACE_0', "%s" % (curline['name']))
+            else:
+                self._agi.set_variable('XIVO_INTERFACE_0', "%s/%s" % (curline['protocol'], curline['name']))
         except Exception:
             pass
 
@@ -230,7 +233,7 @@ class UserFeatures(Handler):
     def _set_call_recordfile(self):
         callrecordfile = ""
         if self._feature_list.callrecord:
-            if self._user.callrecord or self._caller.callrecord: # BUGBUG the context is missing in the filename TODO use ids
+            if self._user.callrecord or (self._caller and self._caller.callrecord):
                 callrecordfile = "user-%s-%s-%s.wav" % (self._srcnum, self._dstnum, int(time.time()))
             else:
                 callrecordfile = ""

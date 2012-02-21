@@ -1,10 +1,10 @@
 Nicolas HICHER (atarakt) <nhicher@proformatique.com>
 add oslec source to dahdi-linux
-Index: dahdi-linux-2.4.1-0/drivers/dahdi/Kbuild
+Index: dahdi-linux-2.6.0/drivers/dahdi/Kbuild
 ===================================================================
---- dahdi-linux-2.4.1-0.orig/drivers/dahdi/Kbuild	2011-03-07 12:07:23.736065633 +0100
-+++ dahdi-linux-2.4.1-0/drivers/dahdi/Kbuild	2011-03-07 12:09:18.024168530 +0100
-@@ -33,12 +33,12 @@
+--- dahdi-linux-2.6.0.orig/drivers/dahdi/Kbuild	2012-02-13 10:42:33.769141181 -0500
++++ dahdi-linux-2.6.0/drivers/dahdi/Kbuild	2012-02-13 10:42:45.149141262 -0500
+@@ -35,12 +35,12 @@
  
  # Only enable this if you think you know what you're doing. This is not
  # supported yet:
@@ -19,9 +19,9 @@ Index: dahdi-linux-2.4.1-0/drivers/dahdi/Kbuild
  
  CFLAGS_MODULE += -I$(DAHDI_INCLUDE) -I$(src)
  
-Index: dahdi-linux-2.4.1-0/drivers/staging/echo/Kbuild
+Index: dahdi-linux-2.6.0/drivers/staging/echo/Kbuild
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ dahdi-linux-2.4.1-0/drivers/staging/echo/Kbuild	2011-03-07 12:09:54.292168868 +0100
++++ dahdi-linux-2.6.0/drivers/staging/echo/Kbuild	2012-02-13 10:42:45.149141262 -0500
 @@ -0,0 +1 @@
 +obj-m += echo.o

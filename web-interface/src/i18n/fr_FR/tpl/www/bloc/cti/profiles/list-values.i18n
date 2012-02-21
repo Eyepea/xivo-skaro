@@ -1,0 +1,188 @@
+; enablevm
+Activer la messagerie vocale
+
+; callrecord
+Enregister les appels
+
+; incallrec
+Enregistrer les appels entrants
+
+; incallfilter
+Filtres sur les appels
+
+; enablednd
+Mode "Ne Pas Déranger"
+
+; fwdunc
+Transfert inconditionnel vers un numéro
+
+; fwdbusy
+Transfert sur occupation
+
+; fwdrna
+Transfert sur non-réponse
+
+
+
+; func-presence 
+Autoriser l'information de présence
+
+; func-switchboard 
+Mise en relation extérieure des téléphones
+
+; func-customerinfo 
+Autoriser les fiches client
+
+; func-agents
+Agents
+
+; func-search 
+Contacts
+
+; func-dial 
+Composer
+
+; func-chitchat
+Messagerie instantanée
+
+; func-conference
+Autoriser les chambres de conférence
+
+; func-directory
+Répertoire
+
+; func-fax
+Autoriser l'accés au fax
+
+; func-features
+Autoriser les services
+
+; func-history
+Autoriser l'historique
+
+; func-database
+Autoriser l'écriture dans la base de données
+
+; func-supervisor
+Accorder un droit superviseur pour les campagnes d'enregistrements
+
+; func-administrator
+Accorder un droit administrateur pour les campagnes d'enregistrements
+
+
+
+; pref-loginwindow-url
+Url à émettre une fois le login effectué
+
+; pref-xlet-identity-logagent
+(Dé)Connexion des agents (xlet "Identité")
+
+; pref-xlet-identity-pauseagent
+(Dé)Pause des agents (xlet "Identité")
+
+; pref-xlet-agentsnext-fontname
+Police de caractères (xlet "Groupes d'agents")
+
+; pref-xlet-agentsnext-fontsize
+Taille de la police de caractères (xlet "Groupes d'agents")
+
+; pref-xlet-agentsnext-blinktime
+Durée de clignotement (xlet "Groupes d'agents")
+
+; pref-xlet-agentdetails-noqueueaction
+Pas d'action sur les files par les agents (xlet "Détails des agents")
+
+; pref-xlet-agentdetails-hideastid
+Cacher le nom du XiVO (xlet "Détails des agents")
+
+; pref-xlet-agentdetails-hidecontext
+Cacher le nom du contexte (xlet "Détails des agents")
+
+; pref-xlet-agents-fontname
+Police de caractères (xlet "Liste d'agents")
+
+; pref-xlet-agents-fontsize
+Taille de la police de caractères (xlet "Liste d'agents")
+
+; pref-xlet-agents-iconsize
+Taille des icônes (xlet "Liste d'agents")
+
+; pref-xlet-queues-statsfetchperiod
+Période de récupération des statistiques (xlet "Liste des Files")
+
+; pref-presence-autochangestate
+Transitions automatiques entre les états de présence
+
+; pref-adlibitum
+Ad libitum
+
+
+
+; xlet-agents
+Agents (liste) (expérimental)
+
+; xlet-agentsnext
+Agents (liste, next) (expérimental)
+
+; xlet-agentdetails
+Agents (détail) (expérimental)
+
+; xlet-queues
+Files d'attente (liste) (expérimental)
+
+; xlet-queuedetails
+Files d'attente (détail) (expérimental)
+
+; xlet-queueentrydetails
+Files d'attente (détail des entrées) (expérimental)
+
+; xlet-calls
+Appels (expérimental)
+
+; xlet-switchboard
+Switchboard (expérimental)
+
+; xlet-customerinfo
+Fiches clients (expérimental)
+
+; xlet-datetime
+Date et heure
+
+; xlet-dial
+Numéroteur
+
+; xlet-directory
+Répertoire
+
+; xlet-fax
+Envoi de fax
+
+; xlet-features
+Services
+
+; xlet-history
+Historique
+
+; xlet-identity
+Identité
+
+; xlet-search
+Contacts
+
+; xlet-conference
+Chambres de conférence
+
+; xlet-operator
+Opérateur (expérimental)
+
+; xlet-mylocaldir
+Mon répertoire local
+
+; xlet-callcampaign
+Campagnes d'appel (expérimental)
+
+; xlet-tabber
+Tabber
+
+; xlet-xletweb
+Web

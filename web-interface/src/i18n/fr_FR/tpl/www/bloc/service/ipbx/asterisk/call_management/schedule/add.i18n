@@ -1,0 +1,83 @@
+; title_content_name
+Horaires > Ajouter
+
+; fm_schedule_name
+Nom :
+
+; fm_schedule_context
+Contexte :
+
+; create_context
+Créer un contexte
+
+; fm_schedule_publicholiday
+Férié :
+
+; col_schedule-time
+Temps
+
+; col_schedule-begin
+Début
+
+; col_schedule-end
+Fin
+
+; schedule_hour
+Heure
+
+; schedule_dayname
+Jour
+
+; schedule_daynum
+Jour du mois
+
+; schedule_month
+Mois
+
+; fld-dialaction-inschedule
+Dans la plage horaire
+
+; fld-dialaction-outschedule
+Hors de la plage horaire
+
+; fm_schedule_timezone
+Fuseau horaire : 
+
+; fld-opened-hours
+Périodes ouvrées
+
+; fld-closed-hours
+Périodes non-ouvrées
+
+; fld-closed-hours-default-action
+Périodes non-ouvrées / Action par défaut
+
+; fm_schedule_description
+Description : 
+
+; smenu_general
+Général
+
+; smenu_closed_periods
+Périodes non-ouvrées
+
+; no_disp
+Aucune période trouvée
+
+; no_disp2
+Aucune période trouvée
+
+; fm_col_schedule
+Horaires
+
+; fm_col_action
+Action
+
+; col_add
+Ajouter
+
+; opt_disp-delete
+Supprimer
+
+; opt_disp2-delete
+Supprimer

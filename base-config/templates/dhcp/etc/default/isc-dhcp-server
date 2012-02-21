@@ -9,5 +9,3 @@
 # On what interfaces should the DHCP server (dhcpd) serve DHCP requests?
 #	Separate multiple interfaces with spaces, e.g. "eth0 eth1".
 INTERFACES="#XIVO_DHCP_IFACES#"
-
-# XIVO_DHCP_ACTIVE: #XIVO_DHCP_ACTIVE#

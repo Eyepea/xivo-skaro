@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# TODO: see the call_rights module.
 
 __license__ = """
     Copyright (C) 2006-2010  Avencall
@@ -21,6 +20,7 @@ __license__ = """
 from xivo_agid import agid
 from xivo_agid import objects
 from xivo_agid import call_rights
+
 
 def _user_set_call_rights(agi, cursor, args):
     userid = agi.get_variable('XIVO_USERID')
@@ -52,7 +52,7 @@ def _user_set_call_rights(agi, cursor, args):
                      "ON rightcall.id = rightcallmember.rightcallid "
                      "WHERE rightcall.id IN " + rightcallids + " "
                      "AND rightcallmember.type = 'user' "
-                     "AND rightcallmember.typeval = %s "
+                     "AND rightcallmember.typeval = '%s' "
                      "AND rightcall.commented = 0",
                      (call_rights.RIGHTCALL_AUTHORIZATION_COLNAME, call_rights.RIGHTCALL_PASSWD_COLNAME),
                      (user.id,))
@@ -82,7 +82,7 @@ def _user_set_call_rights(agi, cursor, args):
                          "ON rightcall.id = rightcallmember.rightcallid "
                          "WHERE rightcall.id IN " + rightcallids + " "
                          "AND rightcallmember.type = 'group' "
-                         "AND rightcallmember.typeval IN (" + ", ".join(["%s"] * len(res)) + ") "
+                         "AND rightcallmember.typeval IN (" + ", ".join(["'%s'"] * len(res)) + ") "
                          "AND rightcall.commented = 0",
                          (call_rights.RIGHTCALL_AUTHORIZATION_COLNAME, call_rights.RIGHTCALL_PASSWD_COLNAME),
                          groupids)
@@ -94,7 +94,7 @@ def _user_set_call_rights(agi, cursor, args):
                      "INNER JOIN rightcallmember "
                      "ON rightcall.id = rightcallmember.rightcallid "
                      "INNER JOIN outcall "
-                     "ON rightcallmember.typeval = outcall.id "
+                     "ON CAST(rightcallmember.typeval AS integer) = outcall.id "
                      "WHERE rightcall.id IN " + rightcallids + " "
                      "AND rightcallmember.type = 'outcall' "
                      "AND outcall.id = %s "
@@ -106,10 +106,12 @@ def _user_set_call_rights(agi, cursor, args):
 
     call_rights.allow(agi)
 
+
 def user_set_call_rights(agi, cursor, args):
     try:
         _user_set_call_rights(agi, cursor, args)
     except call_rights.RuleAppliedException:
         return
+
 
 agid.register(user_set_call_rights)

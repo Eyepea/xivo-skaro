@@ -1,0 +1,83 @@
+; title_content_name
+Schedules > Add
+
+; fm_schedule_name
+Name:
+
+; fm_schedule_context
+Context:
+
+; create_context
+Create a context
+
+; fm_schedule_publicholiday
+Public holiday:
+
+; col_schedule-time
+Time
+
+; col_schedule-begin
+Start
+
+; col_schedule-end
+End
+
+; schedule_hour
+Hour
+
+; schedule_dayname
+Weekday
+
+; schedule_daynum
+Month day
+
+; schedule_month
+Month
+
+; fld-dialaction-inschedule
+In schedule
+
+; fld-dialaction-outschedule
+Out of schedule
+
+; fm_schedule_timezone
+Timezone:
+
+; fld-opened-hours
+Opened hours
+
+; fld-closed-hours
+Closed hours
+
+; fld-closed-hours-default-action
+Out of schedule / Default action
+
+; fm_schedule_description
+Description:
+
+; smenu_general
+General
+
+; smenu_closed_periods
+Closed hours
+
+; no_disp
+No opened hours found
+
+; no_disp2
+No closed hours found
+
+; fm_col_schedule
+Schedule
+
+; fm_col_action
+Action
+
+; col_add
+Add
+
+; opt_disp-delete
+Delete
+
+; opt_disp2-delete
+Delete

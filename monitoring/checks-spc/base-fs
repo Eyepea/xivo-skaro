@@ -1,2 +1,0 @@
-check device #DEV_NAME# with path #DEV_PATH#
-  if space usage > 90% then alert

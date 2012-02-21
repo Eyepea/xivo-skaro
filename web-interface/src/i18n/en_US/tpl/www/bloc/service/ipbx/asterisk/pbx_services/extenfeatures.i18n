@@ -1,0 +1,416 @@
+; title_content_name
+Extensions configuration
+
+; smenu_general
+General
+
+; smenu_voicemail
+Voicemail
+
+; smenu_forwards
+Forwards
+
+; smenu_agents
+Agents
+
+; smenu_paging
+Paging
+
+; smenu_parking
+Parking
+
+; fm_featuremap_blindxfer
+Blind transfer:
+
+; fm_featuremap_atxfer
+Indirect transfer:
+
+; fm_featuremap_automon
+Online call recording:
+
+; fm_featuremap_disconnect
+Hangup:
+
+; fm_extenfeatures_enable-enablevm
+Enable voicemail:
+
+; fm_extenfeatures_enablevm
+Extension:
+
+; fm_extenfeatures_enable-vmusermsg
+Reach the user's voicemail:
+
+; fm_extenfeatures_vmusermsg
+Extension:
+
+; fm_extenfeatures_enable-recsnd
+Sound recording:
+
+; fm_extenfeatures_recsnd
+Extension:
+
+; fm_extenfeatures_enable-phonestatus
+Phone status:
+
+; fm_extenfeatures_phonestatus
+Extension:
+
+; fm_extenfeatures_enable-enablednd
+Do not disturb:
+
+; fm_extenfeatures_enablednd
+Extension:
+
+; fm_extenfeatures_enable-callrecord
+Call recording:
+
+; fm_extenfeatures_callrecord
+Extension:
+
+; fm_extenfeatures_enable-incallfilter
+Incoming call filtering:
+
+; fm_extenfeatures_incallfilter
+Extension:
+
+; fm_extenfeatures_enable-pickup
+Call interception:
+
+; fm_extenfeatures_pickup
+Extension:
+
+; fm_extenfeatures_enable-fwdundoall
+Disable all forwarding:
+
+; fm_extenfeatures_fwdundoall
+Extension:
+
+; fm_extenfeatures_enable-fwdrna
+Enable forwarding on no-answer:
+
+; fm_extenfeatures_fwdrna
+Extension:
+
+; fm_extenfeatures_enable-fwdbusy
+Enable forwarding on busy:
+
+; fm_extenfeatures_fwdbusy
+Extension:
+
+; fm_extenfeatures_enable-fwdunc
+Enable unconditionnal forwarding:
+
+; fm_extenfeatures_fwdunc
+Extension:
+
+; fm_extenfeatures_enable-agentstaticlogin
+Connect a static agent:
+
+; fm_extenfeatures_agentstaticlogin
+Extension:
+
+; fm_extenfeatures_enable-agentstaticlogoff
+Disconnect a static agent:
+
+; fm_extenfeatures_agentstaticlogoff
+Extension:
+
+; fm_extenfeatures_enable-agentdynamiclogin
+Connect a dynamic agent:
+
+; fm_extenfeatures_agentdynamiclogin
+Extension:
+
+; fm_extenfeatures_enable-calllistening
+Listen to online calls:
+
+; fm_extenfeatures_calllistening
+Extension:
+
+; fm_extenfeatures_enable-vmuserpurge
+Delete messages from user's voicemail:
+
+; fm_extenfeatures_vmuserpurge
+Extension:
+
+; fm_extenfeatures_enable-directoryaccess
+Directory access:
+
+; fm_extenfeatures_directoryaccess
+Extension:
+
+; fm_extenfeatures_enable-bsfilter
+Filter Boss - Secretary:
+
+; fm_extenfeatures_bsfilter
+Extension:
+
+; fm_generalfeatures_parkext
+Extension:
+
+; fm_generalfeatures_context
+Context:
+
+; fm_generalfeatures_parkingtime
+Wait delay:
+
+; fm_generalfeatures_parkingtime-opt15
+15 sec.
+
+; fm_generalfeatures_parkingtime-opt30
+30 sec.
+
+; fm_generalfeatures_parkingtime-opt45
+45 sec.
+
+; fm_generalfeatures_parkingtime-opt60
+1 min.
+
+; fm_generalfeatures_parkingtime-opt120
+2 min.
+
+; fm_generalfeatures_parkingtime-opt180
+3 min.
+
+; fm_generalfeatures_parkingtime-opt240
+4 min.
+
+; fm_generalfeatures_parkingtime-opt300
+5 min.
+
+; fm_generalfeatures_parkingtime-opt
+%s min. %s sec.
+
+; fm_generalfeatures_parkpos
+Extension to parked calls:
+
+; fm_generalfeatures_parkfindnext
+Look for the next call:
+
+; fm_generalfeatures_adsipark
+Use ADSI announces:
+
+; fm_generalfeatures_transferdigittimeout
+Dial timeout on transfer:
+
+; fm_generalfeatures_transferdigittimeout-opt(1)
+1 second
+
+; fm_generalfeatures_transferdigittimeout-opt(60)
+1 minute
+
+; fm_generalfeatures_transferdigittimeout-opt
+%s seconds
+
+; fm_generalfeatures_featuredigittimeout
+Feature dial timeout:
+
+; fm_generalfeatures_featuredigittimeout-opt(1)
+1 millisecond
+
+; fm_generalfeatures_featuredigittimeout-opt
+%s milliseconds
+
+; fm_generalfeatures_courtesytone
+Tone audio file:
+
+; fm_generalfeatures_courtesytone-opt(default)
+Default
+
+; fm_generalfeatures_xfersound
+Audio file of a successful transfer:
+
+; fm_generalfeatures_xfersound-opt(default)
+Default
+
+; fm_generalfeatures_xferfailsound
+Audio file of a failed transfer:
+
+; fm_generalfeatures_xferfailsound-opt(default)
+Default
+
+; fm_generalfeatures_pickupexten
+Group interception:
+
+; fm_success-save
+Extensions successfully saved
+
+
+; smenu_calls
+Calls
+
+; smenu_transfers
+Tranfers
+
+; smenu_agent
+Agents
+
+; smenu_groups
+Groups
+
+; smenu_parking
+Parking
+
+; smenu_advanced
+Advanced
+
+; fm_extenfeatures-extension
+Extension :
+
+
+; fm_extenfeatures_enable-callgroup
+Call a group from its id :
+
+; fm_extenfeatures_enable-callqueue
+Call a queue from its id :
+
+; fm_extenfeatures_enable-calluser
+Call a user from its id :
+
+; fm_extenfeatures_enable-callmeetme
+Call meetme room from its id :
+
+; fm_featuremap_atxfer
+Attended transfer :
+
+
+; fm_extenfeatures_enable-enablevmslt
+Enable voicemail for the specified user :
+
+; fm_extenfeatures_enable-vmusermsg
+Listening to voicemail for the specified user :
+
+; fm_extenfeatures_enable-vmboxmsgslt
+Listening to specified voicemail :
+
+; fm_extenfeatures_enable-vmuserslt
+Goto voicemail for the specified user :
+
+; fm_extenfeatures_enable-vmboxslt
+Goto specified voicemail :
+
+; fm_extenfeatures_enable-vmuserpurgeslt
+Delete messages from specified user's voicemail :
+
+; fm_extenfeatures_enable-vmboxpurgeslt
+Delete message from specified voicemail :
+
+; fm_extenfeatures_enable-agentstaticlogtoggle
+Connect/Disconnect static agent :
+
+; fm_extenfeatures_enable-grouptogglemember
+Append/Remove group member :
+
+; fm_extenfeatures_enable-groupaddmember
+Append new group member :
+
+; fm_extenfeatures_enable-groupremovemember
+Remove group member :
+
+; fm_extenfeatures_enable-queuetogglemember
+Append/Remove queue member :
+
+; fm_extenfeatures_enable-queueaddmember
+Append new queue member :
+
+; fm_extenfeatures_enable-queueremovemember
+Remove queue member :
+
+; fm_extenfeatures_enable-phoneprogfunckey
+function keys programmation :
+
+; fm_extenfeatures_enable-guestprov
+phone initialization :
+
+
+
+; fm_generalfeatures_parkingtime-opt-seconds
+%s seconds
+
+; fm_generalfeatures_parkingtime-opt-minute
+1 minute
+
+; fm_generalfeatures_parkingtime-opt-minute-seconds
+%s min. %s sec.
+
+; fm_generalfeatures_parkingtime-opt-minutes
+%s minutes
+
+; fm_generalfeatures_parkingtime-opt-minutes-seconds
+%s min. %s sec.
+
+
+; fm_generalfeatures_parkpos
+Extension to dial to park:
+
+; fm_generalfeatures_adsipark
+ADSI parking announcements:
+
+; fm_generalfeatures_parkedcall-opt(no)
+None
+
+; fm_generalfeatures_parkedcall-opt(callee)
+Callee
+
+; fm_generalfeatures_parkedcall-opt(caller)
+Caller
+
+; fm_generalfeatures_parkedcall-opt(both)
+Both
+
+; fm_generalfeatures_parkedcall-opt(parked)
+Parked call
+
+; fm_generalfeatures_findslot
+Look for the next call:
+
+; fm_generalfeatures_parkinghints
+Parkings hints:
+
+; fm_generalfeatures_comebacktoorigin
+On parkedcall timeout:
+
+; fm_generalfeatures_comebacktoorigin-opt(yes)
+Callback the peer that parked this call
+
+; fm_generalfeatures_comebacktoorigin-opt(no)
+Send parked call to the dialplan
+
+; fm_generalfeatures_parkeddynamic
+Allow dynamically created parkinglots:
+
+; fm_generalfeatures_parkedplay
+Who to play courtesy tone when picking up parked call:
+
+; fm_generalfeatures_parkedcalltransfers
+Allow DTMF based transfers when picking up parked call:
+
+; fm_generalfeatures_parkedcallreparking
+Allow DTMF based parking when picking up parked call:
+
+; fm_generalfeatures_parkedcallhangup
+Allow DTMF based hangups when picking up parked call:
+
+; fm_generalfeatures_parkedcallrecording
+Allow DTMF based one-touch recording when picking up parked call:
+
+; fm_generalfeatures_parkedmusicclass
+MOH class to play to parked calls:
+
+; fm_generalfeatures_atxfernoanswertimeout
+Timeout for answer on attended transfer:
+
+; fm_generalfeatures_atxferdropcall
+Cancel transfer if attended transfer originator hangup before transfer success:
+
+; fm_generalfeatures_atxferloopdelay
+Wait time between 2 retries (attended transfer):
+
+; fm_generalfeatures_atxfercallbackretries
+Max try counts (attended transfer):
+
+; fm_extenfeatures_enable-paging
+Enable paging: 
+
+; fm_extenfeatures-paging_exten
+Paging exten: 
