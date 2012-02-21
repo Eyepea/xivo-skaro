@@ -25,6 +25,8 @@ define('XIVO_SOFT_LABEL','XIVO');
 define('XIVO_SOFT_VERSION','1.2');
 define('XIVO_SOFT_CODENAME','Skaro');
 define('XIVO_SOFT_URL','xivo.fr');
+define('XIVO_DOC_URL','documentation.xivo.fr');
+define('XIVO_BLOG_URL','blog.xivo.fr');
 define('XIVO_CORP_LABEL','Avencall');
 define('XIVO_PF_FR_CORP_LABEL','Avencall');
 define('XIVO_CORP_URL','avencall.com');

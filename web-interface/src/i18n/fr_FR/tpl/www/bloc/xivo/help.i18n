@@ -12,3 +12,15 @@ Téléchargez XiVO Client à l'adresse suivante :
 
 ; download_soft_url_xivo-client
 http://downloads.%s/xivo_cti_client/
+
+; info_xivo-documentation
+Documentation: 
+
+; url_xivo-documentation
+http://%s
+
+; info_xivo-blog
+Blog: 
+
+; url_xivo-blog
+http://%s
