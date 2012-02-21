@@ -69,11 +69,13 @@ proposed_upgrade() {
 upgrading_xivo() {
     upgrading_version
     proposed_upgrade yes
-	echo "Would you like to upgrade your system ? y/n"
-	read answer
-	if [ $answer != 'y' ]; then
-		exit
-	fi
+    if [ $force -eq 0 ]; then
+	    echo "Would you like to upgrade your system ? y/n"
+	    read answer
+	    if [ $answer != 'y' ]; then
+	        exit
+	    fi
+    fi
     echo "upgrading xivo"
     $upgrading_tool dist-upgrade -y
     restart_xivo
@@ -100,6 +102,7 @@ while getopts :a:v: opt
 do
   case ${opt} in
     a)   action=${OPTARG};;
+    f)   force=1;;
     v)   version=${OPTARG};;
     '?') echo "${0} : option ${OPTARG} is not valid" >&2
          usage
@@ -107,6 +110,7 @@ do
   esac
 done
 
+force="${force:-0}"
 version="${version:-""}"
 action="${action:-"upgrade"}"
 
