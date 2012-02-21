@@ -40,7 +40,7 @@ switch($act)
 
 		$user = array();
 		$user['slt'] = array();
-		$user['list'] = $appuser->get_users_list(null,null,null,null,true);
+		$user['list'] = $appuser->get_users_list(null,null,null,true);
 
 		$result = $fm_save = $error = null;
 
@@ -57,7 +57,7 @@ switch($act)
 			else
 				$_QRY->go($_TPL->url('service/ipbx/cost_center/servicesgroup'),$param);
 		}
-		
+
 		if($user['list'] !== false && dwho_issa('user',$result) === true
 		&& ($user['slt'] = dwho_array_intersect_key($result['user'],$user['list'],'id')) !== false)
 			$user['slt'] = array_keys($user['slt']);
@@ -103,7 +103,7 @@ switch($act)
 			else
 				$_QRY->go($_TPL->url('service/ipbx/cost_center/servicesgroup'),$param);
 		}
-		
+
 		if($user['list'] !== false && dwho_issa('user',$info) === true
 		&& ($user['slt'] = dwho_array_intersect_key($info['user'],$user['list'],'id')) !== false)
 			$user['slt'] = array_keys($user['slt']);

@@ -289,16 +289,12 @@ switch($act)
 		$umember['info'] = $qmember['info'] = false;
 		$umember['slt'] = $qmember['slt'] = array();
 
+		$userorder = array();
+		$userorder['firstname'] = SORT_ASC;
+		$userorder['lastname'] = SORT_ASC;
+
 		$appuser = &$ipbx->get_application('user',null,false);
-		$umember['list'] = $appuser->get_users_list(null,
-							    null,
-							    array('firstname'	=> SORT_ASC,
-								  'lastname'	=> SORT_ASC,
-								  'number'	=> SORT_ASC,
-								  'context'	=> SORT_ASC,
-								  'name'	=> SORT_ASC),
-							    null,
-							    true);
+		$umember['list'] = $appuser->get_users_list(null,$userorder,null,true);
 
 		$appqueue = &$ipbx->get_application('queue',null);
 
@@ -414,16 +410,12 @@ switch($act)
 		$umember['info'] = $qmember['info'] = false;
 		$umember['slt'] = $qmember['slt'] = array();
 
+		$userorder = array();
+		$userorder['firstname'] = SORT_ASC;
+		$userorder['lastname'] = SORT_ASC;
+
 		$appuser = &$ipbx->get_application('user',null,false);
-		$umember['list'] = $appuser->get_users_list(null,
-							    null,
-							    array('firstname'	=> SORT_ASC,
-								  'lastname'	=> SORT_ASC,
-								  'number'	=> SORT_ASC,
-								  'context'	=> SORT_ASC,
-								  'name'	=> SORT_ASC),
-							    null,
-							    true);
+		$umember['list'] = $appuser->get_users_list(null,$userorder,null,true);
 
 		$appqueue = &$ipbx->get_application('queue',null);
 
