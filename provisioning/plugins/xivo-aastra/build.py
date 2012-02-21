@@ -20,18 +20,6 @@ def build_2_6_0_2019(path):
                 '2.6.0.2019/', path])
 
 
-@target('3.0.1.2031', 'xivo-aastra-3.0.1.2031')
-def build_3_0_1_2031(path):
-    check_call(['rsync', '-rlp', '--exclude', '.*',
-                '--include', '/templates/6739i.tpl',
-                '--include', '/templates/base.tpl',
-                '--exclude', '/templates/*',
-                'common/', path])
-
-    check_call(['rsync', '-rlp', '--exclude', '.*',
-                '3.0.1.2031/', path])
-
-
 @target('3.2.2.1136', 'xivo-aastra-3.2.2.1136')
 def build_3_2_2_1136(path):
     check_call(['rsync', '-rlp', '--exclude', '.*',

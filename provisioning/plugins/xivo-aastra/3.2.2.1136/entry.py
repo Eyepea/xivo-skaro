@@ -10,15 +10,13 @@ logger = logging.getLogger('plugin.xivo-aastra')
 
 MODELS = [u'6730i', u'6731i', u'6739i', u'6753i', u'6755i', u'6757i',
           u'9143i', u'9480i']
-COMPAT_MODELS = [u'6751i']
 VERSION = u'3.2.2.1136'
 
 
 class AastraPlugin(common['BaseAastraPlugin']):
     IS_PLUGIN = True
 
-    pg_associator = common['BaseAastraPgAssociator'](MODELS, VERSION,
-                                                     COMPAT_MODELS)
+    pg_associator = common['BaseAastraPgAssociator'](MODELS, VERSION)
 
     def _do_add_parking(self, raw_config, parking):
         raw_config[u'XX_parking'] = '\n'.join('sip line%s park pickup config: %s;%s;asterisk' %

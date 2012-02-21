@@ -35,8 +35,8 @@ from provd import synchronize
 from provd.devices.config import RawConfigError
 from provd.plugins import StandardPlugin, FetchfwPluginHelper, \
     TemplatePluginHelper
-from provd.devices.pgasso import IMPROBABLE_SUPPORT, PROBABLE_SUPPORT, \
-    INCOMPLETE_SUPPORT, COMPLETE_SUPPORT, FULL_SUPPORT, BasePgAssociator
+from provd.devices.pgasso import IMPROBABLE_SUPPORT, COMPLETE_SUPPORT, \
+    FULL_SUPPORT, BasePgAssociator, UNKNOWN_SUPPORT
 from provd.servers.http import HTTPNoListingFileService
 from provd.util import norm_mac, format_mac
 from twisted.internet import defer, threads
@@ -94,24 +94,18 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
 
 
 class BaseAastraPgAssociator(BasePgAssociator):
-    def __init__(self, models, version, compat_models):
+    def __init__(self, models, version):
         BasePgAssociator.__init__(self)
         self._models = models
         self._version = version
-        self._compat_models = compat_models
 
     def _do_associate(self, vendor, model, version):
         if vendor == u'Aastra':
             if model in self._models:
                 if version == self._version:
                     return FULL_SUPPORT
-                if version and version[0] != self._version[0]:
-                    # not sharing the same major version
-                    return COMPLETE_SUPPORT - 1
                 return COMPLETE_SUPPORT
-            if model in self._compat_models:
-                return INCOMPLETE_SUPPORT
-            return PROBABLE_SUPPORT
+            return UNKNOWN_SUPPORT
         return IMPROBABLE_SUPPORT
 
 
