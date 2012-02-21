@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+# set -e
 monit_default="/etc/default/monit"
 fai="pf-fai-xivo-1.2-skaro"
 services="postgresql dahdi xivo-confgend pf-xivo-agid asterisk xivo-ctid"
