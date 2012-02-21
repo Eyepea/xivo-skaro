@@ -641,14 +641,16 @@ endif;
 
 		/***********/
 
-    $form->select(array('desc'  => $this->bbf('fm_trunkmaxsize'),
+    $form->text(array('desc'  => $this->bbf('fm_trunkmaxsize'),
             'name'     => 'trunkmaxsize',
             'labelid'  => 'trunkmaxsize',
-            'key'      => false,
+            'size'     => 10,
             'help'     => $this->bbf('hlp_fm_trunkmaxsize'),
-            'selected' => $this->get_var('info','trunkmaxsize','var_val'),
-            'default'  => $element['trunkmaxsize']['default']),
-        $element['trunkmaxsize']['value']),
+            'required' => false,
+            'value'    => $this->get_var('info', 'trunkmaxsize', 'var_val'),
+            'default'  => $element['trunkmaxsize']['default'],
+            'error'    => $this->bbf_args('error',
+              $this->get_var('error','trunkmaxsize')))),
 
     $form->select(array('desc'  => $this->bbf('fm_trunkmtu'),
             'name'     => 'trunkmtu',
@@ -692,23 +694,27 @@ endif;
 
 <div id="sb-part-calllimits" class="b-nodisplay">
 <?php
-    echo $form->select(array('desc'  => $this->bbf('fm_maxcallnumbers'),
+    echo $form->text(array('desc'  => $this->bbf('fm_maxcallnumbers'),
             'name'     => 'maxcallnumbers',
             'labelid'  => 'maxcallnumbers',
-            'key'      => false,
+            'size'     => 6,
             'help'     => $this->bbf('hlp_fm_maxcallnumbers'),
-            'selected' => $this->get_var('info','maxcallnumbers','var_val'),
-            'default'  => $element['maxcallnumbers']['default']),
-        $element['maxcallnumbers']['value']),
+            'required' => false,
+            'value'    => $this->get_var('info', 'maxcallnumbers', 'var_val'),
+            'default'  => $element['maxcallnumbers']['default'],
+            'error'    => $this->bbf_args('error',
+                $this->get_var('error','maxcallnumbers')))),
 
-    $form->select(array('desc'  => $this->bbf('fm_maxcallnumbers_nonvalidated'),
+    $form->text(array('desc'  => $this->bbf('fm_maxcallnumbers_nonvalidated'),
             'name'     => 'maxcallnumbers_nonvalidated',
             'labelid'  => 'maxcallnumbers_nonvalidated',
-            'key'      => false,
+            'size'     => 6,
             'help'     => $this->bbf('hlp_fm_maxcallnumbers_nonvalidated'),
-            'selected' => $this->get_var('info','maxcallnumbers_nonvalidated','var_val'),
-            'default'  => $element['maxcallnumbers_nonvalidated']['default']),
-        $element['maxcallnumbers_nonvalidated']['value']);
+            'required' => false,
+            'value'    => $this->get_var('info', 'maxcallnumbers_nonvalidated', 'var_val'),
+            'default'  => $element['maxcallnumbers_nonvalidated']['default'],
+            'error'    => $this->bbf_args('error',
+                $this->get_var('error','maxcallnumbers_nonvalidated'))));
 ?>
 
 <?php
