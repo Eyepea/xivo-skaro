@@ -49,14 +49,14 @@ upgrading_version() {
 }
 
 proposed_upgrade() {
-    force=$1
+    local upgrade=$1
     echo "updating packages list"
     $upgrading_tool update > /dev/null
     xivo_candidate=$(apt-cache policy pf-xivo | grep Candidate | grep -oE 1.[2-9].[0-9]\{1,2\})
     xivo_installed=$(apt-cache policy pf-xivo | grep Installed | grep -oE 1.[2-9].[0-9]\{1,2\})
 	echo "installed version : $xivo_installed"
 	echo "proposed update   : $xivo_candidate"
-    if [ $force != 'yes' ]; then
+    if [ $upgrade != 'upgrade' ]; then
         if [ $xivo_candidate = $xivo_installed ]; then
             echo "You're systeme is up-to-date, nothing to do."
 	        exit
@@ -68,7 +68,7 @@ proposed_upgrade() {
 
 upgrading_xivo() {
     upgrading_version
-    proposed_upgrade $force
+    proposed_upgrade upgrade
     if [ $force = 'no' ]; then
 	    echo "Would you like to upgrade your system ? y/n"
 	    read answer
