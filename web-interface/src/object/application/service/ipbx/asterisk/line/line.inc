@@ -470,10 +470,14 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		$arr['protocol']['callerid'] = $this->_service->mk_callerid($callerid, '', $protocolname);
 
-		if (dwho_issa('callgroup', $arr['protocol']) === true)
-			$arr['protocol']['callgroup'] = implode(',', $arr['protocol']['callgroup']);
-		if (dwho_issa('pickupgroup', $arr['protocol']) === true)
-			$arr['protocol']['pickupgroup'] = implode(',', $arr['protocol']['pickupgroup']);
+		if ($this->_protocol !== false
+		&& ($protocol = $this->_protocol->get($arr['linefeatures']['protocolid'])) !== false) {
+			$arr['protocol'] = array_merge($protocol, $arr['protocol']);
+			if (dwho_issa('callgroup', $arr['protocol']) === true)
+				$arr['protocol']['callgroup'] = implode(',', $arr['protocol']['callgroup']);
+			if (dwho_issa('pickupgroup', $arr['protocol']) === true)
+				$arr['protocol']['pickupgroup'] = implode(',', $arr['protocol']['pickupgroup']);
+		}
 		if (dwho_issa('userfeatures',$arr) === true
 		&& $this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP) {
 			$arr['protocol']['call-limit'] = (2 * (int) $arr['userfeatures']['simultcalls']);
@@ -634,6 +638,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		if(isset($arr['host-static']) === true && $arr['host'] === 'static')
 			$arr['host'] = $arr['host-static'];
+
+		if(dwho_issa('allow',$arr) === false)
+			$arr['allow'] = null;
 
 		if(($rs = $protocol->chk_values($arr)) === false)
 		{
