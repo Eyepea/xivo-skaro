@@ -52,7 +52,7 @@ endif;
 	echo	$form->textarea(array('paragraph'	=> false,
 				      'label'		=> false,
 				      'name'		=> 'configfile[content]',
-				      'id'		=> 'it-context-description',
+				      'id'			=> 'it-configfile-description',
 				      'cols'		=> 90,
 				      'rows'		=> 30,
 				      'default'		=> $element['configfile']['content']['default'],
