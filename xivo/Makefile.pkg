@@ -1,7 +1,6 @@
 #!/usr/bin/make -f
 # -*- mode: makefile; coding: utf-8 -*-
 
-
 DEB_PKG="pf-xivo"
 DEB_TB_DEPS=""
 
