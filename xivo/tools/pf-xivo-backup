@@ -1,5 +1,4 @@
 #!/bin/sh
-
 BACKUP_TYPE=$1
 if [ -z "${BACKUP_TYPE}" ]; then
     echo "Please give backup type" >&2
