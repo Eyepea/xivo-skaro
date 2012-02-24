@@ -195,15 +195,6 @@ activate_if_installed ntp ntp_offset ntp_states
 rm -rf /etc/munin/templates.bak
 cp -a /etc/munin/templates /etc/munin/templates.bak
 cp -a /etc/munin/templates_pf/* /etc/munin/templates/
-if [ -e /usr/share/pf-common/PRODUCT ]; then
-  PRODUCT=$(cat /usr/share/pf-common/PRODUCT)
-else
-  PRODUCT="Server"
-fi
-sed -i "s/#PRODUCT#/${PRODUCT}/g" /etc/munin/templates/*.tmpl /etc/munin/munin.conf /etc/munin/munin-node.conf
-sed "s/#PRODUCT#/${PRODUCT}/g" /etc/munin/munin.conf.tmpl >/etc/munin/munin.conf
-sed "s/#PRODUCT#/${PRODUCT}/g" /etc/munin/munin-node.conf.tmpl >/etc/munin/munin-node.conf
-
 
 # restart service to take changes into account
 invoke-rc.d munin-node restart >/dev/null
