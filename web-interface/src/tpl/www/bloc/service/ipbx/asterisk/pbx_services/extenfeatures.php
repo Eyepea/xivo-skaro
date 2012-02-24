@@ -146,13 +146,9 @@ if(isset($error_js[0]) === true)
 			</div>
 			<div class="stab">
 				<ul>
-<?php
-/* PARKING - COMMENTED
 					<li><a href="#parking"
-					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-parking',1);">
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-4'),'sb-part-parking',1);">
 							<?=$this->bbf('smenu_parking');?></a></li>
- */
-?>
 					<li><a href="#paging"
 					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-4'),'sb-part-paging',1);">
 							<?=$this->bbf('smenu_paging');?></a></li>
@@ -1069,10 +1065,8 @@ if(isset($error_js[0]) === true)
 		</div>
 	</div>
 
-<?php
-/* PARKING - COMMENTED
 	<div id="sb-part-parking" class="b-nodisplay">
-\<?php
+<?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_generalfeatures_parkext'),
 				  'name'	=> 'generalfeatures[parkext]',
 				  'labelid'	=> 'generalfeatures-parkext',
@@ -1217,10 +1211,8 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'generalfeatures-adsipark',
 				      'checked'	=> $this->get_var('generalfeatures','adsipark','var_val'),
 				      'default'	=> $element['generalfeatures']['adsipark']['default']));
-\?>
-	</div>
-*/
 ?>
+	</div>
 
 	<div id="sb-part-paging" class="b-nodisplay">
 		<div class="fm-paragraph">
