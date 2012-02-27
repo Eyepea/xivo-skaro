@@ -192,11 +192,12 @@ activate_if_installed ntp ntp_offset ntp_states
 
 
 # Server templates
-rm -rf /etc/munin/templates.bak
-cp -a /etc/munin/templates /etc/munin/templates.bak
-cp -a /etc/munin/templates_pf/* /etc/munin/templates/
-cp /etc/munin/munin.conf.tmpl /etc/munin/munin.conf
-cp /etc/munin/munin-node.conf.tmpl /etc/munin/munin-node.conf
+munin_dir="/etc/munin"
+rsync -av $munin_dir/templates/ $munin_dir/templates.bak/ --delete
+rsync -av $munin_dir/templates_pf/* $munin_dir/templates/ --delete
+for config_file in munin.conf munin-node.conf; do
+    cp $munin_dir/$config_file.tmpl $munin_dir/$config_file
+done
 
 # restart service to take changes into account
 invoke-rc.d munin-node restart >/dev/null

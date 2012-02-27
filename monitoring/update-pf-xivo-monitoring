@@ -29,11 +29,12 @@ done
 
 # Server config
 # (backup old file)
-if [ -e /etc/monit/monitrc ]; then
+file="/etc/monit/monitrc"
+if [ -e $monit_file ]; then
   today=$(date +%Y%m%d%H%M%S)
-  cp /etc/monit/monitrc /etc/monit/monitrc.$today
+  cp $monit_file $monit_file.$today
 fi
-cp /etc/monit/monitrc.tmpl /etc/monit/monitrc
+cp $monit_file.tmpl $monit_file
 
 emails=$(get_full_email_alerts "monit")
 if [ -n "$emails" ]; then
