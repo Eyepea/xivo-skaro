@@ -1,56 +1,53 @@
 #!/bin/sh
 
-MUNIN_PLUGINS=/usr/share/munin/plugins
-MUNIN_PLUGINS_CONF=/etc/munin/plugins
+MUNIN_PLUGINS_DIR=/usr/share/munin/plugins
+MUNIN_PLUGINS_CONF_DIR=/etc/munin/plugins
 CONFIG_3WARE="/etc/munin/plugin-conf.d/pf-stats_3ware.generated"
 
 is_installed()
 {
-  PKG=$1
-  dpkg -l ${PKG} >/dev/null 2>/dev/null;
+  package=$1
+  dpkg -l $package >/dev/null 2>/dev/null;
 }
 
 activate_plugin()
 {
-  PL=$1
+  plugin=$1
   NAME=$2
-
-  if [ ! -e ${MUNIN_PLUGINS_CONF}/${PL}${NAME} ]; then
-    ln -s ${MUNIN_PLUGINS}/${PL} ${MUNIN_PLUGINS_CONF}/${PL}${NAME}
+  if [ ! -e ${MUNIN_PLUGINS_CONF_DIR}/${plugin}${NAME} ]; then
+    ln -s ${MUNIN_PLUGINS_DIR}/${plugin} ${MUNIN_PLUGINS_CONF_DIR}/${plugin}${NAME}
   fi
 }
 
 deactivate_plugin()
 {
-  PL=$1
-  rm -f ${MUNIN_PLUGINS_CONF}/${PL}
+  plugin=$1
+  rm -f ${MUNIN_PLUGINS_CONF_DIR}/${plugin}
 }
 
 activate_if_installed()
 {
-  PKG=$1
+  package=$1
   shift
-  PL_LIST=$*
+  plugins_list=$*
 
-  if is_installed ${PKG}; then
-    ACT=activate_plugin
-  else
-    ACT=deactivate_plugin
-  fi
-
-  for ZPL in ${PL_LIST}; do
-    ${ACT} ${ZPL}
+  for plugin in $plugins_list; do
+    if is_installed $package; then
+      activate_plugin $plugin
+    else
+      deactivate_plugin $plugin
+    fi
   done
 }
 
 run_plugin()
 {
-  PL=$1
+  plugin=$1
   shift
   PARAMS=$*
 
-  if [ -e ${MUNIN_PLUGINS}/${PL} ]; then
-    ${MUNIN_PLUGINS}/${PL} ${PARAMS}
+  if [ -e ${MUNIN_PLUGINS_DIR}/${plugin} ]; then
+    ${MUNIN_PLUGINS_DIR}/${plugin} ${PARAMS}
   fi
 }
 
@@ -81,9 +78,9 @@ fi
 # detected sensors stats
 # (lm-sensors MUST be configured manually)
 deactivate_plugin sensors_*
-HAS_SENSORS=$(${MUNIN_PLUGINS}/sensors_ autoconf)
+HAS_SENSORS=$(${MUNIN_PLUGINS_DIR}/sensors_ autoconf)
 if [ "${HAS_SENSORS}" = "yes" ]; then
-  AVAIL_SENSORS=$(${MUNIN_PLUGINS}/sensors_ suggest)
+  AVAIL_SENSORS=$(${MUNIN_PLUGINS_DIR}/sensors_ suggest)
   for S in ${AVAIL_SENSORS}; do
     activate_plugin sensors_ ${S}
   done
