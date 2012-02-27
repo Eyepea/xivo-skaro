@@ -33,6 +33,7 @@ if [ -e /etc/monit/monitrc ]; then
   today=$(date +%Y%m%d%H%M%S)
   cp /etc/monit/monitrc /etc/monit/monitrc.$today
 fi
+cp /etc/monit/monitrc.tmpl /etc/monit/monitrc
 
 emails=$(get_full_email_alerts "monit")
 if [ -n "$emails" ]; then
