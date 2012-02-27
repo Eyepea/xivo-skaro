@@ -29,7 +29,7 @@ done
 
 # Server config
 # (backup old file)
-file="/etc/monit/monitrc"
+monit_file="/etc/monit/monitrc"
 if [ -e $monit_file ]; then
   today=$(date +%Y%m%d%H%M%S)
   cp $monit_file $monit_file.$today
