@@ -106,12 +106,6 @@ class xivo_service_asterisk_cel_sql extends xivo_service_asterisk_abstract_sql
 			else
 				$this->_dso->andwherebegin('channame',$arr['channel']);
 		}
-/*
-		if(isset($arr['eventtype']) === true)
-			$this->_dso->andwhere(array('eventtype' => $arr['eventtype']));
-
-		if(isset($arr['exten']) === true)
-			$this->_dso->andwhere(array('exten' => $arr['exten']));
 
 		if(isset($arr['context']) === true)
 			$this->_dso->andwhere(array('context' => $arr['context']));
@@ -123,12 +117,13 @@ class xivo_service_asterisk_cel_sql extends xivo_service_asterisk_abstract_sql
 			$this->_dso->andwhere(array('linkedid' => $arr['linkedid']));
 
 		if(isset($arr['dcontext']) === true)
-			$this->_dso->andwhereexact('dcontext',$arr['dcontext']);
-*/
+			$this->_dso->andwhereexact('context',$arr['dcontext']);
+
 		if(dwho_issa('src',$arr) === true)
 		{
+			$this->_dso->andwhere(array('eventtype' => 'CHAN_START'));
 			$this->_dso->aggregate_where();
-			$this->_dso->andwherelike('exten',$arr['src']['pattern'],$arr['src']['type']);
+			$this->_dso->andwherelike('cid_name',$arr['src']['pattern'],$arr['src']['type']);
 			$this->_dso->orwherelike('cid_num',$arr['src']['pattern'],$arr['src']['type']);
 			$this->_dso->aggregate_where();
 		}
@@ -136,13 +131,10 @@ class xivo_service_asterisk_cel_sql extends xivo_service_asterisk_abstract_sql
 		if(dwho_issa('dst',$arr) === true)
 		{
 			$this->_dso->aggregate_where();
-			$this->_dso->andwherelike('exten',$arr['dst']['pattern'],$arr['dst']['type']);
+			$this->_dso->orwherelike('cid_name',$arr['src']['pattern'],$arr['src']['type']);
 			$this->_dso->orwherelike('cid_num',$arr['src']['pattern'],$arr['src']['type']);
 			$this->_dso->aggregate_where();
 		}
-/*
-		if(dwho_issa('clid',$arr) === true)
-			$this->_dso->andwherelike('clid',$arr['clid']['pattern'],$arr['clid']['type']);
 
 		if(dwho_issa('accountcode',$arr) === true)
 			$this->_dso->andwherelike('accountcode',$arr['accountcode']['pattern'],$arr['accountcode']['type']);
@@ -150,14 +142,6 @@ class xivo_service_asterisk_cel_sql extends xivo_service_asterisk_abstract_sql
 		if(dwho_issa('userfield',$arr) === true)
 			$this->_dso->andwherelike('userfield',$arr['userfield']['pattern'],$arr['userfield']['type']);
 
-		if(isset($arr['dubeg']) === true)
-		{
-			if(isset($arr['duend']) === true)
-				$this->_dso->andwherebetween('duration',$arr['dubeg'],$arr['duend']);
-			else
-				$this->_dso->andwhereexact('duration',$arr['dubeg']);
-		}
-*/
 		return(true);
 	}
 }

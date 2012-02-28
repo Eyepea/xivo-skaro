@@ -47,19 +47,19 @@ if($result === false):
 	$dhtml->write_js('dwho_submenu.set_option(\'onload_last\',true);');
 else:
 	$dhtml->write_js('dwho_submenu.set_options({
-				\'onload_tab\':		"dwsm-tab-2",
-				\'onload_part\':	"sb-part-result"});');
+		\'onload_tab\':		"dwsm-tab-2",
+		\'onload_part\':	"sb-part-result"});');
 
 	if($info !== null):
 		$page_query = $info;
 		$page_query['search'] = 1;
 		$page_query['act'] = 'search';
 		$page = $url->pager($pager['pages'],
-				    $pager['page'],
-				    $pager['prev'],
-				    $pager['next'],
-				    'statistics/cdr/advanced_search',
-				    $page_query);
+							$pager['page'],
+							$pager['prev'],
+							$pager['next'],
+							'',
+							$page_query);
 	endif;
 
 	$exportcsv_query = $info;
@@ -68,7 +68,7 @@ else:
 endif;
 
 ?>
-<div id="sr-cdr" class="b-infos b-form">
+<div id="sr-cel" class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
@@ -122,9 +122,9 @@ endif;
 		    onmouseout="dwho_submenu.blur(this,1);" onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center"><?=$url->href_html($this->bbf('smenu_exportcsv'),
-									     'statistics/cdr/advanced_search',
-									     $exportcsv_query,
-									     'onclick="return(false);"');?></span>
+										'',
+										$exportcsv_query,
+										'onclick="return(false);"');?></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
@@ -138,17 +138,9 @@ endif;
 
 <div id="sb-part-first"<?=($result !== false ? ' class="b-nodisplay"' : '')?>>
 <form action="#" method="post" accept-charset="utf-8">
-<?php
-	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
-				    'value'	=> DWHO_SESS_ID)),
-
-		$form->hidden(array('name'	=> 'fm_send',
-				    'value'	=> 1)),
-
-		$form->hidden(array('name'	=> 'act',
-				    'value'	=> 'search'));
-?>
-
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID))?>
+<?=$form->hidden(array('name' => 'act','value' => 'search'))?>
+<?=$form->hidden(array('name' => 'fm_send','value' => 1))?>
 <div class="fm-paragraph fm-desc-inline">
 	<div class="fm-multifield">
 <?php
@@ -170,6 +162,7 @@ endif;
 ?>
 	</div>
 </div>
+
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_channel'),
 				    'name'	=> 'channel',
@@ -180,17 +173,6 @@ endif;
 				    'default'	=> $element['channel']['default'],
 				    'selected'	=> $info['channel']),
 			      $element['channel']['value']),
-
-		$form->select(array('desc'	=> $this->bbf('fm_disposition'),
-				    'name'	=> 'disposition',
-				    'labelid'	=> 'disposition',
-				    'empty'	=> true,
-				    'key'	=> false,
-				    'bbf'	=> 'fm_disposition-opt',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'default'	=> $element['disposition']['default'],
-				    'selected'	=> $info['disposition']),
-			      $element['disposition']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_amaflags'),
 				    'name'	=> 'amaflags',
@@ -212,17 +194,7 @@ if($context_list !== false):
 				    'bbf'	=> 'fm_dcontext-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'selected'	=> $dcontext),
-
-			      $context_list,
-			      'onchange="xivo_chg_attrib(\'fm_dcontext\',
-							 \'fd-dcontext-custom\',
-							 Number(this.value === \'custom\'));"'),
-
-		$form->text(array('desc'	=> '&nbsp;',
-				  'name'	=> 'dcontext-custom',
-				  'labelid'	=> 'dcontext-custom',
-				  'size'	=> 15,
-				  'value'	=> $dcontext_custom));
+			      $context_list);
 else:
 	echo	$form->text(array('desc'	=> $this->bbf('fm_dcontext'),
 				  'name'	=> 'dcontext',
@@ -231,6 +203,7 @@ else:
 				  'value'	=> $info['dcontext']));
 endif;
 ?>
+
 
 <div class="fm-paragraph fm-multifield">
 <?php
@@ -278,29 +251,6 @@ endif;
 
 <div class="fm-paragraph fm-multifield">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_clid'),
-				  'paragraph'	=> false,
-				  'name'	=> 'clid',
-				  'labelid'	=> 'clid',
-				  'size'	=> 15,
-				  'notag'	=> false,
-				  'default'	=> $element['clid']['default'],
-				  'value'	=> $info['clid'])),
-
-		$form->select(array('paragraph'	=> false,
-				    'name'	=> 'clidformat',
-				    'labelid'	=> 'clidformat',
-				    'key'	=> false,
-				    'bbf'	=> 'fm_search-format',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'default'	=> $element['clidformat']['default'],
-				    'selected'	=> $info['clidformat']),
-			      $element['clidformat']['value']);
-?>
-</div>
-
-<div class="fm-paragraph fm-multifield">
-<?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_accountcode'),
 				  'paragraph'	=> false,
 				  'name'	=> 'accountcode',
@@ -342,60 +292,11 @@ endif;
 			      $element['userfieldformat']['value']);
 ?>
 </div>
-
-<div class="fm-paragraph fm-desc-inline">
-	<div class="fm-multifield">
-<?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_dubeg'),
-				  'paragraph'	=> false,
-				  'name'	=> 'dubeg',
-				  'labelid'	=> 'dubeg',
-				  'default'	=> $element['dubeg']['default'],
-				  'value'	=> $info['dubeg'])),
-
-		$form->select(array('paragraph'	=> false,
-				    'name'	=> 'dubegunit',
-				    'id'	=> 'dubegunit',
-				    'label'	=> false,
-				    'key'	=> false,
-				    'bbf'	=> 'fm_dubegunit-opt',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'default'	=> $element['dubegunit']['default'],
-				    'selected'	=> $info['dubegunit']),
-			      $element['dubegunit']['value']);
-?>
-	</div>
-
-	<div class="fm-multifield">
-<?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_duend'),
-				  'paragraph'	=> false,
-				  'name'	=> 'duend',
-				  'labelid'	=> 'duend',
-				  'value'	=> $info['duend'])),
-
-		$form->select(array('paragraph'	=> false,
-				    'name'	=> 'duendunit',
-				    'id'	=> 'duendunit',
-				    'label'	=> false,
-				    'key'	=> false,
-				    'bbf'	=> 'fm_duendunit-opt',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'default'	=> $element['duendunit']['default'],
-				    'selected'	=> $info['duendunit']),
-			      $element['duendunit']['value']);
-?>
-	</div>
-</div>
-
-<?php
-	echo	$form->submit(array('name'	=> 'submit',
-				    'id'	=> 'it-submit',
-				    'value'	=> $this->bbf('fm_bt-search')));
-?>
+<?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-search')))?>
 
 </form>
 </div>
+
 
 <?php
 	if($result !== false):
@@ -405,7 +306,7 @@ endif;
 <?php
 	if($page !== ''):
 		echo	'<div class="b-total">',
-			$this->bbf('number_cdr-result','<b>'.$this->get_var('total').'</b>'),
+			$this->bbf('number_cel-result','<b>'.$this->get_var('total').'</b>'),
 			'</div>',
 			'<div class="b-page">',
 			$page,
@@ -424,7 +325,7 @@ endif;
 	if($result === null || ($nb = count($result)) === 0):
 ?>
 		<tr>
-			<td colspan="4" class="td-single"><?=$this->bbf('no_cdr-result');?></td>
+			<td colspan="4" class="td-single"><?=$this->bbf('no_cel-result');?></td>
 		</tr>
 <?
 	else:
@@ -432,19 +333,22 @@ endif;
 			$ref = &$result[$i];
 			$mod = ($i % 2) + 1;
 
-			if(dwho_has_len($ref['src']) === false):
+			$ref0 = array_shift($ref);
+			$ref1 = array_shift($ref);
+
+			if(!isset($ref0['from']) || dwho_has_len($ref0['from']) === false):
 				$src = '-';
 			else:
-				$src = dwho_htmlen(dwho_trunc($ref['src'],15,'...'));
+				$src = dwho_htmlen(dwho_trunc($ref0['from'],25,'...'));
 			endif;
 
-			if(dwho_has_len($ref['dst']) === false):
+			if(!isset($ref0['to']) || dwho_has_len($ref0['to']) === false):
 				$dst = '-';
 			else:
-				$dst = dwho_htmlen(dwho_trunc($ref['dst'],15,'...'));
+				$dst = dwho_htmlen(dwho_trunc($ref0['to'],25,'...'));
 			endif;
 
-			$duration = dwho_calc_duration(null,null,$ref['duration'],true);
+			$duration = dwho_calc_duration(null,null,$ref0['duration'],true);
 
 			if(($cnt_duration = count($duration)) === 4):
 				$bbf_duration = 'entry_duration-dayhourminsec';
@@ -456,7 +360,23 @@ endif;
 				$bbf_duration = 'entry_duration-sec';
 			endif;
 
-			$billsec = dwho_calc_duration(null,null,$ref['billsec'],true);
+			$ringing = 0;
+			if (isset($ref0['ringing']))
+				$ringing = $ref0['ringing'];
+
+			$ringingsec = dwho_calc_duration(null,null,$ringing,true);
+
+			if(($cnt_ringing = count($ringingsec)) === 4):
+				$bbf_ringing = 'entry_billsec-dayhourminsec';
+			elseif($cnt_ringing === 3):
+				$bbf_ringing = 'entry_billsec-hourminsec';
+			elseif($cnt_ringing === 2):
+				$bbf_ringing = 'entry_billsec-minsec';
+			else:
+				$bbf_ringing = 'entry_billsec-sec';
+			endif;
+
+			$billsec = dwho_calc_duration(null,null,$ref0['duration'],true);
 
 			if(($cnt_billsec = count($billsec)) === 4):
 				$bbf_billsec = 'entry_billsec-dayhourminsec';
@@ -468,107 +388,89 @@ endif;
 				$bbf_billsec = 'entry_billsec-sec';
 			endif;
 
-			if($ref['channel'] === XIVO_SRE_IPBX_AST_CHAN_UNKNOWN)
-				$ref['channel'] = $this->bbf('entry_channel','unknown');
+			if($ref0['channame'] === XIVO_SRE_IPBX_AST_CHAN_UNKNOWN)
+				$ref0['channame'] = $this->bbf('entry_channel','unknown');
 ?>
 	<tr class="sb-content l-infos-<?=$mod?>on2 curpointer"
 	    onmouseover="this.tmp = this.className;
 			 this.className = 'sb-content l-infos-over curpointer';"
 	    onmouseout="this.className = this.tmp;"
-	    onclick="this.entryline = dwho_eid('cdr-infos-<?=$i?>').style.display;
-		     dwho_eid('cdr-infos-<?=$i?>').style.display = this.entryline === '' || this.entryline === 'none'
+	    onclick="this.entryline = dwho_eid('cel-infos-<?=$i?>').style.display;
+		     dwho_eid('cel-infos-<?=$i?>').style.display = this.entryline === '' || this.entryline === 'none'
 								   ? 'table-row'
 								   : 'none';">
 		<td class="td-left">
 			<a href="#" onclick="return(false);"><?=dwho_i18n::strftime_l(
 								$this->bbf('date_format_yymmddhhiiss'),
 								null,
-								strtotime($ref['calldate']));?></a>
+								strtotime($ref0['dstart']));?></a>
 		</td>
 		<td><?=$src?></td>
 		<td><?=$dst?></td>
 		<td class="td-right"><?=$this->bbf($bbf_duration,$duration);?></td>
 	</tr>
-	<tr id="cdr-infos-<?=$i?>" class="sb-content l-infos-<?=$mod?>on2 b-nodisplay cdr-infos">
+	<tr id="cel-infos-<?=$i?>" class="sb-content l-infos-<?=$mod?>on2 b-nodisplay cel-infos">
 		<td colspan="4" class="td-single">
 		<dl>
 		<?php
-			if(dwho_has_len($ref['channel']) === true):
+			if(dwho_has_len($ref0['channame']) === true):
 				echo	'<dt>',$this->bbf('entry_channel'),'</dt>',
-					'<dd title="',dwho_htmlen($ref['channel']),'">',
-					dwho_htmlen(dwho_trunc($ref['channel'],30,'...',false)),
+					'<dd title="',dwho_htmlen($ref0['channame']),'">',
+					dwho_htmlen(dwho_trunc($ref0['channame'],35,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(dwho_has_len($ref['disposition']) === true):
-				echo	'<dt>',$this->bbf('entry_disposition'),'</dt>',
-					'<dd>',$this->bbf('entry_disposition',$ref['disposition']),'<br /></dd>';
-			endif;
-
-			if(dwho_has_len($ref['amaflagsmeta']) === true):
+			if(dwho_has_len($ref0['amaflagsmeta']) === true):
 				echo	'<dt>',$this->bbf('entry_amaflagsmeta'),'</dt>',
-					'<dd>',$this->bbf('ast_amaflag_name_info',$ref['amaflagsmeta']),'<br /></dd>';
+					'<dd>',$this->bbf('ast_amaflag_name_info',$ref0['amaflagsmeta']),'<br /></dd>';
 			endif;
 
-			if(dwho_has_len($ref['clid']) === true):
-				echo	'<dt>',$this->bbf('entry_clid'),'</dt>',
-					'<dd title="',dwho_htmlen($ref['clid']),'">',
-					dwho_htmlen(dwho_trunc($ref['clid'],30,'...',false)),
-					'<br /></dd>';
-			endif;
+			echo	'<dt>',$this->bbf('entry_answer'),'</dt>',
+				'<dd title="',dwho_htmlen($ref0['answer']),'">',
+				$this->bbf('call_is_answer',(int) $ref0['answer']),
+				'<br /></dd>';
 
-			if(dwho_has_len($ref['accountcode']) === true):
+			if(dwho_has_len($ref0['accountcode']) === true):
 				echo	'<dt>',$this->bbf('entry_accountcode'),'</dt>',
-					'<dd title="',dwho_htmlen($ref['accountcode']),'">',
-					dwho_htmlen(dwho_trunc($ref['accountcode'],20,'...',false)),
+					'<dd title="',dwho_htmlen($ref0['accountcode']),'">',
+					dwho_htmlen(dwho_trunc($ref0['accountcode'],20,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(dwho_has_len($ref['userfield']) === true):
+			if(dwho_has_len($ref0['userfield']) === true):
 				echo	'<dt>',$this->bbf('entry_userfield'),'</dt>',
-					'<dd title="',dwho_htmlen($ref['userfield']),'">',
-					dwho_htmlen(dwho_trunc($ref['userfield'],20,'...',false)),
+					'<dd title="',dwho_htmlen($ref0['userfield']),'">',
+					dwho_htmlen(dwho_trunc($ref0['userfield'],20,'...',false)),
 					'<br /></dd>';
 			endif;
 		?>
 		</dl>
 		<dl>
 		<?php
-			if(dwho_has_len($ref['dcontext']) === true):
+			if(dwho_has_len($ref0['context']) === true):
 				echo	'<dt>',$this->bbf('entry_dcontext'),'</dt>',
-					'<dd title="',dwho_htmlen($ref['dcontext']),'">',
-					dwho_htmlen(dwho_trunc($ref['dcontext'],30,'...',false)),
+					'<dd title="',dwho_htmlen($ref0['context']),'">',
+					dwho_htmlen(dwho_trunc($ref0['context'],30,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(dwho_has_len($ref['dstchannel']) === true):
+			if(dwho_has_len($ref1['channame']) === true):
 				echo	'<dt>',$this->bbf('entry_dstchannel'),'</dt>',
-					'<dd title="',dwho_htmlen($ref['dstchannel']),'">',
-					dwho_htmlen(dwho_trunc($ref['dstchannel'],20,'...',false)),
+					'<dd title="',dwho_htmlen($ref1['channame']),'">',
+					dwho_htmlen(dwho_trunc($ref1['channame'],20,'...',false)),
 					'<br /></dd>';
 			endif;
 
 			echo	'<dt>',$this->bbf('entry_billsec'),'</dt>',
 				'<dd>',$this->bbf($bbf_billsec,$billsec),'<br /></dd>';
 
-			if(dwho_has_len($ref['lastapp']) === true):
-				echo	'<dt>',$this->bbf('entry_lastapp'),'</dt>',
-					'<dd title="',dwho_htmlen($ref['lastapp']),'">',
-					dwho_htmlen(dwho_trunc($ref['lastapp'],20,'...',false)),
-					'<br /></dd>';
-			endif;
+			echo	'<dt>',$this->bbf('entry_ringsec'),'</dt>',
+				'<dd>',$this->bbf($bbf_ringing,$ringingsec),'<br /></dd>';
 
-			if(dwho_has_len($ref['lastdata']) === true):
-				echo	'<dt>',$this->bbf('entry_lastdata'),'</dt>',
-					'<dd title="',dwho_htmlen($ref['lastdata']),'">',
-					dwho_htmlen(dwho_trunc($ref['lastdata'],25,'...',false)),
-					'<br /></dd>';
-			endif;
-
-			if(dwho_has_len($ref['uniqueid']) === true):
+			if(dwho_has_len($ref0['uniqueid']) === true):
 				echo	'<dt>',$this->bbf('entry_uniqueid'),'</dt>',
-					'<dd title="',dwho_htmlen($ref['uniqueid']),'">',
-					dwho_htmlen(dwho_trunc($ref['uniqueid'],20,'...',false)),
+					'<dd title="',dwho_htmlen($ref0['uniqueid']),'">',
+					dwho_htmlen(dwho_trunc($ref0['uniqueid'],20,'...',false)),
 					'<br /></dd>';
 			endif;
 		?>
@@ -580,10 +482,11 @@ endif;
 	endif;
 ?>
 	</table>
+
 <?php
 	if($page !== ''):
 		echo	'<div class="b-total">',
-			$this->bbf('number_cdr-result','<b>'.$this->get_var('total').'</b>'),
+			$this->bbf('number_cel-result','<b>'.$this->get_var('total').'</b>'),
 			'</div>',
 			'<div class="b-page">',$page,'</div>',
 			'<div class="clearboth"></div>';

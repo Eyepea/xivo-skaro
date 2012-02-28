@@ -18,7 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_statistics_cel
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'date.inc'));
+
+class stats_ressource_cel
 {
 
 	public		$_type		=    '';
@@ -48,6 +50,7 @@ class xivo_statistics_cel
 	private		$_trunklist	= false;
 	private		$_operatorlist	= false;
 	private		$_ipbx		= false;
+	private		$_total		= 0;
 
 	public function __construct()
 	{
@@ -159,7 +162,12 @@ class xivo_statistics_cel
 		return(($this->_trunklist = $rs));
 	}
 
-	public function get_list_call($arr=null)
+	public function get_cnt()
+	{
+		return($this->_total);
+	}
+
+	public function get_list_call($arr=null, $order=null, $limit=null)
 	{
 		if (is_null($arr) === true)
 		{
@@ -169,7 +177,7 @@ class xivo_statistics_cel
 		}
 
 		if ($this->_trunk === false
-		|| ($list = $this->_cel->search($arr)) === false)
+		|| ($list = $this->_cel->search($arr, $order, $limit)) === false)
 			return(false);
 
 		$rs = array();
@@ -465,22 +473,42 @@ class xivo_statistics_cel
 		return($this->_result);
 	}
 
-	private function _build_data($search=null)
+	public function get_calls_records($search=null, $order=null, $limit=null)
+	{
+		return($this->_build_data($search, $order, $limit));
+	}
+
+	private function _build_data($search=null, $order=null, $limit=null)
 	{
 		$rs = array();
-		$listcall = $this->get_list_call($search);
-		while ($listcall)
+		if (($listcall = $this->get_list_call($search, $order)) === false)
+			return(false);
+
+		$this->_total = count($listcall);
+
+		if ($this->_total === 0)
+			return(false);
+
+		if ($limit === null)
+			$limit = array(0, $this->_total);
+		elseif(is_numeric($limit))
+			$limit = array(0, $limit);
+
+		if (($delta = (int) ($limit[0] + $limit[1])) > $this->_total)
+			$delta = $this->_total;
+
+		$listcall = array_values($listcall);
+		for ($i=$limit[0]; $i < $delta; $i++)
 		{
-			$ticketcall = array_shift($listcall);
-			$token = array();
-			$itl = array();
-			$tmp = array();
+			$ticketcall = &$listcall[$i];
+			$token = $itl = $tmp = array();
 			while ($ticketcall)
 			{
 				$call = array_shift($ticketcall);
 
 				$eventtime = dwho_date::all_to_unixtime($call['eventtime']);
 				$uniqueid = $call['uniqueid'];
+				$linkedid = $call['linkedid'];
 				$eventtype = $call['eventtype'];
 				$channame = $call['channame'];
 				$trunkname = substr($channame,0,-strlen(strrchr($channame,'-')));
@@ -506,56 +534,77 @@ class xivo_statistics_cel
 
 				$cc = &$tmp[$uniqueid];
 
+				if (!isset($ref['duration']))
+					$ref['duration'] = 0;
+
 				switch ($eventtype)
 				{
 					case 'CHAN_START':
-						if ($event_cnt === 1)
+						switch ($event_cnt)
 						{
-							$ref['uniqueid'] = $uniqueid;
-							$ref['channame'] = $channame;
-							$ref['dstart'] = date('Y-m-d H:i:s',$eventtime);
-							$ref['start'] = $eventtime;
-							$ref['trunk'] = $trunkname;
-							$ref['from'] = $call['cid_num'];
-							$ref['to'] = empty($call['cid_dnid']) ? $call['exten'] : $call['cid_dnid'];
-							$ref['context'] = $call['context'];
-							$ref['cid_name'] = $call['cid_name'];
-							$ref['cid_num'] = $call['cid_num'];
-							$ref['answer'] = false;
+							case 1:
+								$ref['uniqueid'] = $uniqueid;
+								$ref['channame'] = $channame;
+								$ref['dstart'] = date('Y-m-d H:i:s',$eventtime);
+								$ref['start'] = $eventtime;
+								$ref['trunk'] = $trunkname;
+								if (dwho_has_len($call['cid_name']) && dwho_has_len($call['cid_num']))
+									$ref['from'] = $call['cid_name'].' ('.$call['cid_num'].')';
+								if (preg_match('/^'.XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_EXTEN.'$/', $call['exten']))
+									$ref['to'] = $call['exten'];
+								$ref['context'] = $call['context'];
+								$ref['userdeftype'] = $call['userdeftype'];
+								$ref['answer'] = false;
+								$ref['userfield'] = $call['userfield'];
+								$ref['accountcode'] = $call['accountcode'];
+								$ref['amaflags'] = $call['amaflags'];
+								$ref['amaflagsmeta'] = $call['amaflagsmeta'];
 
-							$itl['start'] = $eventtime;
-							$itl['trunkname'] = $trunkname;
+								$cc['ringing'] = $eventtime;
+								break;
+							case 2:
+								if (dwho_has_len($call['cid_name']) && dwho_has_len($call['cid_num']))
+									$ref['to'] = $call['cid_name'].' ('.$call['cid_num'].')';
+								break;
+							default:
+								$ref['dstart'] = date('Y-m-d H:i:s',$eventtime);
+								$ref['start'] = $eventtime;
+								$ref['context'] = $call['context'];
+								break;
 						}
-						else
-						{
-							$ref['dstart'] = date('Y-m-d H:i:s',$eventtime);
-							$ref['start'] = $eventtime;
-							$ref['context'] = $call['context'];
-						}
-						$cc['ringing'] = $eventtime;
 						break;
 					case 'APP_START':
+						switch ($event_cnt)
+						{
+							case 1:
+								if (!isset($ref['from']) || !dwho_has_len($ref['from']))
+									$ref['from'] = $call['cid_name'].' ('.$call['cid_num'].')';
+								break;
+							case 2:
+								if (!dwho_has_len($ref['to']))
+									$ref['to'] = $call['cid_name'].' ('.$call['cid_num'].')';
+								break;
+						}
 						break;
 					case 'ANSWER':
+						if (!isset($ref['to']) || !dwho_has_len($ref['to']))
+							$ref['to'] = $call['cid_name'];
 						$cc['danswer'] = $eventtime;
 						$ref['answer'] = true;
 						break;
 					case 'BRIDGE_START':
-						$ref['ringing'] = ($eventtime - $cc['ringing']);
+						if (isset($cc['ringing']))
+							$ref['ringing'] = (int) ($eventtime - $cc['ringing']);
 						break;
 					case 'BRIDGE_END':
 						break;
 					case 'HANGUP':
-						if (isset($cc['danswer']) === true)
-							$ref['duration'] = ($eventtime - $cc['danswer']);
-						else
-							$ref['duration'] = 0;
+						if (isset($cc['danswer']))
+							$ref['duration'] = (int) ($eventtime - $cc['danswer']);
 						break;
 					case 'CHAN_END':
 						$ref['end'] = $eventtime;
 						$ref['dend'] = date('Y-m-d H:i:s',$eventtime);
-						$itl['end'] = $eventtime;
-						$itl['duration'] = $ref['duration'];
 						break;
 					default:
 				}

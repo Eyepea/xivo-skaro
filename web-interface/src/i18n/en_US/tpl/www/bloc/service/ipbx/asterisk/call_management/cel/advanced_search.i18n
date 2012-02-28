@@ -1,131 +1,134 @@
 ; title_content_name
-Journaux d'appels
+Call Logs
 
 ; smenu_search
-Recherche
+Search
 
 ; smenu_result
-Résultats
+Results
 
 ; smenu_exportcsv
-Export CSV
+CSV Export
 
-; number_cdr-result
-Résultat(s) : %s
+; number_cel-result
+Result(s): %s
 
 ; bt_showcalendar
-Calendrier
+Calendar
 
 ; fm_search-format(exact)
 Exact
 
 ; fm_search-format(begin)
-Commence par
+Begins
 
-; fm_search-format(contain)
-Contient
+; fm_search-format(container)
+Contains
 
 ; fm_search-format(end)
-Fini par
+Eventually
 
 ; fm_dbeg
-Date de début :
+Arrival date:
 
 ; fm_dend
-Date de fin :
+End date:
 
 ; fm_channel
-Canal :
+Channel:
 
 ; fm_channel-opt(others)
-Autres
+Other
 
 ; fm_channel-opt(unknown)
-Inconnu
+Unknown
 
 ; fm_channel-opt
 %s
 
 ; fm_disposition
-Statut de l'appel :
+Call status:
 
 ; fm_disposition-opt(ANSWERED)
-Répondu
+Answered
 
 ; fm_disposition-opt(NO ANSWER)
-Pas de réponse
+No answer
 
 ; fm_disposition-opt(BUSY)
-Occupé
+Busy
 
 ; fm_disposition-opt(FAILED)
-Echoué
+Failed
 
 ; fm_disposition-opt(UNKNOWN)
-Inconnu
+Unknown
 
 ; fm_amaflags
-Drapeau de facturation :
+Flag billing:
 
 ; fm_dcontext
-Contexte :
+Background:
 
 ; fm_dcontext-opt(custom)
-Personnalisé
+Custom
 
 ; fm_dcontext-opt
 %s
 
 ; fm_src
-Appelant :
+Caller:
 
 ; fm_dst
-Appelé :
+Called:
 
 ; fm_clid
-Nom d'appel :
+Name of Appeal:
 
 ; fm_accountcode
-Numéro d'acompte :
+Number of deposit:
 
 ; fm_userfield
-Champ utilisateur :
+User Field:
 
 ; fm_dubeg
-Début de la durée :
+Beginning of the term:
 
 ; fm_dubegunit-opt(seconds)
-Secondes
+Seconds
 
 ; fm_dubegunit-opt(minutes)
 Minutes
 
 ; fm_duend
-Fin de la durée :
+End time:
 
 ; fm_duendunit-opt(seconds)
-Secondes
+Seconds
 
 ; fm_duendunit-opt(minutes)
 Minutes
 
 ; fm_bt-search
-Rechercher
+Search
 
 ; col_calldate
-Date d'appel
+Call Date
 
 ; col_src
-Appelant
+Caller
 
 ; col_dst
-Appelé
+Called
 
 ; col_duration
-Durée
+Period
+
+; entry_ringsec
+Ring Time: 
 
 ; entry_duration-sec
-%02d sec.
+% 02d sec.
 
 ; entry_duration-minsec
 %s min. %02d sec.
@@ -134,52 +137,61 @@ Durée
 %sh%02d %02d sec.
 
 ; entry_duration-dayhourminsec
-%s jour(s) %sh%02d %02d sec.
+%s day(s) %sh%02d %02d sec.
 
 ; entry_channel
-Canal :
+Channel:
 
 ; entry_channel(unknown)
-Inconnu
+Unknown
 
 ; entry_disposition
-Statut de l'appel :
+Call status:
 
 ; entry_disposition(ANSWERED)
-Répondu
+Answered
 
 ; entry_disposition(NO ANSWER)
-Pas de réponse
+No answer
 
 ; entry_disposition(BUSY)
-Occupé
+Busy
 
 ; entry_disposition(FAILED)
-Echoué
+Failed
 
 ; entry_disposition(UNKNOWN)
-Inconnu
+Unknown
 
 ; entry_amaflagsmeta
-Drapeau de facturation :
+Flag billing:
 
 ; entry_clid
-Nom d'appel :
+Name of Appeal:
 
 ; entry_accountcode
-Numéro d'acompte :
+Number deposit:
+
+; entry_answer
+Answer?:
+
+; call_is_answer(0)
+No
+
+; call_is_answer(1)
+Yes
 
 ; entry_userfield
-Champ utilisateur :
+User Field:
 
 ; entry_dcontext
-Contexte :
+Background:
 
 ; entry_dstchannel
-Canal de destination :
+Destination channel:
 
 ; entry_billsec
-Durée réelle :
+Actual length:
 
 ; entry_billsec-sec
 %02d sec.
@@ -191,16 +203,16 @@ Durée réelle :
 %sh%02d %02d sec.
 
 ; entry_billsec-dayhourminsec
-%s jour(s) %sh%02d %02d sec.
+%s day(s) %sh%02d %02d sec.
 
 ; entry_lastapp
-Dernière application :
+Last application:
 
 ; entry_lastdata
-Dernière donnée :
+Latest data:
 
 ; entry_uniqueid
-Identifiant unique :
+Unique identifier:
 
-; no_cdr-result
-Aucune entrée dans les journaux d'appels correspond à votre recherche
+; no_cel-result
+No entries in the call logs for your search

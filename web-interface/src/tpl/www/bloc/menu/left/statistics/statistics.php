@@ -130,20 +130,20 @@ if(xivo_user::chk_acl_section('statistics/call_center') === true):
 	endif;
 endif;
 
-if(xivo_user::chk_acl('cdr') === true):
+if(xivo_user::chk_acl('search') === true):
 ?>
 			<dt><?=$this->bbf('mn_left_ti_cel')?></dt>
 			<dd id="mn-1">
 				<?=$url->href_html($this->bbf('mn_left_home_cel'),
-						'statistics/cdr/index');?>
+						'statistics/cel/index');?>
 			</dd>
 			<dd id="mn-2">
 				<?=$url->href_html($this->bbf('mn_left_search_cel'),
-						'statistics/cdr/search');?>
+						'statistics/cel/search');?>
 			</dd>
 			<dd id="mn-3">
-				<?=$url->href_html($this->bbf('mn_left_advanced_search_cdr'),
-						'statistics/cdr/advanced_search');?>
+				<?=$url->href_html($this->bbf('mn_left_advanced_search_cel'),
+						'statistics/cel/advanced_search');?>
 			</dd>
 <?php
 endif;
@@ -158,8 +158,8 @@ endif;
 </dl>
 
 <?php
-	if(xivo_user::chk_acl('cdr') === true):
-		if($this->get_var('showdashboard_cdr') === true):
+	if(xivo_user::chk_acl('search') === true):
+		if($this->get_var('showdashboard_search') === true):
 ?>
 <div id="dashboard">
 	<div class="sb-top xspan">
@@ -172,17 +172,17 @@ endif;
 		<div id="it-loading" class="b-nodisplay" style="position: absolute;width: 75px;height: 75px;margin-left: 50px;">
 			<img alt="loading" src="/img/site/loading.gif" width="75" height="75" />
 		</div>
-		<form action="/statistics/cdr/index.php/search" method="get" accept-charset="utf-8" onsubmit="fm_chk();">
+		<form action="/statistics/cel/index.php/search" method="get" accept-charset="utf-8" onsubmit="fm_chk();">
 			<div id="d-conf-list" class="fm-paragraph">
-			<?=$this->bbf('cdr_axetype')?>
+			<?=$this->bbf('search_axetype')?>
 				<?php
 					echo	$form->select(array('name'	=> 'axetype',
 								'id'		=> 'it-axetype',
 								'paragraph'	=> false,
 								'browse'	=> 'axetype',
-								'empty'		=> $this->bbf('fm_stats_cdr_default'),
+								'empty'		=> $this->bbf('fm_stats_search_default'),
 								'key'		=> false,
-								'bbf'		=> 'fm_stats_cdr_by-opt',
+								'bbf'		=> 'fm_stats_search_by-opt',
 								'bbfopt'	=> array('argmode'	=> $listaxetype),
 								'selected'	=> $this->get_var('axetype')),
 								$listaxetype);
@@ -192,7 +192,7 @@ endif;
 	if($this->get_var('axetype') !== ''):
 
 		$listop = $this->get_var('listop');
-		$cdrinfo = $this->get_var('cdrinfo');
+		$searchinfo = $this->get_var('searchinfo');
 		$listchannel = $this->get_var('listchannel');
 
 ?>
@@ -242,7 +242,7 @@ endif;
 								'style'	=> 'float:left;',
 								'size'	=> 12,
 								'default'	=> '',
-								'value'	=> $cdrinfo['src'])),
+								'value'	=> $searchinfo['src'])),
 
 						$form->select(array('paragraph'	=> false,
 								'name'		=> 'srcformat',
@@ -252,7 +252,7 @@ endif;
 								'bbf'		=> 'fm_search-format',
 								'bbfopt'	=> array('argmode' => 'paramvalue'),
 								'default'	=> 'exact',
-								'selected'	=> $cdrinfo['srcformat']),
+								'selected'	=> $searchinfo['srcformat']),
 							$listop);
 				?>
 				</div>
@@ -267,7 +267,7 @@ endif;
 								'labelid'	=> 'dst',
 								'size'	=> 12,
 								'default'	=> '',
-								'value'	=> $cdrinfo['dst'])),
+								'value'	=> $searchinfo['dst'])),
 
 						$form->select(array('paragraph'	=> false,
 								'name'		=> 'dstformat',
@@ -277,7 +277,7 @@ endif;
 								'bbf'		=> 'fm_search-format',
 								'bbfopt'	=> array('argmode' => 'paramvalue'),
 								'default'	=> 'exact',
-								'selected'	=> $cdrinfo['dstformat']),
+								'selected'	=> $searchinfo['dstformat']),
 							$listop);
 				?>
 				</div>
@@ -294,7 +294,7 @@ endif;
 							'bbf'		=> 'fm_channel-opt',
 							'bbfopt'	=> array('argmode' => 'paramvalue'),
 							'default'	=> '',
-							'selected'	=> $cdrinfo['channel']),
+							'selected'	=> $searchinfo['channel']),
 						$listchannel);
 				?>
 				</div>

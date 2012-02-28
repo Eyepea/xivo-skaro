@@ -18,6 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-include(dwho_file::joinpath(dirname(__FILE__),'cdr','index.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'cel','index.php'));
 
 ?>

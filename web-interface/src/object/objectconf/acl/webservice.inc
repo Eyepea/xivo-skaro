@@ -64,6 +64,7 @@ $array['tree']['service']['ipbx']['call_management'] = array();
 $array['tree']['service']['ipbx']['call_management']['incall'] = true;
 $array['tree']['service']['ipbx']['call_management']['outcall'] = true;
 $array['tree']['service']['ipbx']['call_management']['pickup']  = true;
+$array['tree']['service']['ipbx']['call_management']['cel']  = true;
 
 $array['tree']['service']['ipbx']['trunk_management'] = array();
 $array['tree']['service']['ipbx']['trunk_management']['sip'] = true;

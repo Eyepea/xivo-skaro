@@ -47,6 +47,7 @@ $array['tree']['service']['ipbx']['call_management']['rightcall'] = true;
 $array['tree']['service']['ipbx']['call_management']['callfilter'] = true;
 $array['tree']['service']['ipbx']['call_management']['pickup'] = true;
 $array['tree']['service']['ipbx']['call_management']['schedule'] = true;
+$array['tree']['service']['ipbx']['call_management']['cel'] = true;
 
 $array['tree']['service']['ipbx']['trunk_management'] = array();
 $array['tree']['service']['ipbx']['trunk_management']['sip'] = true;

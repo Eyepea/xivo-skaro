@@ -76,6 +76,9 @@ Schedules
 ; mn_left_callmanagement-voicemenu
 Voice menus
 
+; mn_left_callmanagement-cel
+Calls Logs
+
 ; mn_left_ti_trunkmanagement
 Trunk management
 

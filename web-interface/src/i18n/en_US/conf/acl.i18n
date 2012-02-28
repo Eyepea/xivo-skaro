@@ -100,7 +100,7 @@ Call management
 ; acl(service-ipbx-call_management-callfilter)
 Call filters
 
-; acl(service-ipbx-call_management-cdr)
+; acl(service-ipbx-call_management-cel)
 Call logs
 
 ; acl(service-ipbx-call_management-incall)

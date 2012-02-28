@@ -80,10 +80,7 @@ class xivo_service_asterisk_cel extends xivo_service_asterisk_abstract
 		}
 
 		if(dwho_has_len($arr,'channel') === true)
-			$search['channel'] = $arr['channel'];
-
-		if(dwho_has_len($arr,'disposition') === true)
-			$search['disposition'] = $arr['disposition'];
+			$search['channel'] = $this->_search_channel($arr['channel']);
 
 		if(dwho_has_len($arr,'amaflags') === true)
 			$search['amaflags'] = $arr['amaflags'];
@@ -97,15 +94,64 @@ class xivo_service_asterisk_cel extends xivo_service_asterisk_abstract
 		if(dwho_has_len($arr,'dst') === true && isset($arr['dstformat']) === true)
 			$search['dst'] = array('pattern' => $arr['dst'],'type' => $arr['dstformat']);
 
+		if(dwho_has_len($arr,'accountcode') === true && isset($arr['accountcodeformat']) === true)
+			$search['accountcode'] = array('pattern' => $arr['accountcode'],'type' => $arr['accountcodeformat']);
+
+		if(dwho_has_len($arr,'userfield') === true && isset($arr['userfieldformat']) === true)
+			$search['userfield'] = array('pattern' => $arr['userfield'],'type' => $arr['userfieldformat']);
+
 		if(($result = $this->_dso->search($search,$order,$limit)) === false)
 			return(null);
 
 		$nb = count($result);
 
 		for($i = 0;$i < $nb;$i++)
+		{
 			$ref = &$result[$i];
 
+			if(isset($ref['amaflags']) === false)
+				$ref['amaflags'] = 0;
+
+			$ref['amaflagsmeta'] = $this->amaflags_meta($ref['amaflags']);
+		}
+
 		return($result);
+	}
+
+	public function _search_channel($channel)
+	{
+		if($channel !== 'others')
+			return($channel);
+
+		$channel = $this->get_element_value('channel');
+		unset($channel['others']);
+		$channel = array_keys($channel);
+
+		return($channel);
+	}
+
+	public function amaflags_meta($int)
+	{
+		$int = dwho_uint($int);
+
+		$amaflags = $this->get_element_value('amaflags');
+
+		if(isset($amaflags[$int]) === true)
+			return($amaflags[$int]);
+
+		return(XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DEFAULT);
+	}
+
+	public function channel_meta($str)
+	{
+		$str = (string) $str;
+
+		$channels = $this->get_element_value('channel');
+
+		if(isset($channels[$str]) === true)
+			return($channels[$str]);
+
+		return(false);
 	}
 }
 

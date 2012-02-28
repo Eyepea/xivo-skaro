@@ -29,16 +29,16 @@
 #s-asterisk #index #ipbx-logo ul {margin-top: 10px}
 
 #s-asterisk #sr-agentgroup .sb-list th, #s-asterisk #sr-agent .sb-list th {width: 50%;}
-#s-asterisk #sr-cdr .fm-multifield .fm-desc {min-width: 40%;}
-#s-asterisk #sr-cdr .fm-desc-inline .fm-multifield {width: auto;display: inline;padding: 0px 10px;}
-#s-asterisk #sr-cdr .fm-desc-inline .fm-multifield label {padding: 0px;}
-#s-asterisk #sr-cdr .sb-list table {margin-top: 0px;}
-#s-asterisk #sr-cdr .sb-list table .cdr-infos td {padding: 4px;}
-#s-asterisk #sr-cdr .sb-list table .cdr-infos dl {width: 50%; float: left;text-align: left;}
-#s-asterisk #sr-cdr .sb-list table .cdr-infos dt {padding-right: 2px;display: inline;font-weight: bold;}
-#s-asterisk #sr-cdr .sb-list table .cdr-infos dd {display: inline;}
-#s-asterisk #sr-cdr #cal-dbeg {margin: 2px 0px 0px 220px;position: absolute;}
-#s-asterisk #sr-cdr #cal-dend {margin: 2px 0px 0px 415px;position: absolute;}
+#s-asterisk #sr-cel .fm-multifield .fm-desc {min-width: 40%;}
+#s-asterisk #sr-cel .fm-desc-inline .fm-multifield {width: auto;display: inline;padding: 0px 10px;}
+#s-asterisk #sr-cel .fm-desc-inline .fm-multifield label {padding: 0px;}
+#s-asterisk #sr-cel .sb-list table {margin-top: 0px;}
+#s-asterisk #sr-cel .sb-list table .cel-infos td {padding: 4px;}
+#s-asterisk #sr-cel .sb-list table .cel-infos dl {width: 50%; float: left;text-align: left;}
+#s-asterisk #sr-cel .sb-list table .cel-infos dt {padding-right: 2px;display: inline;font-weight: bold;}
+#s-asterisk #sr-cel .sb-list table .cel-infos dd {display: inline;}
+#s-asterisk #sr-cel #cal-dbeg {margin: 2px 0px 0px 220px;position: absolute;}
+#s-asterisk #sr-cel #cal-dend {margin: 2px 0px 0px 415px;position: absolute;}
 #s-asterisk #sr-queues #create-agent {margin-top: 15px;}
 #s-asterisk #sr-meetme #sb-part-period .sb-list {width: auto;}
 #s-asterisk #sr-meetme #sb-part-period .sb-list table {margin: 5px auto;width: 400px;}

@@ -206,13 +206,16 @@ $array['service/ipbx/call_management/callfilter'] = 'service/ipbx/index.php/call
 $array['service/ipbx/call_management/pickup'] = 'service/ipbx/index.php/call_management/pickup/';
 $array['service/ipbx/call_management/schedule'] = 'service/ipbx/index.php/call_management/schedule/';
 $array['service/ipbx/call_management/voicemenu'] = 'service/ipbx/index.php/call_management/voicemenu/';
+$array['service/ipbx/call_management/cel'] = 'service/ipbx/index.php/call_management/cel/';
 
 $array['service/ipbx/json/restricted/call_management/incall']  = 'service/ipbx/json.php/restricted/call_management/incall/';
 $array['service/ipbx/json/restricted/call_management/outcall'] = 'service/ipbx/json.php/restricted/call_management/outcall/';
 $array['service/ipbx/json/restricted/call_management/pickup']  = 'service/ipbx/json.php/restricted/call_management/pickup/';
+$array['service/ipbx/json/restricted/call_management/cel'] = 'service/ipbx/json.php/restricted/call_management/cel/';
 
 $array['service/ipbx/json/private/call_management/incall']     = 'service/ipbx/json.php/private/call_management/incall/';
 $array['service/ipbx/json/private/call_management/pickup']     = 'service/ipbx/json.php/private/call_management/pickup/';
+$array['service/ipbx/json/private/call_management/cel'] = 'service/ipbx/json.php/private/call_management/cel/';
 
 $array['service/ipbx/ui/call_management/schedule'] = 'service/ipbx/ui.php/call_management/schedule/';
 
@@ -392,10 +395,9 @@ $array['statistics/call_center/data/stats5']				= 'statistics/call_center/index.
 $array['statistics/call_center/settings/configuration']		= 'statistics/call_center/index.php/settings/configuration/';
 $array['statistics/call_center/settings/cache']				= 'statistics/call_center/index.php/settings/cache/';
 
-$array['statistics/cdr'] 						= 'statistics/cdr/index.php';
-$array['statistics/cdr/index'] 					= 'statistics/cdr/index.php';
-$array['statistics/cdr/search'] 				= 'statistics/cdr/index.php/search';
-$array['statistics/cdr/advanced_search'] 		= 'statistics/cdr/index.php/advanced_search';
+$array['statistics/cel'] 						= 'statistics/cel/index.php';
+$array['statistics/cel/index'] 					= 'statistics/cel/index.php';
+$array['statistics/cel/search'] 				= 'statistics/cel/index.php/search';
 
 $array['statistics/ui/call_center/genercache'] 				= 'statistics/ui.php/call_center/genercache';
 $array['statistics/ui/call_center/genergraphic'] 			= 'statistics/ui.php/call_center/genergraphic';

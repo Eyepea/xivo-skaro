@@ -59,15 +59,15 @@ $infocal = dwho_date::set_infocal($axetype,$_QR);
 $search['dbeg'] = $infocal['dbeg'];
 $search['dend'] = $infocal['dend'];
 
-$cdrinfo = array();
-$cdrinfo['src'] = isset($_QR['src']) === false ? '' : $_QR['src'];
-$cdrinfo['srcformat'] = isset($_QR['srcformat']) === false ? 'exact' : $_QR['srcformat'];
-$cdrinfo['dst'] = isset($_QR['dst']) === false ? '' : $_QR['dst'];
-$cdrinfo['dstformat'] = isset($_QR['dstformat']) === false ? 'exact' : $_QR['dstformat'];
-$cdrinfo['channel'] = isset($_QR['channel']) === false ? '' : $_QR['channel'];
+$celinfo = array();
+$celinfo['src'] = isset($_QR['src']) === false ? '' : $_QR['src'];
+$celinfo['srcformat'] = isset($_QR['srcformat']) === false ? 'exact' : $_QR['srcformat'];
+$celinfo['dst'] = isset($_QR['dst']) === false ? '' : $_QR['dst'];
+$celinfo['dstformat'] = isset($_QR['dstformat']) === false ? 'exact' : $_QR['dstformat'];
+$celinfo['channel'] = isset($_QR['channel']) === false ? '' : $_QR['channel'];
 
 $_TPL->set_var('infocal',$infocal);
-$_TPL->set_var('cdrinfo',$cdrinfo);
+$_TPL->set_var('celinfo',$celinfo);
 $_TPL->set_var('axetype',$axetype);
 $_TPL->set_var('listaxetype',$listaxetype);
 $_TPL->set_var('listop',$listop);

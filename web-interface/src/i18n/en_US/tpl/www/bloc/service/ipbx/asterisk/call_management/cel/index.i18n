@@ -1,5 +1,5 @@
 ; title_content_name
-Call Logs
+Summary
 
 ; smenu_search
 Search
@@ -16,13 +16,13 @@ Result(s): %s
 ; bt_showcalendar
 Calendar
 
-; fm_search-size(exact)
+; fm_search-format(exact)
 Exact
 
 ; fm_search-format(begin)
 Begins
 
-; fm_search-format(container)
+; fm_search-format(contain)
 Contains
 
 ; fm_search-format(end)
@@ -44,7 +44,7 @@ Other
 Unknown
 
 ; fm_channel-opt
-%s
+% S
 
 ; fm_disposition
 Call status:
@@ -75,6 +75,15 @@ Custom
 
 ; fm_dcontext-opt
 %s
+
+; legend_src
+Appellant
+
+; legend_dst
+Called
+
+; legend_channel
+Channel
 
 ; fm_src
 Appellant:
@@ -125,7 +134,7 @@ Called
 Period
 
 ; entry_duration-sec
-% 02d sec.
+%02d sec.
 
 ; entry_duration-minsec
 %s min. %02d sec.
@@ -139,7 +148,7 @@ Period
 ; entry_channel
 Channel:
 
-; entry_channel (unknown)
+; entry_channel(unknown)
 Unknown
 
 ; entry_disposition
@@ -167,7 +176,7 @@ Flag billing:
 Name of Appeal:
 
 ; entry_accountcode
-Number deposit:
+Number of deposit:
 
 ; entry_userfield
 User Field:

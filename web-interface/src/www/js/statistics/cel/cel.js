@@ -23,7 +23,7 @@ var xivo_fm_dcontext = {
 
 xivo_attrib_register('fm_dcontext',xivo_fm_dcontext);
 
-function xivo_cdr_onload()
+function xivo_cel_onload()
 {
     if((dcontext = dwho_eid('it-dcontext')) !== false)
         xivo_chg_attrib('fm_dcontext','fd-dcontext-custom',Number(dcontext.value === 'custom'));
@@ -31,7 +31,7 @@ function xivo_cdr_onload()
 
 $(document).ready(function() {
     
-    xivo_cdr_onload();
+    xivo_cel_onload();
     
     $.datepicker.setDefaults({
         currentText: 'Now',
