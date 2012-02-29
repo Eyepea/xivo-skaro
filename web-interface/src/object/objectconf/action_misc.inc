@@ -169,6 +169,9 @@ $array['xivo/configuration/web_services/private/provisioning/general'] = array(
 $array['xivo/configuration/web_services/private/provisioning/autoprov'] = array(
 	'path'		=> 'xivo/configuration/web_services/provisioning/autoprov',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['xivo/configuration/web_services/private/provisioning/configregistrar'] = array(
+	'path'		=> 'xivo/configuration/web_services/provisioning/configregistrar',
+	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
 
 ###################################################################

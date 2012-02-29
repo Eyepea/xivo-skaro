@@ -105,6 +105,7 @@ $array['xivo/configuration/json/restricted/provisioning/autoprov'] = 'xivo/confi
 
 $array['xivo/configuration/json/private/provisioning/general'] = 'xivo/configuration/json.php/private/provisioning/general/';
 $array['xivo/configuration/json/private/provisioning/autoprov'] = 'xivo/configuration/json.php/private/provisioning/autoprov/';
+$array['xivo/configuration/json/private/provisioning/configregistrar'] = 'xivo/configuration/json.php/private/provisioning/configregistrar/';
 
 $array['xivo/configuration/ui/provisioning/plugin'] = 'xivo/configuration/ui.php/provisioning/plugin';
 $array['xivo/configuration/ui/provisioning/configs'] = 'xivo/configuration/ui.php/provisioning/configs';

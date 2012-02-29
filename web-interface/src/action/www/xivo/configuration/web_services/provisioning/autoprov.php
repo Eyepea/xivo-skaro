@@ -55,9 +55,9 @@ switch($act)
 		elseif($data['code'] === 'autoprov')
 		{
 			if ($appdevice->mode_autoprov(true) === false)
-			    $http_response->set_status_line(400);
+				$http_response->set_status_line(400);
 			else
-			    $http_response->set_status_line(200);
+				$http_response->set_status_line(200);
 		}
 		elseif(($line = $linefeatures->get_where(array('provisioningid' => $data['code']))) === false
 		|| $appdevice->update_config($line['id'],true) === false)
