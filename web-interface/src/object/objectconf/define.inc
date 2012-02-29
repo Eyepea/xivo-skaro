@@ -18,11 +18,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
+$file_version = '/usr/share/pf-xivo/XIVO-VERSION';
+$xivo_version = 'Unknown';
+if (file_exists($file_version))
+	$xivo_version = file_get_contents($file_version);
+
 define('DWHO_LABEL_CUSTOM','XIVO-WEBI');
 
 define('XIVO_SOFT_NAME','xivo');
 define('XIVO_SOFT_LABEL','XIVO');
-define('XIVO_SOFT_VERSION','1.2.2');
+define('XIVO_SOFT_VERSION',trim($xivo_version));
 define('XIVO_SOFT_CODENAME','Skaro');
 define('XIVO_SOFT_URL','xivo.fr');
 define('XIVO_DOC_URL','documentation.xivo.fr');
