@@ -29,7 +29,7 @@ Contains
 Eventually
 
 ; fm_dbeg
-Arrival date:
+Start date:
 
 ; fm_dend
 End date:
@@ -68,7 +68,7 @@ Unknown
 Flag billing:
 
 ; fm_dcontext
-Background:
+Context:
 
 ; fm_dcontext-opt(custom)
 Custom
@@ -122,7 +122,7 @@ Caller
 Called
 
 ; col_duration
-Period
+Duration
 
 ; entry_ringsec
 Ring Time: 

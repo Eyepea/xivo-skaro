@@ -61,7 +61,9 @@ $result = false;
 if(isset($_QR['fm_send']) === true || isset($_QR['search']) === true)
 {
 	if(($info = $cel->chk_values($_QR,false)) === false)
+	{
 		$info = $cel->get_filter_result();
+	}
 	else
 	{
 		if($act === 'exportcsv')

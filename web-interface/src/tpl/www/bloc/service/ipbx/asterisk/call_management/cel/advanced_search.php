@@ -172,8 +172,8 @@ endif;
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['channel']['default'],
 				    'selected'	=> $info['channel']),
-			      $element['channel']['value']),
-
+			      $element['channel']['value']);
+/*
 		$form->select(array('desc'	=> $this->bbf('fm_amaflags'),
 				    'name'	=> 'amaflags',
 				    'labelid'	=> 'amaflags',
@@ -202,6 +202,7 @@ else:
 				  'default'	=> $element['dcontext']['default'],
 				  'value'	=> $info['dcontext']));
 endif;
+*/
 ?>
 
 
@@ -226,7 +227,6 @@ endif;
 			      $element['srcformat']['value']);
 ?>
 </div>
-
 <div class="fm-paragraph fm-multifield">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_dst'),
@@ -249,6 +249,7 @@ endif;
 ?>
 </div>
 
+<?php /*
 <div class="fm-paragraph fm-multifield">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_accountcode'),
@@ -270,7 +271,6 @@ endif;
 			      $element['accountcodeformat']['value']);
 ?>
 </div>
-
 <div class="fm-paragraph fm-multifield">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_userfield'),
@@ -292,6 +292,7 @@ endif;
 			      $element['userfieldformat']['value']);
 ?>
 </div>
+*/ ?>
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-search')))?>
 
 </form>

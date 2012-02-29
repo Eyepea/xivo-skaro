@@ -88,12 +88,6 @@ class xivo_service_asterisk_cel extends xivo_service_asterisk_abstract
 		if(dwho_has_len($arr,'dcontext') === true)
 			$search['dcontext'] = $arr['dcontext'];
 
-		if(dwho_has_len($arr,'src') === true && isset($arr['srcformat']) === true)
-			$search['src'] = array('pattern' => $arr['src'],'type' => $arr['srcformat']);
-
-		if(dwho_has_len($arr,'dst') === true && isset($arr['dstformat']) === true)
-			$search['dst'] = array('pattern' => $arr['dst'],'type' => $arr['dstformat']);
-
 		if(dwho_has_len($arr,'accountcode') === true && isset($arr['accountcodeformat']) === true)
 			$search['accountcode'] = array('pattern' => $arr['accountcode'],'type' => $arr['accountcodeformat']);
 

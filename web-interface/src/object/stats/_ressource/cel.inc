@@ -478,27 +478,46 @@ class stats_ressource_cel
 		return($this->_build_data($search, $order, $limit));
 	}
 
+	private function _build_search($pattern, $type)
+	{
+		switch($type)
+		{
+			case 'begin':
+				$like_format = '/^%s/i';
+				break;
+			case 'contain':
+				$like_format = '/%s/i';
+				break;
+			case 'end':
+				$like_format = '/%s$/i';
+				break;
+			default:
+				$like_format = '/^%s$/i';
+		}
+
+		return(sprintf($like_format,$pattern));
+	}
+
 	private function _build_data($search=null, $order=null, $limit=null)
 	{
 		$rs = array();
 		if (($listcall = $this->get_list_call($search, $order)) === false)
 			return(false);
 
-		$this->_total = count($listcall);
+		$total = count($listcall);
 
-		if ($this->_total === 0)
-			return(false);
+		if ($total === 0)
+			return(null);
 
-		if ($limit === null)
-			$limit = array(0, $this->_total);
-		elseif(is_numeric($limit))
-			$limit = array(0, $limit);
+		if(dwho_has_len($search,'src') === true && isset($search['srcformat']) === true)
+			$search_src = $this->_build_search($search['src'], $search['srcformat']);
 
-		if (($delta = (int) ($limit[0] + $limit[1])) > $this->_total)
-			$delta = $this->_total;
+		if(dwho_has_len($search,'dst') === true && isset($search['dstformat']) === true)
+			$search_dst = $this->_build_search($search['dst'], $search['dstformat']);
 
 		$listcall = array_values($listcall);
-		for ($i=$limit[0]; $i < $delta; $i++)
+		$token = $itl = $tmp = array();
+		for ($i=0; $i < $total; $i++)
 		{
 			$ticketcall = &$listcall[$i];
 			$token = $itl = $tmp = array();
@@ -609,9 +628,43 @@ class stats_ressource_cel
 					default:
 				}
 			}
+			if (isset($search_dst))
+			{
+				$tt = current($token);
+				if (!isset($tt['to'])
+				|| !preg_match($search_dst, $tt['to']))
+					continue;
+			}
+			if (isset($search_src))
+			{
+				$tt = current($token);
+				if (!isset($tt['from'])
+				|| !preg_match($search_src, $tt['from']))
+					continue;
+			}
 			array_push($rs,$token);
 		}
-		return($rs);
+
+		$this->_total = count($rs);
+
+		if ($this->_total === 0)
+			return(null);
+
+		if ($limit === null)
+			$limit = array(0, $this->_total);
+		elseif(is_numeric($limit))
+			$limit = array(0, $limit);
+
+		if (($delta = (int) ($limit[0] + $limit[1])) > $this->_total)
+			$delta = $this->_total;
+
+		$result = array();
+		for ($i=$limit[0]; $i < $delta; $i++)
+		{
+			$ref = &$rs[$i];
+			array_push($result, $ref);
+		}
+		return($result);
 	}
 
 	protected function update_result($var,$str,$operator='+')

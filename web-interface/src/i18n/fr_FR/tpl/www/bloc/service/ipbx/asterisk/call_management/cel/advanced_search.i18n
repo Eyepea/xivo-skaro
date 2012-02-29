@@ -124,6 +124,15 @@ Appelé
 ; col_duration
 Durée 
 
+;entry_answer
+Repondu?:
+
+; call_is_answer(0)
+Non
+
+;call_is_answer(1)
+Oui
+
 ; entry_ringsec
 Temps de sonnerie: 
 

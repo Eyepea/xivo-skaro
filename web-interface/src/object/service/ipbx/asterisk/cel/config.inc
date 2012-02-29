@@ -80,14 +80,6 @@ $array['element']['dstformat']['value'] = array('exact','begin','contain','end')
 $array['element']['dstformat']['default'] = 'exact';
 $array['element']['dstformat']['unset'] = true;
 
-$array['element']['clid'] = array();
-$array['element']['clid']['default'] = '';
-
-$array['element']['clidformat'] = array();
-$array['element']['clidformat']['value'] = array('exact','begin','contain','end');
-$array['element']['clidformat']['default'] = 'exact';
-$array['element']['clidformat']['unset'] = true;
-
 $array['element']['accountcode'] = array();
 $array['element']['accountcode']['default'] = '';
 
@@ -130,7 +122,7 @@ $array['filter']['disposition'] = array('set' => false,'chk' => 2,'key' => array
 					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_FAILED,
 					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_UNKNOWN));
 $array['filter']['dcontext'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context',
-				     'callbackarg' => array(array(
+					'callbackarg' => array(array(
 					XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 					XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => xivo_service_asterisk::get_amaflags_list());
@@ -139,8 +131,8 @@ $array['filter']['srcformat'] = array('set' => false,'key' => array('exact','beg
 $array['filter']['dst'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
 $array['filter']['dstformat'] = array('set' => false,'key' => array('exact','begin','contain','end'));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 20);
-$array['filter']['accountcodeformat'] = array('set' => false,'key' => array('exact','begin','contain','end'));
+#$array['filter']['accountcodeformat'] = array('set' => false,'key' => array('exact','begin','contain','end'));
 $array['filter']['userfield'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-zA-Z0-9-\._~\!\$&\'\[\]\*\+;=:%@]+$/','maxlen' => 255);
-$array['filter']['userfieldformat'] = array('set' => false,'key' => array('exact','begin','contain','end'));
+#$array['filter']['userfieldformat'] = array('set' => false,'key' => array('exact','begin','contain','end'));
 
 ?>
