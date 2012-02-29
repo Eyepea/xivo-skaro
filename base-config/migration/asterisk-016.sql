@@ -34,4 +34,41 @@ UPDATE "trunkfeatures" SET "protocol" = 'custom' where "_protocol" = 'custom';
 
 ALTER TABLE "trunkfeatures" DROP COLUMN "_protocol";
 
+CREATE UNIQUE INDEX "trunkfeatures__uidx__protocol_protocolid" ON "trunkfeatures"("protocol","protocolid");
+
+-- Update useriax
+
+ALTER TABLE "useriax" DROP COLUMN "protocol";
+ALTER TABLE "useriax" ADD "protocol" "trunk_protocol";
+
+UPDATE "useriax" SET "protocol" = 'iax';
+
+-- Update usersip
+
+ALTER TABLE "usersip" DROP COLUMN "protocol";
+ALTER TABLE "usersip" ADD "protocol" "trunk_protocol";
+
+UPDATE "usersip" SET "protocol" = 'sip';
+
+
+-- Update usercustom
+
+ALTER TABLE "usercustom" DROP COLUMN "protocol";
+ALTER TABLE "usercustom" ADD "protocol" "trunk_protocol";
+
+UPDATE "usercustom" SET "protocol" = 'custom';
+
+-- Update linefeatures
+
+ALTER TABLE "linefeatures" RENAME COLUMN "protocol" TO "_protocol";
+ALTER TABLE "linefeatures" ADD "protocol" "trunk_protocol";
+
+UPDATE "linefeatures" SET "protocol" = 'sip' where "_protocol" = 'sip';
+UPDATE "linefeatures" SET "protocol" = 'iax' where "_protocol" = 'iax';
+UPDATE "linefeatures" SET "protocol" = 'custom' where "_protocol" = 'custom';
+
+ALTER TABLE "linefeatures" DROP COLUMN "_protocol";
+
+CREATE UNIQUE INDEX "linefeatures__uidx__protocol_protocolid" ON "linefeatures"("protocol","protocolid");
+
 COMMIT;

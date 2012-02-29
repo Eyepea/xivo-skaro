@@ -27,6 +27,9 @@ BEGIN;
 DROP TYPE  IF EXISTS "generic_bsfilter" CASCADE;
 CREATE TYPE "generic_bsfilter" AS ENUM ('no', 'boss', 'secretary');
 
+DROP TYPE IF EXISTS "trunk_protocol";
+CREATE TYPE "trunk_protocol" AS ENUM ('sip', 'iax', 'custom');
+
 
 DROP TABLE IF EXISTS "accessfeatures";
 DROP TYPE  IF EXISTS "accessfeatures_feature";
@@ -971,7 +974,7 @@ CREATE UNIQUE INDEX "incall__uidx__exten_context" ON "incall"("exten","context")
 DROP TABLE IF EXISTS "linefeatures";
 CREATE TABLE "linefeatures" (
  "id" SERIAL,
- "protocol" varchar(50) NOT NULL,
+ "protocol" "trunk_protocol" NOT NULL,,
  "protocolid" INTEGER NOT NULL,
  "iduserfeatures" integer DEFAULT 0,
  "config" varchar(128),
@@ -1991,9 +1994,6 @@ INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,1,'voicemail.conf','general','
 INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,1,'voicemail.conf','general','listen-control-stop-key',NULL);
 INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,1,'voicemail.conf','general','backupdeleted',NULL);
 
-DROP TYPE IF EXISTS "trunk_protocol";
-CREATE TYPE "trunk_protocol" AS ENUM ('sip', 'iax', 'custom');
-
 DROP TABLE IF EXISTS "trunkfeatures";
 CREATE TABLE "trunkfeatures" (
  "id" SERIAL,
@@ -2022,7 +2022,7 @@ CREATE TABLE "usercustom" (
  "interface" varchar(128) NOT NULL,
  "intfsuffix" varchar(32) NOT NULL DEFAULT '',
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "protocol" varchar(15) NOT NULL DEFAULT 'custom' CHECK (protocol = 'custom'), -- ENUM
+ "protocol" "trunk_protocol" NOT NULL DEFAULT 'custom',
  "category" usercustom_category NOT NULL,
  PRIMARY KEY("id")
 );
@@ -2172,7 +2172,7 @@ CREATE TABLE "useriax" (
  "immediate" INTEGER DEFAULT NULL, -- BOOLEAN
  "keyrotate" INTEGER DEFAULT NULL, -- BOOLEAN
  "parkinglot" INTEGER DEFAULT NULL,
- "protocol" varchar(15) NOT NULL DEFAULT 'iax' CHECK (protocol = 'iax'), -- ENUM
+ "protocol" "trunk_protocol" NOT NULL DEFAULT 'iax',
  "category" useriax_category NOT NULL,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "requirecalltoken" varchar(4) NOT NULL DEFAULT 'no', -- peer--
@@ -2273,7 +2273,7 @@ CREATE TABLE "usersip" (
  "regserver" varchar(20),
  "lastms" varchar(15) NOT NULL DEFAULT '',
  "parkinglot" INTEGER DEFAULT NULL,
- "protocol" varchar(15) NOT NULL DEFAULT 'sip' CHECK (protocol = 'sip'), -- ENUM
+ "protocol" "trunk_protocol" NOT NULL DEFAULT 'sip',
  "category" useriax_category NOT NULL,
 
  "outboundproxy" varchar(1024),
