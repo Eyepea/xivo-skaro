@@ -1991,13 +1991,10 @@ INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,1,'voicemail.conf','general','
 INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,1,'voicemail.conf','general','listen-control-stop-key',NULL);
 INSERT INTO "staticvoicemail" VALUES (DEFAULT,0,0,1,'voicemail.conf','general','backupdeleted',NULL);
 
-DROP TYPE IF EXISTS "trunk_protocol";
-CREATE TYPE "trunk_protocol" AS ENUM ('sip', 'iax', 'custom');
-
 DROP TABLE IF EXISTS "trunkfeatures";
 CREATE TABLE "trunkfeatures" (
  "id" SERIAL,
- "protocol" "trunk_protocol" NOT NULL,
+ "protocol" varchar(50) NOT NULL CHECK (protocol in ('sip', 'iax', 'custom')),
  "protocolid" INTEGER NOT NULL,
  "registerid" INTEGER NOT NULL DEFAULT 0,
  "registercommented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
