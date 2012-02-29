@@ -331,9 +331,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$config['parent_ids'] = array();
 		// required raw_config dict by provd
 		$config['raw_config'] = array('X_key' => 'xivo');
-		//$config['proxy_backup'] = $registrarip;
 		$config['proxy_main'] = $registrarip;
-		//$config['registrar_backup'] = $registrarip;
 		$config['registrar_main'] = $registrarip;
 
 		if ($this->chk_confregistrar($config) === false
@@ -903,9 +901,15 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$calleridname = str_replace('"','',str_replace('\"','"',$calleridname));
 		$conf['display_name'] = $calleridname;
 
-		$this->_set_config_var($conf,$confregistrar,'proxy_backup');
-		$this->_set_config_var($conf,$confregistrar,'registrar_main');
-		$this->_set_config_var($conf,$confregistrar,'registrar_backup');
+		$confregistrar['registrar_ip'] = $confregistrar['registrar_main'];
+		$confregistrar['proxy_ip'] = $confregistrar['proxy_main'];
+		$confregistrar['backup_registrar_ip'] = $confregistrar['registrar_backup'];
+		$confregistrar['backup_proxy_ip'] = $confregistrar['proxy_backup'];
+
+		$this->_set_config_var($conf,$confregistrar,'registrar_ip');
+		$this->_set_config_var($conf,$confregistrar,'proxy_ip');
+		$this->_set_config_var($conf,$confregistrar,'backup_proxy_ip');
+		$this->_set_config_var($conf,$confregistrar,'backup_registrar_ip');
 		$this->_set_config_var($conf,$arr,'number');
 		$this->_set_config_var($conf,$arr,'dtmf_mode');
 		$this->_set_config_var($conf,$arr,'srtp_mode');
