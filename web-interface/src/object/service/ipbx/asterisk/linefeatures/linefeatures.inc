@@ -70,6 +70,17 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 		return($this->_prepare($rs));
 	}
 
+	function get_line_provisioniable($provisioningid)
+	{
+		if(($rs = $this->_dso->get(array('provisioningid' => $provisioningid))) === false)
+			return(false);
+
+		if (dwho_has_len($rs['device']))
+			return(false);
+
+		return($this->_prepare($rs));
+	}
+
 	function get($id,$orig=true,$disable=null)
 	{
 		$orig = (bool) $orig;

@@ -34,7 +34,7 @@ switch($act)
 {
 	case 'configure':
 		$_QRY = &dwho_gct::get('dwho_query');
-
+/*
 		if(dwho::load_class('dwho_json') === false
 		|| ($data = dwho_json::decode($_QRY->get_input(),true)) === false
 		|| is_array($data) === false
@@ -43,6 +43,9 @@ switch($act)
 			$http_response->set_status_line(400);
 			$http_response->send(true);
 		}
+*/
+		$data['code'] = $_QR['code'];
+		$data['ip'] = $_QR['ip'];
 
 		$appdevice = &$ipbx->get_application('device',null,false);
 		$linefeatures = &$ipbx->get_module('linefeatures');
@@ -59,7 +62,7 @@ switch($act)
 			else
 				$http_response->set_status_line(200);
 		}
-		elseif(($line = $linefeatures->get_where(array('provisioningid' => $data['code']))) === false
+		elseif(($line = $linefeatures->get_line_provisioniable($data['code'])) === false
 		|| $appdevice->update_config($line['id'],true) === false)
 			$http_response->set_status_line(400);
 		else
