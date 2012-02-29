@@ -30,15 +30,26 @@ if(isset($_SERVER['REMOTE_ADDR']) === false
 }
 
 $act = $_QRY->get('act');
+$ipbx = &$_SRE->get('ipbx');
 $provdconfig = &$_XOBJ->get_module('provdconfig');
 
 switch($act)
 {
 	case 'rebuild_required_config':
-		if (!$provdconfig->rebuild_required_config())
+		$linefeatures = &$ipbx->get_module('linefeatures');
+
+		if ($provdconfig->rebuild_required_config() === false
+		|| ($lines = $linefeatures->get_all()) === false)
 			$http_response->set_status_line(400);
 		else
 			$http_response->set_status_line(200);
+
+		$nb = count($lines);
+		for($i = 0;$i < $nb;$i++)
+		{
+			$line = &$lines[$i];
+			$provdconfig->rebuild_lines_user($line['id']);
+		}
 
 		$http_response->send(true);
 		break;
