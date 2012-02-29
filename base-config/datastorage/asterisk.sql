@@ -974,7 +974,7 @@ CREATE UNIQUE INDEX "incall__uidx__exten_context" ON "incall"("exten","context")
 DROP TABLE IF EXISTS "linefeatures";
 CREATE TABLE "linefeatures" (
  "id" SERIAL,
- "protocol" "trunk_protocol" NOT NULL,,
+ "protocol" "trunk_protocol" NOT NULL,
  "protocolid" INTEGER NOT NULL,
  "iduserfeatures" integer DEFAULT 0,
  "config" varchar(128),
