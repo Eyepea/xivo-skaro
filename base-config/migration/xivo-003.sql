@@ -1,6 +1,6 @@
 /*
- * XiVO Web-Interface
- * Copyright (C) 2006-2011  Avencall
+ * XiVO Base-Config
+ * Copyright (C) 2011  Avencall
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,15 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function data_iface_change()
-{
-	if($('#it-pf-ha-cluster_itf_data').val() == "") {
-		$('#p_cluster_itf_master_ip').hide();
-		$('#p_cluster_itf_slave_ip').hide();
-	} else {
-		$('#p_cluster_itf_master_ip').show();
-		$('#p_cluster_itf_slave_ip').show();
-	}
-}
+-- Remove unused ha tables
+BEGIN;
 
-dwho.dom.set_onload(data_iface_change);
+DROP TABLE IF EXISTS "ha";
+DROP TABLE IF EXISTS "ha_cluster_node";
+DROP TABLE IF EXISTS "ha_service";
+
+COMMIT;
