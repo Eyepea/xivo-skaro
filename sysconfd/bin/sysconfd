@@ -30,7 +30,6 @@ from StringIO import StringIO
 from ConfigParser import ConfigParser
 
 from xivo import daemonize
-from xivo import xivo_helpers
 from xivo import http_json_server
 from xivo.http_json_server import CMD_R
 
@@ -77,11 +76,6 @@ def argv_parse_check():
                       default   = 'info',   # warning: see affectation under
                       help      = "Emit traces with LOGLEVEL details, must be one of:\n" \
                                   "critical, error, warning, info, debug")
-    parser.add_option("-d",
-                      action    = 'store_true',
-                      dest      = 'dontlauchmain',
-                      default   = False,
-                      help      = "Don't call the main function, for installation test purposes")
     parser.add_option("-f",
                       action    = 'store_true',
                       dest      = 'foreground',
@@ -141,7 +135,6 @@ def main(options):
     cp.readfp(open(options.conffile))
 
     options.configuration   = cp
-    options.testmethods     = True # XXX
 
     http_json_server.init(options)
 
@@ -164,11 +157,11 @@ def main(options):
     finally:
         daemonize.unlock_pidfile(options.pidfile)
 
+
 if __name__ == '__main__':
     def _start():
         "entry point"
         http_json_server.register(status_check, CMD_R, name='status-check')
         options = argv_parse_check()
-        if not options.dontlauchmain:
-            main(options)
+        main(options)
     _start()

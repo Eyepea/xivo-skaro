@@ -468,16 +468,6 @@ def init(options):
     """
     Must be called just after registration, before anything else
     """
-    if hasattr(options, 'testmethods') and options.testmethods:
-        def fortytwo(args, urlargs):
-            "test GET method"
-            return 42
-        def ping(args, urlargs):
-            "test POST method"
-            return args
-        register(fortytwo, CMD_R)
-        register(ping, CMD_RW)
-
     for name, cmd in _commands.iteritems():
         if cmd.safe_init:
             log.info("safe_init: %r", name)
