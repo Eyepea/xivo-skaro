@@ -31,25 +31,39 @@ if(isset($_SERVER['REMOTE_ADDR']) === false
 
 $act = $_QRY->get('act');
 $ipbx = &$_SRE->get('ipbx');
-$provdconfig = &$_XOBJ->get_module('provdconfig');
 
 switch($act)
 {
 	case 'rebuild_required_config':
+		$provdconfig = &$_XOBJ->get_module('provdconfig');
 		$linefeatures = &$ipbx->get_module('linefeatures');
+		$devicefeatures = &$ipbx->get_module('devicefeatures');
 
-		if ($provdconfig->rebuild_required_config() === false
-		|| ($lines = $linefeatures->get_all()) === false)
-			$http_response->set_status_line(400);
-		else
-			$http_response->set_status_line(200);
-
-		$nb = count($lines);
-		for($i = 0;$i < $nb;$i++)
+		$http_response->set_status_line(204);
+		if (($list = $linefeatures->get_all_where(array('configregistrar' => 'default'))) !== false
+		&& ($nb = count($list)) > 0)
 		{
-			$line = &$lines[$i];
-			$provdconfig->rebuild_lines_user($line['id']);
+			$res = array();
+			for($i=0;$i<$nb;$i++)
+			{
+				$ref = &$list[$i];
+				$deviceid = $ref['device'];
+				if (($device = $devicefeatures->get($deviceid)) === false
+				|| ($config = $device['config']) === null)
+					continue;
+				array_push($res,$device['id']);
+			}
+
+			$listid = array_unique($res);
+			$listid = array_values($listid);
+
+			$nb = count($listid);
+			for($i=0;$i<$nb;$i++)
+				$provdconfig->rebuild_device_config($listid[$i]);
+			$http_response->set_status_line(200);
 		}
+
+		$provdconfig->rebuild_required_config();
 
 		$http_response->send(true);
 		break;

@@ -269,7 +269,8 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 				$listid = array_unique($res);
 				$listid = array_values($listid);
 
-				for($i=0;$i<count($listid);$i++)
+				$nb = count($listid);
+				for($i=0;$i<$nb;$i++)
 					$this->_provdconfig->rebuild_device_config($listid[$i]);
 			}
 
