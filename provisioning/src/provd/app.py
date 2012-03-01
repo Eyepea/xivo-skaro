@@ -566,7 +566,7 @@ class ProvisioningApplication(object):
         successfully inserted.
         
         """
-        logger.info('Inserting config')
+        logger.info('Inserting config %s', config.get(ID_KEY))
         try:
             try:
                 id = yield self._cfg_collection.insert(config)
