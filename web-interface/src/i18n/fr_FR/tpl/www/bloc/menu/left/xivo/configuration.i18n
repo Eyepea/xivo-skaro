@@ -25,6 +25,9 @@ Accès aux services Web
 ; mn_left_manage-certificate
 Certificats SSL
 
+; mn_left_manage-certificate
+Haute disponibilité
+
 ; mn_left_ti_network
 Réseau
 

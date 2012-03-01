@@ -77,8 +77,7 @@ function xivo_network_chg_method() {
 function xivo_network_onload() {
 	xivo_network_chg_method();
 
-	dwho.dom
-			.add_event('change', dwho_eid('it-method'), xivo_network_chg_method);
+	dwho.dom.add_event('change', dwho_eid('it-method'), xivo_network_chg_method);
 }
 
 dwho.dom.set_onload(xivo_network_onload);

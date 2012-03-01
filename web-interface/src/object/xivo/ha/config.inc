@@ -22,64 +22,22 @@ $array = array();
 $array['element'] = array();
 
 $array['element']['active'] = array();
-$array['element']['active']['value']   = array(0,1);
+$array['element']['active']['value'] = array(0,1);
 $array['element']['active']['default'] = 0;
-$array['element']['active']['set']     = true;
+$array['element']['active']['set'] = true;
 
-$array['element']['netaddr'] = array();
-$array['element']['netaddr']['default'] = '';
+$array['element']['type'] = array();
+$array['element']['type']['value'] = array('slave','master');
+$array['element']['type']['default'] = '';
 
-$array['element']['netmask'] = array();
-$array['element']['netmask']['default'] = '';
-
-$array['element']['mcast'] = array();
-$array['element']['mcast']['default'] = '';
-
-$array['element']['node1_ip'] = array();
-$array['element']['node1_ip']['default'] = '';
-
-$array['element']['node1_name'] = array();
-$array['element']['node1_name']['default'] = '';
-
-$array['element']['node2_ip'] = array();
-$array['element']['node2_ip']['default'] = '';
-
-$array['element']['node2_name'] = array();
-$array['element']['node2_name']['default'] = '';
-
-$array['element']['cluster_name'] = array();
-$array['element']['cluster_name']['default'] = '';
-
-$array['element']['cluster_group'] = array();
-$array['element']['cluster_group']['value']   = array(0,1);
-$array['element']['cluster_group']['default'] = 0;
-$array['element']['cluster_group']['set']     = true;
-
-$array['element']['cluster_itf_data'] = array();
-$array['element']['cluster_itf_data']['default'] = '';
-
-$array['element']['cluster_itf_master_ip'] = array();
-$array['element']['cluster_itf_master_ip']['default'] = '';
-
-$array['element']['cluster_itf_slave_ip'] = array();
-$array['element']['cluster_itf_slave_ip']['default'] = '';
-
-$array['element']['cluster_monitor'] = array();
-$array['element']['cluster_monitor']['default'] = 0;
-
-$array['element']['cluster_timeout'] = array();
-$array['element']['cluster_timeout']['default'] = 0;
-
-$array['element']['cluster_mailto'] = array();
-$array['element']['cluster_mailto']['default'] = '';
-$array['element']['cluster_mailto']['null'] = true;
-
-$array['element']['cluster_pingd'] = array();
-$array['element']['cluster_pingd']['default'] = '';
-$array['element']['cluster_pingd']['null'] = true;
+$array['element']['remote_address'] = array();
+$array['element']['remote_address']['default'] = '';
 
 
-### filters ###
 $array['filter'] = array();
+$array['filter']['type'] = array('key' => $array['element']['type']['value']);
+$array['filter']['remote_address'] = array(
+					'callback'		=> 'dwho_network::valid_host',
+					'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
 
 ?>

@@ -38,13 +38,7 @@ $array['module']['entity'] = array();
 $array['module']['entity']['datastorage'] = true;
 
 $array['module']['ha'] = array();
-$array['module']['ha']['datastorage'] = true;
-
-$array['module']['ha_cluster_node'] = array();
-$array['module']['ha_cluster_node']['datastorage'] = true;
-
-$array['module']['ha_service'] = array();
-$array['module']['ha_service']['datastorage'] = true;
+$array['module']['ha']['datastorage'] = false;
 
 $array['module']['iproute'] = array();
 $array['module']['iproute']['datastorage'] = true;

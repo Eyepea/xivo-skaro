@@ -30,8 +30,6 @@ class xivo_object_commonconf extends xivo_object_abstract
 	var $_netiface   = false;
 	var $_resolvconf = false;
 	var $_provisioning = false;
-	var $_ha           = false;
-	var $_ha_vips      = false;
 
 	function xivo_object_commonconf(&$xobj)
 	{
@@ -41,9 +39,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 		|| ($this->_dhcp        = &$this->_xobj->get_module('dhcp'))         === false
 		|| ($this->_monitoring  = &$this->_xobj->get_module('monitoring'))   === false
 		|| ($this->_mail        = &$this->_xobj->get_module('mail'))         === false
-		|| ($this->_provisioning = &$this->_xobj->get_module('provisioning')) === false
-		|| ($this->_ha_vips      = &$this->_xobj->get_module('ha_cluster_node')) === false
-		|| ($this->_ha           = &$this->_xobj->get_module('ha')) === false)
+		|| ($this->_provisioning = &$this->_xobj->get_module('provisioning')) === false)
 			return(false);
 
 		return(true);

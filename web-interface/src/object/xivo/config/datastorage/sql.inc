@@ -28,18 +28,6 @@ $array['entity'] = array();
 $array['entity']['table'] = 'entity';
 $array['entity']['primary'] = array('id' => '');
 
-$array['ha'] = array();
-$array['ha']['table'] = 'ha';
-$array['ha']['primary'] = array('id' => '');
-
-$array['ha_cluster_node'] = array();
-$array['ha_cluster_node']['table'] = 'ha_cluster_node';
-$array['ha_cluster_node']['primary'] = array('device' => '', 'address' => '');
-
-$array['ha_service'] = array();
-$array['ha_service']['table'] = 'ha_service';
-$array['ha_service']['primary'] = array('name' => '');
-
 $array['iproute'] = array();
 $array['iproute']['table'] = 'iproute';
 $array['iproute']['primary'] = array('id' => '');

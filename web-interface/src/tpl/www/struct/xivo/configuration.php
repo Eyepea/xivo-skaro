@@ -21,6 +21,7 @@
 ?>
 <div id="r-xivo-configuration">
 	<div class="b-rubric">
+		<?php $this->file_include('struct/fm_save');?>
 		<?=$this->mk_bloc('main');?>
 	</div>
 </div>

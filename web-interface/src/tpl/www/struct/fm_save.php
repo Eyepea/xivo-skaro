@@ -18,11 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_object::required(array('abstract','datastorage','sql.inc'),true);
+$dhtml   = &$this->get_module('dhtml');
 
-class xivo_object_ha_ping_sql extends xivo_object_abstract_sql
-{
-	var $_disable	= null;
-}
-
+if(($fm_save = $this->get_var('fm_save')) === true):
+	$dhtml->write_js('xivo_form_result(true,\'' .$dhtml->escape($this->bbf('fm_success-save')).'\');');
+elseif($fm_save === false):
+	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
+endif;
 ?>

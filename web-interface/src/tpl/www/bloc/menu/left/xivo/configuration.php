@@ -73,6 +73,13 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
+		if(xivo_user::chk_acl('manage','ha') === true):
+			echo	'<dd id="mn-manage--ha">',
+				$url->href_html($this->bbf('mn_left_manage-ha'),
+						'xivo/configuration/manage/ha'),
+				'</dd>';
+		endif;
+
 		echo '</dl>';
 	endif;
 

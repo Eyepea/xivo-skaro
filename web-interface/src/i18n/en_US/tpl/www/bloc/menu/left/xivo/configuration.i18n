@@ -25,6 +25,9 @@ Web Services Access
 ; mn_left_manage-certificate
 Certificates
 
+; mn_left_manage-ha
+High Availability
+
 ; mn_left_ti_network
 Network
 

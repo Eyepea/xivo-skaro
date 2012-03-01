@@ -26,13 +26,18 @@ class xivo_object_ha extends xivo_object_abstract
 	var $_name		= 'ha';
     var $_filter    = false;
 
-	function xivo_object_ha(&$xobj,&$dso)
+	function xivo_object_ha(&$xobj)
 	{
 		$this->xivo_object_abstract(&$xobj);
-        if(is_object($dso) === false)
-            trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
 
-        $this->_dso = &$dso;
+		$this->_load_config(true);
+	}
+
+	public function get()
+	{
+		$rs = array();
+
+		return($rs);
 	}
 }
 
