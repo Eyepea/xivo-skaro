@@ -11,7 +11,7 @@ EOF
 }
 
 enable_asterisk() {
-    grep RUNASTERISK=no /etc/default/asterisk
+    grep RUNASTERISK=no /etc/default/asterisk > /dev/null
     if [ $? -eq 0 ]; then
         sed -i 's/RUNASTERISK=no/RUNASTERISK=yes/' /etc/default/asterisk
     fi
@@ -24,7 +24,7 @@ disable_asterisk() {
     if [ -f /var/run/asterisk/asterisk.pid ]; then
         /etc/init.d/asterisk stop
     fi
-    grep RUNASTERISK=yes /etc/default/asterisk
+    grep RUNASTERISK=yes /etc/default/asterisk > /dev/null
     if [ $? -eq 0 ]; then
         sed -i 's/RUNASTERISK=yes/RUNASTERISK=no/' /etc/default/asterisk
     fi
