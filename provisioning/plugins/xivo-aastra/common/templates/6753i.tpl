@@ -8,20 +8,15 @@ prgkey2 type: speeddial
 prgkey2 value: {{ exten_fwd_unconditional }}
 {% endif -%}
 
-{% if exten_dnd -%}
-prgkey3 type: speeddial
-prgkey3 value: {{ exten_dnd }}
-{% endif -%}
-
-prgkey4 type: directory
-
-prgkey5 type: callers
-
-prgkey6 type: services
+prgkey3 type: callers
 
 {% if X_xivo_phonebook_ip -%}
-prgkey7 type: xml
-prgkey7 value: https://{{ X_xivo_phonebook_ip }}/service/ipbx/web_services.php/phonebook/search/
+prgkey4 type: xml
+prgkey4 value: https://{{ X_xivo_phonebook_ip }}/service/ipbx/web_services.php/phonebook/search/
 {% endif -%}
+
+prgkey5 type: conf
+
+prgkey6 type: xfer
 
 {% include 'base.tpl' %}
