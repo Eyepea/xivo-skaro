@@ -19,23 +19,52 @@ __license__ = """
 """
 
 import logging
+import json
 
 from xivo import http_json_server
-from xivo.http_json_server import CMD_R
+from xivo.http_json_server import CMD_R, CMD_RW
 
 logger = logging.getLogger('xivo_sysconf.modules.ha')
 
+HA_CONF_FILE = '/etc/pf-xivo/ha.conf'
 
-def ha(args, options):
-    return {'uuid': 'lol'}
+DEFAULT_HA_CONFIG = {
+    "node_type" : "disabled",
+    "remote_address" : ""
+}
+
+def get_ha_config(args, options):
+    ha_config = _read_ha_config()
+    return ha_config
 
 
-def set_conf():
-    pass
+def _read_ha_config():
+    try:
+        with open(HA_CONF_FILE) as fobj:
+            return _read_ha_config_from_fobj(fobj)
+    except IOError as e:
+        logger.info('could not open %s: %s', HA_CONF_FILE, e)
+        return DEFAULT_HA_CONFIG
 
 
-def get_conf():
-    pass
+def _read_ha_config_from_fobj(fobj):
+    ret = json.load(fobj)
+    return ret
 
 
-http_json_server.register(ha, CMD_R, name='ha')
+def update_ha_config(args, options):
+    ha_config = args
+    _write_ha_config(ha_config)
+
+
+def _write_ha_config(ha_config):
+    with open(HA_CONF_FILE, 'wb') as fobj:
+        _write_ha_config_from_fobj(ha_config, fobj)
+
+
+def _write_ha_config_from_fobj(ha_config, fobj):
+    json.dump(ha_config, fobj)
+
+
+http_json_server.register(get_ha_config, CMD_R, name='get_ha_config')
+http_json_server.register(update_ha_config, CMD_RW, name='update_ha_config')
