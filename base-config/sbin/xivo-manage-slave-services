@@ -11,7 +11,7 @@ EOF
 }
 
 enable_asterisk() {
-    grep RUNASTERISK=no /etc/default/asterisk > /dev/null
+    grep -q RUNASTERISK=no /etc/default/asterisk
     if [ $? -eq 0 ]; then
         sed -i 's/RUNASTERISK=no/RUNASTERISK=yes/' /etc/default/asterisk
     fi
@@ -24,14 +24,14 @@ disable_asterisk() {
     if [ -f /var/run/asterisk/asterisk.pid ]; then
         /etc/init.d/asterisk stop
     fi
-    grep RUNASTERISK=yes /etc/default/asterisk > /dev/null
+    grep -q RUNASTERISK=yes /etc/default/asterisk
     if [ $? -eq 0 ]; then
         sed -i 's/RUNASTERISK=yes/RUNASTERISK=no/' /etc/default/asterisk
     fi
 }
 
 enable_monit() {
-    grep "startup=0" /etc/default/monit > /dev/null
+    grep -q "startup=0" /etc/default/monit
     if [ $? -eq 0 ]; then
         sed -i 's/startup=0/startup=1/' /etc/default/monit
     fi
@@ -44,7 +44,7 @@ disable_monit() {
     if [ -f /var/run/monit.pid ]; then
         /etc/init.d/monit stop
     fi
-    grep "startup=1" /etc/default/monit > /dev/null
+    grep -q "startup=1" /etc/default/monit
     if [ $? -eq 0 ]; then
         sed -i 's/startup=1/startup=0/' /etc/default/monit
     fi

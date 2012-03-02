@@ -8,7 +8,7 @@ if [ -z "$ip_addr" ]; then
     exit 1
 fi
 
-ping -c $ping_count -i $ping_interval $ip_addr > /dev/null
+ping -c $ping_count -i $ping_interval $ip_addr
 if [ $? -eq 0 ]; then
     /usr/sbin/xivo-manage-slave-services stop
 else
