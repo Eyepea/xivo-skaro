@@ -81,9 +81,11 @@ $tpl_statistics->add_col('on_saturation',
 					'custom:queue,[key],deterred_on_saturation');
 */
 $tpl_statistics->set_col_struct('rerouted');
+/*
 $tpl_statistics->add_col('on_hungup',
 					'direct',
 					'custom:queue,[key],rerouted_on_hungup');
+*/
 $tpl_statistics->add_col('on_guide',
 					'direct',
 					'custom:queue,[key],rerouted_on_guide');
