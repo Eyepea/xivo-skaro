@@ -49,6 +49,19 @@ switch($act)
 		$http_response->set_status_line($status);
 		$http_response->send(true);
 		break;
+	case 'edit':
+		$appincall = &$ipbx->get_application('incall');
+		
+		if(($incall = $appincall->get($_QRY->get('id'))) === false)
+			$status = 404;
+		else if($appincall->edit_from_json($incall) === true)
+			$status = 200;
+		else
+			$status = 400;
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
 	case 'delete':
 		$appincall = &$ipbx->get_application('incall');
 
