@@ -1,0 +1,16 @@
+#!/bin/sh
+ip_addr=$1
+ping_count="3"
+ping_interval="10"
+
+if [ -z "$ip_addr" ]; then
+    echo "usage: $(basename $0) ip_addr"
+    exit 1
+fi
+
+ping -c $ping_count -i $ping_interval $ip_addr > /dev/null
+if [ $? -eq 0 ]; then
+    /usr/sbin/xivo-manage-slave-services stop
+else
+    /usr/sbin/xivo-manage-slave-services start
+fi
