@@ -38,7 +38,7 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 
 	function get()
 	{
-		if(($res = $this->_sysconfd->request_get('/ha')) === false
+		if(($res = $this->_sysconfd->request_get('/get_ha_config')) === false
 		|| is_array($res) === false)
 			return(false);
 
@@ -68,7 +68,7 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 			return(false);
 		}
 
-		switch($arr['type'])
+		switch($arr['node_type'])
 		{
 			case 'master':
 				break;
@@ -88,16 +88,17 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 		return(true);
 	}
 
-	function _set_save()
+	function _set_save($arr)
 	{
-		if(dwho_issa('ha',$this->_info) === false
-		|| ($rs = $this->get_result('ha')) === null
-		|| $rs === false)
+		$query = array();
+		$query['node_type'] = $arr['node_type'];
+		$query['remote_address'] = $arr['remote_address'];
+
+		if(($res = $this->_sysconfd->request_post('/update_ha_config', $query)) === false
+			|| $this->_sysconfd->last_status_code() != 200) {
 			return(false);
-
-		$this->_return['ha'] = $this->_ha->edit($rs);
-
-		return($this->_return['ha']);
+        }
+		return($res);
 	}
 
 	function set($arr)
@@ -110,7 +111,7 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 		/* TODO
 		 *
 		 */
-		return;
+		//return;
 
 		if($this->_set_save($arr) === false)
 			return false;

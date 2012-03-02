@@ -17,7 +17,7 @@
  */
 
 function ha_chk_type() {
-	var it_ha_type = $('#it-type');
+	var it_ha_type = $('#it-node_type');
 
 	$('#fld-infos').hide();
 	
@@ -34,5 +34,5 @@ function ha_chk_type() {
 
 $(function(){
 	ha_chk_type();
-	$('#it-type').change(ha_chk_type);
+	$('#it-node_type').change(ha_chk_type);
 });

@@ -35,14 +35,13 @@ $element = $this->get_var('element');
 <?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID))?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1))?>
 <?php
-	echo	$form->select(array('desc'	=> $this->bbf('fm_ha_type'),
-					'name'		=> 'type',
-					'labelid'	=> 'type',
-					'empty'		=> true,
+	echo	$form->select(array('desc'	=> $this->bbf('fm_ha_node_type'),
+					'name'		=> 'node_type',
+					'labelid'	=> 'node_type',
 					'key'		=> false,
-					'selected'	=> $this->get_var('info','type'),
-					'error'   	=> $this->bbf_args('error', $this->get_var('error','ha','type'))),
-				$element['type']['value']);
+					'selected'	=> $this->get_var('info','node_type'),
+					'error'   	=> $this->bbf_args('error', $this->get_var('error','ha','node_type'))),
+				$element['node_type']['value']);
 ?>
 
 <fieldset id="fld-infos">

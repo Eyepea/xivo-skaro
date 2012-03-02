@@ -26,16 +26,16 @@ $array['element']['active']['value'] = array(0,1);
 $array['element']['active']['default'] = 0;
 $array['element']['active']['set'] = true;
 
-$array['element']['type'] = array();
-$array['element']['type']['value'] = array('slave','master');
-$array['element']['type']['default'] = '';
+$array['element']['node_type'] = array();
+$array['element']['node_type']['value'] = array('disabled', 'slave','master');
+$array['element']['node_type']['default'] = 'disabled';
 
 $array['element']['remote_address'] = array();
 $array['element']['remote_address']['default'] = '';
 
 
 $array['filter'] = array();
-$array['filter']['type'] = array('key' => $array['element']['type']['value']);
+$array['filter']['node_type'] = array('key' => $array['element']['node_type']['value']);
 $array['filter']['remote_address'] = array(
 					'callback'		=> 'dwho_network::valid_host',
 					'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));

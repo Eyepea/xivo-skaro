@@ -1,11 +1,8 @@
 ; title_content_name
 High Availability
 
-; fm_ha_type
-Type: 
-
-; remote_address
-Remote address: 
+; fm_ha_node_type
+Type of this node: 
 
 ; fm_remote_address
 Remote address: 

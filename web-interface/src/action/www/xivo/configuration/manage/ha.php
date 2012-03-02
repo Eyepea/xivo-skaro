@@ -22,23 +22,16 @@ $appha = &$_XOBJ->get_application('ha');
 
 $element = $appha->get_elements();
 
-$element['master_ws_login'] = array(
-	'default'  => $appha->gen_passphrase(6,true),
-	'readonly' => true,
-	'class'    => 'it-disabled'
-);
-$element['master_ws_passwd'] = array(
-	'default'  => $appha->gen_passphrase(8),
-	'readonly' => true,
-	'class'    => 'it-disabled'
-);
-
 $info = $appha->get();
 $fm_save = $error = null;
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save = $error = false;
 	$return = &$result;
+
+	if($_QR['node_type'] == 'disabled'
+	&& empty($_QR['remote_address']))
+		$_QR['remote_address'] = '0.0.0.0';
 
 	if($appha->set($_QR) === false)
 	{
