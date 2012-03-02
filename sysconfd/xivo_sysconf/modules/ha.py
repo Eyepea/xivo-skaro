@@ -18,24 +18,20 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import logging
+import errno
 import json
-
 from xivo import http_json_server
 from xivo.http_json_server import CMD_R, CMD_RW
 
-logger = logging.getLogger('xivo_sysconf.modules.ha')
-
 HA_CONF_FILE = '/etc/pf-xivo/ha.conf'
-
 DEFAULT_HA_CONFIG = {
-    "node_type" : "disabled",
-    "remote_address" : ""
+    "node_type": "disabled",
+    "remote_address": ""
 }
 
+
 def get_ha_config(args, options):
-    ha_config = _read_ha_config()
-    return ha_config
+    return _read_ha_config()
 
 
 def _read_ha_config():
@@ -43,13 +39,14 @@ def _read_ha_config():
         with open(HA_CONF_FILE) as fobj:
             return _read_ha_config_from_fobj(fobj)
     except IOError as e:
-        logger.info('could not open %s: %s', HA_CONF_FILE, e)
-        return DEFAULT_HA_CONFIG
+        if e.errno == errno.ENOENT:
+            return dict(DEFAULT_HA_CONFIG)
+        else:
+            raise
 
 
 def _read_ha_config_from_fobj(fobj):
-    ret = json.load(fobj)
-    return ret
+    return json.load(fobj)
 
 
 def update_ha_config(args, options):
@@ -59,10 +56,10 @@ def update_ha_config(args, options):
 
 def _write_ha_config(ha_config):
     with open(HA_CONF_FILE, 'wb') as fobj:
-        _write_ha_config_from_fobj(ha_config, fobj)
+        _write_ha_config_to_fobj(ha_config, fobj)
 
 
-def _write_ha_config_from_fobj(ha_config, fobj):
+def _write_ha_config_to_fobj(ha_config, fobj):
     json.dump(ha_config, fobj)
 
 

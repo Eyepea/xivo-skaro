@@ -64,7 +64,7 @@ class TestHA(unittest.TestCase):
         expected_content = '{"node_type": "master", "remote_address": "10.0.0.1"}'
         fobj = StringIO()
 
-        ha._write_ha_config_from_fobj(ha_config, fobj)
+        ha._write_ha_config_to_fobj(ha_config, fobj)
 
         content = fobj.getvalue()
         self.assertEqual(expected_content, content)
