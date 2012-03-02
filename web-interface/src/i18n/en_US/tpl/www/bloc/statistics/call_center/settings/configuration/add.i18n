@@ -2,7 +2,7 @@
 Panel> Add
 
 ; smenu_general
-general
+General
 
 ; smenu_workweek
 Work Week
@@ -16,19 +16,25 @@ Queues
 ; smenu_qos
 Quality of Service
 
+; smenu_permissions
+Permissions
+
 ; smenu_agents
-agents
+Agents
 
 ; fm_description_general
 
 ; fm_name
-name:
+Name:
 
 ; fm_stats_conf_timezone 
 Timezone: 
 
 ; fm_default_delta
-interval:
+Interval:
+
+; xivo_user
+XiVO User authorized
 
 ; hlp_fm_default_delta
 Sets the time interval for the default view type. <br>
@@ -110,10 +116,13 @@ Saturday:
 Sunday:
 
 ; agent
-agents
+Agents
 
 ; create_agent
 Create an Agent
+
+; queue
+Queue
 
 ; user
 users
@@ -128,7 +137,7 @@ Queues
 Create a queue
 
 ; group
-groups
+Groups
 
 ; create_group
 Create a group
@@ -136,7 +145,7 @@ Create a group
 ; fm_description_stats_queue_qos
 Configuring QoS for queues and group in seconds
 
-;-Fm-queue_name
+; -fm-queue_name
 %s:
 
 ; no_queue

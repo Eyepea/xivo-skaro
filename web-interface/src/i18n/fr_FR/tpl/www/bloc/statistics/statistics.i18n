@@ -5,7 +5,10 @@ Choisir une configuration
 Aucune configuration séléctionnées pour la page d'accueil.
 
 ; no_queue
-Aucune file
+Aucune file d'attente
+
+; no_agent
+Aucun agent
 
 ; no_conf
 Aucune configuration

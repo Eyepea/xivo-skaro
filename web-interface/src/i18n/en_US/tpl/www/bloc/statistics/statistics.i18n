@@ -6,7 +6,10 @@ Choose a configuration
 No configuration selected for the home page.
 
 ; no_queue
-No file
+No queue
+
+; no_agent
+No agent
 
 ; no_conf
 No configuration

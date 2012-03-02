@@ -112,20 +112,16 @@ if(xivo_user::chk_acl_section('statistics/call_center') === true):
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-2'),
 						'statistics/call_center/data/stats2',(($pi == '/stats2') ? null : $params));?>
 			</dd>
+			<?php /*
 			<dd id="mn-5">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-3'),
 						'statistics/call_center/data/stats3',(($pi == '/stats3') ? null : $params));?>
 			</dd>
+			*/  ?>
 			<dd id="mn-6">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-4'),
 						'statistics/call_center/data/stats4',(($pi == '/stats4') ? null : $params));?>
 			</dd>
-			<!--
-			<dd id="mn-7">
-				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-5'),
-						'statistics/call_center/data/stats5',(($pi == '/stats5') ? null : $params));?>
-			</dd>
-			 -->
 <?php
 	endif;
 endif;

@@ -816,7 +816,6 @@ class dwho_tpl_statistics extends dwho_tpl_module
             }
             if ($rowname === true)
             {
-                $bbf = array();
                 $return .= '<td class="txt-left">';
                 switch ($type)
                 {
@@ -839,7 +838,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
                     case 'week':
                         $time = strtotime($infocal['dweek']);
                         $date = dwho_date::get_day_from_week_by_name_day(date('Y',$time),date('W',$time),$coldata['key']);
-                        $return .= $url->href_html($this->bbf($coldata['name'].'-opt',array(date('d',strtotime($date)))),
+                        $return .= $url->href_html($this->bbf($coldata['name'].'-opt', array(date('d',strtotime($date)))),
                                                 $this->_baseurl,array_merge($qry,
                                                 array(    'axetype' => 'day',
                                                         'confid' => $idconf,
@@ -850,7 +849,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
                         $day_num = $coldata['day'];
                         $day_time = strtotime($infocal['dmonth'].'-'.$day_num);
                         $week_num = date('W',$day_time);
-                        $return .= $url->href_html($this->bbf($identity,$bbf),
+                        $return .= $url->href_html($identity,
                                                 $this->_baseurl,array_merge($qry,
                                                 array(    'axetype' => 'day',
                                                         'confid' => $idconf,
@@ -860,7 +859,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
                     case 'year':
                         $month_num = $coldata['key'];
                         $month_time = strtotime($infocal['dyear'].'-'.$month_num);
-                        $return .= $url->href_html($this->bbf($identity,$bbf),
+                        $return .= $url->href_html($identity,
                                                 $this->_baseurl,array_merge($qry,
                                                 array(    'axetype' => 'month',
                                                         'confid' => $idconf,
@@ -869,7 +868,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
                         break;
                     case 'type':
                         $objectkey = $coldata['key'];
-                        $return .= $url->href_html($this->bbf($identity,$bbf),
+                        $return .= $url->href_html($identity,
                                                 $this->_baseurl,array_merge($qry,
                                                 array(    'axetype' => 'day',
                                                         'confid' => $idconf,
@@ -878,7 +877,6 @@ class dwho_tpl_statistics extends dwho_tpl_module
                         break;
                     case 'day':
                     default:
-                        #$return .= $this->bbf($identity,$bbf);
                         $return .= $coldata['key'].'h-'.($coldata['key']+1).'h';
                 }
 

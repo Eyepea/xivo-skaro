@@ -77,7 +77,7 @@ $tpl_statistics->add_col('ringnoanswer',
 $tpl_statistics->add_col('outgoing',
 					'direct',
 					'-');
-
+/*
 $tpl_statistics->set_col_struct('total_time');
 $tpl_statistics->add_col('login',
 					'direct',
@@ -95,7 +95,7 @@ $tpl_statistics->add_col('traitment',
 					'direct',
 					'custom:agent,[key],traitmenttime',
 					'time');
-
+*/
 $tpl_statistics->set_col_struct('average_time');
 $tpl_statistics->add_col('dmt',
 					'expression',
@@ -139,7 +139,7 @@ switch ($axetype)
 	case 'week':
 	case 'month':
 	case 'year':
-		$xivo_jqplot->gener_graph('agent_stacked_total_time','astt','agent_total_time_for_login');
+		#$xivo_jqplot->gener_graph('agent_stacked_total_time','astt','agent_total_time_for_login');
 		#$xivo_jqplot->gener_graph('agent_stacked_average_time','asat','agent_average_time_for_login');
 		$xivo_jqplot->gener_graph('agent_perf','ap','agent_performance');
 		break;
