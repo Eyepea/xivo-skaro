@@ -477,7 +477,7 @@ No entry in configuration
 CSV Export
 
 ; total_call_repartition_by_event
-Distribution of calls per event
+Total call distributed
 
 ; queue_performance
 Queues Performance
