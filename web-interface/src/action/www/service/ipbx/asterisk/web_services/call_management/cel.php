@@ -29,13 +29,13 @@ $stats_cel = new stats_ressource_cel();
 $cel = &$ipbx->get_module('cel');
 
 $act = $_QRY->get('act');
-$list = false;
+$limit = (!is_null($_QRY->get('limit')) && $_QRY->get('limit') < 5000) ?  $_QRY->get('limit') : 5000;
 
 switch($act)
 {
 	case 'searchid':
 		if(isset($_QR['idbeg']) !== false
-		&& ($list = $stats_cel->get_calls_records($_QR,'eventtime',5000)) !== false)
+		&& ($list = $cel->search_idbeg($_QR['idbeg'],'eventtime',$limit)) !== false)
 		{
 			if($list === null)
 			{
@@ -50,9 +50,8 @@ switch($act)
 		}
 		break;
 	case 'search':
-	default:
 		if(($info = $cel->chk_values($_QRY->request_meth_raw(),false)) !== false
-		&& ($list = $stats_cel->get_calls_records($info,'eventtime',5000)) !== false)
+		&& ($list = $stats_cel->get_calls_records($info,'eventtime',$limit)) !== false)
 		{
 			if($list === null)
 			{
@@ -65,6 +64,24 @@ switch($act)
 			$http_response->set_status_line(400);
 			$http_response->send(true);
 		}
+		break;
+	default:
+	case 'searchdb':
+		if(($info = $cel->chk_values($_QRY->request_meth_raw(),false)) !== false
+		&& ($list = $cel->search($info,'eventtime',$limit)) !== false)
+		{
+			if($list === null)
+			{
+				$http_response->set_status_line(204);
+				$http_response->send(true);
+			}
+		}
+		else
+		{
+			$http_response->set_status_line(400);
+			$http_response->send(true);
+		}
+		break;
 }
 
 $_TPL->set_var('list',$list);

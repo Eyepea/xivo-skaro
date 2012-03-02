@@ -53,6 +53,11 @@ class xivo_service_asterisk_cel_sql extends xivo_service_asterisk_abstract_sql
 		if(is_array($arr) === false)
 			return(false);
 
+		if(isset($arr['idbeg']) === true)
+		{
+			$this->_dso->where('id > '.$arr['idbeg']);
+		}
+
 		if(isset($arr['dbeg']) === true)
 		{
 			$dbeg = $arr['dbeg'];

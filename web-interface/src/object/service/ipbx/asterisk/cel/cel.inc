@@ -51,6 +51,17 @@ class xivo_service_asterisk_cel extends xivo_service_asterisk_abstract
 		return($this->_dso->stats_count_by_type($type,$value,$event,$interval,$addwhere));
 	}
 
+	public function search_idbeg($idbeg,$order=null,$limit=null)
+	{
+		$search = array();
+		$search['idbeg'] = (int) $idbeg;
+
+		if(($result = $this->_dso->search($search,$order,$limit)) === false)
+			return(null);
+
+		return($result);
+	}
+
 	public function search($arr,$order=null,$limit=null)
 	{
 		if(is_array($arr) === false)
