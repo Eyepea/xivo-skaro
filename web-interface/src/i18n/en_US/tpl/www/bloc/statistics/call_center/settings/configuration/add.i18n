@@ -74,7 +74,7 @@ start:
 end:
 
 ; stats_conf_period
-periods
+Periods
 
 ; fm_period1
 Period 1:
