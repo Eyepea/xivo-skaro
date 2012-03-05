@@ -24,6 +24,8 @@ import shutil
 import tempfile
 import unittest
 from StringIO import StringIO
+import subprocess
+import functools
 from xivo_sysconf.modules.ha import HAConfigManager, _PostgresConfigUpdater, \
     _CronFileInstaller
 
@@ -42,6 +44,21 @@ def new_disabled_ha_config():
 
 def _new_ha_config(node_type, remote_address):
     return {'node_type': node_type, 'remote_address': remote_address}
+
+
+def mock_subprocess_check_call(f):
+
+    @functools.wraps(f)
+    def decorator(*kargs):
+        old_subprocess_check_call = subprocess.check_call
+        subprocess.check_call = mock.Mock()
+
+        try:
+            f(*kargs)
+        finally:
+            subprocess.check_call = old_subprocess_check_call
+
+    return decorator
 
 
 class TestHA(unittest.TestCase):
@@ -106,12 +123,36 @@ class TestHA(unittest.TestCase):
 
     def test_update_ha_config(self):
         ha_config = new_master_ha_config('10.0.0.1')
+        self._ha_config_mgr._manage_services = mock.Mock()
 
         self._ha_config_mgr.update_ha_config(ha_config, None)
 
         expected_ha_config = self._ha_config_mgr._read_ha_config()
         self.assertEqual(expected_ha_config, ha_config)
 
+    @mock_subprocess_check_call
+    def test_manage_services_disabled(self):
+        ha_config = new_disabled_ha_config()
+
+        self._ha_config_mgr._manage_services(ha_config)
+
+        subprocess.check_call.assert_called_with(['/usr/sbin/xivo-manage-slave-services', 'start'])
+
+    @mock_subprocess_check_call
+    def test_manage_services_master(self):
+        ha_config = new_master_ha_config('10.0.0.1')
+
+        self._ha_config_mgr._manage_services(ha_config)
+
+        subprocess.check_call.assert_called_with(['/usr/sbin/xivo-manage-slave-services', 'start'])
+
+    @mock_subprocess_check_call
+    def test_manage_services_slave(self):
+        ha_config = new_slave_ha_config('10.0.0.1')
+
+        self._ha_config_mgr._manage_services(ha_config)
+
+        self.assertFalse(subprocess.check_call.called)
 
 class TestPostgresConfigUpdater(unittest.TestCase):
     def setUp(self):

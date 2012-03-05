@@ -17,7 +17,6 @@ __license__ = """
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
-
 import errno
 import json
 import os
@@ -62,6 +61,7 @@ class HAConfigManager(object):
         self._write_ha_config(ha_config)
         self._update_postgres(ha_config)
         self._update_cronfiles(ha_config)
+        self._manage_services(ha_config)
 
     def _write_ha_config(self, ha_config):
         with open(self._ha_conf_file, 'wb') as fobj:
@@ -93,6 +93,10 @@ class HAConfigManager(object):
     def _add_slave_cronfile(self, remote_address):
         content = '* * * * * root /usr/sbin/xivo-check-master-status %s\n' % remote_address
         self._cronfile_installer.add_cronfile(self.CRONFILE_SLAVE, content)
+
+    def _manage_services(self, ha_config):
+        if ha_config['node_type'] != 'slave':
+            subprocess.check_call(['/usr/sbin/xivo-manage-slave-services', 'start'])
 
 
 class _PostgresConfigUpdater(object):
