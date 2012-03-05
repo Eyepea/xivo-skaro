@@ -96,7 +96,8 @@ class HAConfigManager(object):
 
     def _manage_services(self, ha_config):
         if ha_config['node_type'] != 'slave':
-            subprocess.check_call(['/usr/sbin/xivo-manage-slave-services', 'start'])
+            command_args = ['/usr/sbin/xivo-manage-slave-services', 'start']
+            subprocess.check_call(command_args, close_fds=True)
 
 
 class _PostgresConfigUpdater(object):
