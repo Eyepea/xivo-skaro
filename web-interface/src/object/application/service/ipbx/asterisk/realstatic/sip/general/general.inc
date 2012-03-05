@@ -154,28 +154,6 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 
 		return $ret;
 	}
-
-	/*
-	function get_certificate_files($type='cert', $path)
-	{
-		$files = array();
-		foreach(scandir($path) as $file)
-		{
-
-			if($file[0] == '.' || !is_file("$path/$file"))
-				continue;
-
-			if($type == 'cert' && substr($file, -4) != '.pem'
-			|| $type != 'cert' && substr($file, -4) == '.pem')
-				continue;
-
-			$files[] = $file;
-		}
-		sort($files);
-
-		return $files;
-	}
-	*/
 }
 
 ?>

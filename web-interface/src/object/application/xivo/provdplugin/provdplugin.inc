@@ -26,49 +26,40 @@ class xivo_application_xivo_object_provdplugin extends xivo_application_xivo_obj
 	protected $_provdplugin		= false;
 	protected $_conf			= array();
 
-	public function __construct(&$xobj,$param=array(),$components=true)
+	public function __construct(&$xobj)
 	{
-		$this->xivo_application_xivo_object_abstract(&$xobj);
+		parent::__construct(&$xobj);
 
 		if(($this->_commonconf = &$this->_xobj->get_module('commonconf')) === false
 		|| ($this->_provdplugin = &$this->_xobj->get_module('provdplugin')) === false)
 			return(false);
-		else if((bool) $components === true)
-			$this->load_components();
 
 		return(true);
 	}
 
-	public function load_components()
-	{
-		$this->_components = true;
-
-		return(true);
-	}
-	
-	public function get($id,$nocomponents=null)
+	public function get($id)
 	{
 		return($this->_provdplugin->get($id));
 	}
-	
+
 	public function get_plugin_list($search='',$order=null,$limit=null,$assoc=false)
 	{
 		$this->_cnt = 0;
-		
+
 		if (($list_installed = $this->_provdplugin->get_plugin_installed($search,$order)) === false)
 			$list_installed = array();
-		
+
 		if (($list_installable = $this->_provdplugin->get_plugin_installable($search,$order)) === false)
 			$list_installable = array();
-			
-		$list_old_pni = array_diff_key($list_installed, $list_installable);	
+
+		$list_old_pni = array_diff_key($list_installed, $list_installable);
 		$list_installable = array_merge($list_installable,$list_old_pni);
-		
+
 		ksort($list_installable);
-			
+
 		$list = array();
-		foreach ($list_installable as $k => &$v) 
-		{			
+		foreach ($list_installable as $k => &$v)
+		{
 			if (isset($list_installed[$k]) === true)
 			{
 				$v['version'] = $list_installed[$k]['version'];
@@ -76,14 +67,14 @@ class xivo_application_xivo_object_provdplugin extends xivo_application_xivo_obj
 			}
 			array_push($list, $v);
 		}
-		
+
 		/*
 		if (($list_installed = $this->_provdplugin->get_plugin_installed($search,$order,null)) === false)
 			$list_installed = array();
-		
+
 		if (($list_installable = $this->_provdplugin->get_plugin_installable($search,$order,null,true)) === false)
 			$list_installable = array();
-		
+
 		$plugins = array();
 		$plugins['list'] = $list_installable;
 		$plugins['slt'] = dwho_array_intersect_key($list_installed,$plugins['list'],'name');
@@ -94,10 +85,10 @@ class xivo_application_xivo_object_provdplugin extends xivo_application_xivo_obj
 			$plugins['info'] = dwho_array_copy_intersect_key($list_installed,$plugins['slt'],'name');
 			$plugins['list'] = dwho_array_diff_key($plugins['list'],$plugins['slt']);
 		}
-		
+
 		$list = array_merge($plugins['info'],$plugins['list']);
 		$list = array_values($list);
-		*/	
+		*/
 		$this->_cnt = $total = count($list);
 		for($i=0;$i<$total;$i++)
 		{
@@ -105,9 +96,9 @@ class xivo_application_xivo_object_provdplugin extends xivo_application_xivo_obj
 				continue;
 			unset($list[$i]);
 		}
-		
+
 		$list = array_values($list);
-		
+
 		return($list);
 	}
 }

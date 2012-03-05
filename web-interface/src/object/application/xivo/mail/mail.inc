@@ -25,9 +25,9 @@ class xivo_application_xivo_object_mail extends xivo_application_xivo_object_abs
 	var $_mail           = false;
 	var $_commonconf     = false;
 
-	function xivo_application_xivo_object_mail(&$xobj)
+	public function __construct(&$xobj)
 	{
-		$this->xivo_application_xivo_object_abstract(&$xobj);
+		parent::__construct(&$xobj);
 
 		if(($this->_mail       = &$this->_xobj->get_module('mail'))       === false
         || ($this->_commonconf = &$this->_xobj->get_module('commonconf')) === false)

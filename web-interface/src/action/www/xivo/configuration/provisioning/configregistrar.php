@@ -40,7 +40,6 @@ switch($act)
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('config',$_QR) === true)
 		{
-			$_QR['config']['X_type'] = 'registrar';
 			if($appprovdconfig->set_add($_QR,'registrar') === false
 			|| $appprovdconfig->add() === false)
 			{
@@ -62,7 +61,6 @@ switch($act)
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('config',$_QR) === true)
 		{
-			$_QR['config']['X_type'] = 'registrar';
 			if($appprovdconfig->set_edit($_QR,'registrar') === false
 			|| $appprovdconfig->edit() === false)
 			{

@@ -25,9 +25,9 @@ class xivo_application_xivo_object_dhcp extends xivo_application_xivo_object_abs
 	var $_commonconf = false;
 	var $_dhcp       = false;
 
-	function xivo_application_xivo_object_dhcp(&$xobj)
+	public function __construct(&$xobj)
 	{
-		$this->xivo_application_xivo_object_abstract(&$xobj);
+		parent::__construct(&$xobj);
 
 		if(($this->_commonconf  = &$this->_xobj->get_module('commonconf'))    === false
 		|| ($this->_dhcp        = &$this->_xobj->get_module('dhcp'))          === false)
@@ -58,10 +58,10 @@ class xivo_application_xivo_object_dhcp extends xivo_application_xivo_object_abs
             if(!in_array($key, $keys))
                 unset($arr[$key]);
         }
-        
+
         if(!array_key_exists('active', $arr))
             $arr['active'] = 0;
-            
+
         if($this->_dhcp->edit(1, $arr) === false)
             return false;
 

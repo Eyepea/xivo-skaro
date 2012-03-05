@@ -27,16 +27,14 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 	protected $_conf			= array();
 	protected $_param			= array('internal'	=> false);
 
-	public function __construct(&$xobj,$param=array(),$components=true)
+	public function __construct(&$xobj,$param=array())
 	{
-		$this->xivo_application_xivo_object_abstract(&$xobj);
+		parent::__construct(&$xobj);
 
 		if(($this->_commonconf = &$this->_xobj->get_module('commonconf')) === false
 		|| ($this->_provdconfig = &$this->_xobj->get_module('provdconfig')) === false
 		|| $this->load_init($param) === false)
 			return(false);
-		else if((bool) $components === true)
-			$this->load_components();
 
 		return(true);
 	}
@@ -50,13 +48,6 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 		if(is_array($param) === true
 		&& isset($param['internal']) === true)
 			$this->_param['internal'] = (bool) $param['internal'];
-
-		return(true);
-	}
-
-	public function load_components()
-	{
-		$this->_components = true;
 
 		return(true);
 	}
