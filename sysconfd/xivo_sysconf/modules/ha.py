@@ -32,9 +32,13 @@ class HAConfigManager(object):
         'node_type': 'disabled',
         'remote_address': ''
     }
+    CRONFILE_SLAVE = 'xivo-ha-slave'
+    CRONFILE_MASTER = 'xivo-ha-master'
 
-    def __init__(self, postgres_config_updater_factory, ha_conf_file=DEFAULT_HA_CONF_FILE):
+    def __init__(self, postgres_config_updater_factory, cronfile_installer,
+                 ha_conf_file=DEFAULT_HA_CONF_FILE):
         self._postgres_config_updater_factory = postgres_config_updater_factory
+        self._cronfile_installer = cronfile_installer
         self._ha_conf_file = ha_conf_file
 
     def get_ha_config(self, args, options):
@@ -57,6 +61,7 @@ class HAConfigManager(object):
         ha_config = args
         self._write_ha_config(ha_config)
         self._update_postgres(ha_config)
+        self._update_cronfiles(ha_config)
 
     def _write_ha_config(self, ha_config):
         with open(self._ha_conf_file, 'wb') as fobj:
@@ -70,6 +75,24 @@ class HAConfigManager(object):
         postgres_updater.update_pg_hba_file()
         postgres_updater.update_postgresql_file()
         postgres_updater.restart_postgres()
+
+    def _update_cronfiles(self, ha_config):
+        node_type = ha_config['node_type']
+        remote_address = ha_config['remote_address']
+        self._cronfile_installer.remove_cronfile(self.CRONFILE_MASTER)
+        self._cronfile_installer.remove_cronfile(self.CRONFILE_SLAVE)
+        if node_type == 'master':
+            self._add_master_cronfile(remote_address)
+        elif node_type == 'slave':
+            self._add_slave_cronfile(remote_address)
+
+    def _add_master_cronfile(self, remote_address):
+        content = '0 */1 * * * root /usr/sbin/xivo-master-slave-db-replication %s\n' % remote_address
+        self._cronfile_installer.add_cronfile(self.CRONFILE_MASTER, content)
+
+    def _add_slave_cronfile(self, remote_address):
+        content = '* * * * * root /usr/sbin/xivo-check-master-status %s\n' % remote_address
+        self._cronfile_installer.add_cronfile(self.CRONFILE_SLAVE, content)
 
 
 class _PostgresConfigUpdater(object):
@@ -116,7 +139,27 @@ class _PostgresConfigUpdater(object):
         subprocess.check_call(command_args, close_fds=True)
 
 
-ha_config_manager = HAConfigManager(_PostgresConfigUpdater)
+class _CronFileInstaller(object):
+    DEFAULT_CRON_DIR = '/etc/cron.d'
+
+    def __init__(self, cron_dir=DEFAULT_CRON_DIR):
+        self._cron_dir = cron_dir
+
+    def add_cronfile(self, filename, content):
+        abs_filename = os.path.join(self._cron_dir, filename)
+        with open(abs_filename, 'w') as fobj:
+            fobj.write(content)
+
+    def remove_cronfile(self, filename):
+        abs_filename = os.path.join(self._cron_dir, filename)
+        try:
+            os.unlink(abs_filename)
+        except OSError as e:
+            if e.errno != errno.ENOENT:
+                raise
+
+
+ha_config_manager = HAConfigManager(_PostgresConfigUpdater, _CronFileInstaller())
 http_json_server.register(ha_config_manager.get_ha_config, CMD_R,
                           name='get_ha_config')
 http_json_server.register(ha_config_manager.update_ha_config, CMD_RW,

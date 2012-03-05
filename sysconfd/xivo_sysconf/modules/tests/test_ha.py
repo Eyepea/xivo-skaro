@@ -24,7 +24,8 @@ import shutil
 import tempfile
 import unittest
 from StringIO import StringIO
-from xivo_sysconf.modules.ha import HAConfigManager, _PostgresConfigUpdater
+from xivo_sysconf.modules.ha import HAConfigManager, _PostgresConfigUpdater, \
+    _CronFileInstaller
 
 
 def new_master_ha_config(slave_ip_address):
@@ -47,7 +48,9 @@ class TestHA(unittest.TestCase):
     def setUp(self):
         self._tmp_dir = tempfile.mkdtemp()
         self._ha_conf_file = os.path.join(self._tmp_dir, 'test_ha.conf')
-        self._ha_config_mgr = HAConfigManager(mock.Mock(), self._ha_conf_file)
+        self._ha_config_mgr = HAConfigManager(mock.Mock(),
+                                              mock.Mock(),
+                                              ha_conf_file=self._ha_conf_file)
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
@@ -253,3 +256,48 @@ listen_addresses = '*'
         postgres_updater.update_postgresql_file()
 
         self.assertEqual(expected_postgresql_content, self._read_postgresql_file())
+
+
+class TestCronFileInstaller(unittest.TestCase):
+    def setUp(self):
+        self._tmp_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
+
+    def test_add_cronfile(self):
+        filename = 'test-cronfile'
+        content = 'foo bar\n'
+        cronfile_installer = self._new_cronfile_installer()
+
+        cronfile_installer.add_cronfile(filename, content)
+
+        self.assertEqual(content, self._read_cronfile(filename))
+
+    def _new_cronfile_installer(self):
+        return _CronFileInstaller(self._tmp_dir)
+
+    def _read_cronfile(self, filename):
+        abs_filename = os.path.join(self._tmp_dir, filename)
+        with open(abs_filename) as fobj:
+            return fobj.read()
+
+    def test_remove_cronfile_when_cronfile_present(self):
+        filename = 'test-cronfile'
+        cronfile_installer = self._new_cronfile_installer()
+        cronfile_installer.add_cronfile(filename, '')
+
+        cronfile_installer.remove_cronfile(filename)
+
+        self.assertEqual([], self._list_crondir())
+
+    def _list_crondir(self):
+        return os.listdir(self._tmp_dir)
+
+    def test_remove_cronfile_when_cronfile_absent(self):
+        filename = 'test-cronfile'
+        cronfile_installer = self._new_cronfile_installer()
+
+        cronfile_installer.remove_cronfile(filename)
+
+        self.assertEqual([], self._list_crondir())
