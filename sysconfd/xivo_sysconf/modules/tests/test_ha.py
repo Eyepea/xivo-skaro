@@ -136,7 +136,7 @@ class TestHA(unittest.TestCase):
 
         self._ha_config_mgr._manage_services(ha_config)
 
-        subprocess.check_call.assert_called_with(['/usr/sbin/xivo-manage-slave-services', 'start'])
+        subprocess.check_call.assert_called_with(['/usr/sbin/xivo-manage-slave-services', 'start'], close_fds=True)
 
     @mock_subprocess_check_call
     def test_manage_services_master(self):
@@ -144,7 +144,7 @@ class TestHA(unittest.TestCase):
 
         self._ha_config_mgr._manage_services(ha_config)
 
-        subprocess.check_call.assert_called_with(['/usr/sbin/xivo-manage-slave-services', 'start'])
+        subprocess.check_call.assert_called_with(['/usr/sbin/xivo-manage-slave-services', 'start'], close_fds=True)
 
     @mock_subprocess_check_call
     def test_manage_services_slave(self):
