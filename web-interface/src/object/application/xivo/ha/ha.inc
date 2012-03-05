@@ -24,19 +24,24 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 {
 	var $_sysconfd = false;
 	var $_ha = false;
+	var $_provdconfig = false;
+	var $_ipbx = false;
 
-	function xivo_application_xivo_object_ha(&$xobj)
+	public function __construct(&$xobj)
 	{
-		$this->xivo_application_xivo_object_abstract(&$xobj);
+		parent::__construct(&$xobj);
 
 		if(($this->_sysconfd = &$this->_xobj->get_module('sysconfd')) === false
-		|| ($this->_ha = &$this->_xobj->get_module('ha')) === false)
+		|| ($this->_ha = &$this->_xobj->get_module('ha')) === false
+		|| ($this->_provdconfig = &$this->_xobj->get_application('provdconfig')) === false
+		|| ($_SRE = dwho_gct::get('xivo_service')) === false
+		|| ($this->_ipbx = &$_SRE->get('ipbx')) === false)
 			return(false);
 
 		return(true);
 	}
 
-	function get()
+	public function get()
 	{
 		if(($res = $this->_sysconfd->request_get('/get_ha_config')) === false
 		|| is_array($res) === false)
@@ -45,35 +50,18 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 		return($res);
 	}
 
-	function get_elements()
+	public function get_elements()
 	{
 		return($this->_ha->get_element());
 	}
 
-	function get_status()
-	{
-		$status = $this->_sysconfd->request_get('/ha_status');
-		if($status === false)
-		{ return false; }
-
-		return $status;
-	}
-
-	function _set_check($arr)
+	private function _set_check($arr)
 	{
 		if(is_array($arr) === false)
 		{
 			$this->_set_result('ha',null);
 			$this->_set_error('ha','invalid data');
 			return(false);
-		}
-
-		switch($arr['node_type'])
-		{
-			case 'master':
-				break;
-			case 'slave':
-				break;
 		}
 
 		if(($rs = $this->_ha->chk_values($arr)) === false)
@@ -88,16 +76,103 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 		return(true);
 	}
 
+	private function _set_provd_template_line($node_type, $remote_address)
+	{
+		$info = $this->_provdconfig->get('default');
+
+		$rs = &$info['config'];
+
+		switch($node_type)
+		{
+			case 'master':
+				$rs["registrar_backup"] = $remote_address;
+				$rs["proxy_backup"] = $remote_address;
+				break;
+			case 'slave':
+				break;
+			case 'disabled':
+			default:
+				$rs["registrar_backup"] = '';
+				$rs["proxy_backup"] = '';
+				break;
+		}
+
+		if($this->_provdconfig->set_edit($info,'registrar') === false
+		|| $this->_provdconfig->edit() === false)
+			return(false);
+
+		return(true);
+	}
+
+	private function _set_sip_options($node_type)
+	{
+		$appsip = &$this->_ipbx->get_apprealstatic('sip');
+		$appgeneralsip = &$appsip->get_module('general');
+
+		$list = array();
+		$list[0]['var_name'] = 'minexpiry';
+		$list[1]['var_name'] = 'maxexpiry';
+		$list[2]['var_name'] = 'defaultexpiry';
+
+		switch($node_type)
+		{
+			case 'slave':
+			case 'master':
+				$list[0]['var_val'] = 20;
+				$list[1]['var_val'] = 120;
+				$list[2]['var_val'] = 40;
+				break;
+			case 'disabled':
+			default:
+				$list[0]['var_val'] = 60;
+				$list[1]['var_val'] = 3600;
+				$list[2]['var_val'] = 120;
+				break;
+		}
+
+		$r = array();
+		$r['result'] = array();
+		$r['error'] = array();
+		$err = 0;
+
+		$nb = count($list);
+		for($i = 0;$i < $nb;$i++)
+		{
+			$ref = &$list[$i];
+
+			$ref['commented'] = 0;
+
+			if($appgeneralsip->set($ref) === false
+			|| ($pre_save = $appgeneralsip->_chk_pre_save($ref)) === false
+			|| ($pre_save !== 1 && $appgeneralsip->save() === false) === true) {
+				$err++;
+				$r['error'][$i] = $appgeneralsip->get_error();
+			}
+			$r['result'][$i] = $appgeneralsip->get_result();
+		}
+
+		if ($err > 0) {
+			dwho_report::push('error', $r['error']);
+			dwho_report::push('error', 'Can\'t update SIP Options in staticsip table');
+			return(false);
+		}
+
+		return(true);
+	}
+
 	function _set_save($arr)
 	{
 		$query = array();
 		$query['node_type'] = $arr['node_type'];
 		$query['remote_address'] = $arr['remote_address'];
 
+		$this->_set_sip_options($arr['node_type']);
+		$this->_set_provd_template_line($arr['node_type'], $arr['remote_address']);
+
 		if(($res = $this->_sysconfd->request_post('/update_ha_config', $query)) === false
-			|| $this->_sysconfd->last_status_code() != 200) {
+		|| $this->_sysconfd->last_status_code() != 200) {
 			return(false);
-        }
+		}
 		return($res);
 	}
 
@@ -108,19 +183,10 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 		if(!$this->_set_check(&$arr))
 			return false;
 
-		/* TODO
-		 *
-		 */
-		//return;
-
 		if($this->_set_save($arr) === false)
 			return false;
 
-		return $this->generate();
-	}
-
-	function generate()
-	{
+		return(true);
 	}
 
 	function gen_passphrase($len, $lower=false)

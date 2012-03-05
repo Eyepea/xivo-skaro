@@ -24,20 +24,13 @@ class xivo_object_ha extends xivo_object_abstract
 {
 	var $_dso		= null;
 	var $_name		= 'ha';
-    var $_filter    = false;
+	var $_filter    = false;
 
 	function xivo_object_ha(&$xobj)
 	{
 		$this->xivo_object_abstract(&$xobj);
 
 		$this->_load_config(true);
-	}
-
-	public function get()
-	{
-		$rs = array();
-
-		return($rs);
 	}
 }
 
