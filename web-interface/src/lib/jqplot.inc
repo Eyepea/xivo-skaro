@@ -316,8 +316,13 @@ class xivo_jqplot
             array_push($list_ticks,$row['identity']);
 
         $listprod = array();
-        foreach ($data_table as $colname => $colvalue)
-            array_push($listprod,$colvalue['productivity']['result']);
+        foreach ($data_table as $colname => $colvalue) {
+            if (dwho_issa('productivity', $colvalue)) {
+                array_push($listprod,$colvalue['productivity']['result']);
+            } else {
+                array_push($listprod,null);
+            }
+        }
 
         $axex = $this->build_js_list($listprod,'valuewithindex',true);
 
