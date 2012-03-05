@@ -55,9 +55,9 @@ switch($act)
 	case 'edit':
 		$appline = &$ipbx->get_application('line');
 
-		if($appline->get($_QRY->get('id')) === false)
+		if(($line = $appline->get($_QRY->get('id'))) === false)
 			$status = 404;
-		else if($appline->edit_from_json() === true)
+		else if($appline->edit_from_json($line) === true)
 		{
 			$status = 200;
 			$ipbx->discuss('xivo[userlist,update]');
