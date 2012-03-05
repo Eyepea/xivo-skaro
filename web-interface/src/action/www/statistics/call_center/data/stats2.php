@@ -142,7 +142,7 @@ switch ($axetype)
 	case 'year':
 		#$xivo_jqplot->gener_graph('agent_stacked_total_time','astt','agent_total_time_for_login');
 		#$xivo_jqplot->gener_graph('agent_stacked_average_time','asat','agent_average_time_for_login');
-		$xivo_jqplot->gener_graph('agent_perf','ap','agent_performance');
+		#$xivo_jqplot->gener_graph('agent_perf','ap','agent_performance');
 		break;
 	default:
 }
