@@ -38,6 +38,8 @@ $element = $this->get_var('element');
 	echo	$form->select(array('desc'	=> $this->bbf('fm_ha_node_type'),
 					'name'		=> 'node_type',
 					'labelid'	=> 'node_type',
+					'bbf'		=> 'fm_ha_node_type-opt',
+					'bbfopt'	=> array('argmode' => 'paramvalue'),
 					'key'		=> false,
 					'selected'	=> $this->get_var('info','node_type'),
 					'error'   	=> $this->bbf_args('error', $this->get_var('error','ha','node_type'))),
@@ -48,7 +50,7 @@ $element = $this->get_var('element');
 	<legend id="fld-legend_master"><?=$this->bbf('fld_ha_part_master');?></legend>
 	<legend id="fld-legend_slave"><?=$this->bbf('fld_ha_part_slave');?></legend>
 <?php
-	echo $form->text(array('desc'	=> $this->bbf('fm_remote_address'),
+	echo 	$form->text(array('desc'	=> $this->bbf('fm_remote_address'),
 					'name'	    => 'remote_address',
 					'labelid'	=> 'remote_address',
 					'size'	  	=> 15,

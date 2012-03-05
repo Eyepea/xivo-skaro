@@ -310,6 +310,9 @@ XiVO servers
 ; acl(xivo-configuration-manage-user)
 Users
 
+; acl(xivo-configuration-manage-ha)
+High Availability
+
 ; acl(xivo-configuration-network)
 Network
 
