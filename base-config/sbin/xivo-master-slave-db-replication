@@ -20,11 +20,10 @@ if [ $? -ne 0 ]; then
     panic "Slave down"
 fi
 
-asterisk -rx "module unload cel_pgsql.so"
 
 su postgres -c "pg_dump -c -T cel $DB_NAME | tee out_master.sql | psql -h $SLAVE_IP $DB_NAME"
 
-asterisk -rx "module load cel_pgsql.so"
+asterisk -rx "module reload cel_pgsql.so"
 
 su postgres -c "pg_dump -h $SLAVE_IP -c -T cel $DB_NAME > out_slave.sql"
 
