@@ -7,6 +7,7 @@ if [ -z $SLAVE_IP ]; then
 fi
 DB_NAME='asterisk'
 SLAVE_BACKUP='out_slave_backup.sql'
+PG_DUMP_OPTIONS='-T cel -T cel_id_seq'
 
 panic() {
     echo "Slave replication failed: $*" | mutt root@localhost
@@ -20,12 +21,12 @@ if [ $? -ne 0 ]; then
     panic "Slave down"
 fi
 
-su postgres -c "pg_dump -c -T cel $DB_NAME > out_master.sql"
+su postgres -c "pg_dump -c $PG_DUMP_OPTIONS $DB_NAME > out_master.sql"
 asterisk -rx "module reload cel_pgsql.so"
 
 su postgres -c "psql -h $SLAVE_IP $DB_NAME < out_master.sql > /dev/null"
 
-su postgres -c "pg_dump -h $SLAVE_IP -c -T cel $DB_NAME > out_slave.sql"
+su postgres -c "pg_dump -h $SLAVE_IP -c $PG_DUMP_OPTIONS $DB_NAME > out_slave.sql"
 
 master_md5=$(md5sum out_master.sql | awk '{print $1}')
 slave_md5=$(md5sum out_slave.sql | awk '{print $1}')
