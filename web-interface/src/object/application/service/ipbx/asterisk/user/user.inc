@@ -2202,7 +2202,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		}
 
 		if(!is_null($mergewith))
+		{
+			unset($mergewith['linefeatures']);
 			$arr = $this->array_merge_recursive($mergewith,$arr);
+		}
+
 
 		if($this->set_edit($arr) === false
 		|| $this->edit() === false)

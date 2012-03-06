@@ -74,7 +74,7 @@ switch($act)
 		if(($user = $appuser->get($_QRY->get('id'),
 										 null,
 										 false,
-										 array('linefeatures' => true, 'entity' => true))) === false)
+										 array('entity' => true))) === false)
 				 $status = 404;
 
 		else if($appuser->edit_from_json($user) === true)
