@@ -31,11 +31,6 @@ $configdevice = $this->get_var('configdevice');
 $listline = $this->get_var('info','config','sip_lines');
 $element = $this->get_var('element');
 
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
-
 ?>
 
 <div id="sb-part-first" class="b-nodisplay">
@@ -114,23 +109,23 @@ endif;
 						   $this->get_var('error', 'config', 'protocol'))),
 			      $element['config']['protocol']['value']),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_config_config_encryption_enabled'),
-				      'name'	=> 'config[config_encryption_enabled]',
-				      'labelid'	=> 'config-config_encryption_enabled',
-				      'default'	=> $element['config']['config_encryption_enabled']['default'],
-				      'checked'	=> $this->get_var('info','config','config_encryption_enabled'),
-				      'legend'	=> $this->get_var('configdevice','raw_config','config_encryption_enabled'),
-				      'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'config', 'config_encryption_enabled')))),
+		   $form->select(array('desc'	=> $this->bbf('fm_config_config_encryption_enabled'),
+		   		'name'	=> 'config[config_encryption_enabled]',
+		   		'labelid'	=> 'config-config_encryption_enabled',
+		   		'key'		=> false,
+		   		'default'	=> $element['config']['config_encryption_enabled']['default'],
+		   		'selected'	=> $this->get_var('info','config','config_encryption_enabled'),
+		   		'legend'	=> $this->get_var('configdevice','raw_config','config_encryption_enabled') ),
+		   		$element['config']['config_encryption_enabled']['value']),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_config_ntp_enabled'),
-				      'name'	=> 'config[ntp_enabled]',
-				      'labelid'	=> 'config-ntp_enabled',
-				      'default'	=> $element['config']['ntp_enabled']['default'],
-				      'checked'	=> $this->get_var('info','config','ntp_enabled'),
-				      'legend'	=> $this->get_var('configdevice','raw_config','ntp_enabled'),
-				      'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'config', 'ntp_enabled')))),
+		   $form->select(array('desc'	=> $this->bbf('fm_config_ntp_enabled'),
+		   		'name'	=> 'config[ntp_enabled]',
+		   		'labelid'	=> 'config-ntp_enabled',
+		   		'key'		=> false,
+		   		'default'	=> $element['config']['ntp_enabled']['default'],
+		   		'selected'	=> $this->get_var('info','config','ntp_enabled'),
+		   		'legend'	=> $this->get_var('configdevice','raw_config','ntp_enabled') ),
+		   		$element['config']['ntp_enabled']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_config_ntp_ip'),
 				  'name'	=> 'config[ntp_ip]',
@@ -193,12 +188,15 @@ endif;
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'user_password')) )),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_config_sip_subscribe_mwi'),
+		$form->select(array('desc'	=> $this->bbf('fm_config_sip_subscribe_mwi'),
 				  'name'	=> 'config[sip_subscribe_mwi]',
 				  'labelid'	=> 'config-sip_subscribe_mwi',
-				  'default'	=> $element['config']['sip_subscribe_mwi']['default'],
-				  'checked'	=> $this->get_var('info','config','sip_subscribe_mwi'),
-				  'legend'	=> $this->get_var('configdevice','raw_config','sip_subscribe_mwi')));
+				  'key'		=> false,
+				  'selected'	=> $this->get_var('info','config','sip_subscribe_mwi'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','sip_subscribe_mwi'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'config', 'sip_subscribe_mwi')) ),
+				$element['config']['sip_subscribe_mwi']['value']);
 ?>
 	<div class="fm-paragraph fm-description">
 		<p>
@@ -243,17 +241,20 @@ endif;
 				  'legend'	=> $this->get_var('configdevice','raw_config','sip_srtp_mode'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'config', 'sip_srtp_mode')) ),
-			      $element['config']['sip_srtp_mode']['value']);
+				$element['config']['sip_srtp_mode']['value']);
 ?>
 </fieldset>
 <fieldset>
 	<legend><?=$this->bbf('fld-device-vlan_config')?></legend>
 <?php
-	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_config_vlan_enabled'),
-				      'name'	=> 'config[vlan_enabled]',
-				      'labelid'	=> 'config-vlan_enabled',
-				      'default'	=> $element['config']['vlan_enabled']['default'],
-				      'checked'	=> $this->get_var('info','config','vlan_enabled'))),
+	echo	$form->select(array('desc'	=> $this->bbf('fm_config_vlan_enabled'),
+				  'name'	=> 'config[vlan_enabled]',
+				  'labelid'	=> 'config-vlan_enabled',
+				  'key'		=> false,
+				  'default'	=> $element['config']['vlan_enabled']['default'],
+				  'selected'	=> $this->get_var('info','config','vlan_enabled'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','vlan_enabled') ),
+			      $element['config']['vlan_enabled']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_config_vlan_id'),
 				  'name'	=> 'config[vlan_id]',
@@ -288,11 +289,14 @@ endif;
 <fieldset>
 	<legend><?=$this->bbf('fld-device-syslog_config')?></legend>
 <?php
-	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_config_syslog_enabled'),
-				      'name'	=> 'config[syslog_enabled]',
-				      'labelid'	=> 'config-syslog_enabled',
-				      'default'	=> $element['config']['syslog_enabled']['default'],
-				      'checked'	=> $this->get_var('info','config','syslog_enabled'))),
+	echo	$form->select(array('desc'	=> $this->bbf('fm_config_syslog_enabled'),
+				  'name'	=> 'config[syslog_enabled]',
+				  'labelid'	=> 'config-syslog_enabled',
+				  'key'	=> false,
+				  'default'	=> $element['config']['syslog_enabled']['default'],
+				  'selected'	=> $this->get_var('info','config','syslog_enabled'),
+				  'legend'	=> $this->get_var('configdevice','raw_config','syslog_enabled') ),
+			      $element['config']['syslog_enabled']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_config_syslog_ip'),
 				  'name'	=> 'config[syslog_ip]',

@@ -116,7 +116,8 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 			case 'registrar':
 				if(($rs = $this->_provdconfig->chk_confregistrar($arr)) === false)
 				{
-					dwho_report::push('error', 'config data not valid');
+					$this->_set_result('config',$this->_provdconfig->get_filter_result());
+					$this->_set_error('config',$this->_provdconfig->get_filter_error());
 					return(false);
 				}
 				$config = $rs;
@@ -127,7 +128,8 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 			case 'device':
 				if(($rs = $this->_provdconfig->chk_values($arr)) === false)
 				{
-					dwho_report::push('error', 'config data not valid');
+					$this->_set_result('config',$this->_provdconfig->get_filter_result());
+					$this->_set_error('config',$this->_provdconfig->get_filter_error());
 					return(false);
 				}
 				$config['X_type'] = 'device';
