@@ -17,6 +17,7 @@ enable_asterisk() {
     fi
     if [ ! -f /var/run/asterisk/asterisk.pid ]; then
         /etc/init.d/asterisk start
+        /etc/init.d/xivo-ctid restart
     fi
 }
 
