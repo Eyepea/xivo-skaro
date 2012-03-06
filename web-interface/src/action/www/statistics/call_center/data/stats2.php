@@ -133,7 +133,7 @@ $xivo_jqplot->init_data_full($tpl_statistics);
 switch ($axetype)
 {
 	case 'type':
-		$xivo_jqplot->gener_graph('prod_agent','chart1','productivity_by_agent');
+		#$xivo_jqplot->gener_graph('prod_agent','chart1','productivity_by_agent');
 		break;
 	case 'day':
 		break;

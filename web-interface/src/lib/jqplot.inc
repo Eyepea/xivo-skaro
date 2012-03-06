@@ -1021,22 +1021,16 @@ class xivo_jqplot
         foreach ($listrow as $row)
             array_push($list_ticks,$row['name']);
 
-        $listpresented = array();
         $listconnect = array();
         $listhome_rated = array();
-        $listproductivity = array();
         foreach ($data_table as $colname => $colvalue)
         {
             array_push($listhome_rated,$colvalue['home_rated']['result']);
-            array_push($listproductivity,$colvalue['productivity']['result']);
-            array_push($listpresented,$colvalue['presented']['result']);
             array_push($listconnect,$colvalue['connect']['result']);
         }
 
-        $axex = $this->build_js_list($listpresented,'value',true);
         $axex2 = $this->build_js_list($listconnect,'value',true);
         $axey1 = $this->build_js_list($listhome_rated,'value',true);
-        $axey2 = $this->build_js_list($listproductivity,'value',true);
 
         ob_start();
 
@@ -1047,12 +1041,10 @@ class xivo_jqplot
 
         echo "<script type=\"text/javascript\">
             $.jqplot.config.enablePlugins = true;
-            listpresented = $axex;
             listconnect = $axex2;
             listhome_rated = $axey1;
-            listproductivity = $axey2;
 
-            plot3 = $.jqplot('$box', [listpresented, listconnect, listhome_rated, listproductivity],
+            plot3 = $.jqplot('$box', [listconnect, listhome_rated],
             {
                 grid:
                 {
@@ -1099,13 +1091,6 @@ class xivo_jqplot
                 },
                 series:
                 [
-                    {
-                        label: '".$this->bbf('col_presented')."',
-                        renderer: $.jqplot.BarRenderer,
-                        rendererOptions:{barMargin: 5},
-                        xaxis: 'xaxis',
-                        yaxis: 'y2axis'
-                    },
                     {
                         label: '".$this->bbf('col_connect')."',
                         renderer: $.jqplot.BarRenderer,

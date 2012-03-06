@@ -88,13 +88,13 @@ else
             					'expression',
             					'{custom:queue,[key],qos}/{custom:queue,[key],connect}',
             					'percent');
-
+/*
 		$tpl_statistics->set_col_struct('agent');
 		$tpl_statistics->add_col('productivity',
             					'expression',
             					'{custom:agent,[key],calltime}/{custom:agent,[key],logintime}',
             					'percent');
-
+*/
 		$tpl_statistics->gener_table();
 		$table_general = $tpl_statistics->render_html(false,true);
 

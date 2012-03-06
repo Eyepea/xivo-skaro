@@ -47,7 +47,7 @@ Available value: - [0-999] [day | week | month] s <br>
 Leave 0 for the current day.
 
 ; fm_conf_homepage
-Show on page:
+Show on summary page:
 
 ; fm_description_cache
 The dates for the cache should be in the form YYYY-MM.
