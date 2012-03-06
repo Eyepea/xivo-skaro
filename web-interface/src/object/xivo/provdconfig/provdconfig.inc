@@ -479,13 +479,23 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		return($exten);
 	}
 
-	private function _set_config_var(&$config,$data,$var)
+	private function _set_config_var(&$config,$data,$var,$type=null)
 	{
 		if (isset($data[$var]) === true
-		&& dwho_empty($data[$var]) === false)
-			$config[$var] = $data[$var];
-		else
+		&& dwho_empty($data[$var]) === false) {
+			switch ($type)
+			{
+				case 'bool':
+					$rs = dwho_bool($data[$var]);
+					break;
+				case null:
+				default:
+					$rs = $data[$var];
+			}
+			$config[$var] = $rs;
+		} else {
 			unset($config[$var]);
+		}
 	}
 
 	public function update_parents_ids($configid,$method,$id)
@@ -941,17 +951,17 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$this->_set_config_var($conf,$raw,'timezone');
 		$this->_set_config_var($conf,$raw,'locale');
 		$this->_set_config_var($conf,$raw,'protocol');
-		$this->_set_config_var($conf,$raw,'ntp_enabled');
+		$this->_set_config_var($conf,$raw,'ntp_enabled','bool');
 		$this->_set_config_var($conf,$raw,'ntp_ip');
-		$this->_set_config_var($conf,$raw,'vlan_enabled');
+		$this->_set_config_var($conf,$raw,'vlan_enabled','bool');
 		$this->_set_config_var($conf,$raw,'vlan_id');
 		$this->_set_config_var($conf,$raw,'vlan_priority');
 		$this->_set_config_var($conf,$raw,'vlan_pc_port_id');
-		$this->_set_config_var($conf,$raw,'syslog_enabled');
+		$this->_set_config_var($conf,$raw,'syslog_enabled','bool');
 		$this->_set_config_var($conf,$raw,'syslog_ip');
 		$this->_set_config_var($conf,$raw,'syslog_port');
 		$this->_set_config_var($conf,$raw,'syslog_level');
-		$this->_set_config_var($conf,$raw,'config_encryption_enabled');
+		$this->_set_config_var($conf,$raw,'config_encryption_enabled','bool');
 		$this->_set_config_var($conf,$raw,'sip_proxy_ip');
 		$this->_set_config_var($conf,$raw,'sip_proxy_port');
 		$this->_set_config_var($conf,$raw,'sip_backup_proxy_ip');
@@ -968,7 +978,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$this->_set_config_var($conf,$raw,'sip_local_root_and_intermediate_certificates');
 		$this->_set_config_var($conf,$raw,'sip_local_certificate');
 		$this->_set_config_var($conf,$raw,'sip_local_key');
-		$this->_set_config_var($conf,$raw,'sip_subscribe_mwi');
+		$this->_set_config_var($conf,$raw,'sip_subscribe_mwi','bool');
 
 		return($conf);
 	}
