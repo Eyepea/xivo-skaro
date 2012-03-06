@@ -557,10 +557,6 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			array_push($globalconfig['parent_ids'],'base');
 		}
 
-		if (is_null($raw) === true) {
-			$raw = array();
-		}
-
 		$raw_config = &$globalconfig['raw_config'];
 
 		if (isset($raw_config['sip_lines']) === true
@@ -568,18 +564,20 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			$raw_config['sip_lines'] = array();
 		}
 
-		$build_raw_config = $this->build_raw_config_device($raw);
-		$raw_config = array_merge($raw_config,$build_raw_config);
+		if (is_null($raw) === false) {
+			$build_raw_config = $this->build_raw_config_device($raw);
+			$raw_config = array_merge($raw_config,$build_raw_config);
 
-		$nb = count($raw_config);
+			foreach ($raw_config as $key => $val) {
+				if (substr($key, 0, 5) === 'exten'
+				|| $key === 'sip_lines'
+				|| isset($build_raw_config[$key]))
+					continue;
 
-		foreach ($raw_config as $key => $val) {
-			if (substr($key, 0, 5) === 'exten'
-			|| $key === 'sip_lines'
-			|| isset($build_raw_config[$key]))
-				continue;
-
-			unset($raw_config[$key]);
+				unset($raw_config[$key]);
+			}
+		} else {
+			$raw = array();
 		}
 
 		$raw_config = array_merge($raw_config,$this->_build_exten_config());

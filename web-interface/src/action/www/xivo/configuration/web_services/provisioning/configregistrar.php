@@ -58,8 +58,9 @@ switch($act)
 			$listid = array_values($listid);
 
 			$nb = count($listid);
-			for($i=0;$i<$nb;$i++)
+			for($i=0;$i<$nb;$i++) {
 				$provdconfig->rebuild_device_config($listid[$i]);
+			}
 			$http_response->set_status_line(200);
 		}
 
