@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 
 SLAVE_IP=$1
 if [ -z $SLAVE_IP ]; then
@@ -20,10 +20,10 @@ if [ $? -ne 0 ]; then
     panic "Slave down"
 fi
 
-
-su postgres -c "pg_dump -c -T cel $DB_NAME | tee out_master.sql | psql -h $SLAVE_IP $DB_NAME"
-
+su postgres -c "pg_dump -c -T cel $DB_NAME > out_master.sql"
 asterisk -rx "module reload cel_pgsql.so"
+
+su postgres -c "psql -h $SLAVE_IP $DB_NAME < out_master.sql > /dev/null"
 
 su postgres -c "pg_dump -h $SLAVE_IP -c -T cel $DB_NAME > out_slave.sql"
 
