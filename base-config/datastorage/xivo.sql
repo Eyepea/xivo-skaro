@@ -56,9 +56,8 @@ CREATE TABLE "directories" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "directories" VALUES (1,'internal' , NULL, 'internal' , '', 'XiVO internal users');
-INSERT INTO "directories" VALUES (2,'phonebook', NULL, 'phonebook', '', 'XiVO phonebook');
-SELECT setval('directories_id_seq', 3);
+INSERT INTO "directories" VALUES (DEFAULT,'internal' , NULL, 'internal' , '', 'XiVO internal users');
+INSERT INTO "directories" VALUES (DEFAULT,'phonebook', NULL, 'phonebook', '', 'XiVO phonebook');
 
 
 DROP TABLE IF EXISTS "entity";
@@ -198,8 +197,7 @@ CREATE TABLE "resolvconf" (
 
 CREATE UNIQUE INDEX "resolvconf__uidx__hostname" ON "resolvconf"("hostname");
 
-INSERT INTO "resolvconf" VALUES(1, '', '', NULL, NULL, NULL, NULL, '');
-SELECT setval('resolvconf_id_seq', 2);
+INSERT INTO "resolvconf" VALUES(DEFAULT, '', '', NULL, NULL, NULL, NULL, '');
 
 DROP TABLE IF EXISTS "server";
 CREATE TABLE "server" (
@@ -265,8 +263,7 @@ CREATE INDEX "user__idx__valid" ON "user"("valid");
 CREATE INDEX "user__idx__time" ON "user"("time");
 CREATE UNIQUE INDEX "user__uidx__login_meta" ON "user"("login","meta");
 
-INSERT INTO "user" VALUES (1,'root','proformatique','root',1,0,EXTRACT(EPOCH from now()),0,'');
-SELECT setval('user_id_seq', 2);
+INSERT INTO "user" VALUES (DEFAULT,'root','proformatique','root',1,0,EXTRACT(EPOCH from now()),0,'');
 
 
 DROP TABLE IF EXISTS "dhcp";
@@ -279,8 +276,7 @@ CREATE TABLE "dhcp" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "dhcp" VALUES (1,0,'','','');
-SELECT setval('dhcp_id_seq', 2);
+INSERT INTO "dhcp" VALUES (DEFAULT,0,'','','');
 
 
 DROP TABLE IF EXISTS "mail";
@@ -296,8 +292,7 @@ CREATE TABLE "mail" (
 
 CREATE UNIQUE INDEX "mail__uidx__origin" ON "mail"("origin");
 
-INSERT INTO "mail" VALUES (1,'','xivo-clients.proformatique.com','','','');
-SELECT setval('mail_id_seq', 2);
+INSERT INTO "mail" VALUES (DEFAULT,'','xivo-clients.proformatique.com','','','');
 
 
 DROP TABLE IF EXISTS "monitoring";
@@ -310,8 +305,7 @@ CREATE TABLE "monitoring" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO monitoring VALUES (1,0,NULL,NULL,NULL);
-SELECT setval('monitoring_id_seq', 2);
+INSERT INTO monitoring VALUES (DEFAULT,0,NULL,NULL,NULL);
 
 
 DROP TABLE IF EXISTS "provisioning";
@@ -329,8 +323,7 @@ CREATE TABLE "provisioning" (
  PRIMARY KEY ("id")
 );
 
-INSERT INTO "provisioning" VALUES(1, '', '127.0.0.1', 'admin', 'admin', 0, 8666, 8667, 0, 0);
-SELECT setval('provisioning_id_seq', 2);
+INSERT INTO "provisioning" VALUES(DEFAULT, '', '127.0.0.1', 'admin', 'admin', 0, 8666, 8667, 0, 0);
 
 
 --- STATS ---
