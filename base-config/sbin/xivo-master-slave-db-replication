@@ -30,13 +30,11 @@ su postgres -c "pg_dump -h $SLAVE_IP -c -T cel $DB_NAME > out_slave.sql"
 master_md5=$(md5sum out_master.sql | awk '{print $1}')
 slave_md5=$(md5sum out_slave.sql | awk '{print $1}')
 
-rm -f out_*.sql
-
-cd -
-
 if [ "$master_md5" != "$slave_md5" ]; then
     su postgres -c "cat $SLAVE_BACKUP | psql -h $SLAVE_IP $DB_NAME"
+    rm -f out_*.sql
     panic "md5sum didnt match"
 else
     echo "Slave replication completed succesfully"
+    rm -f out_*.sql
 fi
