@@ -31,8 +31,8 @@ $array['ini']['error']['email'] = 'xivo-webinterface-error@proformatique.com';
 $array['ini']['error']['file'] = '/var/log/pf-xivo-web-interface/error.log';
 
 $array['ini']['locale'] = array();
-$array['ini']['locale']['language'] = 'fr';
-$array['ini']['locale']['territory'] = 'FR';
+$array['ini']['locale']['language'] = 'en';
+$array['ini']['locale']['territory'] = 'US';
 $array['ini']['locale']['charset'] = 'UTF-8';
 
 $array['ini']['session'] = array();
