@@ -60,7 +60,16 @@ class xivo_application_service_asterisk_phonebook_sql extends xivo_application_a
 		if($this->_dso->aggregate_where() === false)
 			return(false);
 
-		$this->_dso->new_group('id',$this->_table['phonebook']);
+		$this->_dso->add_group('id',$this->_table['phonebook']);
+		$this->_dso->add_group('title',$this->_table['phonebook']);
+		$this->_dso->add_group('firstname',$this->_table['phonebook']);
+		$this->_dso->add_group('lastname',$this->_table['phonebook']);
+		$this->_dso->add_group('displayname',$this->_table['phonebook']);
+		$this->_dso->add_group('society',$this->_table['phonebook']);
+		$this->_dso->add_group('email',$this->_table['phonebook']);
+		$this->_dso->add_group('url',$this->_table['phonebook']);
+		$this->_dso->add_group('image',$this->_table['phonebook']);
+		$this->_dso->add_group('description',$this->_table['phonebook']);
 		$this->_dso->new_order($order,null,$this->_table['phonebook']);
 		$this->_dso->limit($limit);
 
