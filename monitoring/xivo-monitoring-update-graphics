@@ -53,13 +53,13 @@ run_plugin()
 
 
 # autodetect useful plugins
-CFILE=$(mktemp)
-munin-node-configure --shell 2>/dev/null >${CFILE}
-CFILE_N=$(wc -l ${CFILE} | cut -d\  -f1)
-if [ "${CFILE_N}" != "0" ]; then
-  sh < ${CFILE}
+config_file=$(mktemp)
+munin-node-configure --shell 2>/dev/null >$config_file
+config_files=$(wc -l $config_file | cut -d\  -f1)
+if [ "$config_files" != "0" ]; then
+  sh < $config_file
 fi
-rm -f ${CFILE}
+rm -f $config_file
 
 # commun sys stats
 activate_plugin uptime
@@ -68,12 +68,21 @@ activate_plugin hddtemp_smartctl
 
 # detected net stats
 deactivate_plugin vlan_*
-VLANS=$(run_plugin vlan_ suggest)
-if [ -n "${VLANS}" ]; then
-  for V in ${VLANS}; do
-    activate_plugin vlan_ ${V}
+vlans=$(run_plugin vlan_ suggest)
+if [ -n "$vlans" ]; then
+  for vlan in $vlans; do
+    activate_plugin vlan_ $vlan
   done
 fi
+# remove old vlan graphs
+dir="/var/www/munin/localdomain/localhost.localdomain"
+temp_dir=$(mktemp)
+rsync -a $dir/ $temp_dir/
+rm -rf $dir/vlan_*
+for vlan in $(ls /etc/munin/plugins/vlan_*); do
+        rsync -a $temp_dir/$(basename $vlan)* $dir/
+done
+rm -rf $temp_dir
 
 # detected sensors stats
 # (lm-sensors MUST be configured manually)
