@@ -76,7 +76,7 @@ if [ -n "$vlans" ]; then
 fi
 # remove old vlan graphs
 dir="/var/www/munin/localdomain/localhost.localdomain"
-temp_dir=$(mktemp)
+temp_dir="/tmp/munin"
 rsync -a $dir/ $temp_dir/
 rm -rf $dir/vlan_*
 for vlan in $(ls /etc/munin/plugins/vlan_*); do
