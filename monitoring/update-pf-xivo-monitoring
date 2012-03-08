@@ -39,7 +39,7 @@ cp $monit_file.tmpl $monit_file
 emails=$(get_full_email_alerts "monit")
 if [ -n "$emails" ]; then
   for email in $emails; do
-    echo "set alert $email but not on { instance changed }" >> /etc/monit/monitrc
+    echo "set alert $email" >> /etc/monit/monitrc
   done
 fi
 
