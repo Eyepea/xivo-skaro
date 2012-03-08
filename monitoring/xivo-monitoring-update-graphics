@@ -76,9 +76,13 @@ if [ -d /proc/net/vlan ]; then
         done
     fi
 fi
-# remove old vlan graphs
+
 dir="/var/www/munin/localdomain/localhost.localdomain"
+bck_dir="${dir}.bck"
 temp_dir="/tmp/munin"
+# create backup
+rsync -aq $dir/ $bck_dir/ --delete
+# remove old graph
 rsync -aq $dir/ $temp_dir/
 rm -rf $dir/vlan_* > /dev/null 2>&1
 ls /etc/munin/plugins/vlan_* > /dev/null 2>&1
@@ -208,8 +212,8 @@ activate_if_installed ntp ntp_offset ntp_states
 
 # Server templates
 munin_dir="/etc/munin"
-rsync -av $munin_dir/templates/ $munin_dir/templates.bak/ --delete
-rsync -av $munin_dir/templates_pf/ $munin_dir/templates/
+rsync -aq $munin_dir/templates/ $munin_dir/templates.bak/ --delete
+rsync -aq $munin_dir/templates_pf/ $munin_dir/templates/
 for config_file in munin.conf munin-node.conf; do
     cp $munin_dir/$config_file.tmpl $munin_dir/$config_file
 done
