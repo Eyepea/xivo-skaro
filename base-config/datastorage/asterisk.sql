@@ -980,7 +980,7 @@ CREATE TABLE "linefeatures" (
  "config" varchar(128),
  "device" varchar(32),
  "configregistrar" varchar(128),
- "name" varchar(20) NOT NULL,
+ "name" varchar(128) NOT NULL,
  "number" varchar(40),
  "context" varchar(39) NOT NULL,
  "provisioningid" integer NOT NULL,

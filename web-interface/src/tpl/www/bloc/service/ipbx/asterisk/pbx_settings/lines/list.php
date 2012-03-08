@@ -132,7 +132,7 @@ $page = $url->pager($pager['pages'],
 <?php
 				echo $url->img_html('img/site/phone/'.$icon.'.gif',null,'class="icons-list"');
 				echo $url->img_html('img/site/utils/phone-'.$phone.'.png',null,'class="icons-list"');
-				echo dwho_htmlen(dwho_trunc($ref['identity'],25,'...',false));
+				echo dwho_htmlen(dwho_trunc($ref['identity'],30,'...',false));
 ?>
 			</label>
 		</td>
