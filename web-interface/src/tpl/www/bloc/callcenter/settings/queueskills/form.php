@@ -21,18 +21,10 @@
 $form = &$this->get_module('form');
 $url  = &$this->get_module('url');
 
-$info 		= $this->get_var('info');
+$info = $this->get_var('info');
+$element = $this->get_var('element');
 
-// queueskill category name
-$element 	= $this->get_var('element');
-
-// queueskill values (if edit mode or redisplay view after error)
-$data 		= $this->get_var('data');
-
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
+$data = $this->get_var('data');
 
 ?>
 

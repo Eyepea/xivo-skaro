@@ -21,18 +21,14 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
-$element     = $this->get_var('element');
-$info        = $this->get_var('info');
-$contexts    = $this->get_var('contexts');
-$incalls     = $this->get_var('incalls');
+$element = $this->get_var('element');
+$info = $this->get_var('info');
+
+$contexts = $this->get_var('contexts');
+$incalls = $this->get_var('incalls');
 $availextens = $this->get_var('extens');
 
 $yesno = array($this->bbf('no'), $this->bbf('yes'));
-
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 
 // *** DECLARE A JAVASCRIPT ARRAY FOR EACH CONTEXT
 $js   = array();

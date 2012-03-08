@@ -23,15 +23,11 @@ $url = &$this->get_module('url');
 
 $element = $this->get_var('element');
 $info = $this->get_var('info');
+
 $context_list = $this->get_var('context_list');
 $umember = $this->get_var('umember');
 $queues = $this->get_var('queues');
 $qmember = $this->get_var('qmember');
-
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 
 ?>
 

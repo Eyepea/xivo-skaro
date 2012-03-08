@@ -23,17 +23,12 @@ $url = &$this->get_module('url');
 
 $element = $this->get_var('element');
 $info = $this->get_var('info');
+
 $profileclientlist = $this->get_var('profileclientlist');
 $contextavail = $this->get_var('contextavail');
 $screens = $this->get_var('screens');
 $systrays = $this->get_var('systrays');
 $informations = $this->get_var('informations');
-
-
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 
 ?>
 

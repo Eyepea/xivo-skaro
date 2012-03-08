@@ -24,13 +24,7 @@ $url = &$this->get_module('url');
 $info = $this->get_var('info');
 $element = $this->get_var('element');
 
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
-
 ?>
-
 <div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_phonebook_title'),

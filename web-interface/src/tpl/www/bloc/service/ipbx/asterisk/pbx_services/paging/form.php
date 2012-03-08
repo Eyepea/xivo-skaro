@@ -18,21 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$form         = &$this->get_module('form');
-$url          = $this->get_module('url');
+$form = &$this->get_module('form');
+$url = $this->get_module('url');
 
-$info         = $this->get_var('info');
-$element      = $this->get_var('element');
-$paginguser   = $this->get_var('paginguser');
-$pagingcaller   = $this->get_var('pagingcaller');
+$info = $this->get_var('info');
+$element = $this->get_var('element');
 
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
+$paginguser = $this->get_var('paginguser');
+$pagingcaller = $this->get_var('pagingcaller');
 
 ?>
-
 <div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo $form->text(array('desc'	=> $this->bbf('fm_paging_number'),
@@ -43,7 +38,7 @@ endif;
 				  'value'	=> $this->get_var('info','paging','number'),
 				  'error'	=> $this->bbf_args('error',
 					$this->get_var('error', 'paging', 'number')) )),
-					
+
 		$form->checkbox(array('desc'	=> $this->bbf('fm_paging_duplex'),
 				      'name'		=> 'paging[duplex]',
 				      'labelid'		=> 'paging-duplex',
@@ -73,7 +68,7 @@ endif;
 				      'labelid'		=> 'paging-callnotbusy',
 				      'default'		=> $element['paging']['callnotbusy']['default'],
 					  'checked'		=> $this->get_var('info','paging','callnotbusy'))),
-		
+
 		$form->select(array('desc'	=> $this->bbf('fm_paging_timeout'),
 					    'name'		=> 'paging[timeout]',
 					    'labelid'	=> 'paging-timeout',
@@ -94,7 +89,7 @@ endif;
 				      'labelid'		=> 'paging-announcement_play',
 				      'default'		=> $element['paging']['announcement_play']['default'],
 					  'checked'		=> $this->get_var('info','paging','announcement_play'))),
-		
+
 		$form->select(array('desc'	=> $this->bbf('fm_paging_announcement_file'),
 					    'name'		=> 'paging[announcement_file]',
 					    'labelid'	=> 'paging-announcement_file',

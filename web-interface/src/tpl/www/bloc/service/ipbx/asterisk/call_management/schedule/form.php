@@ -21,19 +21,14 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
-$info         = $this->get_var('info');
-$element      = $this->get_var('element');
-$list         = $this->get_var('list');
-$context_list = $this->get_var('context_list');
-$timezones    = $this->get_var('timezones');
+$info = $this->get_var('info');
+$element = $this->get_var('element');
 
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
+$list = $this->get_var('list');
+$context_list = $this->get_var('context_list');
+$timezones = $this->get_var('timezones');
 
 ?>
-
 
 <div id="sb-part-first" class="b-nodisplay">
 <?php
@@ -46,11 +41,11 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 				  'error'	=> $this->bbf_args('error',
 			  		$this->get_var('error', 'schedule', 'name')) )),
 
-      $form->select(array('desc' => $this->bbf('fm_schedule_timezone'),
+		$form->select(array('desc' => $this->bbf('fm_schedule_timezone'),
 				  'name'     => 'schedule[timezone]',
-			    'key'      => false,
-			    'default'  => $element['timezone']['default'],
-					'selected' => $info['schedule']['timezone']),
+				  'key'      => false,
+				  'default'  => $element['timezone']['default'],
+				  'selected' => $info['schedule']['timezone']),
 				$timezones);
 
 
@@ -326,7 +321,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 ?>
 					<script type="text/javascript">
 	dwho.dom.set_onload(function() { xivo_ast_schedule_add_dyn_dialaction('<?=$i+1?>'); });
-					</script>					
+					</script>
 				</td>
 				<td class="td-right">
 					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',

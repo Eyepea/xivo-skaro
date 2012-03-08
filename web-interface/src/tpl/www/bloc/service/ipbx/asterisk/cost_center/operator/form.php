@@ -20,17 +20,12 @@
 
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
+$dhtml = &$this->get_module('dhtml');
 
 $element = $this->get_var('element');
 $info = $this->get_var('info');
+
 $trunk = $this->get_var('trunk');
-
-$dhtml = &$this->get_module('dhtml');
-
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 
 $destination_nb = 0;
 $destination_list = false;

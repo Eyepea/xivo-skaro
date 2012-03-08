@@ -24,16 +24,11 @@ $url     = $this->get_module('url');
 $info    = $this->get_var('info');
 $element = $this->get_var('element');
 
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
+$penalties    = array();
+if (is_array($info) && array_key_exists('changes', $info))
+	$penalties = $info['changes'];
 
-	$penalties    = array();
-	if (is_array($info) && array_key_exists('changes', $info))
-		$penalties = $info['changes'];
-
-	$signs        = array('+','-','=');
+$signs = array('+','-','=');
 ?>
 
 <div id="sb-part-first" class="b-nodisplay">

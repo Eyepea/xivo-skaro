@@ -23,6 +23,7 @@ $url = &$this->get_module('url');
 
 $element = $this->get_var('element');
 $info = $this->get_var('info');
+
 $actionslist = $this->get_var('actionslist');
 
 $actionsavail = array(
@@ -43,11 +44,6 @@ $status = $this->get_var('status');
 
 $type = 'actions';
 $count = count($actionslist);
-
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 
 ?>
 

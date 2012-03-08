@@ -29,11 +29,6 @@ $outcalltrunk = $this->get_var('outcalltrunk');
 $rightcall    = $this->get_var('rightcall');
 $schedules    = $this->get_var('schedules');
 
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
-
 ?>
 
 <div id="sb-part-first" class="b-nodisplay">

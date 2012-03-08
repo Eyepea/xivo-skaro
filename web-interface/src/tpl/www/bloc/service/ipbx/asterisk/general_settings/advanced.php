@@ -21,15 +21,9 @@
 $form = &$this->get_module('form');
 $dhtml = &$this->get_module('dhtml');
 
-$info    = $this->get_var('info');
+$info = $this->get_var('info');
 $element = $this->get_var('element');
 $error = $this->get_var('error');
-
-if(($fm_save = $this->get_var('fm_save')) === true):
-	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
-elseif($fm_save === false):
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 
 $error_js = array();
 $error_nb = count($error['generalmeetme']);
