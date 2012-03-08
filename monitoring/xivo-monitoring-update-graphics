@@ -69,18 +69,24 @@ activate_plugin hddtemp_smartctl
 # detected net stats
 deactivate_plugin vlan_*
 vlans=$(run_plugin vlan_ suggest)
-if [ -n "$vlans" ]; then
-  for vlan in $vlans; do
-    activate_plugin vlan_ $vlan
-  done
+if [ -d /proc/net/vlan ]; then
+    if [ -n "$vlans" ]; then
+        for vlan in $vlans; do
+            activate_plugin vlan_ $vlan
+        done
+    fi
 fi
 # remove old vlan graphs
 dir="/var/www/munin/localdomain/localhost.localdomain"
 temp_dir="/tmp/munin"
 rsync -aq $dir/ $temp_dir/
-rm -rf $dir/vlan_*
+rm -rf $dir/vlan_* > /dev/null 2>&1
 for vlan in $(ls /etc/munin/plugins/vlan_*); do
-        rsync -aq $temp_dir/$(basename $vlan)* $dir/
+    id=$(basename $vlan)
+    ls -l $temp_dir/$id* > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        rsync -aq $temp_dir/$id* $dir/
+    fi
 done
 rm -rf $temp_dir
 
