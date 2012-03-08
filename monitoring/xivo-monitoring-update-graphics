@@ -81,14 +81,17 @@ dir="/var/www/munin/localdomain/localhost.localdomain"
 temp_dir="/tmp/munin"
 rsync -aq $dir/ $temp_dir/
 rm -rf $dir/vlan_* > /dev/null 2>&1
-for vlan in $(ls /etc/munin/plugins/vlan_*); do
-    id=$(basename $vlan)
-    ls -l $temp_dir/$id* > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        rsync -aq $temp_dir/$id* $dir/
-    fi
-done
-rm -rf $temp_dir
+ls /etc/munin/plugins/vlan_* > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+    for vlan in $(ls /etc/munin/plugins/vlan_*); do
+        id=$(basename $vlan)
+        ls -l $temp_dir/$id* > /dev/null 2>&1
+        if [ $? -eq 0 ]; then
+            rsync -aq $temp_dir/$id* $dir/
+        fi
+    done
+    rm -rf $temp_dir
+fi
 
 # detected sensors stats
 # (lm-sensors MUST be configured manually)
