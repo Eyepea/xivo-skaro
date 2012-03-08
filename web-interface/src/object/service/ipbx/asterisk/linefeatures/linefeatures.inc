@@ -310,6 +310,7 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 	{
 		$arr = array();
 		$arr['device'] = 0;
+
 		$where = array('device' => (string) $iddevice);
 
 		return(parent::edit_where($where,$arr));

@@ -141,7 +141,7 @@ $page = $url->pager($pager['pages'],
 			endif;
 
 			$phonenumber = '';
-			if(isset($ref['provdconfig'])):
+			if(isset($ref['provdconfig']) && $icon === 'green'):
 				$provdconfig = $ref['provdconfig'];
 				$raw_config = $provdconfig['raw_config'];
 				if (isset($raw_config['sip_lines'])):
