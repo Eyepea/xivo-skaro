@@ -198,4 +198,3 @@ done
 
 # restart service to take changes into account
 invoke-rc.d munin-node restart >/dev/null
-
