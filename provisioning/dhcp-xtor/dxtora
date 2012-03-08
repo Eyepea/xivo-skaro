@@ -60,43 +60,6 @@ class PidFileError(Exception):
     pass
 
 
-class CachingDHCPInfoSink(object):
-    """A destination for DHCP information objects.
-    
-    Cache DHCP information and trigger the next sink only if the info has
-    changed.
-    
-    Note: its close method will call the close method of the next sink.
-    
-    """
-    def __init__(self, next_sink):
-        self._next_sink = next_sink
-        self._cache = {}
-    
-    def close(self):
-        self._next_sink.close()
-    
-    def _is_cached(self, dhcp_info):
-        ip = dhcp_info['ip']
-        return self._cache.get(ip) == dhcp_info
-
-    def _update_cache(self, dhcp_info):
-        ip = dhcp_info['ip']
-        old_dhcp_info = self._cache.get(ip)
-        if old_dhcp_info != dhcp_info:
-            self._cache[ip] = dhcp_info
-
-    def push(self, dhcp_info):
-        """Send the dhcp_info object to the sink."""
-        logger.info('Pushing DHCP info through cache')
-        if self._is_cached(dhcp_info):
-            logger.info('DHCP info in cache -- not pushing to next sink')
-        else:
-            logger.info('DHCP info not in cache -- pushing to next sink')
-            self._next_sink.push(dhcp_info)
-            self._update_cache(dhcp_info)
-
-
 class StreamDHCPInfoSink(object):
     """A destination for DHCP information objects.
     
@@ -364,8 +327,7 @@ class PidFile(object):
 
 def _read_config_default():
     return {'general':
-                {'cache': True,
-                 'retries': 0,
+                {'retries': 0,
                  'foreground': False},
             'prov_server':
                 {'username': 'admin',
@@ -385,7 +347,6 @@ def _read_config_from_file(filename):
         if config.has_option(section, option):
             getfun = getattr(config, getname)
             result[section][option] = getfun(section, option)
-    _get('general', 'cache', 'getboolean')
     _get('general', 'retries', 'getint')
     _get('prov_server', 'dev_mgr_uri')
     _get('prov_server', 'username')
@@ -493,8 +454,6 @@ def main():
     password = config['prov_server'].get('password')
     sink = ProvServerDHCPInfoSink(base_uri, username, password)
     try:
-        if config['general']['cache']:
-            sink = CachingDHCPInfoSink(sink)
         if not config['general']['foreground']:
             _daemonize()
         pidfile = PidFile(PID_FILE)
