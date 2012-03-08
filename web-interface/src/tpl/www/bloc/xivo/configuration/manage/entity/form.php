@@ -23,11 +23,6 @@ $form = &$this->get_module('form');
 $info = $this->get_var('info');
 $element = $this->get_var('element');
 
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
-
 echo	$form->text(array('desc'	=> $this->bbf('fm_name'),
 			  'name'	=> 'name',
 			  'labelid'	=> 'name',

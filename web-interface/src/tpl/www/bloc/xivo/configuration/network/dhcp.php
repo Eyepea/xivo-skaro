@@ -24,12 +24,6 @@ $dhtml   = &$this->get_module('dhtml');
 $element = $this->get_var('element');
 $netifaces = $this->get_var('netifaces');
 
-if(($fm_save = $this->get_var('fm_save')) === true):
-	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
-elseif($fm_save === false):
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
-
 ?>
 
 <div class="b-infos b-form">
@@ -61,7 +55,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['dhcp']['pool_start']['default'],
 				  'value'	=> $this->get_var('info','pool_start'),
-				  'error'   => $this->bbf_args('ipaddr', 
+				  'error'   => $this->bbf_args('ipaddr',
                     $this->get_var('error', 'pool_start'))
                )),
 
@@ -71,7 +65,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['dhcp']['pool_end']['default'],
 				  'value'	=> $this->get_var('info','pool_end'),
-				  'error'   => $this->bbf_args('ipaddr', 
+				  'error'   => $this->bbf_args('ipaddr',
                     $this->get_var('error', 'pool_end'))
 				  )),
 

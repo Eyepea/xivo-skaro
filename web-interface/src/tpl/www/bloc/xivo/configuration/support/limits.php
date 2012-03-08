@@ -22,12 +22,7 @@ $form	 = &$this->get_module('form');
 $dhtml 	 = &$this->get_module('dhtml');
 
 $info = $this->get_var('info');
-
-if(($fm_save = $this->get_var('fm_save')) === true):
-	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
-elseif($fm_save === false):
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
+$element = $this->get_var('element');
 
 ?>
 
@@ -55,6 +50,7 @@ endif;
 				  'labelid'	=> 'max_call_duration',
 				  'size'	=> 15,
 				  'value'	=> $info['max_call_duration'],
+				  'default'	=> $element['max_call_duration']['default'],
 				  'help'    => $this->bbf('fm_help-max_call_duration'),
 				  'error'   => $this->bbf_args('max_call_duration',
 				      $this->get_var('error', 'max_call_duration'))
