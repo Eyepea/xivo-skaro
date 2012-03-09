@@ -937,23 +937,23 @@ class dwho_tpl_statistics extends dwho_tpl_module
         {
             $query = array_merge($query,array('name' => $this->_name));
             $return .= $url->href_html($url->img_html('img/site/utils/app-csv.png',
-                               $this->bbf('tbl-lnk-expotcsv'),
+                               $this->bbf('tbl-lnk-exportcsv'),
                                'border="0"'),
                     $this->_baseurl,
                     $query,
                     #'onclick="$(\'#'.$this->_name.'\').table2CSV();return(false);"',
                     #'onclick="exportToCSV(\''.$this->_name.'\');return(false);"',
-                    $this->bbf('tbl-lnk-expotcsv'));
+                    $this->bbf('tbl-lnk-exportcsv'));
         }
         else
         {
             $return .= $url->href_html($url->img_html('img/site/utils/app-csv.png',
-                               $this->bbf('tbl-lnk-expotcsv'),
+                               $this->bbf('tbl-lnk-exportcsv'),
                                'border="0"'),
                     $this->_baseurl,
                     $query,
                     null,
-                    $this->bbf('tbl-lnk-expotcsv'));
+                    $this->bbf('tbl-lnk-exportcsv'));
         }
         $return .= '</p>';
         $return .= '<div class="clearboth"></div>';

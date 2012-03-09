@@ -2,7 +2,7 @@
 Choisir une configuration
 
 ; no_conf_selected_for_homepage
-Aucune configuration séléctionnées pour la page d'accueil.
+Aucune configuration sélectionnées pour la page d'accueil.
 
 ; no_queue
 Aucune file d'attente
@@ -27,7 +27,7 @@ Résumé
 
 ; hlp_fm_conf_period_cache-with_end
  à %s 
- 
+
 ; hlp_fm_conf_period_cache-without_end
 jusqu'à ce jour
 
@@ -82,25 +82,25 @@ Dissuadés
 ; col_on_close
 <acronym title="Dissuadés sur fermeture">fermeture</acronym>
 
-; col_on_saturation 
+; col_on_saturation
 <acronym title="Dissuadés sur saturation">saturation</acronym>
 
 ; colstruct_rerouted
 Reroutés
 
-; col_on_hungup 
+; col_on_hungup
 <acronym title="Reroutés sur un raccrocheś">Raccrocheś</acronym>
 
-; col_on_guide  
+; col_on_guide
 <acronym title="Reroutés sur guide">Sur guide</acronym>
 
-; col_on_number 
+; col_on_number
 <acronym title="Reroutés sur numéro">Sur numéro</acronym>
 
-; col_average_time_waiting  
+; col_average_time_waiting
 <acronym title="Temps moyen d'attente">Temps moyen d'attente</acronym>
 
-; col_home_rated    
+; col_home_rated
 <acronym title="Taux d'accueil">Taux d'accueil</acronym>
 
 ; col_qos
@@ -208,25 +208,25 @@ Nombre
 ; col_nb_intern
 Interne
 
-; col_nb_in 
+; col_nb_in
 Entrant
 
 ; col_nb_out
 Sortant
 
-; col_nb_total  
+; col_nb_total
 Total
 
 ; colstruct_max_concurrent_calls
 Pic d'appels
 
-; col_max_concurrent_calls_intern   
+; col_max_concurrent_calls_intern
 Interne
 
-; col_max_concurrent_calls_in   
+; col_max_concurrent_calls_in
 Entrant
 
-; col_max_concurrent_calls_out  
+; col_max_concurrent_calls_out
 Sortant
 
 ; col_max_concurrent_calls_total
@@ -466,13 +466,13 @@ Dimanche %d
 ; week
 Semaine %d
 
-; no_cache_generated_for 
+; no_cache_generated_for
 Cache %s n'est pas généré
 
-; no_type_in_conf 
+; no_type_in_conf
 Aucune entrée dans la configuration
 
-; tbl-lnk-expotcsv
+; tbl-lnk-exportcsv
 Exporter CSV
 
 ; total_call_repartition_by_event
