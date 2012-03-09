@@ -1,20 +1,38 @@
 ; title_content_name
 Others
 
-; dhcpd3
-Served DHCP addresses
+; diskstats_iops
+Disks IOPS
+
+; diskstats_latency
+Disks latency
+
+; diskstats_throughput
+Disks throughput
+
+; diskstats_utilization
+Disks utilization
+
+; fw_packets
+Firewall packets
+
+; iostat_ios
+IO service time
+
+; munin_stats
+Munin processing time
+
+; nfs4_client
+NFS4 client
+
+; proc_pri
+Processes priority
+
+; threads
+Number of threads
 
 ; uptime
 Uptime
 
-; acpi
-CPU temperature
-
-; sensors_fan
-Fans rotation speed
-
-; sensors_temp
-System temperature
-
-; sensors_volt
-Motherboard voltage
+; users
+Logged in users

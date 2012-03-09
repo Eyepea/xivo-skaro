@@ -6,3 +6,12 @@ Time offset
 
 ; ntp_states
 Servers state
+
+; ntp_kernel_err
+NTP PLL errors
+
+; ntp_kernel_pll_freq
+NTP PLL frequency
+
+; ntp_kernel_pll_off
+NTP PLL offset

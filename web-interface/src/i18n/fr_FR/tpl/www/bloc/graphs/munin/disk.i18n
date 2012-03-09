@@ -18,3 +18,6 @@ Statistiques SMART (Disque #0)
 
 ; smart_twe0_1
 Statistiques SMART (Disque #1)
+
+; smart_sda
+SMART statistics (Disk sda)
