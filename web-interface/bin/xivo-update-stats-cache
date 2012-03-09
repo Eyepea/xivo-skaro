@@ -28,27 +28,30 @@ if (isset($output['idconf']) === false
 	
 $idconf = $output['idconf'];
 $type = $output['type'];
-$erase = isset($output['erase']) ? (bool) $output['erase'] : false;
+
+$dbeg = isset($output['dbeg']) ? $output['dbeg'] : null;
+$dend = isset($output['dend']) ? $output['dend'] : null;
+$erase = isset($output['erase']) ? true : false;
+$debug = isset($output['debug']) ? true : false;
 
 require_once('xivo.php');
 
 $ipbx = &$_SRE->get('ipbx');
 
-if(xivo::load_class('xivo_statistics',XIVO_PATH_OBJECT,null,false) === false)
-	die('Failed to load xivo_statistics object');
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'stats','stats.inc'));
 
 $base_memory = memory_get_usage();
 
-$_XS = new xivo_statistics(&$_XOBJ,&$ipbx);
+$_XS = new xivo_stats_lib();
 $_XS->set_idconf($idconf,true);
 echo "Update cache for $type in progress.. \n";
 $_XS->_objectkey = 0;
 $listobject = $_XS->get_list_by_type($type);
 while($listobject !== false && ($object = array_shift($listobject)))
 {
-    if (empty($object) === true)
-        continue;
-	$_XS->update_cache($idconf,$type,$object,(bool) $erase);
+	if (empty($object) === true)
+		continue;
+	$_XS->update_cache($idconf,$type,$object,$erase,$dbeg,$dend);
 	echo "-- memory usage: ", dwho_byte_to(memory_get_usage() - $base_memory), "\n";
 }
 

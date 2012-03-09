@@ -1,0 +1,162 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+__version__ = '$Revision: 0.1 $'
+__license__ = """
+    Copyright (c) 2011  Avencall
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import sys
+import os
+import glob
+import ConfigParser
+import argparse
+import urllib2
+import traceback
+import subprocess
+import time
+import urllib
+
+from xivo import anysql
+from xivo.BackSQL import backpostgresql
+
+XIVO_INI_FILE = '/etc/pf-xivo/web-interface/xivo.ini'
+STATS_CACHE_DIR = '/var/lib/pf-xivo-web-interface/statistics/cache'
+SCRIPT_UPDATE_STATS_CACHE = '/usr/sbin/xivo-update-stats-cache'
+_LIST_TYPE = ["queue", "agent", "period"] # incall
+
+
+class DbManager(object):
+    def __init__(self):
+        config = ConfigParser.RawConfigParser()
+        config.readfp(open(XIVO_INI_FILE))
+        db_uri = config.get('general', 'datastorage').strip('"')
+        
+        self._conn = backpostgresql.connect_by_uri(db_uri)
+        self.cursor = self._conn.cursor()
+        
+    def close(self):
+        self.cursor.close()
+        self._conn.close()
+
+
+def request_http(url, data=None):
+    try:
+        if data is not None:
+            data = data.replace(' ', '').replace('\n', '')
+        req = urllib2.Request(url, data)
+        return urllib2.urlopen(req)
+    except HTTPError, e:
+        print ''
+
+
+def recursive_chown(path, uid, gid):
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            os.chown(os.path.join(root, name), id, gid)
+        for name in dirs:
+            os.chown(os.path.join(root, name), uid, gid)
+
+
+class GenerCache(object):
+
+    def __init__(self, erase=False, dbeg=None, dend=None):
+        self.execute(erase, dbeg, dend)
+
+    def _get_stats_conf(self):
+        dbman = DbManager()
+        try:
+            dbman.cursor.execute("SELECT * FROM stats_conf")
+            return dbman.cursor.fetchall()
+        finally:
+            dbman.close()
+
+    def _gener_type(self, query):
+        bench = time.time()
+        try:
+            print "called script: %s %s" % (SCRIPT_UPDATE_STATS_CACHE, query)
+            print"Processing generation..."
+            subprocess.call([SCRIPT_UPDATE_STATS_CACHE, query, ">/dev/null"])
+        except (OSError, subprocess.CalledProcessError):
+            print "Error while executing %s" % SCRIPT_UPDATE_STATS_CACHE
+            raise
+        finally:
+            print 'Generation terminated in %.2fs.' % (time.time() - bench)
+
+    def execute(self, erase, dbeg, dend, client=None):
+        list_conf = self._get_stats_conf()
+        if not list_conf:
+            print "No configuration found."
+            raise
+
+        qry = {}
+        if erase:
+            qry.update({"erase": 1})
+        if dbeg:
+            qry.update({"dbeg": dbeg})
+        if dend:
+            qry.update({"dend": dend})
+
+        for conf in list_conf:
+            clientid = int(conf[0])
+            clientconf = conf[4]
+
+            if client and client != clientconf:
+                continue
+
+            print "Generation cache for configuration %s in progress..." % conf[1]
+
+            qry.update({"idconf": clientid})
+
+            for typeconf in _LIST_TYPE:
+                qry.update({"type": typeconf})
+                query = urllib.urlencode(qry)
+                self._gener_type(query)
+
+        recursive_chown(STATS_CACHE_DIR, 33, 33)
+
+
+def new_argument_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--verbose", action="store_true", default=False,
+                        help="increase logging verbosity")
+    parser.add_argument("--stderr", action="store_true", default=False,
+                        help="output log message to stderr")
+    parser.add_argument("--erase", action="store_true", default=False,
+                        help="force regenerate existent cache")
+    parser.add_argument("--dbeg",
+                        help="Date begin for generate cache - example: 2011-01-01")
+    parser.add_argument("--dend",
+                        help="Date end for generate cache - example: 2011-01-01")
+    return parser
+
+
+def parse_args(args):
+    parser = new_argument_parser()
+    parsed_args = parser.parse_args(args)
+    return parsed_args
+
+
+def main():
+    args = parse_args(sys.argv[1:])
+
+    GenerCache(erase=args.erase, 
+               dbeg=args.dbeg, 
+               dend=args.dend)
+
+
+if __name__ == '__main__':
+    main()

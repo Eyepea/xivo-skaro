@@ -162,6 +162,8 @@ abstract class dwho_date
 	public static function all_to_unixtime($str)
 	{
 		$rs = time();
+		if (preg_match(self::$_regex['unixtime'],$str) === 1)
+			$rs = (int) $str;
 		if (preg_match(self::$_regex['datetime'],$str) === 1)
 			$rs = (int) strtotime($str);
 		elseif (preg_match(self::$_regex['datetime_with_microseconds'],$str) === 1)
@@ -327,7 +329,7 @@ abstract class dwho_date
 		#$month_process = strtotime('-1 month',$dbeg);
 		#$month_process = mktime(0, 0, 0, date('m',$month_process), 1, date('Y',$month_process));
 		$listmonth = array();
-		while ($month_process <= ((int) $dend))
+		while ($month_process <= $dend)
 		{
 			$dayname = strtolower(date('l',$month_process));
 			$month = date('m',$month_process);
