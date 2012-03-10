@@ -164,7 +164,7 @@ abstract class dwho_date
 		$rs = time();
 		if (preg_match(self::$_regex['unixtime'],$str) === 1)
 			$rs = (int) $str;
-		if (preg_match(self::$_regex['datetime'],$str) === 1)
+		elseif (preg_match(self::$_regex['datetime'],$str) === 1)
 			$rs = (int) strtotime($str);
 		elseif (preg_match(self::$_regex['datetime_with_microseconds'],$str) === 1)
 			$rs = (int) strtotime($str);

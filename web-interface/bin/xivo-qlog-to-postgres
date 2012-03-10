@@ -32,7 +32,7 @@ import contextlib
 import re
 from optparse import OptionParser
 
- 
+
 DEBUG = False
 IP_XIVO = "127.0.0.1"
 FILE_DELIMITERS = '|'
@@ -49,25 +49,25 @@ COMMAND_COPY = "COPY queue_log (time,callid,queuename,agent,event,data1,data2,da
 
 
 def populate_data_queue(name):
-    return {"queuefeatures": 
+    return {"queuefeatures":
                 {
                     "name": name,
                     "context": "default",
                     "number": "",
                     "timeout": 0
                 },
-            "queue": 
-                { 
+            "queue":
+                {
                     "timeoutpriority": "app",
                     "min-announce-frequency": 60,
                     "announce-position": "yes",
-                    "announce-position-limit": 5 
+                    "announce-position-limit": 5
                 }
             }
 
 
 def populate_data_agent(firtname, lastname, number):
-    return {"agentfeatures": 
+    return {"agentfeatures":
                 {
                     "firstname": firtname,
                     "lastname": lastname,
@@ -78,17 +78,19 @@ def populate_data_agent(firtname, lastname, number):
                     "ackcall": "no",
                     "wrapuptime": 0,
                     "acceptdtmf": "#",
-                    "enddtmf": "*" 
+                    "enddtmf": "*"
                 },
-            "agentoptions": 
+            "agentoptions":
                 {
-                    "maxlogintries": 3 
+                    "maxlogintries": 3
                 }
             }
 
 
 def _limit(count):
-   # decorator that limit the number of elements returned by a generator
+   """
+   decorator that limit the number of elements returned by a generator
+   """
    def aux(fun):
        def aux2(*args, **kwargs):
            n = count
@@ -98,7 +100,6 @@ def _limit(count):
                n -= 1
        return aux2
    return aux
-        
 
 
 def _open_file(file):
@@ -120,7 +121,7 @@ def readlines(directory):
                 nb_line += 1
                 yield line
         print '%s entries found in %s.' % (nb_line, file)
-                
+
 
 def traitmentline(line, separator='|'):
     rs = line.rstrip().split(separator)
@@ -187,25 +188,24 @@ def exec_ws():
 def main(directory):
     if not os.access(directory, os.R_OK):
         raise "Can't open directory %s" % directory
-    fobj = open(DEFAULT_OUT_FILE, 'w')
-    total_line_nb = 0
-    for line in readlines(directory):
-        linet = traitmentline(line)
-        total_line_nb += 1
-        datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime((int(linet[0]))))
-        lineoutput = '%s%s' % (datetime, FILE_DELIMITERS) + FILE_DELIMITERS.join(linet[1:]) + '\n'
-        fobj.write(lineoutput)
-        # build list queue
-        LIST_QUEUE.add(linet[2])
-        # build list agent
-        LIST_AGENT.add(linet[3])
-    fobj.close()
-    
+    with open(DEFAULT_OUT_FILE, 'w') as fobj:
+        total_line_nb = 0
+        for line in readlines(directory):
+            linet = traitmentline(line)
+            total_line_nb += 1
+            datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime((int(linet[0]))))
+            lineoutput = '%s%s' % (datetime, FILE_DELIMITERS) + FILE_DELIMITERS.join(linet[1:]) + '\n'
+            fobj.write(lineoutput)
+            # build list queue
+            LIST_QUEUE.add(linet[2])
+            # build list agent
+            LIST_AGENT.add(linet[3])
+
     print 'Total: %s lines found for processing' % total_line_nb
     print
-    
+
     exec_ws()
-    
+
     try:
         if DEBUG:
             print 'sudo', '-H', '-u', 'postgres' , 'psql', 'asterisk', '-c', COMMAND_COPY
@@ -226,8 +226,7 @@ if __name__ == '__main__':
     if opts.output_filename:
         DEFAULT_OUT_FILE = opts.output_filename
     if len(args) != 1:
-        print >> sys.stderr, "usage: %s -v -o <output_filename> <directory>" % ("./qlogtopostgres")
+        print >> sys.stderr, "usage: %s -d -o <output_filename> <directory>" % ("./qlogtopostgres")
         raise sys.exit(1)
     else:
         main(args[0])
-
