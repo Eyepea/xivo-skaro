@@ -74,36 +74,29 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 	public function update()
 	{
 		$ret = array();
-		if (($listd = $this->_provddevice->get_device_list('')) === false
-		|| is_array($listd) === false
-		|| ($nb = count($listd)) === 0)
+		if (($list_device = $this->_provddevice->get_device_list()) === false
+		|| is_array($list_device) === false
+		|| ($nb = count($list_device)) === 0)
 			return($ret);
+
+		#dwho_var_dump($list_device);
 
 		for($i=0;$i<$nb;$i++)
 		{
-			$ref = &$listd[$i];
+			$ref = &$list_device[$i];
 			$deviceid = $ref['id'];
 			$ret[$deviceid] = false;
 
-			if((int) $this->get_nb(array('deviceid' => $deviceid)) === 0)
-			{
-				if(isset($ref['mac']) === true
-				&& ($devicefeatures = $this->_devicefeatures->get_where(array('mac' => $ref['mac']))) !== false
-				&& $this->get_by_deviceid($devicefeatures['deviceid']) !== false)
-				{
-					$act_set = 'set_edit';
-					$act = 'edit';
-				}
-				else
-				{
-					$act_set = 'set_add';
-					$act = 'add';
-				}
-			}
-			elseif($this->get_by_deviceid($deviceid,null,false) !== false)
+			if($this->get_by_mac($ref['mac']) !== false
+			|| $this->get_by_deviceid($deviceid) !== false)
 			{
 				$act_set = 'set_edit';
 				$act = 'edit';
+			}
+			elseif((int) $this->get_nb(array('deviceid' => $deviceid)) === 0)
+			{
+				$act_set = 'set_add';
+				$act = 'add';
 			}
 			else
 			{
@@ -126,6 +119,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 				dwho_report::push('error',
 					dwho_i18n::babelfish('error_during_'.$act.'_device',array($deviceid)),
 					'error_device_'.$act);
+
 				foreach($this->get_error() as $k => $v)
 				{
 					if (is_array($v))
