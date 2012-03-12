@@ -246,7 +246,7 @@ if($list !== false):
 				    'name'		=> 'linefeatures[device][]',
 				    'id'		=> 'linefeatures-device',
 				    'label'		=> false,
-				    'key'		=> 'ip',
+				    'key'		=> 'mac',
 				    'altkey'	=> 'id',
 				    'empty'		=> true,
 				    'default'	=> $element['linefeatures']['device']['default'],
