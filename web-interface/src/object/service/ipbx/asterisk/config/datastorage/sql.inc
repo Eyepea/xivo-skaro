@@ -368,6 +368,14 @@ $array['iaxcallnumberlimits'] = array();
 $array['iaxcallnumberlimits']['table'] = 'iaxcallnumberlimits';
 $array['iaxcallnumberlimits']['primary'] = array('id' => '');
 
+$array['sccpline'] = array();
+$array['sccpline']['table'] = 'sccpline';
+$array['sccpline']['primary'] = array('id' => '');
+
+$array['sccpdevice'] = array();
+$array['sccpdevice']['table'] = 'sccpdevice';
+$array['sccpdevice']['primary'] = array('id' => '');
+
 $array['schedule_path'] = array();
 $array['schedule_path']['table'] = 'schedule_path';
 $array['schedule_path']['primary'] = array('schedule_id' => '', 'path' => '', 'pathid' => '');

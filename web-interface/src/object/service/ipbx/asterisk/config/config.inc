@@ -331,6 +331,12 @@ $array['module']['operator_destination']['datastorage'] = true;
 $array['module']['operator_trunk'] = array();
 $array['module']['operator_trunk']['datastorage'] = true;
 
+$array['module']['sccpline'] = array();
+$array['module']['sccpline']['datastorage'] = true;
+
+$array['module']['sccpdevice'] = array();
+$array['module']['sccpdevice']['datastorage'] = true;
+
 $array['module']['servicesgroup'] = array();
 $array['module']['servicesgroup']['datastorage'] = true;
 
@@ -375,6 +381,7 @@ $array['module']['campaign_campaign_filter']['datastorage'] = true;
 $array['protocol'] = array();
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP]    = array('module' => 'usersip');
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_IAX]    = array('module' => 'useriax');
+$array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SCCP]    = array('module' => 'sccpline');
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_CUSTOM] = array('module' => 'usercustom');
 
 $array['channel'] = array();
