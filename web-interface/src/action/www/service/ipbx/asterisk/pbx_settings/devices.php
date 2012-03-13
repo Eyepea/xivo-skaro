@@ -223,6 +223,8 @@ switch($act)
 
 		$appdevice = &$ipbx->get_application('device');
 
+		$appdevice->update();
+
 		$order = array();
 		if($sort[1] == 'ip')
 			$order['ip'] = $sort[0];
