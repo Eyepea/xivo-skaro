@@ -69,12 +69,12 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		return($rs['devices'][0]);
 	}
 
-	public function get_device_list($search='',$assoc=false)
+	public function get_device_list()
 	{
-		return($this->_get_devices('list',$search,$assoc));
+		return($this->_get_devices('list'));
 	}
 
-	private function _get_devices($type,$search='',$assoc=false)
+	private function _get_devices($type)
 	{
 		$this->reset();
 
@@ -95,17 +95,9 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		for($i=0;$i<$nb;$i++)
 		{
 			$ref = &$rs[$i];
-
-			if ($search !== ''
-			&& preg_match('/'.$search.'/', $ref['name']) === 0
-			&& preg_match('/'.$search.'/', $ref['description']) === 0)
-				unset($rs[$i]);
 		}
 
-		if((bool) $assoc === false)
-			return(array_values($rs));
-
-		return($rs);
+		return(array_values($rs));
 	}
 
 	private function _prepare_to($arr)
