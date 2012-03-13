@@ -37,10 +37,6 @@ class xivo_application_service_asterisk_device_sql extends xivo_application_abst
 
 		$this->_dso->andwhere($arr,$this->_table['devicefeatures']);
 
-		if($initialized !== null)
-		{
-		}
-
 		return(dwho_ulongint($this->_dso->select_count(null,'id',$this->_table['devicefeatures'])));
 	}
 
