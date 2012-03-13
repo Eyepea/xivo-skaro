@@ -110,8 +110,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			$arr = array();
 			$arr['devicefeatures'] = $ref;
 			$arr['devicefeatures']['deviceid'] = $deviceid;
-
-			$this->_provddevice->eval_config_device($deviceid);
+			if ($arr['devicefeatures']['config'] !== $deviceid)
+				$this->_provddevice->eval_config_device($deviceid);
 
 			if($this->$act_set($arr) === false
 			|| $this->$act() === false)
