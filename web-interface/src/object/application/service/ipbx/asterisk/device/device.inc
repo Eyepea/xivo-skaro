@@ -72,6 +72,56 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		return(true);
 	}
 
+	public function update_by_ip($ip)
+	{
+		if(($device = $this->_provddevice->get_device_by_ip($ip)) === false)
+		{
+			return(false);
+		}
+
+		$deviceid = $device['id'];
+
+		if($this->get_by_deviceid($deviceid) !== false)
+		{
+			$act_set = 'set_edit';
+			$act = 'edit';
+		}
+		elseif((int) $this->get_nb(array('deviceid' => $deviceid)) === 0)
+		{
+			$act_set = 'set_add';
+			$act = 'add';
+		}
+		else
+		{
+			dwho_report::push('error','error during update device: '.$deviceid);
+			continue;
+		}
+
+		unset($device['id']);
+		$arr = array();
+		$arr['devicefeatures'] = $device;
+		$arr['devicefeatures']['deviceid'] = $deviceid;
+		if(isset($device['config']) && $device['config'] !== $deviceid)
+			$this->_provddevice->eval_config_device($deviceid);
+
+		if($this->$act_set($arr) === false
+		|| $this->$act() === false)
+		{
+			dwho_report::push('error',
+					dwho_i18n::babelfish('error_during_'.$act.'_device',array($deviceid)),
+					'error_device_'.$act);
+
+			foreach($this->get_error() as $k => $v)
+			{
+				if (is_array($v))
+					foreach($v as $kk => $vv)
+					dwho_report::push('error',$kk.': '.$vv,'error_device_'.$act);
+				else
+					dwho_report::push('error',$k.': '.$v,'error_device_'.$act);
+			}
+		}
+	}
+
 	public function update()
 	{
 		$ret = array();
@@ -86,8 +136,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			$deviceid = $ref['id'];
 			$ret[$deviceid] = false;
 
-			if($this->get_by_mac($ref['mac'],null,true) !== false
-			|| $this->get_by_deviceid($deviceid,null,true) !== false)
+			if($this->get_by_deviceid($deviceid,null,true) !== false)
 			{
 				$act_set = 'set_edit';
 				$act = 'edit';

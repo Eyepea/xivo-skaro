@@ -52,6 +52,23 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		return($rs['device']);
 	}
 
+	public function get_device_by_ip($ip)
+	{
+		$this->reset();
+
+		$uri = $this->_build_uri(array('devices'));
+		$query = array();
+		array_push($query,array('q','{"ip":"'.$ip.'"}'));
+		$rs = $this->request_get($uri, $query);
+
+		if($this->_status_code !== 200
+		|| empty($rs['devices']) === true) {
+			return(false);
+		}
+
+		return($rs['devices'][0]);
+	}
+
 	public function get_device_list($search='',$assoc=false)
 	{
 		return($this->_get_devices('list',$search,$assoc));
@@ -67,9 +84,6 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 			case 'list':
 				$uri = $this->_build_uri(array('devices'));
 		}
-
-		#$this->set_order($order);
-		#$this->set_limit($limit);
 
 		$rs = $this->request_get($uri);
 
@@ -98,7 +112,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 	{
 		if (isset($arr['mac']) === true
 		&& $arr['mac'] === '')
-		    unset($arr['mac']);
+			unset($arr['mac']);
 
 		return($arr);
 	}
@@ -133,7 +147,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 
 		if (isset($arr['mac']) === true
 		&& $arr['mac'] === '')
-		    unset($arr['mac']);
+			unset($arr['mac']);
 
 		$data['device'] = $arr;
 

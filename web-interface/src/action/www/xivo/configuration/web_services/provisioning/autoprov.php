@@ -45,7 +45,7 @@ switch($act)
 		$appdevice = &$ipbx->get_application('device',null,false);
 		$linefeatures = &$ipbx->get_module('linefeatures');
 
-		$appdevice->update();
+		$appdevice->update_by_ip($data['ip']);
 
 		if(($device = $appdevice->get_by_ip($data['ip'])) === false
 		|| ($devicefeatures = $device['devicefeatures']) === false)
