@@ -237,16 +237,6 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		return($this->get(0,$disable,$nocomponents,$w));
 	}
 
-	public function get_by_mac($mac,$disable=null,$nocomponents=null)
-	{
-		$w = array();
-		$w['mac'] = $mac;
-		if (is_null($disable) === false)
-			$w['commented'] = true;
-
-		return($this->get_from_db_only(0,$disable,$nocomponents,$w));
-	}
-
 	public function get_nb($arr=null,$disable=null,$initialized=null)
 	{
 		return($this->_dso->get_nb($arr,$disable,$initialized));
