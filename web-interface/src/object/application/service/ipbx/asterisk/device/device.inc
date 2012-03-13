@@ -136,10 +136,24 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			$deviceid = $ref['id'];
 			$ret[$deviceid] = false;
 
-			if($this->get_by_deviceid($deviceid,null,true) !== false)
+			if(($devices = $this->get_by_deviceid($deviceid,null,true)) !== false)
 			{
-				$act_set = 'set_edit';
-				$act = 'edit';
+				$ret[$deviceid] = true;
+				$device_from_db = $devices['devicefeatures'];
+				if ($device_from_db['ip'] !== $ref['ip']
+				|| $device_from_db['mac'] !== $ref['mac']
+				|| $device_from_db['vendor'] !== $ref['vendor']
+				|| $device_from_db['model'] !== $ref['model']
+				|| $device_from_db['plugin'] !== $ref['plugin']
+				)
+				{
+					$act_set = 'set_edit';
+					$act = 'edit';
+				}
+				else
+				{
+					continue;
+				}
 			}
 			elseif((int) $this->get_nb(array('deviceid' => $deviceid)) === 0)
 			{
