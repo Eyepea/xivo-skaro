@@ -20,7 +20,7 @@
 
 $form = &$this->get_module('form');
 $info = $this->get_var('info');
-$proto = $info['protocol']['protocol'];
+$proto = $info['linefeatures']['protocol'];
 
 ?>
 <div id="sr-lines" class="b-infos b-form">

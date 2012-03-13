@@ -590,10 +590,20 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			$raw_config = array_merge($raw_config,$funckeys);
 		}
 
+		if (isset($lines[1])
+		&& isset($lines[1]['linefeatures'])
+		&& isset($lines[1]['linefeatures']['protocol'])) {
+			$protocolname = $lines[1]['linefeatures']['protocol'];
+		}
+
 		switch ($protocolname)
 		{
+			case 'sccp':
+				$raw_config['protocol'] = 'SCCP';
+				break;
 			case 'sip':
 			default:
+				$raw_config['protocol'] = 'SIP';
 				$appgeneralsip = &$this->_appsip->get_module('general');
 
 				$tlsenable = $appgeneralsip->get('tlsenable');

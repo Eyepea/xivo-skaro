@@ -106,10 +106,11 @@ def _check_raw_config_validity(raw_config):
             if u'proxy_ip' not in line and u'sip_proxy_ip' not in raw_config:
                 raise RawConfigError('missing proxy_ip parameter for line %s' %
                                      line_no)
-            for param in [u'username', u'password', u'display_name']:
-                if param not in line:
-                    raise RawConfigError('missing %s parameter for line %s' %
-                                         (param, line_no))
+            if raw_config[u'protocol'] == 'SIP':
+                for param in [u'username', u'password', u'display_name']:
+                    if param not in line:
+                        raise RawConfigError('missing %s parameter for line %s' %
+                                             (param, line_no))
     if u'sccp_call_managers' in raw_config:
         for priority, call_manager in raw_config[u'sccp_call_managers'].iteritems():
             if u'ip' not in call_manager:
@@ -143,7 +144,8 @@ def _set_defaults_raw_config(raw_config):
         for line in raw_config[u'sip_lines'].itervalues():
             if u'proxy_ip' in line:
                 line.setdefault(u'registrar_ip', line[u'proxy_ip'])
-            line.setdefault(u'auth_username', line[u'username'])
+            if u'username' in line:
+                line.setdefault(u'auth_username', line[u'username'])
     raw_config.setdefault(u'sccp_call_managers', {})
     raw_config.setdefault(u'funckeys', {})
 

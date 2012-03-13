@@ -21,9 +21,8 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
-$act	 = $this->get_var('act');
-$info    = $this->get_var('info');
-$error   = $this->get_var('error');
+$info = $this->get_var('info');
+$error = $this->get_var('error');
 $element = $this->get_var('element');
 
 $context_list = $this->get_var('context_list');
@@ -46,6 +45,10 @@ else {
 	$context = $amaflags = $qualify = $host = $number = '';
 }
 
+if ($protocol === ''):
+	$protocol = $info['linefeatures']['protocol'];
+endif;
+
 $codec_active = empty($allow) === false;
 $host_static = ($host !== '' && $host !== 'dynamic');
 
@@ -58,8 +61,9 @@ if (empty($number) === false):
 endif;
 
 $filename = dirname(__FILE__).'/protocol/'.$protocol.'.php';
-if (is_readable($filename) === true)
+if (is_readable($filename) === true):
 	include($filename);
+endif;
 ?>
 
 <div id="sb-part-ipbxinfos" class="b-nodisplay">

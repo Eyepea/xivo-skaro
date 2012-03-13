@@ -29,13 +29,15 @@ DROP TABLE IF EXISTS "sccpline";
 CREATE TABLE "sccpline" (
 	"id"		SERIAL,
 	"name"		varchar(80) NOT NULL,
+    "context"   varchar(80) NOT NULL,
 	"cid_name"	varchar(80) NOT NULL,
 	"cid_num"	varchar(80) NOT NULL,
+	"commented" INTEGER NOT NULL DEFAULT 0
 	PRIMARY KEY("id")
 );
 
 /*
- * [cisco7940desk]
+ * [SEPACA016FDF235]
  * device=SEPACA016FDF235
  * line=100
  */

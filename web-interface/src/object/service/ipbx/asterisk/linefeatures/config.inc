@@ -34,7 +34,7 @@ $array['element'] = array();
 
 $array['element']['protocol'] = array();
 $array['element']['protocol']['value'] = array(XIVO_SRE_IPBX_AST_PROTO_SIP,
-												#XIVO_SRE_IPBX_AST_PROTO_IAX,
+												XIVO_SRE_IPBX_AST_PROTO_SCCP,
 												XIVO_SRE_IPBX_AST_PROTO_CUSTOM);
 $array['element']['protocol']['default'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 

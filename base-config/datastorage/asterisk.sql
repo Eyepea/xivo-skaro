@@ -28,7 +28,7 @@ DROP TYPE  IF EXISTS "generic_bsfilter" CASCADE;
 CREATE TYPE "generic_bsfilter" AS ENUM ('no', 'boss', 'secretary');
 
 DROP TYPE IF EXISTS "trunk_protocol";
-CREATE TYPE "trunk_protocol" AS ENUM ('sip', 'iax', 'custom');
+CREATE TYPE "trunk_protocol" AS ENUM ('sip', 'iax', 'sccp', 'custom');
 
 
 DROP TABLE IF EXISTS "accessfeatures";

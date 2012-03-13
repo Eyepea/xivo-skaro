@@ -28,6 +28,9 @@ SIP
 ; line_protocol-iax
 IAX
 
+; line_protocol-sccp
+SCCP
+
 ; line_protocol-custom
 Personnalisé
 

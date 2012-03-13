@@ -23,11 +23,16 @@ $url = &$this->get_module('url');
 
 $info = $this->get_var('info');
 $element = $this->get_var('element');
-$nb = $this->get_var('count');
 $list = $this->get_var('list');
 $list_configregistrar = $this->get_var('list_configregistrar');
 $list_device_line = $this->get_var('list_device_line');
 $err = $this->get_var('error','linefeatures');
+
+$list_device = array();
+$nb_device = count($list_device_line);
+for($i=0; $i<$nb_device; $i++):
+	$list_device[$i] = $list_device_line[$i]['devicefeatures'];
+endfor;
 
 ?>
 <!--
@@ -107,6 +112,7 @@ $err = $this->get_var('error','linefeatures');
 if($list !== false):
 
 	$rs = array();
+	$nb = $this->get_var('count');
 	for($i = 0;$i < $nb;$i++):
 		$ref = &$list[$i];
 
@@ -236,7 +242,7 @@ if($list !== false):
 		</td>
 		*/ ?>
 		<td>
-		<?php if ($list_device_line === false): ?>
+		<?php if ($list_device === false): ?>
 			 -
 			<?=$form->hidden(array('name' => 'linefeatures[device][]',
 					'value' 	=> null,
@@ -251,7 +257,7 @@ if($list !== false):
 				    'empty'		=> true,
 				    'default'	=> $element['linefeatures']['device']['default'],
 					'selected'	=> $ref['device']),
-			      $list_device_line);?>
+			      $list_device);?>
 		<?php endif; ?>
 		</td>
 		<td>
@@ -381,7 +387,7 @@ endif;
 		</td>
 		*/ ?>
 		<td id="td_ex-linefeatures-device">
-		<?php if ($list_device_line === false): ?>
+		<?php if ($list_device === false): ?>
 			 -
 			<?=$form->hidden(array('name' => 'linefeatures[device][]',
 					'value' 	=> null,
@@ -391,16 +397,16 @@ endif;
 				    'name'		=> 'linefeatures[device][]',
 				    'id'		=> 'linefeatures-device',
 				    'label'		=> false,
-				    'key'		=> 'ip',
+				    'key'		=> 'mac',
 				    'altkey'	=> 'id',
 				    'default'	=> $element['linefeatures']['device']['default'],
 				    'empty'		=> true),
-			      $list_device_line);?>
+			      $list_device);?>
 		<?php endif; ?>
 		</td>
 		<td>
 			&nbsp;
-		<?php if ($list_device_line === false): ?>
+		<?php if ($list_device === false): ?>
 			 -
 			<?=$form->hidden(array('name' => 'linefeatures[num][]',
 					'value' 	=> null,

@@ -76,6 +76,12 @@ IAX
 ; line_protocol-opt(iax)
 IAX
 
+; line_protocol-sccp
+SCCP
+
+; line_protocol-opt(sccp)
+SCCP
+
 ; line_protocol-custom
 Customized
 

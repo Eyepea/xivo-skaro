@@ -25,6 +25,9 @@ $array['element'] = array();
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
+$array['element']['context'] = array();
+$array['element']['context']['default'] = 'default';
+
 $array['element']['cid_name'] = array();
 $array['element']['cid_name']['default'] = '';
 
@@ -35,6 +38,10 @@ dwho::load_class('dwho_network');
 
 $array['filter'] = array();
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 80,'regexp' => '/^[a-z0-9_-]+$/i');
+$array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
+									'callbackarg' => array(array(
+												XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
+												XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['cid_name'] = array('minlen' => 1,'maxlen' => 80,'cast' => 'sgraph');
 $array['filter']['cid_num'] = array('minlen' => 1,'maxlen' => 80,'regexp' => '/^[a-z0-9_-]+$/i');
 

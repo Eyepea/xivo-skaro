@@ -47,6 +47,37 @@ class xivo_service_asterisk_sccpdevice extends xivo_service_asterisk_abstract
 
 		return($data);
 	}
+
+	function add($arr,$id=0)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		$name = str_replace(':', '', $arr['name']);
+		$name = str_replace('-', '', $name);
+
+		$arr['name'] = 'SEP'.$name;
+		$arr['device'] = $arr['name'];
+
+		return(parent::add($arr,$id));
+	}
+
+	function edit($id,$arr,$disable=null)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		$name = str_replace(':', '', $arr['name']);
+		$name = str_replace('-', '', $name);
+
+		if (substr($mame, 0, 3) !== 'SEP')
+			$arr['name'] = 'SEP'.$name;
+		else
+			$arr['name'] = $name;
+		$arr['device'] = $arr['name'];
+
+		return(parent::edit($id,$arr,$disable));
+	}
 }
 
 ?>

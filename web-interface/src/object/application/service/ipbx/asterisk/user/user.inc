@@ -967,7 +967,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			else
 			{
 				$ref['protocolid'] = 0;
-				$ref['name'] = $this->gen_password(6,true);
+				if($ref['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP) {
+					$ref['name'] = $ref['number'];
+				} else {
+					$ref['name'] = $this->gen_password(6,true);
+				}
 				if (isset($ref['rules_order']) === false)
 					$ref['rules_order'] = $i+1;
 			}
@@ -1493,6 +1497,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 				$arr['protocol']['interface'] = $line['name'];
+			elseif($protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP) {
+				$arr['protocol']['cid_name'] = $line['callerid'];
+				$arr['protocol']['cid_num'] = $line['number'];
+			}
 
 			$arr['callgroup'] = $this->get_result('callgroup');
 

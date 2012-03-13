@@ -38,6 +38,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 	protected $_provdconfig		= false;
 	protected $_provddevice		= false;
 	protected $_devicefeatures 	= false;
+	protected $_sccpdevice		= false;
 	protected $_conf			= array();
 	protected $_param			= array('internal'	=> false);
 
@@ -80,6 +81,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'user'))) === false
 		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'user'))) === false
 		|| ($this->_devicefeatures = &$this->_service->get_module('devicefeatures')) === false
+		|| ($this->_sccpdevice = &$this->_service->get_module('sccpdevice')) === false
 		|| ($_XOBJ = &dwho_gct::get('xivo_object')) === false
 		|| ($this->_provdconfig = &$_XOBJ->get_module('provdconfig')) === false
 		|| ($this->_provddevice = &$_XOBJ->get_module('provddevice')) === false)
@@ -408,6 +410,13 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					$iax['identity'] = strtoupper($iax['protocol']).'/'.$iax['name'];
 					$r[$linefeatures['id']] = array_merge($iax,$linefeatures);
 					break;
+				case XIVO_SRE_IPBX_AST_PROTO_SCCP:
+					$sccp = dwho_array_startswith_key($ref,'sccpline.',true);
+					$sccp['protocol'] = 'SCCP';
+					$sccp['initialized'] = true;
+					$sccp['identity'] = strtoupper($sccp['protocol']).'/'.$sccp['name'];
+					$r[$linefeatures['id']] = array_merge($sccp,$linefeatures);
+					break;
 				case XIVO_SRE_IPBX_AST_PROTO_CUSTOM:
 					$custom = dwho_array_startswith_key($ref,'usercustom.',true);
 					$custom['initialized'] = true;
@@ -416,8 +425,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					$r[$linefeatures['id']] = array_merge($custom,$linefeatures);
 					break;
 				default:
-					$this->_cnt = 0;
-					return(false);
+					continue;
 			}
 		}
 
@@ -486,12 +494,12 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		$this->set_protocol($arr['protocol'],$protocolname);
 
 		if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM) {
-			$name = $this->get_result_var('protocol','interface');
+			$name = $arr['protocol']['interface'];
 		} else {
-			$name = $this->get_result_var('protocol','name');
+			$name = $arr['protocol']['name'];
 		}
 
-		$context = (string) $this->get_result_var('protocol','context');
+		$context = (string) $arr['protocol']['context'];
 
 		if (dwho_issa('linefeatures',$arr) === false)
 		{
@@ -605,11 +613,13 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 			$enablehint = (bool) $this->get_result_var('userfeatures','enablehint') === false;
 
-			if(($hints = $this->set_hints($action,$name,$protocolname,$number,$enablehint)) === false) {
-				$this->_set_error('hints');
-			}
+			if($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_SCCP) {
+				if(($hints = $this->set_hints($action,$name,$protocolname,$number,$enablehint)) === false) {
+					$this->_set_error('hints');
+				}
 
-			$this->_set_result('hints',$hints);
+				$this->_set_result('hints',$hints);
+			}
 		}
 
 		if($this->get_errnb() > 0) {
@@ -934,7 +944,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 	function update_protocol_setvar($protocolid,$iduserfeatures)
 	{
-		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM
+		|| $this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
 			return(null);
 		else if(($protocolid = dwho_ulongint($protocolid)) === 0
 		|| ($iduserfeatures = dwho_ulongint($iduserfeatures)) === 0
@@ -1088,7 +1099,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				if($this->add_usermacro($iduserfeatures,$linefeaturesid) === false
 				|| $this->add_extenumbers($linefeaturesid) === false
 				|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
-				   && $this->add_hints() === false) === true)
+					&& $this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_SCCP
+					&& $this->add_hints() === false) === true)
 				{
 					$this->_reverse_edit($protocolret);
 					$this->_status = '';
@@ -1119,14 +1131,16 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 						$this->_status = '';
 						return(false);
 					}
-					else if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+					else if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM
+					|| $this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP) {
 						$this->delete_hints();
-					else
-					{
-						if($this->_info['linefeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+					} else {
+						if($this->_info['linefeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM
+						|| $this->_info['linefeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP) {
 							$hints = $this->add_hints();
-						else
+						} else {
 							$hints = $this->edit_hints();
+						}
 
 						if($hints === false)
 						{
@@ -1139,6 +1153,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				else if($this->add_usermacro($iduserfeatures,$linefeaturesid) === false
 				|| $this->add_extenumbers($linefeaturesid) === false
 				|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
+					&& $this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_SCCP
 					&& $this->add_hints() === false) === true)
 				{
 					$this->_reverse_edit($protocolret);
@@ -1255,6 +1270,12 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 			$arr['protocol'] = $protocol;
 
+			if ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP)
+			{
+				$sccpdevice = array();
+				$sccpdevice['line'] = $rs['name'];
+			}
+
 			// new device associated
 			if (empty($rs['device']) === false)
 			{
@@ -1263,8 +1284,22 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					dwho_report::push('error', 'device doesn\'t exist: '.$rs['device']);
 					return(false);
 				}
-				elseif($this->_provddevice->update_config_from_line($arr,$device['deviceid']) === false)
+				elseif($this->_provddevice->update_config_from_line($arr,$device['deviceid']) === false) {
 					return(false);
+				}
+
+				if ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP)
+				{
+					$sccpdevice['name'] = $device['mac'];
+					if (($info_sccpdevice = $this->_sccpdevice->get_where($sccpdevice)) === false)
+					{
+						$this->_sccpdevice->add($sccpdevice);
+					}
+					else
+					{
+						$this->_sccpdevice->edit($info_sccpdevice['id'],$sccpdevice);
+					}
+				}
 			}
 			// remove device associated
 			if (empty($this->_info['linefeatures']['device']) === false)
@@ -1274,6 +1309,12 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				{
 					dwho_report::push('error', 'doesn\'t exist: '.$device['deviceid']);
 					return(false);
+				}
+
+				if ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP)
+				{
+					$sccpdevice['name'] = $device['mac'];
+					$this->_sccpdevice->delete_where($sccpdevice);
 				}
 			}
 		}
@@ -1285,8 +1326,16 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				dwho_report::push('error', 'device doesn\'t exist: '.$this->_info['linefeatures']['device']);
 				return(false);
 			}
-			else
+			else {
 				$this->_provdconfig->rebuild_device_config($device['id']);
+			}
+
+			if ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP
+			&& ($info_sccpdevice = $this->_sccpdevice->get_where($sccpdevice)) !== false)
+			{
+				$sccpdevice['name'] = $device['mac'];
+				$this->_sccpdevice->edit($info_sccpdevice['id'],$sccpdevice);
+			}
 		}
 
 		return(true);
