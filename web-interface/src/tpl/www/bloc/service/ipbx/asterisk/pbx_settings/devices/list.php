@@ -129,25 +129,23 @@ $page = $url->pager($pager['pages'],
 
 			$ref = &$list[$i];
 
-			if($ref['commented'] === true):
+			$linefeatures = $ref['linefeatures'];
+			$devicefeatures = $ref['devicefeatures'];
+
+			if($devicefeatures['commented'] === true):
 				$icon = 'disable';
-			elseif($ref['configured'] === false):
+			elseif($devicefeatures['configured'] === false):
 				$icon = 'red';
 			else:
-				if(strncmp($ref['config'],'autoprov',strlen('autoprov')) === 0)
+				if(strncmp($devicefeatures['config'],'autoprov',strlen('autoprov')) === 0)
 					$icon = 'yellow';
 				else
 					$icon = 'green';
 			endif;
 
-			$phonenumber = '';
-			if(isset($ref['provdconfig']) && $icon === 'green'):
-				$provdconfig = $ref['provdconfig'];
-				$raw_config = $provdconfig['raw_config'];
-				if (isset($raw_config['sip_lines'])):
-					$siplines = $raw_config['sip_lines'];
-					$phonenumber = isset($siplines[1]) ? $siplines[1]['number'] : '';
-				endif;
+			$phonenumber = '-';
+			if($linefeatures !== false):
+				$phonenumber = $linefeatures['number'];
 			endif;
 
 			if($ref['provdexist'] === true):
@@ -161,26 +159,26 @@ $page = $url->pager($pager['pages'],
 	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left">
 			<?=$form->checkbox(array('name'		=> 'devices[]',
-						 'value'	=> $ref['id'],
+						 'value'	=> $devicefeatures['id'],
 						 'label'	=> false,
 						 'id'		=> 'it-devices-'.$i,
 						 'checked'	=> false,
 						 'paragraph'	=> false));?>
 		</td>
-		<td class="txt-left" title="<?=dwho_alttitle($ref['mac']);?>">
+		<td class="txt-left" title="<?=dwho_alttitle($devicefeatures['mac']);?>">
 			<label for="it-devices-<?=$i?>" id="lb-devices-<?=$i?>">
 <?php
 				echo $url->img_html('img/site/utils/'.$provdexist.'.png',null,'class="icons-list"');
 				echo $url->img_html('img/site/utils/cercle-'.$icon.'.png',null,'class="icons-list"');
-				echo dwho_has_len($ref['mac']) === true ? dwho_htmlen(dwho_trunc($ref['mac'],25,'...',false)) : '-';
+				echo dwho_has_len($devicefeatures['mac']) === true ? dwho_htmlen(dwho_trunc($devicefeatures['mac'],25,'...',false)) : '-';
 ?>
 			</label>
 		</td>
 		<td><?=(dwho_has_len($phonenumber) === true ? $phonenumber : '-')?></td>
-		<td><?=$ref['ip'];?></td>
-		<td><?=(dwho_has_len($ref['vendor']) === true ? $ref['vendor'] : '-')?></td>
-		<td><?=(dwho_has_len($ref['model']) === true ? $ref['model'] : '-')?></td>
-		<td><?=(dwho_has_len($ref['plugin']) === true ? $ref['plugin'] : '-')?></td>
+		<td><?=$devicefeatures['ip'];?></td>
+		<td><?=(dwho_has_len($devicefeatures['vendor']) === true ? $devicefeatures['vendor'] : '-')?></td>
+		<td><?=(dwho_has_len($devicefeatures['model']) === true ? $devicefeatures['model'] : '-')?></td>
+		<td><?=(dwho_has_len($devicefeatures['plugin']) === true ? $devicefeatures['plugin'] : '-')?></td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/utils/updating.png',
@@ -188,15 +186,15 @@ $page = $url->pager($pager['pages'],
 						       'border="0"'),
 					'service/ipbx/pbx_settings/devices',
 					array('act'	=> 'synchronize',
-					      'id'	=> $ref['id']),
-					'onclick="if(confirm(\''.$dhtml->escape($this->bbf('opt_synchronize_confirm')).'\')){init_synchronize(\''.$ref['id'].'\');}return(false);"',
+					      'id'	=> $devicefeatures['id']),
+					'onclick="if(confirm(\''.$dhtml->escape($this->bbf('opt_synchronize_confirm')).'\')){init_synchronize(\''.$devicefeatures['id'].'\');}return(false);"',
 					$this->bbf('opt_synchronize')),"\n";
 		echo	$url->href_html($url->img_html('img/site/utils/reset.png',
 						       $this->bbf('opt_reset-autoprov'),
 						       'border="0" width="16" height="16"'),
 					'service/ipbx/pbx_settings/devices',
 					array('act'	=> 'modeautoprov',
-					      'id'	=> $ref['id']),
+					      'id'	=> $devicefeatures['id']),
 					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_modeautoprov_confirm')).'\'));"',
 					$this->bbf('opt_reset-autoprov')),"\n";
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',
@@ -204,7 +202,7 @@ $page = $url->pager($pager['pages'],
 						       'border="0"'),
 					'service/ipbx/pbx_settings/devices',
 					array('act'	=> 'edit',
-					      'id'	=> $ref['id']),
+					      'id'	=> $devicefeatures['id']),
 					null,
 					$this->bbf('opt_modify')),"\n",
 			$url->href_html($url->img_html('img/site/button/delete.gif',
@@ -212,7 +210,7 @@ $page = $url->pager($pager['pages'],
 						       'border="0"'),
 					'service/ipbx/pbx_settings/devices',
 					array('act'	=> 'delete',
-					      'id'	=> $ref['id'],
+					      'id'	=> $devicefeatures['id'],
 					      'page'	=> $pager['page'],
 					      $param),
 					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',

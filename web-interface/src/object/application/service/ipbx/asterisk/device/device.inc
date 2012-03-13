@@ -27,10 +27,11 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_device extends xivo_application_asterisk_abstract
 {
 	var $_dso			= null;
-	var $_devicefeatures = false;
-	var $_provddevice 	= false;
-	var $_provdplugin 	= false;
-	var $_provdconfig 	= false;
+	protected $_devicefeatures = false;
+	protected $_provddevice 	= false;
+	protected $_provdplugin 	= false;
+	protected $_provdconfig 	= false;
+	protected $_prodv_exist_list = false;
 
 	public function __construct(&$service,&$dso,$param=array(),$components=true)
 	{
@@ -79,16 +80,14 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		|| ($nb = count($list_device)) === 0)
 			return($ret);
 
-		//dwho_var_dump($list_device);
-
 		for($i=0;$i<$nb;$i++)
 		{
 			$ref = &$list_device[$i];
 			$deviceid = $ref['id'];
 			$ret[$deviceid] = false;
 
-			if($this->get_by_mac($ref['mac']) !== false
-			|| $this->get_by_deviceid($deviceid) !== false)
+			if($this->get_by_mac($ref['mac'],null,true) !== false
+			|| $this->get_by_deviceid($deviceid,null,true) !== false)
 			{
 				$act_set = 'set_edit';
 				$act = 'edit';
@@ -131,6 +130,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			}
 		}
 
+		$this->_prodv_exist_list = $ret;
 		return($ret);
 	}
 
@@ -157,7 +157,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 	{
 		$this->_info = $this->get_from_db_only($id,$disable,$nocomponents,$where);
 
-		if($this->_components === false)
+		if($this->_components === false
+		|| $nocomponents === true)
 			return($this->_info);
 
 		$this->get_deviceprovd($this->_info['devicefeatures']['deviceid']);
@@ -328,9 +329,6 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 	{
 		$search = strval($search);
 
-		if (($listupdate = $this->update()) === false)
-			dwho_report::push('error',dwho_i18n::babelfish('error_during_update'));
-
 		switch($action)
 		{
 			case 'search':
@@ -350,13 +348,22 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		for($i = 0;$i < $nb;$i++)
 		{
 			$ref = &$rs[$i];
-			$devicefeatures = $this->_devicefeatures->_prepare($ref);
-			$devicefeatures['provdexist'] = false;
-			$devicefeatures['capabilities'] = $this->get_capabilities_by_plugin($devicefeatures['plugin']);
-			if (isset($listupdate[$devicefeatures['deviceid']]) === true)
-				$devicefeatures['provdexist'] = true;
-			$r[$devicefeatures['id']] = $devicefeatures;
-			$r[$devicefeatures['id']]['provdconfig'] = $this->_provdconfig->get($devicefeatures['deviceid']);
+			$devicefeatures = dwho_array_startswith_key($ref,'devicefeatures.',true);
+			$devicefeatures = $this->_devicefeatures->_prepare($devicefeatures);
+			$r[$devicefeatures['id']]['devicefeatures'] = $devicefeatures;
+
+			$r[$devicefeatures['id']]['provdexist'] = false;
+			if (isset($this->_prodv_exist_list[$devicefeatures['deviceid']]) === true)
+				$r[$devicefeatures['id']]['provdexist'] = true;
+
+			#$r[$devicefeatures['id']]['capabilities'] = $this->get_capabilities_by_plugin($devicefeatures['plugin']);
+
+			$linefeatures = dwho_array_startswith_key($ref,'linefeatures.',true);
+			$r[$devicefeatures['id']]['linefeatures'] = false;
+			if ($linefeatures['id'] !== null) {
+				$linefeatures = $this->_linefeatures->_prepare($linefeatures);
+				$r[$devicefeatures['id']]['linefeatures'] = $linefeatures;
+			}
 		}
 
 		if(empty($r) === true)

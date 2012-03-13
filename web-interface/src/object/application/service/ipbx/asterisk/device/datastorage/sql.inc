@@ -22,7 +22,8 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'application','abstract','data
 
 class xivo_application_service_asterisk_device_sql extends xivo_application_abstract_datastorage_sql
 {
-	var $_table	= array('devicefeatures' => '');
+	var $_table	= array('devicefeatures' => '',
+						'linefeatures' => '');
 
 	function get_nb($arr=null,$disable=null,$initialized=null)
 	{
@@ -56,19 +57,24 @@ class xivo_application_service_asterisk_device_sql extends xivo_application_abst
 
 		$this->_dso->andwhere($arr,$this->_table['devicefeatures']);
 
+		$this->_dso->leftjoin($this->_table['linefeatures'],
+				$this->_dso->cast($this->_table['devicefeatures'].'.id', 'varchar').' = '.$this->_table['linefeatures'].'.device',
+				null,
+				'*');
+
 		//$this->_dso->aggregate_where(false,'AND');
 		$this->_dso->aggregate_where();
 		if(dwho_has_len($value) === true)
 		{
 			$this->_dso->aggregate_where();
-			$this->_dso->whereexact('ip'   ,$value,true,$this->_table['devicefeatures']);
+			$this->_dso->whereexact('ip',$value,true,$this->_table['devicefeatures']);
 			$this->_dso->orwhereexact('mac',$value,true,$this->_table['devicefeatures']);
 		}
 
 		$this->_dso->new_order($order,null,$this->_table['devicefeatures']);
 		$this->_dso->limit($limit);
 
-		$r = $this->_dso->select_all();
+		$r = $this->_dso->select_all(null,true,true);
 
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
