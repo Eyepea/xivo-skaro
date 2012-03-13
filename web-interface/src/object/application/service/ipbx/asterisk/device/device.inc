@@ -79,7 +79,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		|| ($nb = count($list_device)) === 0)
 			return($ret);
 
-		#dwho_var_dump($list_device);
+		//dwho_var_dump($list_device);
 
 		for($i=0;$i<$nb;$i++)
 		{
@@ -110,7 +110,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			$arr = array();
 			$arr['devicefeatures'] = $ref;
 			$arr['devicefeatures']['deviceid'] = $deviceid;
-			if ($arr['devicefeatures']['config'] !== $deviceid)
+			if(isset($ref['config']) && $ref['config'] !== $deviceid)
 				$this->_provddevice->eval_config_device($deviceid);
 
 			if($this->$act_set($arr) === false
