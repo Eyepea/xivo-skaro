@@ -155,7 +155,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 	}
 	public function get($id,$disable=null,$nocomponents=null,$where=null)
 	{
-		$this->_info = $this->get_from_db_only($id,$disable,$nocomponents,$w);
+		$this->_info = $this->get_from_db_only($id,$disable,$nocomponents,$where);
 
 		if($this->_components === false)
 			return($this->_info);
