@@ -1498,7 +1498,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 				$arr['protocol']['interface'] = $line['name'];
 			elseif($protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP) {
-				$arr['protocol']['cid_name'] = $line['callerid'];
+				$arr['protocol']['cid_name'] = str_replace('"','',$line['callerid']);
 				$arr['protocol']['cid_num'] = $line['number'];
 			}
 
