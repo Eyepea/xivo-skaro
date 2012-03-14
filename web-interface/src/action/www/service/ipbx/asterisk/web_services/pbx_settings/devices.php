@@ -52,6 +52,8 @@ switch($act)
 	default:
 		$act = 'list';
 
+		$appdevice->update();
+
 		if(($list = $appdevice->get_devices_list()) === false)
 		{
 			$http_response->set_status_line(204);
