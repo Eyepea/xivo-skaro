@@ -56,11 +56,10 @@ DROP TYPE "trunk_protocol2";
 
 COMMIT;
 
--- add context field en sccpline 
 
 BEGIN;
 
-ALTER TABLE "sccpline" ADD "context" varchar(80);
-ALTER TABLE "sccpline" ADD "commented"INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "sccpline" ADD "context" varchar(80) NOT NULL;
+ALTER TABLE "sccpline" ADD "commented" INTEGER NOT NULL DEFAULT 0;
 
 COMMIT;
