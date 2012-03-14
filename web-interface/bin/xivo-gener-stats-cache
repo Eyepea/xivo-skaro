@@ -97,10 +97,13 @@ class GenerCache(object):
             print 'Generation terminated in %.2fs.' % (time.time() - bench)
 
     def execute(self, erase, dbeg, dend, client=None):
+        if not os.access(XIVO_INI_FILE, os.R_OK):
+            print "File %s not exist." % XIVO_INI_FILE
+            exit(0)
         list_conf = self._get_stats_conf()
         if not list_conf:
             print "No configuration found."
-            raise
+            exit(0)
 
         qry = {}
         if erase:
