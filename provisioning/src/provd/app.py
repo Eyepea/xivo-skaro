@@ -106,7 +106,7 @@ def _check_raw_config_validity(raw_config):
             if u'proxy_ip' not in line and u'sip_proxy_ip' not in raw_config:
                 raise RawConfigError('missing proxy_ip parameter for line %s' %
                                      line_no)
-            if raw_config[u'protocol'] == 'SIP':
+            if u'protocol' in raw_config and raw_config[u'protocol'] == 'SIP':
                 for param in [u'username', u'password', u'display_name']:
                     if param not in line:
                         raise RawConfigError('missing %s parameter for line %s' %
