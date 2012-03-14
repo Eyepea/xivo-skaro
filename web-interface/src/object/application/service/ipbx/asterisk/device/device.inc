@@ -81,17 +81,11 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 
 		$deviceid = $device['id'];
 
+		$act = 'add';
 		if($this->get_by_deviceid($deviceid) !== false)
 			$act = 'edit';
-		elseif((int) $this->get_nb(array('deviceid' => $deviceid)) === 0)
-			$act = 'add';
-		else
-		{
-			dwho_report::push('error','error during update device: '.$deviceid);
-			return(false);
-		}
 
-		$this->_update_device($act,$ref,$device['config'],true);
+		$this->_update_device($act,$device,true);
 	}
 
 	public function update()
@@ -149,11 +143,11 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 
 		$ret[$deviceid] = true;
 
-		unset($ref['id']);
+		unset($data['id']);
 		$arr = array();
-		$arr['devicefeatures'] = $ref;
+		$arr['devicefeatures'] = $data;
 		$arr['devicefeatures']['deviceid'] = $deviceid;
-		if($reconfigure === true && $ref['config'] !== $deviceid)
+		if($reconfigure === true && $data['config'] !== $deviceid)
 			$this->_provddevice->eval_config_device($deviceid);
 
 		if($this->$act_set($arr) === false
