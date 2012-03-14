@@ -75,7 +75,7 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 		if(($rs = $this->_dso->get(array('provisioningid' => $provisioningid))) === false)
 			return(false);
 
-		if (dwho_has_len($rs['device']))
+		if ((int) $rs['device'] > 0)
 			return(false);
 
 		return($this->_prepare($rs));

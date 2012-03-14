@@ -77,56 +77,26 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 	public function update_by_ip($ip)
 	{
 		if(($device = $this->_provddevice->get_device_by_ip($ip)) === false)
-		{
 			return(false);
-		}
 
 		$deviceid = $device['id'];
 
 		if($this->get_by_deviceid($deviceid) !== false)
-		{
-			$act_set = 'set_edit';
 			$act = 'edit';
-		}
 		elseif((int) $this->get_nb(array('deviceid' => $deviceid)) === 0)
-		{
-			$act_set = 'set_add';
 			$act = 'add';
-		}
 		else
 		{
 			dwho_report::push('error','error during update device: '.$deviceid);
-			continue;
+			return(false);
 		}
 
-		unset($device['id']);
-		$arr = array();
-		$arr['devicefeatures'] = $device;
-		$arr['devicefeatures']['deviceid'] = $deviceid;
-		if(isset($device['config']) && $device['config'] !== $deviceid)
-			$this->_provddevice->eval_config_device($deviceid);
-
-		if($this->$act_set($arr) === false
-		|| $this->$act() === false)
-		{
-			dwho_report::push('error',
-					dwho_i18n::babelfish('error_during_'.$act.'_device',array($deviceid)),
-					'error_device_'.$act);
-
-			foreach($this->get_error() as $k => $v)
-			{
-				if (is_array($v))
-					foreach($v as $kk => $vv)
-					dwho_report::push('error',$kk.': '.$vv,'error_device_'.$act);
-				else
-					dwho_report::push('error',$k.': '.$v,'error_device_'.$act);
-			}
-		}
+		$this->_update_device($act,$ref,$device['config'],true);
 	}
 
 	public function update()
 	{
-		$ret = array();
+		$ret = $this->_prodv_exist_list = array();
 		if (($list_device = $this->_provddevice->get_device_list()) === false
 		|| is_array($list_device) === false
 		|| ($nb = count($list_device)) === 0)
@@ -138,65 +108,70 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			$deviceid = $ref['id'];
 			$ret[$deviceid] = false;
 
-			if(($devices = $this->get_by_deviceid($deviceid,null,true)) !== false)
+			$act = 'add';
+
+			if(($device = $this->get_by_deviceid($deviceid,null,true)) !== false)
 			{
-				$ret[$deviceid] = true;
-				$device_from_db = $devices['devicefeatures'];
+				$device_from_db = $device['devicefeatures'];
 				if ($device_from_db['ip'] !== $ref['ip']
 				|| $device_from_db['mac'] !== $ref['mac']
 				|| $device_from_db['vendor'] !== $ref['vendor']
 				|| $device_from_db['model'] !== $ref['model']
-				|| $device_from_db['plugin'] !== $ref['plugin']
-				)
-				{
-					$act_set = 'set_edit';
+				|| $device_from_db['plugin'] !== $ref['plugin'])
 					$act = 'edit';
-				}
 				else
-				{
 					continue;
-				}
-			}
-			elseif((int) $this->get_nb(array('deviceid' => $deviceid)) === 0)
-			{
-				$act_set = 'set_add';
-				$act = 'add';
-			}
-			else
-			{
-				dwho_report::push('error','error during update device: '.$deviceid);
-				continue;
 			}
 
 			$ret[$deviceid] = true;
-
-			unset($ref['id']);
-			$arr = array();
-			$arr['devicefeatures'] = $ref;
-			$arr['devicefeatures']['deviceid'] = $deviceid;
-			if(isset($ref['config']) && $ref['config'] !== $deviceid)
-				$this->_provddevice->eval_config_device($deviceid);
-
-			if($this->$act_set($arr) === false
-			|| $this->$act() === false)
-			{
-				dwho_report::push('error',
-					dwho_i18n::babelfish('error_during_'.$act.'_device',array($deviceid)),
-					'error_device_'.$act);
-
-				foreach($this->get_error() as $k => $v)
-				{
-					if (is_array($v))
-						foreach($v as $kk => $vv)
-							dwho_report::push('error',$kk.': '.$vv,'error_device_'.$act);
-					else
-						dwho_report::push('error',$k.': '.$v,'error_device_'.$act);
-				}
-			}
+			$this->_update_device($act,$ref);
 		}
 
 		$this->_prodv_exist_list = $ret;
 		return($ret);
+	}
+
+	private function _update_device($method, $data, $reconfigure=false)
+	{
+
+		switch($method){
+			case 'add':
+				$act_set = 'set_add';
+				$act = 'add';
+				break;
+			case 'edit':
+				$act_set = 'set_edit';
+				$act = 'edit';
+				break;
+			default:
+				return(false);
+		}
+
+		$ret[$deviceid] = true;
+
+		unset($ref['id']);
+		$arr = array();
+		$arr['devicefeatures'] = $ref;
+		$arr['devicefeatures']['deviceid'] = $deviceid;
+		if($reconfigure === true && $ref['config'] !== $deviceid)
+			$this->_provddevice->eval_config_device($deviceid);
+
+		if($this->$act_set($arr) === false
+		|| $this->$act() === false)
+		{
+			dwho_report::push('error',
+				dwho_i18n::babelfish('error_during_'.$act.'_device',array($deviceid)),
+				'error_device_'.$act);
+
+			foreach($this->get_error() as $k => $v)
+			{
+				if (is_array($v))
+					foreach($v as $kk => $vv)
+						dwho_report::push('error',$kk.': '.$vv,'error_device_'.$act);
+				else
+					dwho_report::push('error',$k.': '.$v,'error_device_'.$act);
+			}
+		}
 	}
 
 	public function get_from_db_only($id,$disable=null,$nocomponents=null,$where=null)
