@@ -70,13 +70,27 @@ class xivo_service_asterisk_sccpdevice extends xivo_service_asterisk_abstract
 		$name = str_replace(':', '', $arr['name']);
 		$name = str_replace('-', '', $name);
 
-		if (substr($mame, 0, 3) !== 'SEP')
+		if (substr($name, 0, 3) !== 'SEP')
 			$arr['name'] = 'SEP'.$name;
 		else
 			$arr['name'] = $name;
 		$arr['device'] = $arr['name'];
 
 		return(parent::edit($id,$arr,$disable));
+	}
+
+	function delete_by_mac($mac)
+	{
+		$arr = array();
+		$name = str_replace(':', '', $mac);
+		$name = str_replace('-', '', $name);
+
+		if (substr($name, 0, 3) !== 'SEP')
+			$arr['name'] = 'SEP'.$name;
+		else
+			$arr['name'] = $name;
+
+		return(parent::delete_where($arr));
 	}
 }
 

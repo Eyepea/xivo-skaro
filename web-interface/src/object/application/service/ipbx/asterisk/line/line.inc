@@ -937,6 +937,14 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					dwho_report::push('error', 'Can\'t edit device');
 					return(false);
 				}
+
+				if ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP)
+				{
+					$sccpdevice = array();
+					$sccpdevice['line'] = $rs['name'];
+					$sccpdevice['name'] = $device['mac'];
+					$this->_sccpdevice->add($sccpdevice);
+				}
 			}
 		}
 		return(true);

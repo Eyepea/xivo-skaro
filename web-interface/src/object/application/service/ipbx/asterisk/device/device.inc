@@ -31,6 +31,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 	protected $_provddevice 	= false;
 	protected $_provdplugin 	= false;
 	protected $_provdconfig 	= false;
+	protected $_sccpdevice		= false;
 	protected $_prodv_exist_list = false;
 
 	public function __construct(&$service,&$dso,$param=array(),$components=true)
@@ -44,6 +45,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 
 		if(($this->_devicefeatures = &$this->_service->get_module('devicefeatures')) === false
 		|| ($this->_linefeatures = &$this->_service->get_module('linefeatures')) === false
+		|| ($this->_sccpdevice = &$this->_service->get_module('sccpdevice')) === false
 		|| ($_XOBJ = &dwho_gct::get('xivo_object')) === false
 		|| ($this->_provddevice = &$_XOBJ->get_module('provddevice')) === false
 		|| ($this->_provdplugin = &$_XOBJ->get_module('provdplugin')) === false
@@ -216,6 +218,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		return($this->_info);
 
 	}
+
 	public function get($id,$disable=null,$nocomponents=null,$where=null)
 	{
 		$this->_info = $this->get_from_db_only($id,$disable,$nocomponents,$where);
@@ -737,7 +740,14 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		$this->_provdconfig->delete($this->_info['devicefeatures']['config']);
 		$this->_provdconfig->delete($this->_info['devicefeatures']['deviceid']);
 		$this->_provddevice->delete($this->_info['devicefeatures']['deviceid']);
+		$this->_sccpdevice->delete_by_mac($this->_info['devicefeatures']['mac']);
 		$r = $this->_devicefeatures->delete($this->_info['devicefeatures']['id']);
+
+		if (isset($this->_info['config'])
+		&& isset($this->_info['config']['protocol'])
+		&& $this->_info['config']['protocol'] == 'SCCP'){
+			$this->_sccpdevice->delete_by_mac($this->_info['devicefeatures']['mac']);
+		}
 
 		if($this->_status === 'delete')
 			$this->_return['devicefeatures'] = $r;
