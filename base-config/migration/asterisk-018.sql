@@ -22,26 +22,31 @@ BEGIN;
 ALTER TYPE "trunk_protocol" RENAME TO "trunk_protocol2";
 CREATE TYPE "trunk_protocol" AS ENUM ('sip', 'iax', 'sccp', 'custom');
 
+ALTER TABLE "linefeatures" DROP COLUMN IF EXISTS "_protocol";
 ALTER TABLE "linefeatures" RENAME COLUMN "protocol" TO "_protocol";
 ALTER TABLE "linefeatures" ADD "protocol" "trunk_protocol";
 UPDATE "linefeatures" SET "protocol" = "_protocol"::text::"trunk_protocol";
 ALTER TABLE "linefeatures" DROP COLUMN "_protocol";
 
+ALTER TABLE "trunkfeatures" DROP COLUMN IF EXISTS "_protocol";
 ALTER TABLE "trunkfeatures" RENAME COLUMN "protocol" TO "_protocol";
 ALTER TABLE "trunkfeatures" ADD "protocol" "trunk_protocol";
 UPDATE "trunkfeatures" SET "protocol" = "_protocol"::text::"trunk_protocol";
 ALTER TABLE "trunkfeatures" DROP COLUMN "_protocol";
 
+ALTER TABLE "usercustom" DROP COLUMN IF EXISTS "_protocol";
 ALTER TABLE "usercustom" RENAME COLUMN "protocol" TO "_protocol";
 ALTER TABLE "usercustom" ADD "protocol" "trunk_protocol";
 UPDATE "usercustom" SET "protocol" = "_protocol"::text::"trunk_protocol";
 ALTER TABLE "usercustom" DROP COLUMN "_protocol";
 
+ALTER TABLE "useriax" DROP COLUMN IF EXISTS "_protocol";
 ALTER TABLE "useriax" RENAME COLUMN "protocol" TO "_protocol";
 ALTER TABLE "useriax" ADD "protocol" "trunk_protocol";
 UPDATE "useriax" SET "protocol" = "_protocol"::text::"trunk_protocol";
 ALTER TABLE "useriax" DROP COLUMN "_protocol";
 
+ALTER TABLE "usersip" DROP COLUMN IF EXISTS "_protocol";
 ALTER TABLE "usersip" RENAME COLUMN "protocol" TO "_protocol";
 ALTER TABLE "usersip" ADD "protocol" "trunk_protocol";
 UPDATE "usersip" SET "protocol" = "_protocol"::text::"trunk_protocol";
