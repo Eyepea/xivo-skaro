@@ -32,7 +32,7 @@ Terminaison correctement configurée
 Terminaison configurée en mode (Autoprov)
 
 ; device-list_legend-opt(not_configured)
-Terminaison non configurée (verifié si le greffon est bien installé pour cette terminaison)
+Terminaison non configurée (verifiez si le greffon est bien installé pour cette terminaison)
 
 ; no_device
 Aucune terminaison trouvée
