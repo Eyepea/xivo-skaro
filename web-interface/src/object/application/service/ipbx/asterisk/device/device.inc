@@ -32,7 +32,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 	protected $_provdplugin 	= false;
 	protected $_provdconfig 	= false;
 	protected $_sccpdevice		= false;
-	protected $_prodv_exist_list = false;
+	protected $_prodv_exist_list = array();
 
 	public function __construct(&$service,&$dso,$param=array(),$components=true)
 	{
@@ -82,7 +82,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		$deviceid = $device['id'];
 
 		$act = 'add';
-		if($this->get_by_deviceid($deviceid) !== false)
+		if($this->get_by_deviceid($deviceid,null,true) !== false)
 			$act = 'edit';
 
 		$this->_update_device($act,$device,true);
@@ -90,17 +90,17 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 
 	public function update()
 	{
-		$ret = $this->_prodv_exist_list = array();
+		$ret = &$this->_prodv_exist_list;
 		if (($list_device = $this->_provddevice->get_device_list()) === false
 		|| is_array($list_device) === false
 		|| ($nb = count($list_device)) === 0)
-			return($ret);
+			return($this->_prodv_exist_list);
 
 		for($i=0;$i<$nb;$i++)
 		{
 			$ref = &$list_device[$i];
 			$deviceid = $ref['id'];
-			$ret[$deviceid] = false;
+			$ret[$deviceid] = true;
 
 			$act = 'add';
 			if(($device = $this->get_by_deviceid($deviceid,null,true)) !== false)
@@ -117,17 +117,14 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 					continue;
 			}
 
-			$ret[$deviceid] = true;
 			$this->_update_device($act,$ref);
 		}
 
-		$this->_prodv_exist_list = $ret;
-		return($ret);
+		return($this->_prodv_exist_list);
 	}
 
 	private function _update_device($method, $data, $reconfigure=false)
 	{
-
 		switch($method){
 			case 'add':
 				$act_set = 'set_add';
@@ -142,7 +139,6 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		}
 
 		$deviceid = $data['id'];
-		unset($data['id']);
 		$arr = array();
 		$arr['devicefeatures'] = $data;
 		$arr['devicefeatures']['deviceid'] = $deviceid;
