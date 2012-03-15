@@ -26,8 +26,8 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_device extends xivo_application_asterisk_abstract
 {
-	var $_dso			= null;
-	protected $_devicefeatures = false;
+	var $_dso					= null;
+	protected $_devicefeatures 	= false;
 	protected $_provddevice 	= false;
 	protected $_provdplugin 	= false;
 	protected $_provdconfig 	= false;

@@ -206,19 +206,12 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		return(true);
 	}
 
-	public function eval_config_device($id)
+	public function eval_config_device($deviceid)
 	{
 		if ($this->_provdconfig === false
-		|| empty($id) === true)
+		|| ($conf = $this->_provdconfig->build_raw_config($deviceid)) === false
+		|| $this->_provdconfig->add($deviceid,$conf) === false)
 			return(false);
-
-		// create config for this device if not exist
-		if (($rs = $this->_provdconfig->get($id)) === false)
-		{
-			if (($conf = $this->_provdconfig->build_raw_config($id)) === false
-			|| $this->_provdconfig->edit($id,$conf) === false)
-				return(false);
-		}
 
 		return(true);
 	}
@@ -248,7 +241,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 
 		if (($device = $this->get($deviceid)) === false)
 		{
-			dwho_report::push('error', 'fail to edit config for this device: '.$deviceid);
+			dwho_report::push('error', 'fail to get config for this device: '.$deviceid);
 			return(false);
 		}
 
