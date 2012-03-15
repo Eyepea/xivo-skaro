@@ -1,5 +1,5 @@
 {
-    "version": "0.1.9",
+    "version": "0.1.10",
     "description": "Plugin for Cisco 7911G, 7941G, 7941G-GE and 7961G in version 9.2.1 of the SCCP software.",
     "description_fr": "Greffon pour Cisco 7911G, 7941G, 7941G-GE and 7961G en version 9.2.1 du logiciel SCCP.",
     "capabilities": {

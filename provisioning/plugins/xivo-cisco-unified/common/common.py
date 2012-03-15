@@ -85,12 +85,6 @@ class CiscoDownloader(DefaultDownloader):
                         raise InvalidCredentialsError('authentification failed on Cisco website')
             else:
                 logger.debug('No sign of authentication failure - assuming success')
-        # Do GET request that sets more cookies and stuff. This is not done
-        # automatically because:
-        # - we don't support javascript
-        # - we don't understand the HTML <meta http⁻equiv"refresh"> tag neither
-        # This is extremely flimsy, but since we have no control on how cisco
-        # handle the whole login process, this is as good as it can get.
         with contextlib.closing(self._opener.open(self._POST_LOGIN_URL, timeout=timeout)) as f:
             f.read()
         self._is_authenticated = True
@@ -112,16 +106,12 @@ class BaseCiscoPgAssociator(BasePgAssociator):
     def _do_associate(self, vendor, model, version):
         if vendor == u'Cisco':
             if model is None:
-                # There's so many Cisco models it's hard to say something
-                # precise when we have no model information
-                return PROBABLE_SUPPORT
+                # when model is None, give a score slightly higher than
+                # xivo-cisco-spa plugins
+                return PROBABLE_SUPPORT + 10
             assert model is not None
             if model.startswith(u'SPA'):
                 return NO_SUPPORT
-            if version is None:
-                # Could be either in SIP or SCCP...
-                return PROBABLE_SUPPORT
-            assert version is not None
             if model in self._model_version:
                 if version == self._model_version[model]:
                     return FULL_SUPPORT
