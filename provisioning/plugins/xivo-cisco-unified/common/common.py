@@ -1,12 +1,7 @@
 # -*- coding: UTF-8 -*-
 
-"""Common plugin code shared by the various xivo-cisco-sccp and
-xivo-cisco-sip plugins.
-
-"""
-
 __license__ = """
-    Copyright (C) 2010-2011  Avencall
+    Copyright (C) 2010-2012  Avencall
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,10 +23,10 @@ import logging
 import re
 import urllib
 import urllib2
-from fetchfw.download import DefaultDownloader, InvalidCredentialsError,\
+from fetchfw.download import DefaultDownloader, InvalidCredentialsError, \
     DownloadError
 from provd import tzinform
-from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
+from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT, \
     NO_SUPPORT, FULL_SUPPORT, COMPLETE_SUPPORT, PROBABLE_SUPPORT
 from provd.util import norm_mac
 from twisted.internet import defer
@@ -46,22 +41,22 @@ class WeakCiscoCredentialsError(DownloadError):
 class CiscoDownloader(DefaultDownloader):
     _C14N_LOGIN_URL = 'http://www.cisco.com/cgi-bin/login'
     _POST_LOGIN_URL = 'https://fedps.cisco.com/idp/startSSO.ping?PartnerSpId=https://fedam.cisco.com&IdpAdapterId=fedsmidpCCO&TargetResource=http%3A//www.cisco.com/cgi-bin/login%3Freferer%3Dhttp%3A//www.cisco.com/'
-    
+
     def __init__(self, handlers):
         DefaultDownloader.__init__(self, handlers)
         self._cookiejar = cookielib.CookieJar()
         self._opener.add_handler(urllib2.HTTPCookieProcessor(self._cookiejar))
         self._form_params = None
         self._is_authenticated = False
-    
+
     def clear_password(self):
         self._form_params = None
-    
+
     def set_password(self, user, passwd):
         self._is_authenticated = False
         self._cookiejar.clear()
         self._form_params = {'USER': user, 'PASSWORD': passwd}
-    
+
     def _do_download(self, url, timeout):
         if not self._form_params:
             raise InvalidCredentialsError('no Cisco username/password have been set')
@@ -72,10 +67,10 @@ class CiscoDownloader(DefaultDownloader):
         # Cisco website is not using HTTP 4xx status code to signal that we can't access an URL, so...
         if f.info().type == 'text/html':
             f.close()
-            raise WeakCiscoCredentialsError('it seems like your Cisco username/password doesn\'t give you ' 
+            raise WeakCiscoCredentialsError('it seems like your Cisco username/password doesn\'t give you '
                                             'access to this URL (or this URL might be no longer valid)')
         return f
-    
+
     def _authenticate(self, timeout):
         form_url = self._get_form_url(timeout)
         data = urllib.urlencode(self._form_params)
@@ -99,7 +94,7 @@ class CiscoDownloader(DefaultDownloader):
         with contextlib.closing(self._opener.open(self._POST_LOGIN_URL, timeout=timeout)) as f:
             f.read()
         self._is_authenticated = True
-        
+
     def _get_form_url(self, timeout):
         # This step is not strictly required but this way we have less chance to be
         # affected by an URL modification
@@ -113,7 +108,7 @@ class CiscoDownloader(DefaultDownloader):
 class BaseCiscoPgAssociator(BasePgAssociator):
     def __init__(self, model_version):
         self._model_version = model_version
-    
+
     def _do_associate(self, vendor, model, version):
         if vendor == u'Cisco':
             if model is None:
@@ -138,14 +133,14 @@ class BaseCiscoPgAssociator(BasePgAssociator):
 class BaseCiscoDHCPDeviceInfoExtractor(object):
     def extract(self, request, request_type):
         return defer.succeed(self._do_extract(request))
-    
+
     _VDI_REGEX = re.compile(r'IP Phone (?:79(\d\d)|CP-79(\d\d)G|CP-(\d\d\d\d))')
-    
+
     def _do_extract(self, request):
         options = request[u'options']
         if 60 in options:
             return self._extract_from_vdi(options[60])
-    
+
     def _extract_from_vdi(self, vdi):
         # Vendor class identifier:
         #   "Cisco Systems, Inc." (Cisco 6901 9.1.2/9.2.1)
@@ -176,10 +171,10 @@ class BaseCiscoTFTPDeviceInfoExtractor(object):
         re.compile(r'^ITLFile\.tlv$'),
         re.compile(r'^g3-tones\.xml$'),
     ]
-    
+
     def extract(self, request, request_type):
         return defer.succeed(self._do_extract(request))
-    
+
     def _do_extract(self, request):
         packet = request['packet']
         filename = packet['filename']
@@ -266,7 +261,7 @@ def _gen_tz_map():
 
 class CiscoConfigureService(object):
     # implements(IConfigureService)
-    
+
     def __init__(self, cisco_dler, username, password):
         # Creating an instance will also set the password to the downloader
         # if applicable
@@ -274,19 +269,19 @@ class CiscoConfigureService(object):
         self._p_username = username
         self._p_password = password
         self._update_dler()
-    
+
     def _update_dler(self):
         if self._p_username and self._p_password:
             self._cisco_dler.set_password(self._p_username, self._p_password)
         else:
             self._cisco_dler.clear_password()
-    
+
     def get(self, name):
         try:
             return getattr(self, '_p_' + name)
         except AttributeError, e:
             raise KeyError(e)
-    
+
     def set(self, name, value):
         attrname = '_p_' + name
         if hasattr(self, attrname):
@@ -294,12 +289,12 @@ class CiscoConfigureService(object):
             self._update_dler()
         else:
             raise KeyError(name)
-    
+
     description = [
         (u'username', u'The username used to download files from cisco.com website'),
         (u'password', u'The password used to download files from cisco.com website'),
     ]
-    
+
     description_fr = [
         (u'username', u"Le nom d'utilisateur pour télécharger les fichiers sur le site cisco.com"),
         (u'password', u'Le mot de passe pour télécharger les fichiers sur le site cisco.com'),
