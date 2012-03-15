@@ -1,6 +1,13 @@
-[pkg_7941-fw]
-description: Firmware for Cisco 7941G/7941G-GE (SCCP)
-description_fr: Micrologiciel pour Cisco 7941G/7941G-GE (SCCP)
+[pkg_7906-7911-fw]
+description: Firmware for Cisco 7911G (SCCP)
+description_fr: Micrologiciel pour Cisco 7911G (SCCP)
+version: 9.2.1
+files: 7906-7911-fw
+install: cisco-unified-fw
+
+[pkg_7941-7961-fw]
+description: Firmware for Cisco 7941G, 7941G-GE and 7961G (SCCP)
+description_fr: Micrologiciel pour Cisco 7941G, 7941G-GE et 7961G (SCCP)
 version: 9.2.1
 files: 7941-7961-fw
 install: cisco-unified-fw
