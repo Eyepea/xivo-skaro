@@ -1,13 +1,13 @@
 [pkg_7906-7911-fw]
-description: Firmware for Cisco 7911G (SCCP)
-description_fr: Micrologiciel pour Cisco 7911G (SCCP)
+description: Firmware for Cisco 7911G
+description_fr: Micrologiciel pour Cisco 7911G
 version: 9.2.1
 files: 7906-7911-fw
 install: cisco-unified-fw
 
 [pkg_7941-7961-fw]
-description: Firmware for Cisco 7941G, 7941G-GE and 7961G (SCCP)
-description_fr: Micrologiciel pour Cisco 7941G, 7941G-GE et 7961G (SCCP)
+description: Firmware for Cisco 7941G, 7941G-GE and 7961G
+description_fr: Micrologiciel pour Cisco 7941G, 7941G-GE et 7961G
 version: 9.2.1
 files: 7941-7961-fw
 install: cisco-unified-fw
@@ -82,7 +82,7 @@ sha1sum: ef040187fb0421c8fe04f585b1cd9255d2e0c4ca
 downloader: x-cisco
 
 [file_7906-7911-fw]
-url: http://download.cisco.com/swc/esd/05/280136569/contract/cmterm-7911_7906-sccp.9-2-1.zip
+url: http://download.cisco.com/swc/esd/05/280136569/guest/cmterm-7911_7906-sccp.9-2-1.zip
 size: 5190761
 sha1sum: 19bf8b8cde4b03adba36d266d983e8071c94d1bc
 downloader: x-cisco
@@ -94,7 +94,7 @@ sha1sum: 295296ad96460d56c72c6f7064318386ee5fec75
 downloader: x-cisco
 
 [file_7941-7961-fw]
-url: http://download.cisco.com/swc/esd/05/279251499/contract/cmterm-7941_7961-sccp.9-2-1.zip
+url: http://download.cisco.com/swc/esd/05/279251499/guest/cmterm-7941_7961-sccp.9-2-1.zip
 size: 5298221
 sha1sum: d9f8b4112fc96a199099a9ba762e29f92eaf3d04
 downloader: x-cisco

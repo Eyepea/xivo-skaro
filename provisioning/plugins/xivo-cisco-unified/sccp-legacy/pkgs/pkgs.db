@@ -1,13 +1,13 @@
 [pkg_7912-fw]
-description: Firmware for Cisco 7912G (SCCP)
-description_fr: Micrologiciel pour Cisco 7912G (SCCP)
+description: Firmware for Cisco 7912G
+description_fr: Micrologiciel pour Cisco 7912G
 version: 8.0.4
 files: 7912-fw
 install: cisco-unified-fw
 
 [pkg_7940-7960-fw]
-description: Firmware for Cisco 7940G and 7960G (SCCP)
-description_fr: Micrologiciel pour Cisco 7940G et 7960G (SCCP)
+description: Firmware for Cisco 7940G and 7960G
+description_fr: Micrologiciel pour Cisco 7940G et 7960G
 version: 8.1.2
 files: 7940-7960-fw
 install: cisco-unified-fw
@@ -93,7 +93,7 @@ downloader: x-cisco
 
 [file_7940-7960-fw]
 ; Released on August 2009
-url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/cmterm-7940-7960-sccp.8-1-2.zip
+url: http://download.cisco.com/swc/esd/05/268437897/guest/cmterm-7940-7960-sccp.8-1-2.zip
 size: 701384
 sha1sum: bdd4acc78d947ee0e50af88917d622b3fba3c545
 downloader: x-cisco
