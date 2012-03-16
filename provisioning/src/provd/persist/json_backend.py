@@ -49,7 +49,7 @@ class JsonSimpleBackend(object):
             else:
                 try:
                     document = json.load(fobj)
-                except ValueError:
+                except ValueError as e:
                     logger.warning('Could not decode JSON document %s: %s', abs_filename, e)
                 else:
                     self._dict[rel_filename.decode('ascii')] = document
