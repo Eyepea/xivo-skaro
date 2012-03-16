@@ -1,11 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-"""Common code shared by the various xivo-aastra plugins.
-
-Support the 6730i, 6731i, 6739i, 6751i, 6753i, 6755i, 6757i, 9143i and 9180i.
-
-"""
-
 __license__ = """
     Copyright (C) 2010-2011  Avencall
 
@@ -22,9 +16,6 @@ __license__ = """
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-# XXX does the CT models identify themselves differently ? i.e. does the
-#     57i CT identify itself as 57i or something like 57iCT ?
 
 import logging
 import re
@@ -59,8 +50,6 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
     def _do_extract(self, request):
         ua = request.getHeader('User-Agent')
         if ua:
-            # All information is present in the User-Agent header for
-            # Aastra
             return self._extract_from_ua(ua)
         return None
 
