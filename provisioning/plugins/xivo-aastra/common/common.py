@@ -17,6 +17,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import errno
 import logging
 import re
 import os.path
@@ -403,21 +404,24 @@ class BaseAastraPlugin(StandardPlugin):
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
 
     def deconfigure(self, device):
-        # remove device configuration file
+        self._remove_configuration_file(device)
+        self._remove_certificate_file(device)
+
+    def _remove_configuration_file(self, device):
         path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))
         try:
             os.remove(path)
-        except OSError, e:
-            # ignore
-            logger.info('error while removing file: %s', e)
-        # remove device certificate file
+        except OSError as e:
+            logger.info('error while removing configuration file: %s', e)
+
+    def _remove_certificate_file(self, device):
         path = os.path.join(self._tftpboot_dir,
                             self._device_cert_or_key_filename(device, self._TRUSTED_ROOT_CERTS_SUFFIX))
         try:
             os.remove(path)
-        except OSError, e:
-            # ignore
-            logger.info('error while removing file: %s', e)
+        except OSError as e:
+            if e.errno != errno.ENOENT:
+                logger.info('error while removing certificate file: %s', e)
 
     def synchronize(self, device, raw_config):
         try:
