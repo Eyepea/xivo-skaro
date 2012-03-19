@@ -43,8 +43,6 @@ switch($act)
 
 		if($appdevice->update_by_ip($data['ip']) === false)
 			$http_response->set_status_line(400);
-		elseif($appdevice->get_by_ip($data['ip']) === false)
-			$http_response->set_status_line(400);
 		elseif($data['code'] === 'autoprov')
 		{
 			if ($appdevice->mode_autoprov(true) === false)

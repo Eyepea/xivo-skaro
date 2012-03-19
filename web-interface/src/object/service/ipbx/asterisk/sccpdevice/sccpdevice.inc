@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_sccpdevice extends xivo_service_asterisk_abstract
@@ -48,49 +49,80 @@ class xivo_service_asterisk_sccpdevice extends xivo_service_asterisk_abstract
 		return($data);
 	}
 
-	function add($arr,$id=0)
+	function sccp_normalize_mac($mac)
+	{
+		$var = dwho_network::normalize_macaddr($mac);
+		$var = str_replace(':', '', $var);
+
+		$rs = 'SEP'.$var;
+		if (substr($var, 0, 3) == 'SEP')
+			$rs = $var;
+
+		return($rs);
+	}
+
+	function get_by_mac($mac)
+	{
+		$mac = $this->sccp_normalize_mac($mac);
+		if(($rs = $this->_dso->get(array('name' => $mac))) === false)
+			return(false);
+
+		return($this->_prepare($rs));
+	}
+
+	public function add($arr,$id=0)
 	{
 		if(is_array($arr) === false)
 			return(false);
 
-		$name = str_replace(':', '', $arr['name']);
-		$name = str_replace('-', '', $name);
-
-		$arr['name'] = 'SEP'.$name;
+		$arr['name'] = $this->sccp_normalize_mac($arr['name']);
 		$arr['device'] = $arr['name'];
 
 		return(parent::add($arr,$id));
 	}
 
-	function edit($id,$arr,$disable=null)
+	public function edit($id,$arr,$disable=null)
 	{
 		if(is_array($arr) === false)
 			return(false);
 
-		$name = str_replace(':', '', $arr['name']);
-		$name = str_replace('-', '', $name);
-
-		if (substr($name, 0, 3) !== 'SEP')
-			$arr['name'] = 'SEP'.$name;
-		else
-			$arr['name'] = $name;
+		$arr['name'] = $this->sccp_normalize_mac($arr['name']);
 		$arr['device'] = $arr['name'];
 
 		return(parent::edit($id,$arr,$disable));
 	}
 
-	function delete_by_mac($mac)
+	public function delete_by_mac($mac)
+	{
+		$arr = array('name' => $this->sccp_normalize_mac($mac));
+		return(parent::delete_where($arr));
+	}
+
+	public function init_device($mac,$line=false)
 	{
 		$arr = array();
-		$name = str_replace(':', '', $mac);
-		$name = str_replace('-', '', $name);
+		$arr['name'] = $this->sccp_normalize_mac($mac);
+		$arr['device'] = $arr['name'];
+		if ($line !== false)
+			$arr['line'] = $line;
 
-		if (substr($name, 0, 3) !== 'SEP')
-			$arr['name'] = 'SEP'.$name;
+		if (($info = $this->get_by_mac($mac)) === false)
+			return(parent::add($arr));
 		else
-			$arr['name'] = $name;
+			return(parent::edit($info['id'],$arr));
+	}
 
-		return(parent::delete_where($arr));
+	public function update_line($mac,$line)
+	{
+		if (($info = $this->get_by_mac($mac)) === false)
+			return(false);
+
+		$arr = array();
+		$arr['name'] = $this->sccp_normalize_mac($mac);
+		$arr['device'] = $arr['name'];
+		$arr['line'] = $line;
+
+		return(parent::edit($info['id'],$arr));
 	}
 }
 

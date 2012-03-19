@@ -48,6 +48,42 @@ class xivo_service_asterisk_sccpline extends xivo_service_asterisk_abstract
 		return($data);
 	}
 
+	function add($arr,$id=0)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		if (($ret = parent::add($arr,$id)) === false)
+			return(false);
+
+		$this->_sre->discuss(array('sccp update config'));
+
+		return($ret);
+	}
+
+	function edit($id,$arr,$disable=null)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		if (($ret = parent::edit($id,$arr,$disable)) === false)
+			return(false);
+
+		$this->_sre->discuss(array('sccp update config'));
+
+		return($ret);
+	}
+
+	function delete($id,$disable=null)
+	{
+		if (($ret = parent::delete($id,$disable)) === false)
+			return(false);
+
+		$this->_sre->discuss(array('sccp update config'));
+
+		return($ret);
+	}
+
 }
 
 ?>

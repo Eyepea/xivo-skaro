@@ -1255,9 +1255,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 	function edit_config()
 	{
-		if($this->_provdconfig === false
-		|| $this->_provddevice === false
-		|| dwho_issa('linefeatures',$this->_info) === false
+		if(dwho_issa('linefeatures',$this->_info) === false
 		|| dwho_issa('protocol',$this->_info) === false
 		|| ($rs = $this->get_result('linefeatures')) === null
 		|| $rs === false)
@@ -1278,12 +1276,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 			$arr['protocol'] = $protocol;
 
-			if ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP)
-			{
-				$sccpdevice = array();
-				$sccpdevice['line'] = $rs['name'];
-			}
-
 			// new device associated
 			if (empty($rs['device']) === false)
 			{
@@ -1292,22 +1284,12 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					dwho_report::push('error', 'device doesn\'t exist: '.$rs['device']);
 					return(false);
 				}
-				elseif($this->_provddevice->update_config_from_line($arr,$device['deviceid']) === false) {
+				elseif($this->_provddevice->update_config_from_line($arr,$device['deviceid']) === false)
 					return(false);
-				}
 
-				if ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP)
-				{
-					$sccpdevice['name'] = $device['mac'];
-					if (($info_sccpdevice = $this->_sccpdevice->get_where($sccpdevice)) === false)
-					{
-						$this->_sccpdevice->add($sccpdevice);
-					}
-					else
-					{
-						$this->_sccpdevice->edit($info_sccpdevice['id'],$sccpdevice);
-					}
-				}
+				if ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP
+				&& $this->_sccpdevice->init_device($device['mac'],$rs['number']) === false)
+					return(false);
 			}
 			// remove device associated
 			if (empty($this->_info['linefeatures']['device']) === false)
@@ -1319,11 +1301,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					return(false);
 				}
 
-				if ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP)
-				{
-					$sccpdevice['name'] = $device['mac'];
-					$this->_sccpdevice->delete_where($sccpdevice);
-				}
+				if ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP
+				&& $this->_sccpdevice->init_device($device['mac'],'') === false)
+					return(false);
 			}
 		}
 		elseif (empty($rs['device']) === false
@@ -1334,16 +1314,12 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				dwho_report::push('error', 'device doesn\'t exist: '.$this->_info['linefeatures']['device']);
 				return(false);
 			}
-			else {
-				$this->_provdconfig->rebuild_device_config($device['id']);
-			}
+
+			$this->_provdconfig->rebuild_device_config($device['id']);
 
 			if ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP
-			&& ($info_sccpdevice = $this->_sccpdevice->get_where($sccpdevice)) !== false)
-			{
-				$sccpdevice['name'] = $device['mac'];
-				$this->_sccpdevice->edit($info_sccpdevice['id'],$sccpdevice);
-			}
+			&& $this->_sccpdevice->init_device($device['mac'],$rs['number']) === false)
+				return(false);
 		}
 
 		return(true);

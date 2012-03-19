@@ -69,33 +69,17 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		return($rs['devices'][0]);
 	}
 
-	public function get_device_list()
-	{
-		return($this->_get_devices('list'));
-	}
-
-	private function _get_devices($type)
+	public function get_all()
 	{
 		$this->reset();
 
-		switch ($type)
-		{
-			default:
-			case 'list':
-				$uri = $this->_build_uri(array('devices'));
-		}
-
+		$uri = $this->_build_uri(array('devices'));
 		$rs = $this->request_get($uri);
 
 		if (is_array($rs) === false
 		|| ($rs = $rs['devices']) === false
 		|| ($nb = count($rs)) === 0)
 			return(false);
-
-		for($i=0;$i<$nb;$i++)
-		{
-			$ref = &$rs[$i];
-		}
 
 		return(array_values($rs));
 	}
@@ -208,9 +192,8 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 
 	public function eval_config_device($deviceid)
 	{
-		if ($this->_provdconfig === false
-		|| ($conf = $this->_provdconfig->build_raw_config($deviceid)) === false
-		|| $this->_provdconfig->add($deviceid,$conf) === false)
+		if (($conf = $this->_provdconfig->build_raw_config($deviceid)) === false
+		|| $this->_provdconfig->edit($deviceid,$conf) === false)
 			return(false);
 
 		return(true);

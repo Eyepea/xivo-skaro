@@ -82,36 +82,44 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		$deviceid = $device['id'];
 
 		$act = 'add';
-		if($this->get_by_deviceid($deviceid,null,true) !== false)
+		if(($devicefeatures = $this->_devicefeatures->get_where(array('deviceid' => $deviceid))) !== false
+		&& $this->get($devicefeatures['id'],null,true) !== false)
 			$act = 'edit';
 
 		$this->_update_device($act,$device,true);
+
+		if ($act === 'add')
+		{
+			$this->get($this->_return['devicefeatures'],null,true);
+			return((int) $this->_return['devicefeatures']);
+		}
+
+		return((int) $devicefeatures['id']);
 	}
 
 	public function update()
 	{
 		$ret = &$this->_prodv_exist_list;
-		if (($list_device = $this->_provddevice->get_device_list()) === false
-		|| is_array($list_device) === false
-		|| ($nb = count($list_device)) === 0)
+		if (($provd_devices = $this->_provddevice->get_all()) === false
+		|| ($nb = count($provd_devices)) === 0)
 			return($this->_prodv_exist_list);
 
 		for($i=0;$i<$nb;$i++)
 		{
-			$ref = &$list_device[$i];
+			$ref = &$provd_devices[$i];
 			$deviceid = $ref['id'];
 			$ret[$deviceid] = true;
 
 			$act = 'add';
-			if(($device = $this->get_by_deviceid($deviceid,null,true)) !== false)
+			if(($devicefeatures = $this->_devicefeatures->get_where(array('deviceid' => $deviceid))) !== false
+			&& $this->get($devicefeatures['id'],null,true) !== false)
 			{
-				$device_from_db = $device['devicefeatures'];
-				if ($device_from_db['ip'] !== $ref['ip']
-				|| $device_from_db['mac'] !== $ref['mac']
-				|| $device_from_db['vendor'] !== $ref['vendor']
-				|| $device_from_db['model'] !== $ref['model']
-				|| $device_from_db['plugin'] !== $ref['plugin']
-				|| $device_from_db['config'] !== $ref['config'])
+				if ($devicefeatures['ip'] !== $ref['ip']
+				|| $devicefeatures['mac'] !== $ref['mac']
+				|| $devicefeatures['vendor'] !== $ref['vendor']
+				|| $devicefeatures['model'] !== $ref['model']
+				|| $devicefeatures['plugin'] !== $ref['plugin']
+				|| $devicefeatures['config'] !== $ref['config'])
 					$act = 'edit';
 				else
 					continue;
@@ -125,7 +133,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 
 	private function _update_device($method, $data, $reconfigure=false)
 	{
-		switch($method){
+		switch($method)
+		{
 			case 'add':
 				$act_set = 'set_add';
 				$act = 'add';
@@ -161,31 +170,20 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 					dwho_report::push('error',$k.': '.$v,'error_device_'.$act);
 			}
 		}
+		elseif(preg_match('/'.XIVO_SRE_IPBX_AST_PROTO_SCCP.'/', $data['plugin']) === 1)
+			$this->_sccpdevice->init_device($data['mac']);
+
+		return(true);
 	}
 
-	public function get_from_db_only($id,$disable=null,$nocomponents=null,$where=null)
+	public function get($id,$disable=null,$nocomponents=null)
 	{
 		$this->_info = $this->_origin = array();
 
-		if (is_array($where) === true)
-		{
-			if(($this->_info['devicefeatures'] = $this->_devicefeatures->get_where($where)) === false)
-				return(false);
-		}
-		else
-		{
-			if(($this->_info['devicefeatures'] = $this->_devicefeatures->get($id,$disable)) === false)
-				return(false);
-		}
+		if(($this->_info['devicefeatures'] = $this->_devicefeatures->get($id,$disable)) === false)
+			return(false);
 
 		$this->_origin['devicefeatures'] = $this->_devicefeatures->get_origin();
-		return($this->_info);
-
-	}
-
-	public function get($id,$disable=null,$nocomponents=null,$where=null)
-	{
-		$this->_info = $this->get_from_db_only($id,$disable,$nocomponents,$where);
 
 		if($this->_components === false
 		|| $nocomponents === true)
@@ -196,26 +194,6 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		$this->get_config();
 
 		return($this->_info);
-	}
-
-	public function get_by_deviceid($deviceid,$disable=null,$nocomponents=null)
-	{
-		$w = array();
-		$w['deviceid'] = $deviceid;
-		if (is_null($disable) === false)
-			$w['commented'] = true;
-
-		return($this->get_from_db_only(0,$disable,$nocomponents,$w));
-	}
-
-	public function get_by_ip($ip,$disable=null,$nocomponents=null)
-	{
-		$w = array();
-		$w['ip'] = $ip;
-		if (is_null($disable) === false)
-			$w['commented'] = true;
-
-		return($this->get(0,$disable,$nocomponents,$w));
 	}
 
 	public function get_nb($arr=null,$disable=null,$initialized=null)
