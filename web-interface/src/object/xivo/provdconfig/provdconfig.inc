@@ -58,7 +58,6 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		$this->_load_config(true);
 		$this->_load_init();
-		$this->get_default();
 	}
 
 	public function get_supp_elements()

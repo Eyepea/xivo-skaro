@@ -34,7 +34,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 	protected $_sccpdevice		= false;
 	protected $_prodv_exist_list = array();
 
-	public function __construct(&$service,&$dso,$param=array(),$components=true)
+	public function __construct(&$service,&$dso,$param=array())
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
@@ -49,27 +49,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		|| ($_XOBJ = &dwho_gct::get('xivo_object')) === false
 		|| ($this->_provddevice = &$_XOBJ->get_module('provddevice')) === false
 		|| ($this->_provdplugin = &$_XOBJ->get_module('provdplugin')) === false
-		|| ($this->_provdconfig = &$_XOBJ->get_module('provdconfig')) === false
-		|| $this->load_init($param) === false)
+		|| ($this->_provdconfig = &$_XOBJ->get_module('provdconfig')) === false)
 			return(false);
-		else if((bool) $components === true)
-			$this->load_components();
-
-		return(true);
-	}
-
-	public function load_init($param=array())
-	{
-		$this->_reset_info();
-		$this->_reset_params();
-		$this->_reset();
-
-		return(true);
-	}
-
-	public function load_components()
-	{
-		$this->_components = true;
 
 		return(true);
 	}
