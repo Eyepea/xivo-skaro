@@ -8,9 +8,8 @@ execfile_('common.py', common)
 logger = logging.getLogger('plugin.xivo-aastra')
 
 
-MODELS = [u'6730i', u'6731i', u'6739i', u'6753i', u'6755i', u'6757i',
-          u'9143i', u'9480i']
-VERSION = u'3.2.2.1136'
+MODELS = [u'6735i', u'6737i']
+VERSION = u'3.2.2.6038'
 
 
 class AastraPlugin(common['BaseAastraPlugin']):

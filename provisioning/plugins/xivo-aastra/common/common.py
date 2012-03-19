@@ -64,6 +64,8 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
         #   "Aastra6739i MAC:00-08-5D-13-CA-05 V:3.2.1.1013-SIP"
         #   "Aastra55i MAC:00-08-5D-20-DA-5B V:2.6.0.1008-SIP"
         #   "Aastra57i MAC:00-08-5D-19-E4-01 V:2.6.0.1008-SIP"
+        #   "Aastra6735i MAC:00-08-5D-2E-A0-94 V:3.2.2.6038-SIP"
+        #   "Aastra6737i MAC:00-08-5D-30-A6-CE V:3.2.2.6038-SIP"
         m = self._UA_REGEX.match(ua)
         if m:
             raw_model, raw_mac, raw_version = m.groups()
@@ -105,6 +107,8 @@ class BaseAastraPlugin(StandardPlugin):
         # <model>: ([(<nb keys>, <keytype>), ...], <nb expansion modules>)
         u'6730i': ([(8, u'prgkey')], 0),
         u'6731i': ([(8, u'prgkey')], 0),
+        u'6735i': ([(6, u'prgkey'), (20, u'softkey')], 3),
+        u'6737i': ([(10, u'topsoftkey'), (20, u'softkey')], 3),
         u'6739i': ([(55, u'softkey')], 3),
         u'6753i': ([(6, u'prgkey')], 3),
         u'6755i': ([(6, u'prgkey'), (20, u'softkey')], 3),
@@ -367,7 +371,7 @@ class BaseAastraPlugin(StandardPlugin):
                                                                     self._TRUSTED_ROOT_CERTS_SUFFIX)
 
     def _add_parking(self, raw_config):
-        # to be optionally overriden in derived class
+        # to be optionally overridden in derived class
         pass
 
     def _dev_specific_filename(self, device):
