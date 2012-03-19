@@ -19,9 +19,9 @@ class AastraPlugin(common['BaseAastraPlugin']):
     pg_associator = common['BaseAastraPgAssociator'](MODELS, VERSION)
 
     def _do_add_parking(self, raw_config, parking):
-        raw_config[u'XX_parking'] = '\n'.join('sip line%s park pickup config: %s;%s;asterisk' %
-                                              (line_no, parking, parking)
-                                              for line_no in raw_config[u'sip_lines'])
+        raw_config[u'XX_parking'] = u'\n'.join(u'sip line%s park pickup config: %s;%s;asterisk' %
+                                               (line_no, parking, parking)
+                                               for line_no in raw_config[u'sip_lines'])
 
     def _add_parking(self, raw_config):
         # hack to set the per line parking config if a park function key is used
