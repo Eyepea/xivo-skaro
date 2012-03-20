@@ -652,6 +652,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if(dwho_issa('allow',$arr) === false)
 			$arr['allow'] = null;
 
+		$this->_set_result('mailbox',$arr['mailbox']);
+
 		if(($rs = $protocol->chk_values($arr)) === false)
 		{
 			$this->_set_result('protocol',$protocol->get_filter_result());
@@ -919,6 +921,10 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		{
 			$this->_set_result_var('linefeatures', 'id',$linefeaturesid);
 
+			$vm_number = '';
+			if (dwho_has_len(($mailbox = $this->get_result('mailbox'))))
+				$vm_number = strstr($mailbox, '@', true);
+
 			$arr = array();
 			$arr['linefeatures'] = $this->get_result('linefeatures');
 			$arr['userfeatures'] = $this->get_result('userfeatures');
@@ -938,7 +944,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					return(false);
 				}
 				elseif ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP
-				&& $this->_sccpdevice->init_device($device['mac'],$rs['name']) === false)
+				&& $this->_sccpdevice->init_device($device['mac'],$rs['name'],$vm_number) === false)
 					return(false);
 			}
 		}
@@ -1256,6 +1262,10 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		|| $rs === false)
 			return(false);
 
+		$vm_number = '';
+		if (dwho_has_len(($mailbox = $this->get_result('mailbox'))))
+			$vm_number = strstr($mailbox, '@', true);
+
 		if ($this->_info['linefeatures']['device'] !== $rs['device'])
 		{
 			$linefeaturesid = $this->_info['linefeatures']['id'];
@@ -1283,7 +1293,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					return(false);
 
 				if ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP
-				&& $this->_sccpdevice->init_device($device['mac'],$rs['number']) === false)
+				&& $this->_sccpdevice->init_device($device['mac'],$rs['number'],$vm_number) === false)
 					return(false);
 			}
 			// remove device associated
@@ -1313,7 +1323,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			$this->_provdconfig->rebuild_device_config($device['id']);
 
 			if ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP
-			&& $this->_sccpdevice->init_device($device['mac'],$rs['number']) === false)
+			&& $this->_sccpdevice->init_device($device['mac'],$rs['number'],$vm_number) === false)
 				return(false);
 		}
 

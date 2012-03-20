@@ -58,7 +58,7 @@ class xivo_service_asterisk_sccpdevice extends xivo_service_asterisk_abstract
 		if (substr($var, 0, 3) == 'SEP')
 			$rs = $var;
 
-		return($rs);
+		return((string) $rs);
 	}
 
 	function get_by_mac($mac)
@@ -113,13 +113,15 @@ class xivo_service_asterisk_sccpdevice extends xivo_service_asterisk_abstract
 		return($ret);
 	}
 
-	public function init_device($mac,$line=false)
+	public function init_device($mac,$line=false,$voicemail=false)
 	{
 		$arr = array();
 		$arr['name'] = $this->sccp_normalize_mac($mac);
 		$arr['device'] = $arr['name'];
 		if ($line !== false)
-			$arr['line'] = $line;
+			$arr['line'] = (string) $line;
+		if ($voicemail !== false)
+			$arr['voicemail'] = (string) $voicemail;
 
 		if (($info = $this->get_by_mac($mac)) === false)
 			$ret = parent::add($arr);
@@ -131,7 +133,7 @@ class xivo_service_asterisk_sccpdevice extends xivo_service_asterisk_abstract
 		return($ret);
 	}
 
-	public function update_line($mac,$line)
+	public function update_line($mac,$line,$voicemail=false)
 	{
 		if (($info = $this->get_by_mac($mac)) === false)
 			return(false);
@@ -139,7 +141,9 @@ class xivo_service_asterisk_sccpdevice extends xivo_service_asterisk_abstract
 		$arr = array();
 		$arr['name'] = $this->sccp_normalize_mac($mac);
 		$arr['device'] = $arr['name'];
-		$arr['line'] = $line;
+		$arr['line'] = (string) $line;
+		if ($voicemail !== false)
+			$arr['voicemail'] = (string) $voicemail;
 
 		$ret = parent::edit($info['id'],$arr);
 

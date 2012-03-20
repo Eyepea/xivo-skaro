@@ -13,11 +13,11 @@ BEGIN;
  */
 DROP TABLE IF EXISTS "sccpgeneral";
 CREATE TABLE "sccpgeneral" (
-	"id"		SERIAL,
-	"name"		varchar(80) NOT NULL,
-	"option_name"	varchar(80) NOT NULL,
-	"value"		varchar(80) NOT NULL,
-	PRIMARY KEY("id")
+    "id"          SERIAL,
+    "name"        varchar(80) NOT NULL,
+    "option_name" varchar(80) NOT NULL,
+    "value"       varchar(80) NOT NULL,
+    PRIMARY KEY("id")
 );
 
 /*
@@ -27,13 +27,13 @@ CREATE TABLE "sccpgeneral" (
  */
 DROP TABLE IF EXISTS "sccpline";
 CREATE TABLE "sccpline" (
-	"id"		SERIAL,
-	"name"		varchar(80) NOT NULL,
+    "id"        SERIAL,
+    "name"      varchar(80) NOT NULL,
     "context"   varchar(80) NOT NULL,
-	"cid_name"	varchar(80) NOT NULL,
-	"cid_num"	varchar(80) NOT NULL,
-	"commented" INTEGER NOT NULL DEFAULT 0,
-	PRIMARY KEY("id")
+    "cid_name"  varchar(80) NOT NULL,
+    "cid_num"   varchar(80) NOT NULL,
+    "commented" INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY("id")
 );
 
 /*
@@ -43,18 +43,19 @@ CREATE TABLE "sccpline" (
  */
 DROP TABLE IF EXISTS "sccpdevice";
 CREATE TABLE "sccpdevice" (
-	"id"		SERIAL,
-	"name"		varchar(80) NOT NULL,
-	"device"	varchar(80) NOT NULL,
-	"line"		varchar(80) NOT NULL,
-	PRIMARY KEY("id")
+    "id"        SERIAL,
+    "name"      varchar(80) NOT NULL,
+    "device"    varchar(80) NOT NULL,
+    "line"      varchar(80) NOT NULL DEFAULT '',
+    "voicemail" varchar(80) NOT NULL DEFAULT '',
+    PRIMARY KEY("id")
 );
 
 -- grant all rights to asterisk.* for asterisk user
 CREATE OR REPLACE FUNCTION execute(text)
 RETURNS VOID AS '
 BEGIN
-        execute $1;
+    execute $1;
 END;
 ' LANGUAGE plpgsql;
 SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO asterisk;') FROM pg_tables WHERE schemaname = 'public';
