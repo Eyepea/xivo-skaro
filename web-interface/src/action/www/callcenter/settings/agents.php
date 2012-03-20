@@ -77,6 +77,7 @@ switch($act)
 			}
 			else
 			{
+				$this->ipbx->discuss(array('xivo[queuemember,update]'));
 				$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 			}
 		}
@@ -87,7 +88,7 @@ switch($act)
 		&& ($amember['slt'] = dwho_array_intersect_key($result['agentmember'],$amember['list'],'id')) !== false)
 			$amember['slt'] = array_keys($amember['slt']);
 
-		if($qmember['list'] !== false && dwho_ak('queuemember',$result) === true)
+		if($qmember['list'] !== false && dwho_ak('queuememer',$result) === true)
 		{
 			$qmember['slt'] = dwho_array_intersect_key($result['queuemember'],
 								$qmember['list'],
@@ -169,6 +170,7 @@ switch($act)
 			}
 			else
 			{
+				$this->ipbx->discuss(array('xivo[queuemember,update]'));
 				$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 			}
 		}
@@ -227,6 +229,7 @@ switch($act)
 
 		$appagentgroup->delete();
 
+		$this->ipbx->discuss(array('xivo[queuemember,update]'));
 		$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 		break;
 	case 'deletes':
@@ -246,6 +249,7 @@ switch($act)
 				$appagentgroup->delete();
 		}
 
+		$this->ipbx->discuss(array('xivo[queuemember,update]'));
 		$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 		break;
 	case 'enables':
@@ -270,8 +274,9 @@ switch($act)
 		}
 
 		$ipbx->discuss(array('module reload chan_agent.so',
-		'module reload app_queue.so',  // must reload app_queue (propagate skills)
-		'xivo[agentlist,update]'));
+		                     'module reload app_queue.so',  // must reload app_queue (propagate skills)
+		                     'xivo[agentlist,update]',
+		                     'xivo[queuemember,update]'));
 
 		$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 		break;
@@ -337,10 +342,10 @@ switch($act)
 			else
 			{
 				$ipbx->discuss(array('module reload chan_agent.so',
-									'module reload app_queue.so',  // must reload app_queue (propagate skills)
-									'xivo[agentlist,update]',
-									'xivo[userlist,update]')
-				);
+				                     'module reload app_queue.so',  // must reload app_queue (propagate skills)
+				                     'xivo[agentlist,update]',
+				                     'xivo[userlist,update]',
+				                     'xivo[queuemember,update]'));
 
 				$param['group'] = $appagent->get_result_var('agentfeatures','numgroup');
 				$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
@@ -465,10 +470,10 @@ switch($act)
 				$appqueue->agentskills_edit($_QR['id'], $queueskills);
 
 				$ipbx->discuss(array('module reload chan_agent.so',
-    				                 'module reload app_queue.so',  // must reload app_queue (propagate skills)
-    				                 'xivo[agentlist,update]',
-									'xivo[userlist,update]')
-				);
+				                     'module reload app_queue.so',  // must reload app_queue (propagate skills)
+				                     'xivo[agentlist,update]',
+				                     'xivo[userlist,update]',
+				                     'xivo[queuemember,update]'));
 				$param['group'] = $appagent->get_result_var('agentfeatures','numgroup');
 				$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 			}
@@ -539,8 +544,9 @@ switch($act)
 		$appagent->delete();
 
 		$ipbx->discuss(array('module reload chan_agent.so',
-		'module reload app_queue.so',  // must reload app_queue (propagate skills)
-		'xivo[agentlist,update]'));
+		                     'module reload app_queue.so',  // must reload app_queue (propagate skills)
+		                     'xivo[agentlist,update]',
+		                     'xivo[queuemember,update]'));
 
 		$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 		break;
@@ -562,8 +568,9 @@ switch($act)
 		}
 
 		$ipbx->discuss(array('module reload chan_agent.so',
-		'module reload app_queue.so',  // must reload app_queue (propagate skills)
-		'xivo[agentlist,update]'));
+		                     'module reload app_queue.so',  // must reload app_queue (propagate skills)
+		                     'xivo[agentlist,update]',
+		                     'xivo[queuemember,update]'));
 
 		$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 		break;
@@ -590,8 +597,9 @@ switch($act)
 		}
 
 		$ipbx->discuss(array('module reload chan_agent.so',
-		'module reload app_queue.so',  // must reload app_queue (propagate skills)
-		'xivo[agentlist,update]'));
+		                     'module reload app_queue.so',  // must reload app_queue (propagate skills)
+		                     'xivo[agentlist,update]',
+		                     'xivo[queuemember,update]'));
 
 		$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 		break;

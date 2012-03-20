@@ -135,9 +135,10 @@ switch($act)
 			{
 				// sip reload:: refresh pickup groups
 				$ipbx->discuss(array('module reload app_queue.so',  // must reload app_queue (propagate skills)
-								'xivo[queuelist,update]',
-								'sip reload',
-								'dialplan reload'));
+				                     'xivo[queuelist,update]',
+				                     'sip reload',
+				                     'dialplan reload',
+				                     'xivo[queuemember,update]'));
 				$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
 			}
 		}
@@ -344,9 +345,10 @@ switch($act)
 			{
 				// sip reload:: refresh pickup groups
 				$ipbx->discuss(array('module reload app_queue.so',  // must reload app_queue (propagate skills)
-								'xivo[queuelist,update]',
-								'sip reload',
-								'dialplan reload'));
+				                     'xivo[queuelist,update]',
+				                     'sip reload',
+				                     'dialplan reload',
+				                     'xivo[queuemember,update]'));
 				$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
 			}
 		}
@@ -463,7 +465,11 @@ switch($act)
 		$appqueue->delete();
 
 		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('xivo[queuelist,update]', 'sip reload', 'queue reload all', 'dialplan reload'));
+		$ipbx->discuss(array('xivo[queuelist,update]',
+		                     'sip reload',
+		                     'queue reload all',
+		                     'dialplan reload',
+		                     'xivo[queuemember,update]'));
 
 		$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
 		break;
@@ -485,9 +491,10 @@ switch($act)
 
 		// sip reload:: refresh pickup groups
 		$ipbx->discuss(array('module reload app_queue.so',  // must reload app_queue (propagate skills)
-							'xivo[queuelist,update]',
-							'sip reload',
-							'dialplan reload'));
+		                     'xivo[queuelist,update]',
+		                     'sip reload',
+		                     'dialplan reload',
+		                     'xivo[queuemember,update]'));
 
 		$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
 		break;
@@ -513,9 +520,10 @@ switch($act)
 
 		// sip reload:: refresh pickup groups
 		$ipbx->discuss(array('module reload app_queue.so',  // must reload app_queue (propagate skills)
-							'xivo[queuelist,update]',
-							'sip reload',
-							'dialplan reload'));
+		                     'xivo[queuelist,update]',
+		                     'sip reload',
+		                     'dialplan reload',
+		                     'xivo[queuemember,update]'));
 
 		$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
 		break;
