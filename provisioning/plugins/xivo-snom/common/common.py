@@ -1,11 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-"""Common code shared by the various xivo-snom plugins.
-
-Support the 300, 320, 360, 370, 820, 821 and 870.
-
-"""
-
 __license__ = """
     Copyright (C) 2010-2011  Avencall
 
@@ -30,9 +24,9 @@ from operator import itemgetter
 from provd import tzinform
 from provd import synchronize
 from provd.devices.config import RawConfigError
-from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
+from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT, \
     PROBABLE_SUPPORT, FULL_SUPPORT, NO_SUPPORT, COMPLETE_SUPPORT
-from provd.plugins import StandardPlugin, FetchfwPluginHelper,\
+from provd.plugins import StandardPlugin, FetchfwPluginHelper, \
     TemplatePluginHelper
 from provd.servers.http import HTTPNoListingFileService
 from provd.util import norm_mac, format_mac
@@ -44,10 +38,10 @@ logger = logging.getLogger('plugin.xivo-snom')
 class BaseSnomHTTPDeviceInfoExtractor(object):
     _UA_REGEX = re.compile(r'\bsnom(\w+)-SIP ([\d.]+)')
     _PATH_REGEX = re.compile(r'\bsnom\w+-([\dA-F]{12})\.htm$')
-    
+
     def extract(self, request, request_type):
         return defer.succeed(self._do_extract(request))
-    
+
     def _do_extract(self, request):
         ua = request.getHeader('User-Agent')
         if ua:
@@ -56,7 +50,7 @@ class BaseSnomHTTPDeviceInfoExtractor(object):
                 self._extract_from_path(request.path, dev_info)
                 return dev_info
         return None
-    
+
     def _extract_from_ua(self, ua):
         # HTTP User-Agent:
         #   "Mozilla/4.0 (compatible; snom lid 3605)" --> Snom 6.5.xx
@@ -66,6 +60,8 @@ class BaseSnomHTTPDeviceInfoExtractor(object):
         #   "Mozilla/4.0 (compatible; snom820-SIP 8.4.18 1.1.4-IFX-26.11.09)"
         #   "Mozilla/4.0 (compatible; snom870-SIP 8.3.6 SPEAr300 SNOM 1.4)"
         #   "Mozilla/4.0 (compatible; snom870-SIP 8.4.18 SPEAr300 SNOM 1.4)"
+        #   "Mozilla/4.0 (compatible; snom820-SIP 8.4.35 1.1.4-IFX-26.11.09)"
+        #   "Mozilla/4.0 (compatible; snom870-SIP 8.4.35 SPEAr300 SNOM 1.4)"
         m = self._UA_REGEX.search(ua)
         if m:
             raw_model, raw_version = m.groups()
@@ -73,7 +69,7 @@ class BaseSnomHTTPDeviceInfoExtractor(object):
                     u'model': raw_model.decode('ascii'),
                     u'version': raw_version.decode('ascii')}
         return None
-    
+
     def _extract_from_path(self, path, dev_info):
         m = self._PATH_REGEX.search(path)
         if m:
@@ -85,7 +81,7 @@ class BaseSnomPgAssociator(BasePgAssociator):
     def __init__(self, models, version):
         self._models = models
         self._version = version
-        
+
     def _do_associate(self, vendor, model, version):
         if vendor == u'Snom':
             if version is None:
@@ -100,7 +96,7 @@ class BaseSnomPgAssociator(BasePgAssociator):
                 return COMPLETE_SUPPORT
             return PROBABLE_SUPPORT
         return IMPROBABLE_SUPPORT
-    
+
     def _is_incompatible_version(self, version):
         """
         Pre: model is not None
@@ -132,20 +128,20 @@ class BaseSnomPlugin(StandardPlugin):
         u'RTP-out-of-band': u'off',
         u'SIP-INFO': u'sip_info_only'
     }
-    
+
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
-        
+
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
-        
+
         downloaders = FetchfwPluginHelper.new_downloaders(gen_cfg.get('proxies'))
         fetchfw_helper = FetchfwPluginHelper(plugin_dir, downloaders)
-        
+
         self.services = fetchfw_helper.services()
         self.http_service = HTTPNoListingFileService(self._tftpboot_dir)
-    
+
     http_dev_info_extractor = BaseSnomHTTPDeviceInfoExtractor()
-    
+
     def _common_templates(self):
         yield ('common/gui_lang.xml.tpl', 'gui_lang.xml')
         yield ('common/web_lang.xml.tpl', 'web_lang.xml')
@@ -154,13 +150,13 @@ class BaseSnomPlugin(StandardPlugin):
                                         ('common/snom%s-firmware.xml.tpl', 'snom%s-firmware.xml')]:
             for model in self._MODELS:
                 yield tpl_format % model, file_format % model
-    
+
     def configure_common(self, raw_config):
         for tpl_filename, filename in self._common_templates():
             tpl = self._tpl_helper.get_template(tpl_filename)
             dst = os.path.join(self._tftpboot_dir, filename)
             self._tpl_helper.dump(tpl, raw_config, dst, self._ENCODING)
-    
+
     def _get_fkey_domain(self, raw_config):
         # Return None if there's no usable domain
         if u'sip_proxy_ip' in raw_config:
@@ -170,7 +166,7 @@ class BaseSnomPlugin(StandardPlugin):
             if lines:
                 return lines[min(lines.iterkeys())][u'proxy_ip']
         return None
-    
+
     def _add_fkeys(self, raw_config):
         domain = self._get_fkey_domain(raw_config)
         if domain is None:
@@ -192,13 +188,13 @@ class BaseSnomPlugin(StandardPlugin):
                 lines.append(u'<fkey idx="%d" context="active" perm="R">%s &lt;sip:%s@%s&gt;</fkey>' %
                             (int(funckey_no) - 1, type_, value, domain))
             raw_config[u'XX_fkeys'] = u'\n'.join(lines)
-    
+
     def _add_lang(self, raw_config):
         if u'locale' in raw_config:
             locale = raw_config[u'locale']
             if locale in self._LOCALE:
                 raw_config[u'XX_lang'] = self._LOCALE[locale]
-    
+
     def _format_dst_change(self, dst_change):
         fmted_time = u'%02d:%02d:%02d' % tuple(dst_change['time'].as_hms)
         day = dst_change['day']
@@ -208,7 +204,7 @@ class BaseSnomPlugin(StandardPlugin):
             week, weekday = map(int, day[1:].split('.'))
             weekday = tzinform.week_start_on_monday(weekday)
             return u'%02d.%02d.%02d %s' % (dst_change['month'], week, weekday, fmted_time)
-    
+
     def _format_tzinfo(self, tzinfo):
         lines = []
         lines.append(u'<timezone perm="R"></timezone>')
@@ -216,12 +212,12 @@ class BaseSnomPlugin(StandardPlugin):
         if tzinfo['dst'] is None:
             lines.append(u'<dst perm="R"></dst>')
         else:
-            lines.append(u'<dst perm="R">%d %s %s</dst>' % 
+            lines.append(u'<dst perm="R">%d %s %s</dst>' %
                          (tzinfo['dst']['save'].as_seconds,
                           self._format_dst_change(tzinfo['dst']['start']),
                           self._format_dst_change(tzinfo['dst']['end'])))
         return u'\n'.join(lines)
-    
+
     def _add_timezone(self, raw_config):
         if u'timezone' in raw_config:
             try:
@@ -230,53 +226,53 @@ class BaseSnomPlugin(StandardPlugin):
                 logger.warning('Unknown timezone %s: %s', raw_config[u'timezone'], e)
             else:
                 raw_config[u'XX_timezone'] = self._format_tzinfo(tzinfo)
-    
+
     def _add_user_dtmf_info(self, raw_config):
         dtmf_mode = raw_config.get(u'sip_dtmf_mode')
         for line in raw_config[u'sip_lines'].itervalues():
             cur_dtmf_mode = line.get(u'dtmf_mode', dtmf_mode)
             line[u'XX_user_dtmf_info'] = self._SIP_DTMF_MODE.get(cur_dtmf_mode, u'off')
-    
+
     def _dev_specific_filenames(self, device):
         # Return a tuple (htm filename, xml filename)
         fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
         return 'snom%s-%s.htm' % (device[u'model'], fmted_mac), fmted_mac + '.xml'
-    
+
     def _check_config(self, raw_config):
         if u'http_port' not in raw_config:
             raise RawConfigError('only support configuration via HTTP')
-    
+
     def _check_device(self, device):
         if u'mac' not in device:
             raise Exception('MAC address needed for device configuration')
         # model is needed since filename has model name in it.
         if u'model' not in device:
             raise Exception('model needed for device configuration')
-    
+
     def configure(self, device, raw_config):
         self._check_config(raw_config)
         self._check_device(device)
         htm_filename, xml_filename = self._dev_specific_filenames(device)
-        
+
         # generate xml file
         tpl = self._tpl_helper.get_dev_template(xml_filename, device)
-        
+
         self._add_fkeys(raw_config)
         self._add_lang(raw_config)
         self._add_timezone(raw_config)
         self._add_user_dtmf_info(raw_config)
-        
+
         path = os.path.join(self._tftpboot_dir, xml_filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
-        
+
         # generate htm file
         tpl = self._tpl_helper.get_template('other/base.htm.tpl')
-        
+
         raw_config[u'XX_xml_filename'] = xml_filename
-        
+
         path = os.path.join(self._tftpboot_dir, htm_filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
-    
+
     def deconfigure(self, device):
         for filename in self._dev_specific_filenames(device):
             try:
@@ -284,7 +280,7 @@ class BaseSnomPlugin(StandardPlugin):
             except OSError, e:
                 # ignore
                 logger.info('error while removing file: %s', e)
-    
+
     def synchronize(self, device, raw_config):
         try:
             ip = device[u'ip'].encode('ascii')
