@@ -937,14 +937,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					dwho_report::push('error', 'Can\'t edit device');
 					return(false);
 				}
-
-				if ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP)
-				{
-					$sccpdevice = array();
-					$sccpdevice['line'] = $rs['name'];
-					$sccpdevice['name'] = $device['mac'];
-					$this->_sccpdevice->add($sccpdevice);
-				}
+				elseif ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP
+				&& $this->_sccpdevice->init_device($device['mac'],$rs['name']) === false)
+					return(false);
 			}
 		}
 		return(true);
@@ -1551,6 +1546,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if(($device = $this->_devicefeatures->get($this->_info['linefeatures']['device'])) === false)
 			return(true);
 		elseif($this->_provdconfig->remove_line_from_config($device['deviceid'],$this->_info['linefeatures']['num']) === false)
+			return(false);
+		elseif ($this->_info['linefeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP
+		&& $this->_sccpdevice->init_device($device['mac'],'') === false)
 			return(false);
 
 		return(true);

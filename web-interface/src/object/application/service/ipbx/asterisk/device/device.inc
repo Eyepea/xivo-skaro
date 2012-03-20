@@ -255,11 +255,15 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 
 		$id = $this->_info['devicefeatures']['id'];
 		$deviceid = $this->_info['devicefeatures']['deviceid'];
+		$mac = $this->_info['devicefeatures']['mac'];
+		$plugin = $this->_info['devicefeatures']['plugin'];
 
 		if (($confid = $this->_provdconfig->autocreate()) === false
 		|| $this->_provddevice->update_configid($deviceid,$confid,$synchronize) === false
 		|| $this->_linefeatures->reset_device($id) === false)
 			return(false);
+		elseif(preg_match('/'.XIVO_SRE_IPBX_AST_PROTO_SCCP.'/',$plugin) === 1)
+			$this->_sccpdevice->init_device($mac,'');
 
 		return(true);
 	}

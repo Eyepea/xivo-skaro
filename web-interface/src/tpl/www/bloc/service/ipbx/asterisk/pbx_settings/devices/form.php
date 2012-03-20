@@ -333,15 +333,14 @@ $element = $this->get_var('element');
 <?php
 
 $nbcap = $busy = 0;
-if (($capabilities = $info['capabilities']) !== false):
-
+if (isset($info['capabilities'])
+&& ($capabilities = $info['capabilities']) !== false):
 	if(isset($capabilities['sip.lines']) === true
 	&& ($nbcap = (int) $capabilities['sip.lines']) !== 0):
-	    if (empty($listline) === false)
-	        $busy = count($listline);
+		if (empty($listline) === false)
+			$busy = count($listline);
 		echo $this->bbf('nb_line_busy-free',array($busy,$nbcap-$busy));
 	endif;
-
 endif;
 
 ?>

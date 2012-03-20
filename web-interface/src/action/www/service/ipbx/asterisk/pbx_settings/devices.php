@@ -128,7 +128,9 @@ switch($act)
 
 		$fm_save = $error = null;
 
-		$configdevice = $appprovdconfig->get($info['deviceconfig']['configdevice']);
+		$configdevice = false;
+		if (isset($info['deviceconfig']))
+			$configdevice = $appprovdconfig->get($info['deviceconfig']['configdevice']);
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('devicefeatures',$_QR) === true)

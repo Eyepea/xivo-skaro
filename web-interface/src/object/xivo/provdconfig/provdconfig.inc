@@ -450,7 +450,6 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$conf['raw_config']['ntp_enabled'] = true;
 		$conf['raw_config']['ntp_ip'] = $confregistrar['proxy_main'];
 
-
 		if (($rs = $this->get('defaultconfigdevice')) !== false)
 			$this->delete('defaultconfigdevice');
 		if (is_array($rs) === true)
