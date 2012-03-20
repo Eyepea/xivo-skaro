@@ -14,9 +14,9 @@
     <mwi_dialtone perm="R">normal</mwi_dialtone>
     <subscription_delay perm="R">100</subscription_delay>
     <mailbox_active perm="R">on</mailbox_active>
-    
-    <network_id_port perm="R">5060</network_id_port> 
-    
+
+    <network_id_port perm="R">5060</network_id_port>
+
     <user_active idx="1" perm="R">off</user_active>
     <user_active idx="2" perm="R">off</user_active>
     <user_active idx="3" perm="R">off</user_active>
@@ -29,7 +29,7 @@
     <user_active idx="10" perm="R">off</user_active>
     <user_active idx="11" perm="R">off</user_active>
     <user_active idx="12" perm="R">off</user_active>
-    
+
     <!-- Set user_srtp to off until we have TLS/SRTP support in the plugin
          since setting it to on seems to cause some compatibility issue with
          asterisk 1.8. See http://forum.snom.com/index.php?showtopic=6665 -->
@@ -45,7 +45,7 @@
     <user_srtp idx="10" perm="R">off</user_srtp>
     <user_srtp idx="11" perm="R">off</user_srtp>
     <user_srtp idx="12" perm="R">off</user_srtp>
-    
+
     <!-- http://wiki.snom.com/Interoperability/PBX/Asterisk-->
     <call_completion perm="R">off</call_completion>
     <challenge_response perm="R">off</challenge_response>
