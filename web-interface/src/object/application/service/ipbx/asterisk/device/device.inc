@@ -166,8 +166,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 
 		$this->_origin['devicefeatures'] = $this->_devicefeatures->get_origin();
 
-		if($this->_components === false
-		|| $nocomponents === true)
+		if($nocomponents === true)
 			return($this->_info);
 
 		$this->get_deviceprovd($this->_info['devicefeatures']['deviceid']);
