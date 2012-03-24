@@ -1936,7 +1936,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if($issa_userfeatures === true)
 		{
-			if (dwho_issa('entityid',$arr['userfeatures']) === false)
+			if (isset($arr['userfeatures']['entityid']) === false)
 				$arr['userfeatures']['entityid'] = 1;
 
 			if(dwho_has_len($arr['userfeatures'],'firstname') === true)
