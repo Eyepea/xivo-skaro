@@ -50,13 +50,16 @@ Port:
 DTMF:
 
 ; fm_protocol_type
-Identified by:
+Connection type:
+
+; fm_protocol_type-opt(user)
+Incoming
 
 ; fm_protocol_type-opt(peer)
-Address
+Outgoing
 
 ; fm_protocol_type-opt(friend)
-Username
+Incoming/Outgoing
 
 ; fm_protocol_nat
 NAT:

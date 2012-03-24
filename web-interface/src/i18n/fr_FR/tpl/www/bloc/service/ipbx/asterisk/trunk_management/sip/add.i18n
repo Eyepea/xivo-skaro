@@ -47,13 +47,16 @@ Dynamique
 Statique
 
 ; fm_protocol_type
-Mode d'authentification :
+Type de connexion :
+
+; fm_protocol_type-opt(user)
+Entrant
 
 ; fm_protocol_type-opt(peer)
-Adresse
+Sortant
 
 ; fm_protocol_type-opt(friend)
-Identifiant
+Entrant/Sortant
 
 ; fm_protocol_language
 Langue :
