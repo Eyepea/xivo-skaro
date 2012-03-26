@@ -42,7 +42,7 @@ class xivo_application_xivo_object_provdplugin extends xivo_application_xivo_obj
 		return($this->_provdplugin->get($id));
 	}
 
-	public function get_plugin_list($search='',$order=null,$limit=null,$assoc=false)
+	public function get_plugin_list($search='',$order=null,$limit=null)
 	{
 		$this->_cnt = 0;
 
@@ -89,15 +89,20 @@ class xivo_application_xivo_object_provdplugin extends xivo_application_xivo_obj
 		$list = array_merge($plugins['info'],$plugins['list']);
 		$list = array_values($list);
 		*/
-		$this->_cnt = $total = count($list);
-		for($i=0;$i<$total;$i++)
-		{
-			if ($i >= $limit[0] && $i <= ($limit[0]+$limit[1]))
-				continue;
-			unset($list[$i]);
-		}
 
-		$list = array_values($list);
+		$this->_cnt = $total = count($list);
+
+		$rs = $list;
+		if ($limit !== null)
+		{
+			if (($nb = ($limit[0]+$limit[1])) < $total)
+				$total = $nb;
+
+			$rs = array();
+			for($i=$limit[0];$i<$total;$i++)
+				array_push($rs, $list[$i]);
+		}
+		$list = array_values($rs);
 
 		return($list);
 	}
