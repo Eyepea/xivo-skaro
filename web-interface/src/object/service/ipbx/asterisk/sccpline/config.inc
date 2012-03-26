@@ -34,6 +34,15 @@ $array['element']['cid_name']['default'] = '';
 $array['element']['cid_num'] = array();
 $array['element']['cid_num']['default'] = '';
 
+$array['element']['protocol'] = array();
+$array['element']['protocol']['default'] = XIVO_SRE_IPBX_AST_PROTO_SCCP;
+$array['element']['protocol']['forcedef'] = true;
+
+$array['element']['commented'] = array();
+$array['element']['commented']['value'] = array(0,1);
+$array['element']['commented']['default'] = 0;
+$array['element']['commented']['set'] = true;
+
 dwho::load_class('dwho_network');
 
 $array['filter'] = array();
@@ -44,5 +53,7 @@ $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_co
 												XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['cid_name'] = array('minlen' => 1,'maxlen' => 80,'cast' => 'sgraph');
 $array['filter']['cid_num'] = array('minlen' => 1,'maxlen' => 80,'regexp' => '/^[a-z0-9_-]+$/i');
+$array['filter']['protocol'] = array('set' => false);
+$array['filter']['commented'] = array('bool' => true);
 
 ?>
