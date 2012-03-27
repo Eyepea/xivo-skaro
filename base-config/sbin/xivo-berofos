@@ -34,7 +34,7 @@ def _new_argument_parser():
     parser.add_argument('-v', '--verbose', action='store_true', default=False,
                         help='increase logging verbosity')
     parser.add_argument('--syslog', action='store_true', default=False,
-                        help='log to syslog instead of stdout')
+                        help='also log to syslog')
     parser.add_argument('ha_state', choices=['master', 'slave'],
                         help='the target state of the HA')
     return parser
@@ -42,14 +42,14 @@ def _new_argument_parser():
 
 def _init_logging(parsed_args):
     logger = logging.getLogger()
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter('%(message)s'))
+    logger.addHandler(handler)
     if parsed_args.syslog:
         from logging.handlers import SysLogHandler
         handler = SysLogHandler('/dev/log', SysLogHandler.LOG_USER)
         handler.setFormatter(logging.Formatter('xivo-berofos[%(process)d]: %(message)s'))
-    else:
-        handler = logging.StreamHandler()
-        handler.setFormatter(logging.Formatter('%(message)s'))
-    logger.addHandler(handler)
+        logger.addHandler(handler)
     if parsed_args.verbose:
         logger.setLevel(logging.DEBUG)
     else:
