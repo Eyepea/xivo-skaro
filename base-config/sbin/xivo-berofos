@@ -60,8 +60,11 @@ def is_berofos_configured():
     return os.path.exists('/etc/bnfos.conf')
 
 
+_RELAY_MODE = {0: 'A--D', 1: 'A--B'}
+
 def set_berofos_relay_mode(mode):
-    logger.info('setting berofos relay mode to %s', mode)
+    logger.info('setting berofos relay mode to %r (%s)',
+                mode, _RELAY_MODE.get(mode, 'unknown'))
     command = ['bnfos', '--set', 'mode=%s' % mode, '-f', 'fos1']
     logger.debug('Executing %r', command)
     subprocess.check_call(command)
