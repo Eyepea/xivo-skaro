@@ -6,7 +6,7 @@ services="monit asterisk"
 usage() {
     cat << EOF
     usage: $(basename $0) action
-        action: start or stop to enable/disable $services
+        action: start or stop to enable/disable slave services
 EOF
 }
 
@@ -50,12 +50,22 @@ disable_monit() {
     fi
 }
 
+set_berofos_to_slave_state() {
+    xivo-berofos --syslog slave
+}
+
+set_berofos_to_master_state() {
+    xivo-berofos --syslog master
+}
+
 enable_service() {
     enable_asterisk
     enable_monit
+    set_berofos_to_slave_state
 }
 
 disable_service() {
+    set_berofos_to_master_state
     disable_monit
     disable_asterisk
 }
