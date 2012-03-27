@@ -4,4 +4,6 @@ if [ -z "$PYTHON" ]; then
     PYTHON=python
 fi
 
+unset $http_proxy
+
 "$PYTHON" -m provd.rest.pycli.pycli "$@"
