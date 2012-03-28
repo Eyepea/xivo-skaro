@@ -62,6 +62,8 @@ class BaseSnomHTTPDeviceInfoExtractor(object):
         #   "Mozilla/4.0 (compatible; snom870-SIP 8.4.18 SPEAr300 SNOM 1.4)"
         #   "Mozilla/4.0 (compatible; snom820-SIP 8.4.35 1.1.4-IFX-26.11.09)"
         #   "Mozilla/4.0 (compatible; snom870-SIP 8.4.35 SPEAr300 SNOM 1.4)"
+        #   "Mozilla/4.0 (compatible; snomPA1-SIP 8.4.23 1.1.3-s)"
+        #   "Mozilla/4.0 (compatible; snomPA1-SIP 8.4.35 1.1.3-s)"
         m = self._UA_REGEX.search(ua)
         if m:
             raw_model, raw_version = m.groups()
@@ -98,13 +100,6 @@ class BaseSnomPgAssociator(BasePgAssociator):
         return IMPROBABLE_SUPPORT
 
     def _is_incompatible_version(self, version):
-        """
-        Pre: model is not None
-             version is not None
-        """
-        # XXX if we support snom m3 one day, this will need to be
-        #     changed or overriden... or if we add support for an
-        #     old (6) firmware to enable automatic upgrade...
         try:
             maj_version = int(version[0])
             if maj_version < 7:
