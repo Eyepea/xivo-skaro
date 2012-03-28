@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import argparse
+import errno
 import logging
 import os.path
 import subprocess
@@ -10,6 +11,13 @@ logger = logging.getLogger('xivo-berofos')
 
 
 def main():
+    try:
+        _do_main()
+    except Exception:
+        raise SystemExit(1)
+
+
+def _do_main():
     parsed_args = _parse_args()
     _init_logging(parsed_args)
     if is_berofos_configured():
@@ -65,9 +73,25 @@ _RELAY_MODE = {0: 'A--D', 1: 'A--B'}
 def set_berofos_relay_mode(mode):
     logger.info('setting berofos relay mode to %r (%s)',
                 mode, _RELAY_MODE.get(mode, 'unknown'))
-    command = ['bnfos', '--set', 'mode=%s' % mode, '-f', 'fos1']
+    bnfos_command = ['--set', 'mode=%s' % mode, '-f', 'fos1']
+    _exec_bnfos_command(bnfos_command)
+
+
+def _exec_bnfos_command(bnfos_command):
+    command = ['bnfos'] + bnfos_command
     logger.debug('Executing %r', command)
-    subprocess.check_call(command)
+    try:
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        output = process.communicate()[0]
+    except OSError as e:
+        if e.errno == errno.ENOENT:
+            logger.error('error while executing bnfos command: bnfos command not found')
+        raise
+    else:
+        if process.returncode:
+            logger.error('error while executing bnfos command: return code %r', process.returncode)
+            logger.info('%s', output)
+            raise Exception('bnfos command returned %r' % process.returncode)
 
 
 if __name__ == '__main__':
