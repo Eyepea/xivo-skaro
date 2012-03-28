@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <firmware-settings>
-  <firmware perm="R">http://{{ ip }}:{{ http_port }}/firmware/#FW_FILENAME#</firmware>
+  <firmware>http://{{ ip }}:{{ http_port }}/firmware/#FW_FILENAME#</firmware>
 </firmware-settings>

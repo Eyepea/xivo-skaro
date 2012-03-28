@@ -17,7 +17,8 @@ def build_8_4_35(path):
               ('370', 'f'),
               ('820', 'r'),
               ('821', 'r'),
-              ('870', 'r')]
+              ('870', 'r'),
+              ('PA1', 'f')]
 
     check_call(['rsync', '-rlp', '--exclude', '.*',
                 '--exclude', '*.btpl',

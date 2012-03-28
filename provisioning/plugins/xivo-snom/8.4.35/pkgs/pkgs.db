@@ -47,6 +47,13 @@ version: 8.4.35
 files: 870-fw
 install: snom-fw
 
+[pkg_PA1-fw]
+description: Firmware for Snom PA1
+description_fr: Micrologiciel pour Snom PA1
+version: 8.4.35
+files: PA1-fw
+install: snom-fw
+
 [pkg_lang]
 description: Language files for Snom 3x0
 description_fr: Fichiers de langue pour Snom 3x0
@@ -99,6 +106,11 @@ sha1sum: 7bfff4121b83faf4fdb6b87202b8ef7a0efa4b7b
 url: http://provisioning.snom.com/download/fw/snom870-8.4.35-SIP-r.bin
 size: 21918304
 sha1sum: ae7322583032a9788b5361415859269cb3918268
+
+[file_PA1-fw]
+url: http://provisioning.snom.com/download/fw/snomPA1-8.4.35-SIP-f.bin
+size: 2963980
+sha1sum: 6b5ebb47b4e0a342405ca42c4411b9725e5b6c33
 
 [file_lang]
 url: http://fox.snom.com/config/snomlang-8.4.35.zip

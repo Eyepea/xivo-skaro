@@ -1,7 +1,7 @@
 {
-    "version": "0.1.4",
-    "description": "Plugin for Snom 300, 320, 360, 370, 820, 821 and 870 in version 8.4.35.",
-    "description_fr": "Greffon pour Snom 300, 320, 360, 370, 820, 821 et 870 en version 8.4.35.",
+    "version": "0.1.5",
+    "description": "Plugin for Snom 300, 320, 360, 370, 820, 821, 870 and PA1 in version 8.4.35.",
+    "description_fr": "Greffon pour Snom 300, 320, 360, 370, 820, 821, 870 et PA1 en version 8.4.35.",
     "capabilities": {
         "Snom, 300, 8.4.35": {
             "sip.lines": 12
@@ -23,6 +23,9 @@
         },
         "Snom, 870, 8.4.35": {
             "sip.lines": 12
+        },
+        "Snom, PA1, 8.4.35": {
+            "sip.lines": 1
         }
     }
 }
