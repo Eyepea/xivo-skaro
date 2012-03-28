@@ -4,6 +4,8 @@
         # Aastra
         allow members of "Aastra6730i";
         allow members of "Aastra6731i";
+        allow members of "Aastra6735i";
+        allow members of "Aastra6737i";
         allow members of "Aastra6739i";
         allow members of "Aastra6751i";
         allow members of "Aastra6753i";
@@ -77,6 +79,7 @@
         allow members of "Snom820";
         allow members of "Snom821";
         allow members of "Snom870";
+        allow members of "SnomPA1";
         # Thomson
         allow members of "ThomsonST2022S";
         allow members of "ThomsonST2030S";
