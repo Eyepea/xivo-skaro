@@ -192,9 +192,13 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 
 	public function eval_config_device($deviceid)
 	{
-		if (($conf = $this->_provdconfig->build_raw_config($deviceid)) === false
-		|| $this->_provdconfig->edit($deviceid,$conf) === false)
+		if (($conf = $this->_provdconfig->build_raw_config($deviceid)) === false)
 			return(false);
+
+		if ($this->_provdconfig->get($deviceid) === false)
+			$this->_provdconfig->add($conf);
+		else
+			$this->_provdconfig->edit($deviceid,$conf);
 
 		return(true);
 	}
@@ -262,20 +266,17 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 
 		if (($conf = $this->_provdconfig->build_raw_config($deviceid,$lines)) === false)
 			return(false);
-
-		if ($this->_provdconfig->edit($deviceid,$conf) === false)
+		elseif ($this->_provdconfig->edit($deviceid,$conf) === false)
 		{
 			dwho_report::push('error', 'fail to edit config for this device: " '.$deviceid.' "');
 			return(false);
 		}
-
-		if($this->update_configid($deviceid,$deviceid) === false)
+		elseif($this->update_configid($deviceid,$deviceid) === false)
 		{
 			dwho_report::push('error', 'fail to edit config device: '.$deviceid);
 			return(false);
 		}
-
-		if ($synchronize === true
+		elseif ($synchronize === true
 		&& $this->synchronize($deviceid) === false)
 			dwho_report::push('warning', 'fail to synchronize this device: '.$deviceid);
 
@@ -305,11 +306,6 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 			dwho_report::push('warning', 'fail to synchronize this device: '.$deviceid);
 
 		return(true);
-	}
-
-	public function remove_config_from_line($deviceid)
-	{
-		return($this->remove_config($deviceid));
 	}
 }
 

@@ -28,16 +28,12 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	protected $_base_url 		= '/provd/cfg_mgr';
 	protected $_internal 		= array('base','autoprov');
 	protected $_confdefault 	= false;
-	protected $_phonefunckey 	= false;
-	protected $_extenumbers  	= false;
+	protected $_extenumbers		= false;
 	protected $_devicefeatures 	= false;
-	protected $_groupfeatures	= false;
-	protected $_linefeatures  	= false;
-	protected $_meetmefeatures	= false;
-	protected $_queuefeatures	= false;
-	protected $_callfiltermember    = false;
-	protected $_callfilter      = false;
-	protected $_appsip 	        = false;
+	protected $_sccpdevice		= false;
+	protected $_linefeatures	= false;
+	protected $_phonefunckey 	= false;
+	protected $_appsip			= false;
 
 	public function __construct(&$xobj,$param=array())
 	{
@@ -45,14 +41,9 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		|| ($ipbx = &$_SRE->get('ipbx')) === false
 		|| ($this->_extenumbers = &$ipbx->get_module('extenumbers')) === false
 		|| ($this->_devicefeatures = &$ipbx->get_module('devicefeatures')) === false
-		|| ($this->_groupfeatures = &$ipbx->get_module('groupfeatures')) === false
+		|| ($this->_sccpdevice = &$ipbx->get_module('sccpdevice')) === false
 		|| ($this->_linefeatures = &$ipbx->get_module('linefeatures')) === false
-		|| ($this->_meetmefeatures = &$ipbx->get_module('meetmefeatures')) === false
-		|| ($this->_queuefeatures = &$ipbx->get_module('queuefeatures')) === false
-		|| ($this->_userfeatures = &$ipbx->get_module('userfeatures')) === false
 		|| ($this->_phonefunckey = &$ipbx->get_module('phonefunckey')) === false
-		|| ($this->_callfiltermember = &$ipbx->get_module('callfiltermember')) === false
-		|| ($this->_callfilter = &$ipbx->get_module('callfilter')) === false
 		|| ($this->_appsip = &$ipbx->get_apprealstatic('sip')) === false)
 			return(false);
 
@@ -357,23 +348,11 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		$base['raw_config']['ntp_enabled'] = true;
 		$base['raw_config']['ntp_ip'] = $confregistrar['proxy_main'];
-
 		$base['raw_config']['X_xivo_phonebook_ip'] = $confregistrar['proxy_main'];
-
-		$base['raw_config']['sip_lines'][1]['proxy_ip'] = $confregistrar['proxy_main'];
-
-		$base['raw_config']['sccp_call_managers'][1] = array();
-		$base['raw_config']['sccp_call_managers'][1]['ip'] = $confregistrar['proxy_main'];
-
-		if (empty($confregistrar['proxy_backup']) === false)
-		{
-			$base['raw_config']['sip_lines'][1]['backup_proxy_ip'] = $confregistrar['proxy_backup'];
-			$base['raw_config']['sccp_call_managers'][2] = array();
-			$base['raw_config']['sccp_call_managers'][2]['ip'] = $confregistrar['proxy_backup'];
-		}
 
 		if (($rs = $this->get('base')) !== false)
 			$this->delete('base');
+
 		if (is_array($rs) === true)
 			$base['raw_config'] = array_merge($rs['raw_config'],$base['raw_config']);
 
@@ -480,7 +459,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	private function _set_config_var(&$config,$data,$var,$type=null)
 	{
 		if (isset($data[$var]) === true
-		&& dwho_empty($data[$var]) === false) {
+		&& dwho_empty($data[$var]) === false)
+		{
 			switch ($type)
 			{
 				case 'int':
@@ -494,14 +474,15 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 					$rs = $data[$var];
 			}
 			$config[$var] = $rs;
-		} else {
-			unset($config[$var]);
 		}
+		else
+			unset($config[$var]);
 	}
 
 	public function update_parents_ids($configid,$method,$id)
 	{
-		if (($config = $this->get($configid)) === false) {
+		if (($config = $this->get($configid)) === false)
+		{
 			dwho_report::push('error', 'Config not exist: '.$config);
 			return(false);
 		}
@@ -511,13 +492,13 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		{
 			case 'add':
 			case 'edit':
-				if (in_array($id,$parents_ids) === false) {
+				if (in_array($id,$parents_ids) === false)
 					array_push($parents_ids,$id);
-				}
 				$config['configdevice'] = $id;
 				break;
 			case 'del':
-				for ($i=0;$i<count($parents_ids);$i++) {
+				for ($i=0;$i<count($parents_ids);$i++)
+				{
 					if ($id === $parents_ids[$i])
 					unset($parents_ids[$i]);
 				}
@@ -541,7 +522,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		$confdefault = $this->_confdefault;
 
-		if (($globalconfig = $this->get($configid)) === false) {
+		if (($globalconfig = $this->get($configid)) === false)
+		{
 			$globalconfig = array();
 			$globalconfig['id'] = $configid;
 			$globalconfig['configdevice'] = 'defaultconfigdevice';
@@ -551,56 +533,62 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			$this->add($globalconfig);
 		}
 
-		if (in_array('base',$globalconfig['parent_ids']) === false) {
+		if (in_array('base',$globalconfig['parent_ids']) === false)
 			array_push($globalconfig['parent_ids'],'base');
-		}
 
 		$raw_config = &$globalconfig['raw_config'];
-
-		if (isset($raw_config['sip_lines']) === true
-		&& is_array($raw_config['sip_lines']) === false) {
-			$raw_config['sip_lines'] = array();
-		}
-
-		if (is_null($raw) === false) {
-			$build_raw_config = $this->build_raw_config_device($raw);
-			$raw_config = array_merge($raw_config,$build_raw_config);
-
-			foreach ($raw_config as $key => $val) {
-				if (substr($key, 0, 5) === 'exten'
-				|| $key === 'sip_lines'
-				|| isset($build_raw_config[$key]))
-					continue;
-
-				unset($raw_config[$key]);
-			}
-		} else {
-			$raw = array();
-		}
 
 		$raw_config = array_merge($raw_config,$this->_build_exten_config());
 
 		$funckeys = $this->_init_device_master_line($configid);
 
-		if (empty($funckeys)) {
+		if (empty($funckeys))
 			unset($raw_config['funckeys']);
-		} else {
+		else
 			$raw_config = array_merge($raw_config,$funckeys);
-		}
 
 		if (isset($lines[1])
 		&& isset($lines[1]['linefeatures'])
-		&& isset($lines[1]['linefeatures']['protocol'])) {
+		&& isset($lines[1]['linefeatures']['protocol']))
 			$protocolname = $lines[1]['linefeatures']['protocol'];
-		}
 
 		switch ($protocolname)
 		{
 			case 'sccp':
+				$confregistrar = $this->get('default');
 				$raw_config['protocol'] = 'SCCP';
+				$raw_config['sccp_call_managers'] = array();
+ 				$raw_config['sccp_call_managers'][1] = array();
+				$raw_config['sccp_call_managers'][1]['ip'] = $confregistrar['proxy_main'];
+				if (empty($confregistrar['proxy_backup']) === false)
+				{
+	 				$raw_config['sccp_call_managers'][2] = array();
+					$raw_config['sccp_call_managers'][2]['ip'] = $confregistrar['proxy_backup'];
+				}
 				break;
 			case 'sip':
-			default:
+				$raw_config['sip_dtmf_mode'] = 'SIP-INFO';
+
+				if (isset($raw_config['sip_lines']) === false)
+					$raw_config['sip_lines'] = array();
+
+				if (is_null($raw) === false) {
+					$build_raw_config = $this->build_raw_config_device($raw);
+					$raw_config = array_merge($raw_config,$build_raw_config);
+
+					foreach ($raw_config as $key => $val)
+					{
+						if (substr($key, 0, 5) === 'exten'
+						|| $key === 'sip_lines'
+						|| isset($build_raw_config[$key]))
+							continue;
+
+						unset($raw_config[$key]);
+					}
+				}
+				else
+					$raw = array();
+
 				$raw_config['protocol'] = 'SIP';
 				$appgeneralsip = &$this->_appsip->get_module('general');
 
@@ -626,14 +614,12 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 				if (is_array($lines) === true)
 				{
 					$rslines = $this->_build_lines($lines);
-					if (isset($raw_config['sip_lines']) === true) {
+					if (isset($raw_config['sip_lines']) === true)
 						$raw_config['sip_lines'] = array_replace($raw_config['sip_lines'],$rslines);
-					} else {
+					else
 						$raw_config['sip_lines'] = $rslines;
-					}
-					if (isset($raw_config['sip_lines'][0])) {
-						unset($raw_config['sip_lines'][0]);
-					}
+					if (empty($raw_config['sip_lines']) === true)
+						unset($raw_config['sip_lines']);
 				}
 		}
 
@@ -646,7 +632,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		if (($list = $this->_linefeatures->get_all_where($w)) === false)
 			return(null);
 
-		for($i = 0;$i < $nb;$i++) {
+		for($i = 0;$i < $nb;$i++)
+		{
 			$ref = &$rs[$i];
 			if (dwho_has_len($line['device']) === true
 			&& $this->rebuild_device_config($ref['device']) === false)
@@ -671,15 +658,16 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	public function rebuild_device_config($deviceid)
 	{
 		if(($_SRE = &dwho_gct::get('xivo_service')) === false
-		|| ($ipbx = &$_SRE->get('ipbx')) === false) {
+		|| ($ipbx = &$_SRE->get('ipbx')) === false)
 			return(false);
-		}
 
 		$rslines = array();
 		if (($listline = $this->_linefeatures->get_all_where(array('device' => (string) $deviceid))) !== false
-		&& ($device = $this->_devicefeatures->get($deviceid)) !== false) {
+		&& ($device = $this->_devicefeatures->get($deviceid)) !== false)
+		{
 			$rs = array();
-			while($listline) {
+			while($listline)
+			{
 				$line = array_shift($listline);
 				$rs['linefeatures'] = $line;
 				$modprotocol = $ipbx->get_protocol_module($line['protocol']);
@@ -690,7 +678,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		$conf = $this->build_raw_config($device['deviceid'],$rslines);
 
-		if ($this->edit($device['deviceid'],$conf) === false) {
+		if ($this->edit($device['deviceid'],$conf) === false)
+		{
 			dwho_report::push('error', 'fail to edit config for this device: '.$device['deviceid']);
 			return(false);
 		}
@@ -703,19 +692,17 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		if (($device = $this->_devicefeatures->get_where(array('deviceid' => $deviceid))) === false
 		|| ($masterline = $this->_linefeatures->get_user_masterline(null,$device['id'])) === false
-		|| (int) $masterline['iduserfeatures'] === 0) {
+		|| (int) $masterline['iduserfeatures'] === 0)
 			return($raw_config);
-		}
 
 		$iduserfeatures = $masterline['iduserfeatures'];
 
 		// build funckey from user masterline
 		if ($iduserfeatures !== false
-		&& ($rs = $this->_build_funckey($iduserfeatures)) === false) {
+		&& ($rs = $this->_phonefunckey->build_provd_conf_funckey($iduserfeatures)) === false)
 			unset($raw_config['funckeys']);
-		} else {
+		else
 			$raw_config['funckeys'] = $rs;
-		}
 
 		return($raw_config);
 	}
@@ -725,21 +712,18 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$rslines = array();
 		foreach ($lines as $num => $val) {
 			if (dwho_issa('protocol',$val) === false
-			|| dwho_issa('linefeatures',$val) === false) {
+			|| dwho_issa('linefeatures',$val) === false)
 				return(false);
-			}
 
 			$protocol = $val['protocol'];
 			$linefeatures = $val['linefeatures'];
 
 			$protolines = array_merge($protocol,$linefeatures);
-			if (($confregistrar = $this->get($linefeatures['configregistrar'])) === false) {
+			if (($confregistrar = $this->get($linefeatures['configregistrar'])) === false)
 				$confregistrar = $this->get_default();
-			}
 
-			if(($siplines = $this->build_raw_config_siplines($protolines,$confregistrar)) === false) {
+			if(($siplines = $this->build_raw_config_siplines($protolines,$confregistrar)) === false)
 				return(false);
-			}
 
 			$rslines[$linefeatures['num']] = $siplines;
 		}
@@ -760,162 +744,6 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$conf['exten_voicemail'] = $this->get_exten('vmusermsg');
 
 		return($conf);
-	}
-
-	private function _build_funckey($iduserfeatures)
-	{
-		$conf = array();
-
-		if(is_object($this->_phonefunckey) === false
-		|| is_object($this->_linefeatures) === false) {
-			return(false);
-		}
-
-		$where = array();
-		$where['iduserfeatures'] = $iduserfeatures;
-		if (($rs = $this->_phonefunckey->get_all_where($where, null,true, array('fknum' => SORT_ASC))) === false
-		|| ($nb = count($rs)) === 0) {
-			return(false);
-		}
-
-		for($i = 0;$i < $nb;$i++) {
-			$ref = &$rs[$i];
-
-			$type = $this->_phonefunckey->get_type($ref['typeextenumbers'],
-													$ref['typevalextenumbers'],
-													$ref['typeextenumbersright'],
-													$ref['typevalextenumbersright']);
-
-			$conf[$ref['fknum']] = array();
-			$conf[$ref['fknum']]['type'] = ($ref['supervision'] === false) ? 'speeddial' : 'blf';
-			$conf[$ref['fknum']]['line'] = 1;
-			$label = $ref['label'];
-			if($label !== null) {
-				$conf[$ref['fknum']]['label'] = $label;
-			}
-
-			if(empty($type) === true) {
-				$conf[$ref['fknum']]['value'] = $ref['exten'];
-				continue;
-			}
-
-			$exten = '';
-			switch ($type['type'])
-			{
-				case 'generalfeatures':
-					if ($type['val'] === 'parkext')
-						$conf[$ref['fknum']]['type'] = 'park';
-					$exten = $ref['exten'];
-					break;
-				case 'user':
-					$where = array();
-					$where['iduserfeatures'] = $type['val'];
-					if(($linefeatures = $this->_linefeatures->get_all_where($where)) !== false)
-						$exten = $linefeatures[0]['number'];
-					break;
-				case 'queue':
-					$queue_id = $type['val'];
-					$queue = $this->_queuefeatures->get($queue_id);
-					$exten = $queue['number'];
-					break;
-				case 'group':
-					$group_id = $type['val'];
-					$group = $this->_groupfeatures->get($group_id);
-					$exten = $group['number'];
-					break;
-				case 'meetme':
-					$meetme_id = $type['val'];
-					$meetme = $this->_meetmefeatures->get($meetme_id);
-					$exten = $meetme['confno'];
-					break;
-				case 'agent':
-					if ($ref['progfunckey'] === true) {
-
-						if ($ref['exten'] === null && $ref['typevalextenumbersright'] !== null)
-							$typevalright = '*'.$ref['typevalextenumbersright'];
-
-						$where = array('typeval' => 'phoneprogfunckey');
-						if (($rsextenmbers = $this->_extenumbers->get_where($where)) === false)
-							break;
-						$where = array();
-						$where['type'] = $ref['typeextenumbers'];
-						$where['typeval'] = $ref['typevalextenumbers'];
-						if (($extenumleftexten = $this->_extenumbers->get_where($where)) === false)
-							break;
-
-						$exten = $this->_phonefunckey->fkey_extension($rsextenmbers['extenbrut'],
-								array($ref['iduserfeatures'],
-									$extenumleftexten['extenbrut'],
-									$typevalright)
-								);
-					}
-					break;
-				case 'featuremap':
-				case 'extenfeatures':
-					$where = array();
-					$where['type'] = $type['type'];
-					$where['typeval'] = $type['val'];
-					if (($rsextenmbers = $this->_extenumbers->get_where($where)) !== false)
-						$rsexten = $rsextenmbers['exten'];
-					switch($type['val'])
-					{
-						case 'bsfilter':
-							$whereright = array();
-							$whereright['type'] = $ref['typeextenumbersright'];
-							$whereright['typeval'] = $ref['typevalextenumbersright'];
-
-							switch($ref['typeextenumbersright'])
-							{
-								case 'user':
-									if (($masterline = $this->_linefeatures->get_user_masterline($ref['typevalextenumbersright'])) === false
-									|| ($callfiltermember = $this->_callfiltermember->get_where($whereright)) === false)
-									{
-										dwho_report::push('error', 'error during get master line of user or user not exist in callfitermember');
-										break;
-									}
-									$w = array();
-									$w['callfilterid'] = $callfiltermember['callfilterid'];
-									$w['bstype'] = ($callfiltermember['bstype'] === 'boss') ? 'secretary' : 'boss';
-									$callfilter = $this->_callfiltermember->get_where($w);
-
-									if($w['bstype'] === 'boss')
-										$bossmasterline = $this->_linefeatures->get_user_masterline($callfilter['typeval']);
-									else
-									{
-										$bossmasterline = $masterline;
-										$masterline = $this->_linefeatures->get_user_masterline($callfilter['typeval']);
-									}
-							}
-
-							$exten .= $bossmasterline['number'];
-							$exten .= '*';
-							$exten .= $masterline['number'];
-							$exten = str_replace('.', $exten, $rsexten);
-							break;
-						default:
-							if($ref['progfunckey'] === true)
-							{
-								$where = array('typeval' => 'phoneprogfunckey');
-								if (($progfunckey = $this->_extenumbers->get_where($where)) === false)
-									break;
-								$exten = $this->_phonefunckey->fkey_extension($progfunckey['extenbrut'],
-									array($ref['iduserfeatures'],
-										$rsexten,
-										$ref['exten'])
-								);
-							}
-							else
-							{
-								$exten = str_replace('.', $ref['typevalextenumbersright'], $rsexten);
-							}
-					}
-			}
-
-			$conf[$ref['fknum']]['value'] = $exten;
-
-		}
-
-		return((empty($conf) ? false : $conf));
 	}
 
 	public function build_raw_config_siplines($arr,$confregistrar)
@@ -990,35 +818,6 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$this->_set_config_var($conf,$raw,'sip_subscribe_mwi','int');
 
 		return($conf);
-	}
-
-	public function remove_line_from_config($config,$line_num)
-	{
-		if(dwho_has_len($config) === false
-		||dwho_has_len($line_num) === false)
-			return(false);
-
-		if (($globalconfig = $this->get($config)) === false)
-		{
-			dwho_report::push('error', 'config not exist: '.$config);
-			return(false);
-		}
-
-		$raw_config = &$globalconfig['raw_config'];
-
-		if (isset($raw_config['sip_lines']) === true
-		&& isset($raw_config['sip_lines'][$line_num]) === true)
-		{
-			unset($raw_config['sip_lines'][$line_num]);
-			if (empty($raw_config['sip_lines']) === true)
-				unset($raw_config['sip_lines']);
-			if($this->edit($config,$globalconfig) === false)
-			{
-				dwho_report::push('error', 'Can\'t remove line from config: '.$config);
-				return(false);
-			}
-		}
-		return(true);
 	}
 
 	public function chk_confregistrar($arr)

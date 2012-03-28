@@ -441,6 +441,164 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 
 		return(implode('*',$ret));
 	}
+
+	public function build_provd_conf_funckey($iduserfeatures)
+	{
+		$conf = array();
+
+		if (($ipbx = &$this->_sre) === false
+		|| ($callfiltermember = &$ipbx->get_module('callfiltermember')) === false
+		|| ($callfilter = &$ipbx->get_module('callfilter')) === false
+		|| ($userfeatures = &$ipbx->get_module('userfeatures')) === false
+		|| ($queuefeatures = &$ipbx->get_module('queuefeatures')) === false
+		|| ($meetmefeatures = &$ipbx->get_module('meetmefeatures')) === false
+		|| ($groupfeatures = &$ipbx->get_module('groupfeatures')) === false
+		|| ($linefeatures = &$ipbx->get_module('linefeatures')) === false)
+			return(false);
+
+		$where = array();
+		$where['iduserfeatures'] = $iduserfeatures;
+		if (($rs = $this->get_all_where($where, null,true, array('fknum' => SORT_ASC))) === false
+		|| ($nb = count($rs)) === 0)
+			return(false);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$ref = &$rs[$i];
+
+			$type = $this->get_type($ref['typeextenumbers'],
+					$ref['typevalextenumbers'],
+					$ref['typeextenumbersright'],
+					$ref['typevalextenumbersright']);
+
+			$conf[$ref['fknum']] = array();
+			$conf[$ref['fknum']]['type'] = ($ref['supervision'] === false) ? 'speeddial' : 'blf';
+			$conf[$ref['fknum']]['line'] = 1;
+			$label = $ref['label'];
+			if($label !== null)
+				$conf[$ref['fknum']]['label'] = $label;
+
+			if(empty($type) === true) {
+				$conf[$ref['fknum']]['value'] = $ref['exten'];
+				continue;
+			}
+
+			$exten = '';
+			switch ($type['type'])
+			{
+				case 'generalfeatures':
+					if ($type['val'] === 'parkext')
+						$conf[$ref['fknum']]['type'] = 'park';
+					$exten = $ref['exten'];
+					break;
+				case 'user':
+					$where = array();
+					$where['iduserfeatures'] = $type['val'];
+					if(($linefeatures = $linefeatures->get_all_where($where)) !== false)
+						$exten = $linefeatures[0]['number'];
+					break;
+				case 'queue':
+					$queue_id = $type['val'];
+					$queue = $queuefeatures->get($queue_id);
+					$exten = $queue['number'];
+					break;
+				case 'group':
+					$group_id = $type['val'];
+					$group = $groupfeatures->get($group_id);
+					$exten = $group['number'];
+					break;
+				case 'meetme':
+					$meetme_id = $type['val'];
+					$meetme = $meetmefeatures->get($meetme_id);
+					$exten = $meetme['confno'];
+					break;
+				case 'agent':
+					if ($ref['progfunckey'] === true) {
+
+						if ($ref['exten'] === null && $ref['typevalextenumbersright'] !== null)
+							$typevalright = '*'.$ref['typevalextenumbersright'];
+
+						$where = array('typeval' => 'phoneprogfunckey');
+						if (($rsextenmbers = $extenumbers->get_where($where)) === false)
+							break;
+						$where = array();
+						$where['type'] = $ref['typeextenumbers'];
+						$where['typeval'] = $ref['typevalextenumbers'];
+						if (($extenumleftexten = $extenumbers->get_where($where)) === false)
+							break;
+
+						$exten = $this->fkey_extension($rsextenmbers['extenbrut'],
+								array($ref['iduserfeatures'],
+										$extenumleftexten['extenbrut'],
+										$typevalright)
+						);
+					}
+					break;
+				case 'featuremap':
+				case 'extenfeatures':
+					$where = array();
+					$where['type'] = $type['type'];
+					$where['typeval'] = $type['val'];
+					if (($rsextenmbers = $extenumbers->get_where($where)) !== false)
+						$rsexten = $rsextenmbers['exten'];
+					switch($type['val'])
+					{
+						case 'bsfilter':
+							$whereright = array();
+							$whereright['type'] = $ref['typeextenumbersright'];
+							$whereright['typeval'] = $ref['typevalextenumbersright'];
+
+							switch($ref['typeextenumbersright'])
+							{
+								case 'user':
+									if (($masterline = $linefeatures->get_user_masterline($ref['typevalextenumbersright'])) === false
+									|| ($callfiltermember = $callfiltermember->get_where($whereright)) === false)
+									{
+										dwho_report::push('error', 'error during get master line of user or user not exist in callfitermember');
+										break;
+									}
+									$w = array();
+									$w['callfilterid'] = $callfiltermember['callfilterid'];
+									$w['bstype'] = ($callfiltermember['bstype'] === 'boss') ? 'secretary' : 'boss';
+									$callfilter = $callfiltermember->get_where($w);
+
+									if($w['bstype'] === 'boss')
+										$bossmasterline = $this->_linefeatures->get_user_masterline($callfilter['typeval']);
+									else
+									{
+										$bossmasterline = $masterline;
+										$masterline = $this->_linefeatures->get_user_masterline($callfilter['typeval']);
+									}
+							}
+
+							$exten .= $bossmasterline['number'];
+							$exten .= '*';
+							$exten .= $masterline['number'];
+							$exten = str_replace('.', $exten, $rsexten);
+							break;
+						default:
+							if($ref['progfunckey'] === true)
+							{
+								$where = array('typeval' => 'phoneprogfunckey');
+								if (($progfunckey = $extenumbers->get_where($where)) === false)
+									break;
+								$exten = $this->fkey_extension($progfunckey['extenbrut'],
+										array($ref['iduserfeatures'],
+												$rsexten,
+												$ref['exten'])
+								);
+							}
+							else
+								$exten = str_replace('.', $ref['typevalextenumbersright'], $rsexten);
+					}
+			}
+
+			$conf[$ref['fknum']]['value'] = $exten;
+
+		}
+
+		return((empty($conf) ? false : $conf));
+	}
 }
 
 ?>

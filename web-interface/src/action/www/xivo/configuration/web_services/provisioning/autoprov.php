@@ -51,11 +51,10 @@ switch($act)
 				$http_response->set_status_line(200);
 		}
 		elseif(($line = $linefeatures->get_line_provisioniable($data['code'])) === false
-		|| $appdevice->update_config($line['id'],true) === false) {
+		|| $appdevice->associate_line($line['id'],true) === false)
 			$http_response->set_status_line(400);
-		} else {
+		else
 			$http_response->set_status_line(200);
-		}
 
 		$http_response->send(true);
 		break;

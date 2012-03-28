@@ -100,7 +100,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 				|| $devicefeatures['vendor'] !== $ref['vendor']
 				|| $devicefeatures['model'] !== $ref['model']
 				|| $devicefeatures['plugin'] !== $ref['plugin']
-				|| $devicefeatures['config'] !== $ref['config'])
+				|| $devicefeatures['config'] !== $ref['config']
+				|| $devicefeatures['configured'] !== $ref['configured'])
 					$act = 'edit';
 				else
 					continue;
@@ -259,7 +260,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 
 		if (($confid = $this->_provdconfig->autocreate()) === false
 		|| $this->_provddevice->update_configid($deviceid,$confid,$synchronize) === false
-		|| $this->_linefeatures->reset_device($id) === false)
+		|| $this->_linefeatures->reset_device($id) === false
+		|| $this->remove_all_line() === false)
 			return(false);
 		elseif(preg_match('/'.XIVO_SRE_IPBX_AST_PROTO_SCCP.'/',$plugin) === 1)
 			$this->_sccpdevice->init_device($mac,'');
@@ -267,7 +269,51 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		return(true);
 	}
 
-	public function update_config($idlinefeatures,$synchronize=false)
+	public function remove_all_line()
+	{
+		if(dwho_issa('devicefeatures',$this->_info) === false
+		|| ($globalconfig = $this->_provdconfig->get($this->_info['devicefeatures']['deviceid'])) === false
+		|| isset($globalconfig['raw_config']) === false)
+			return(false);
+
+		$raw_config = &$globalconfig['raw_config'];
+		unset($raw_config['sip_lines']);
+		if($this->_provdconfig->edit($globalconfig['id'],$globalconfig) === false)
+		{
+			dwho_report::push('error', 'Can\'t remove line from config: '.$globalconfig['id']);
+			return(false);
+		}
+		return(true);
+	}
+
+	public function remove_line($line_num, $all=false, $synchronize=false)
+	{
+		if(dwho_issa('devicefeatures',$this->_info) === false
+		|| ($globalconfig = $this->_provdconfig->get($this->_info['devicefeatures']['deviceid'])) === false
+		|| isset($globalconfig['raw_config']) === false)
+			return(false);
+
+		$raw_config = &$globalconfig['raw_config'];
+
+		if (isset($raw_config['sip_lines']) === true
+		&& isset($raw_config['sip_lines'][$line_num]) === true)
+		{
+			unset($raw_config['sip_lines'][$line_num]);
+			if (empty($raw_config['sip_lines']) === true)
+			{
+				unset($raw_config['sip_lines']);
+				$this->mode_autoprov($synchronize);
+			}
+			if($this->_provdconfig->edit($globalconfig['id'],$globalconfig) === false)
+			{
+				dwho_report::push('error', 'Can\'t remove line from config: '.$globalconfig['id']);
+				return(false);
+			}
+		}
+		return(true);
+	}
+
+	public function associate_line($idlinefeatures,$synchronize=false)
 	{
 		if(dwho_issa('devicefeatures',$this->_info) === false)
 			return(false);

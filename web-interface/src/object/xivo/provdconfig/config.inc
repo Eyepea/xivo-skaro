@@ -24,19 +24,13 @@ $array = array();
 $array['base'] = array();
 $array['base']['id'] = 'base';
 $array['base']['parent_ids'] = array();
-
 $array['base']['raw_config'] = array();
-$array['base']['raw_config']['sip_dtmf_mode'] = 'SIP-INFO';
-$array['base']['raw_config']['sip_lines'] = array();
-$array['base']['raw_config']['sip_lines'][1] = array();
-$array['base']['raw_config']['sccp_call_managers'] = array();
 
 // Config autoprov
 $array['autoprov'] = array();
 $array['autoprov']['id'] = 'autoprov';
 $array['autoprov']['role'] = 'autocreate';
 $array['autoprov']['parent_ids'] = array('base','defaultconfigdevice');
-
 $array['autoprov']['raw_config'] = array();
 $array['autoprov']['raw_config']['sip_lines'] = array();
 $array['autoprov']['raw_config']['sip_lines'][1] = array();
@@ -44,7 +38,6 @@ $array['autoprov']['raw_config']['sip_lines'][1]['display_name'] = 'Autoprov';
 $array['autoprov']['raw_config']['sip_lines'][1]['username'] ='autoprov';
 $array['autoprov']['raw_config']['sip_lines'][1]['password'] ='autoprov';
 $array['autoprov']['raw_config']['sip_lines'][1]['number'] ='autoprov';
-$array['autoprov']['raw_config']['sccp_call_managers'] = array();
 
 
 
