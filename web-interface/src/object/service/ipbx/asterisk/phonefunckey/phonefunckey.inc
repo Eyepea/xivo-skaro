@@ -447,13 +447,11 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		$conf = array();
 
 		if (($ipbx = &$this->_sre) === false
-		|| ($callfiltermember = &$ipbx->get_module('callfiltermember')) === false
-		|| ($callfilter = &$ipbx->get_module('callfilter')) === false
-		|| ($userfeatures = &$ipbx->get_module('userfeatures')) === false
-		|| ($queuefeatures = &$ipbx->get_module('queuefeatures')) === false
-		|| ($meetmefeatures = &$ipbx->get_module('meetmefeatures')) === false
-		|| ($groupfeatures = &$ipbx->get_module('groupfeatures')) === false
-		|| ($linefeatures = &$ipbx->get_module('linefeatures')) === false)
+		|| ($modcallfiltermember = &$ipbx->get_module('callfiltermember')) === false
+		|| ($modqueuefeatures = &$ipbx->get_module('queuefeatures')) === false
+		|| ($modmeetmefeatures = &$ipbx->get_module('meetmefeatures')) === false
+		|| ($modgroupfeatures = &$ipbx->get_module('groupfeatures')) === false
+		|| ($modlinefeatures = &$ipbx->get_module('linefeatures')) === false)
 			return(false);
 
 		$where = array();
@@ -494,22 +492,22 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 				case 'user':
 					$where = array();
 					$where['iduserfeatures'] = $type['val'];
-					if(($linefeatures = $linefeatures->get_all_where($where)) !== false)
+					if(($linefeatures = $modlinefeatures->get_all_where($where)) !== false)
 						$exten = $linefeatures[0]['number'];
 					break;
 				case 'queue':
 					$queue_id = $type['val'];
-					$queue = $queuefeatures->get($queue_id);
+					$queue = $modqueuefeatures->get($queue_id);
 					$exten = $queue['number'];
 					break;
 				case 'group':
 					$group_id = $type['val'];
-					$group = $groupfeatures->get($group_id);
+					$group = $modgroupfeatures->get($group_id);
 					$exten = $group['number'];
 					break;
 				case 'meetme':
 					$meetme_id = $type['val'];
-					$meetme = $meetmefeatures->get($meetme_id);
+					$meetme = $modmeetmefeatures->get($meetme_id);
 					$exten = $meetme['confno'];
 					break;
 				case 'agent':
@@ -551,8 +549,8 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 							switch($ref['typeextenumbersright'])
 							{
 								case 'user':
-									if (($masterline = $linefeatures->get_user_masterline($ref['typevalextenumbersright'])) === false
-									|| ($callfiltermember = $callfiltermember->get_where($whereright)) === false)
+									if (($masterline = $modlinefeatures->get_user_masterline($ref['typevalextenumbersright'])) === false
+									|| ($callfiltermember = $modcallfiltermember->get_where($whereright)) === false)
 									{
 										dwho_report::push('error', 'error during get master line of user or user not exist in callfitermember');
 										break;
@@ -560,14 +558,14 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 									$w = array();
 									$w['callfilterid'] = $callfiltermember['callfilterid'];
 									$w['bstype'] = ($callfiltermember['bstype'] === 'boss') ? 'secretary' : 'boss';
-									$callfilter = $callfiltermember->get_where($w);
+									$callfilter = $modcallfiltermember->get_where($w);
 
 									if($w['bstype'] === 'boss')
-										$bossmasterline = $this->_linefeatures->get_user_masterline($callfilter['typeval']);
+										$bossmasterline = $modlinefeatures->get_user_masterline($callfilter['typeval']);
 									else
 									{
 										$bossmasterline = $masterline;
-										$masterline = $this->_linefeatures->get_user_masterline($callfilter['typeval']);
+										$masterline = $modlinefeatures->get_user_masterline($callfilter['typeval']);
 									}
 							}
 

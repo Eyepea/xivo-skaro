@@ -101,25 +101,6 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 		return($this->_prepare($r));
 	}
 
-	function get_where($arr,$orig=true,$disable=null,$id=null)
-	{
-		$orig = (bool) $orig;
-		$origin = $this->_origin;
-
-		if($orig === false)
-			$this->_origin = null;
-
-		if(($r = parent::get_where($arr,$disable,$id)) === false)
-		{
-			$this->_origin = $origin;
-			return(false);
-		}
-		else if($orig === false)
-			$this->_origin = $origin;
-
-		return($r);
-	}
-
 	function _mk_provisioning_id($protocol)
 	{
 		if($this->_chk_exists_cfg('provisioning_id',$protocol) === false)
@@ -213,23 +194,6 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 	function get_all_wherein($id,$where)
 	{
 		if(($list = $this->_dso->get_all_wherein($id,$where)) === false)
-			return(false);
-
-		$nb = count($list);
-		$list = array_values($list);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$data = &$list[$i];
-			$data = $this->_prepare($data);
-		}
-
-		return($list);
-	}
-
-	function get_all_where($arr,$disable=null,$order=null,$limit=null)
-	{
-		if(($list = $this->_dso->get_all_where($arr,$disable,$order,$limit)) === false)
 			return(false);
 
 		$nb = count($list);
