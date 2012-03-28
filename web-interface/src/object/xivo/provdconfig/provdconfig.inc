@@ -764,8 +764,11 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		$confregistrar['registrar_ip'] = $confregistrar['registrar_main'];
 		$confregistrar['proxy_ip'] = $confregistrar['proxy_main'];
-		$confregistrar['backup_registrar_ip'] = $confregistrar['registrar_backup'];
-		$confregistrar['backup_proxy_ip'] = $confregistrar['proxy_backup'];
+		if (empty($confregistrar['proxy_backup']) === false)
+		{
+			$confregistrar['backup_registrar_ip'] = $confregistrar['registrar_backup'];
+			$confregistrar['backup_proxy_ip'] = $confregistrar['proxy_backup'];
+		}
 
 		$this->_set_config_var($conf,$confregistrar,'registrar_ip');
 		$this->_set_config_var($conf,$confregistrar,'proxy_ip');
