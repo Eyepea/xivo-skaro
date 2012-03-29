@@ -10,7 +10,7 @@ fi
 
 ping -c $ping_count -i $ping_interval $ip_addr
 if [ $? -eq 0 ]; then
-    xivo-manage-slave-services stop
+    /usr/sbin/xivo-manage-slave-services stop
 else
-    xivo-manage-slave-services start
+    /usr/sbin/xivo-manage-slave-services start
 fi
