@@ -97,10 +97,13 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			{
 				if ($devicefeatures['ip'] !== $ref['ip']
 				|| $devicefeatures['mac'] !== $ref['mac']
-				|| $devicefeatures['vendor'] !== $ref['vendor']
-				|| $devicefeatures['model'] !== $ref['model']
+				|| (isset($ref['vendor'])
+					&& $devicefeatures['vendor'] !== $ref['vendor'])
+				|| (isset($ref['vendor'])
+					&& $devicefeatures['model'] !== $ref['model'])
 				|| $devicefeatures['plugin'] !== $ref['plugin']
-				|| $devicefeatures['config'] !== $ref['config']
+				|| (isset($ref['vendor'])
+					&& $devicefeatures['config'] !== $ref['config'])
 				|| $devicefeatures['configured'] !== $ref['configured'])
 					$act = 'edit';
 				else
