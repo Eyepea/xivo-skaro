@@ -446,5 +446,9 @@ $array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_MP3] = array(
 							 'audio/x-mpeg',
 							 'audio/mpeg3',
 							 'audio/x-mpeg3'));
+$array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_G722] = array(
+				'type'		=> 'audio',
+				'extension'	=> array('g722'),
+				'mime'		=> 'application/octet-stream');
 
 ?>
