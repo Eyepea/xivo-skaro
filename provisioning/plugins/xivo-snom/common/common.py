@@ -174,14 +174,21 @@ class BaseSnomPlugin(StandardPlugin):
                 funckey_type = funckey_dict[u'type']
                 if funckey_type == u'speeddial':
                     type_ = u'speed'
+                    suffix = ''
                 elif funckey_type == u'blf':
-                    type_ = u'dest'
+                    if u'exten_pickup_call' in raw_config:
+                        type_ = u'blf'
+                        suffix = '|%s' % raw_config[u'exten_pickup_call']
+                    else:
+                        logger.warning('Could not set funckey %s: no exten_pickup_call',
+                                       funckey_no)
+                        continue
                 else:
                     logger.info('Unsupported funckey type: %s', funckey_type)
                     continue
                 value = funckey_dict[u'value']
-                lines.append(u'<fkey idx="%d" context="active" perm="R">%s &lt;sip:%s@%s&gt;</fkey>' %
-                            (int(funckey_no) - 1, type_, value, domain))
+                lines.append(u'<fkey idx="%d" context="active" perm="R">%s &lt;sip:%s@%s&gt;%s</fkey>' %
+                            (int(funckey_no) - 1, type_, value, domain, suffix))
             raw_config[u'XX_fkeys'] = u'\n'.join(lines)
 
     def _add_lang(self, raw_config):
