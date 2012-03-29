@@ -99,10 +99,11 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 				|| $devicefeatures['mac'] !== $ref['mac']
 				|| (isset($ref['vendor'])
 					&& $devicefeatures['vendor'] !== $ref['vendor'])
-				|| (isset($ref['vendor'])
+				|| (isset($ref['model'])
 					&& $devicefeatures['model'] !== $ref['model'])
-				|| $devicefeatures['plugin'] !== $ref['plugin']
-				|| (isset($ref['vendor'])
+				|| (isset($ref['plugin'])
+					&& $devicefeatures['plugin'] !== $ref['plugin'])
+				|| (isset($ref['config'])
 					&& $devicefeatures['config'] !== $ref['config'])
 				|| $devicefeatures['configured'] !== $ref['configured'])
 					$act = 'edit';
