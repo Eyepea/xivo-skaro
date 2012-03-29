@@ -87,11 +87,15 @@ class HAConfigManager(object):
             self._add_slave_cronfile(remote_address)
 
     def _add_master_cronfile(self, remote_address):
-        content = '0 */1 * * * root /usr/sbin/xivo-master-slave-db-replication %s\n' % remote_address
+        content = '''\
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+0 */1 * * * root xivo-master-slave-db-replication %s\n''' % remote_address
         self._cronfile_installer.add_cronfile(self.CRONFILE_MASTER, content)
 
     def _add_slave_cronfile(self, remote_address):
-        content = '* * * * * root /usr/sbin/xivo-check-master-status %s\n' % remote_address
+        content = '''\
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+* * * * * root xivo-check-master-status %s\n''' % remote_address
         self._cronfile_installer.add_cronfile(self.CRONFILE_SLAVE, content)
 
     def _manage_services(self, ha_config):
