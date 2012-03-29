@@ -302,7 +302,7 @@ Durée d'attente entre deux essais (transfer annoncé) :
 Nombre d'essais (transfer annoncé) : 
 
 ; fm_extenfeatures_enable-paging
-Activer intercom : 
+Activer l'intercom :
 
 ; fm_extenfeatures-paging_exten
-Intercom extension: 
+Appeler un intercom :

@@ -1210,20 +1210,29 @@ if(isset($error_js[0]) === true)
 	</div>
 
 	<div id="sb-part-paging" class="b-nodisplay">
-		<div class="fm-paragraph">
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-paging'),
 				      'name'	=> 'extenfeatures[paging][enable]',
-				      'labelid'	=> 'extenfeatures-enable-paging_enable',
+				      'labelid'	=> 'extenfeatures-enable-paging',
 				      'checked'	=> ((bool) $this->get_var('extenfeatures','paging','commented') === false)));
-
-	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-paging_exten'),
+?>
+		<div class="fm-paragraph">
+<?php
+	echo $form->text(array('desc'	=> $this->bbf('fm_extenfeatures-paging_exten'),
 				  'name'	=> 'extenfeatures[paging][exten]',
 				  'paragraph'	=> false,
-				  'labelid'	=> 'extenfeatures-paging-exten',
+				  'labelid'	=> 'extenfeatures-paging',
 				  'size'	=> 15,
 				  'value'	=> $this->get_var('extenfeatures','paging','exten'),
-				  'default'	=> $element['extenfeatures']['phoneprogfunckey']['default']));
+				  'default'	=> $element['extenfeatures']['paging']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['paging']))),
+
+	$form->select(array('paragraph'	=> false,
+			'name'	=> 'extenfeatures[list-paging]',
+			'labelid'	=> 'extenfeatures-list-paging',
+			'empty'	=> true,
+			'key'	=> false),
+			array('*',range(3,11)));
 ?>
 		</div>
 	</div>

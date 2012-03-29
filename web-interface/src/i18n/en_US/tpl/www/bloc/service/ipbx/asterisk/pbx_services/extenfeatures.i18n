@@ -410,7 +410,7 @@ Wait time between 2 retries (attended transfer):
 Max try counts (attended transfer):
 
 ; fm_extenfeatures_enable-paging
-Enable paging: 
+Enable paging :
 
 ; fm_extenfeatures-paging_exten
-Paging exten: 
+Call a paging :

@@ -81,6 +81,8 @@ var xivo_list_elt_extenfeatures = {
                              'it-extenfeatures-list-queueaddmember'],
     'it-extenfeatures-enable-queueremovemember':    ['it-extenfeatures-queueremovemember',
                              'it-extenfeatures-list-queueremovemember'],
+    'it-extenfeatures-enable-paging':    ['it-extenfeatures-paging',
+                             'it-extenfeatures-list-paging'],
     'it-extenfeatures-enable-phoneprogfunckey':    ['it-extenfeatures-phoneprogfunckey',
                              'it-extenfeatures-list-phoneprogfunckey'],
     'it-extenfeatures-enable-guestprov':        ['it-extenfeatures-guestprov']};
