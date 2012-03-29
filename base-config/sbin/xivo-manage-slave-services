@@ -51,11 +51,11 @@ disable_monit() {
 }
 
 set_berofos_to_slave_state() {
-    xivo-berofos --syslog slave
+    /usr/sbin/xivo-berofos --syslog slave
 }
 
 set_berofos_to_master_state() {
-    xivo-berofos --syslog master
+    /usr/sbin/xivo-berofos --syslog master
 }
 
 enable_service() {
