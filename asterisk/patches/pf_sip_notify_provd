@@ -105,7 +105,7 @@ Index: asterisk-1.8.11.0/channels/chan_sip.c
 +
 +	if (create_addr_provd(p, &addr)) {
 +		/* Maybe they're not registered, etc. */
-+		dialog_unlink_all(p, TRUE, TRUE);
++		dialog_unlink_all(p);
 +		dialog_unref(p, "unref dialog inside for loop" );
 +		/* sip_destroy(p); */
 +		astman_send_error(s, m, "Could not create address");
