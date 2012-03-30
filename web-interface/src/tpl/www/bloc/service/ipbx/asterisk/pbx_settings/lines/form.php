@@ -21,10 +21,10 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
-$act	 = $this->get_var('act');
-$info    = $this->get_var('info');
-$error   = $this->get_var('error');
+$info = $this->get_var('info');
+$error = $this->get_var('error');
 $element = $this->get_var('element');
+
 $context_list = $this->get_var('context_list');
 $ipbxinfos = $this->get_var('info','ipbx');
 
@@ -45,13 +45,12 @@ else {
 	$context = $amaflags = $qualify = $host = $number = '';
 }
 
+if ($protocol === ''):
+	$protocol = $info['linefeatures']['protocol'];
+endif;
+
 $codec_active = empty($allow) === false;
 $host_static = ($host !== '' && $host !== 'dynamic');
-
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 
 echo $form->hidden(array('name' => 'proto','value' => $protocol));
 
@@ -62,8 +61,9 @@ if (empty($number) === false):
 endif;
 
 $filename = dirname(__FILE__).'/protocol/'.$protocol.'.php';
-if (is_readable($filename) === true)
+if (is_readable($filename) === true):
 	include($filename);
+endif;
 ?>
 
 <div id="sb-part-ipbxinfos" class="b-nodisplay">

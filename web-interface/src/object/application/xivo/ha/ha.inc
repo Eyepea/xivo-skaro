@@ -22,186 +22,186 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','xivo.inc'),true);
 
 class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstract
 {
-	var $_sysconfd	    = false;
-	var $_ha_svc        = false;
-	var $_cnodes_svc    = false;
-	var $_service_svc   = false;
+	var $_sysconfd = false;
+	var $_ha = false;
+	var $_provdconfig = false;
+	var $_ipbx = false;
 
-	function xivo_application_xivo_object_ha(&$xobj)
+	public function __construct(&$xobj)
 	{
-		$this->xivo_application_xivo_object_abstract(&$xobj);
+		parent::__construct(&$xobj);
 
-		if(($this->_sysconfd    = &$this->_xobj->get_module('sysconfd'))   === false
-		|| ($this->_ha_svc      = &$this->_xobj->get_module('ha'))         === false
-		|| ($this->_service_svc = &$this->_xobj->get_module('ha_service')) === false
-		|| ($this->_cnodes_svc    = &$this->_xobj->get_module('ha_cluster_node'))    === false)
+		if(($this->_sysconfd = &$this->_xobj->get_module('sysconfd')) === false
+		|| ($this->_ha = &$this->_xobj->get_module('ha')) === false
+		|| ($this->_provdconfig = &$this->_xobj->get_application('provdconfig')) === false
+		|| ($_SRE = dwho_gct::get('xivo_service')) === false
+		|| ($this->_ipbx = &$_SRE->get('ipbx')) === false)
 			return(false);
 
 		return(true);
 	}
 
-	function get()
+	public function get()
 	{
-		$arr = array();
-		$arr['ha'] = $this->_ha_svc->get(1);
+		if(($res = $this->_sysconfd->request_get('/get_ha_config')) === false
+		|| is_array($res) === false)
+			return(false);
 
-		// services
-		$arr['service'] = array();
-		foreach($this->_service_svc->get_all() as $svc)
-			$arr['service'][$svc['name']] = $svc;
-
-		$arr['cnodes'] = $this->_cnodes_svc->get_all();
-
-    return $arr;
+		return($res);
 	}
 
-
-	function get_netifaces()
+	public function get_elements()
 	{
-	    $netifaces = $this->_sysconfd->request_get('/discover_netifaces');
-	    if($netifaces === false)
-	    { return false; }
-
-	    $netifaces = array_keys($netifaces);
-	    asort($netifaces);
-	    return $netifaces;
+		return($this->_ha->get_element());
 	}
 
-	function get_status()
-    {
-	    $status = $this->_sysconfd->request_get('/ha_status');
-	    if($status === false)
-	    { return false; }
-
-	    return $status;
-	}
-
-	function _set_check($conf)
+	private function _set_check($arr)
 	{
-		foreach($conf['service'] as $key => &$val) {
-			if (strlen($val['monitor']) == 0)
-				$val['monitor'] = null;
-			if (strlen($val['timeout']) == 0)
-				$val['timeout'] = null;
+		if(is_array($arr) === false)
+		{
+			$this->_set_result('ha',null);
+			$this->_set_error('ha','invalid data');
+			return(false);
 		}
 
-		return true;
+		if(($rs = $this->_ha->chk_values($arr)) === false)
+		{
+			$this->_set_result('ha',$this->_ha->get_filter_result());
+			$this->_set_error('ha',$this->_ha->get_filter_error());
+			return(false);
+		}
+
+		$this->_set_result('ha',$rs);
+
+		return(true);
 	}
 
-	function _set_save($conf)
+	private function _set_provd_template_line($node_type, $remote_address)
 	{
-        // IF ALL IT'S OK, SAVE DATA
-        if($this->_ha_svc->edit(1, $conf['ha']) === false)
-					return false;
+		$info = $this->_provdconfig->get('default');
 
-				foreach($conf['service'] as $key => $val)
-					if($this->_service_svc->edit($key, $val) === false)
-						return false;
+		$rs = &$info['config'];
 
+		switch($node_type)
+		{
+			case 'master':
+				$rs["registrar_backup"] = $remote_address;
+				$rs["proxy_backup"] = $remote_address;
+				break;
+			case 'slave':
+				break;
+			case 'disabled':
+			default:
+				$rs["registrar_backup"] = '';
+				$rs["proxy_backup"] = '';
+				break;
+		}
 
-				// cluster nodes
-        if($this->_cnodes_svc->delete_all(array()) === false)
-            return false;
+		if($this->_provdconfig->set_edit($info,'registrar') === false
+		|| $this->_provdconfig->edit() === false)
+			return(false);
 
-        foreach($conf['cnodes'] as $cnode)
-					if($this->_cnodes_svc->add($cnode) === false)
-						return false;
+		return(true);
+	}
 
-        if($this->get_errnb() > 0)
-            return false;
+	private function _set_sip_options($node_type)
+	{
+		$appsip = &$this->_ipbx->get_apprealstatic('sip');
+		$appgeneralsip = &$appsip->get_module('general');
 
-				return true;
+		$list = array();
+		$list[0]['var_name'] = 'minexpiry';
+		$list[1]['var_name'] = 'maxexpiry';
+		$list[2]['var_name'] = 'defaultexpiry';
+
+		switch($node_type)
+		{
+			case 'slave':
+			case 'master':
+				$list[0]['var_val'] = 20;
+				$list[1]['var_val'] = 120;
+				$list[2]['var_val'] = 40;
+				break;
+			case 'disabled':
+			default:
+				$list[0]['var_val'] = 60;
+				$list[1]['var_val'] = 3600;
+				$list[2]['var_val'] = 120;
+				break;
+		}
+
+		$r = array();
+		$r['result'] = array();
+		$r['error'] = array();
+		$err = 0;
+
+		$nb = count($list);
+		for($i = 0;$i < $nb;$i++)
+		{
+			$ref = &$list[$i];
+
+			$ref['commented'] = 0;
+
+			if($appgeneralsip->set($ref) === false
+			|| ($pre_save = $appgeneralsip->_chk_pre_save($ref)) === false
+			|| ($pre_save !== 1 && $appgeneralsip->save() === false) === true) {
+				$err++;
+				$r['error'][$i] = $appgeneralsip->get_error();
+			}
+			$r['result'][$i] = $appgeneralsip->get_result();
+		}
+
+		if ($err > 0) {
+			dwho_report::push('error', $r['error']);
+			dwho_report::push('error', 'Can\'t update SIP Options in staticsip table');
+			return(false);
+		}
+
+		return(true);
+	}
+
+	function _set_save($arr)
+	{
+		$query = array();
+		$query['node_type'] = $arr['node_type'];
+		$query['remote_address'] = $arr['remote_address'];
+
+		$this->_set_sip_options($arr['node_type']);
+		$this->_set_provd_template_line($arr['node_type'], $arr['remote_address']);
+
+		if(($res = $this->_sysconfd->request_post('/update_ha_config', $query)) === false
+		|| $this->_sysconfd->last_status_code() != 200) {
+			return(false);
+		}
+		return($res);
 	}
 
 	function set($arr)
 	{
 		$this->_reset();
-		$this->_set_result('ha', $arr);
 
 		if(!$this->_set_check(&$arr))
 			return false;
 
-		// IF ALL IT'S OK, SAVE DATA
 		if($this->_set_save($arr) === false)
 			return false;
 
-		return $this->generate();
+		return(true);
 	}
 
-	/** Send informations to sysconfd to update HA configuration file
-	 **/
-  function generate()
+	function gen_passphrase($len, $lower=false)
 	{
-		$arr  = $this->get();
-		$conf = array('nodes' => array(), 'cluster' => array('services' => array()));
+		$pwd = '';
+		for($i = 0; $i < $len; $i++)
+		{
+			$r = mt_rand(0, 35);
+			$pwd .= $r < 10?$r:chr($r-10+65);
+		}
 
-		# we need to reread database to get services rsc_class
-		$rsc_classes = array();
-		foreach($this->_service_svc->get_all() as $k => $v)
-			$rsc_classes[$v['name']] = $v['rsc_class'];
+		if($lower)
+			$pwd = strtolower($pwd);
 
-		foreach($arr['service'] as $name => $attrs)
-			if(intval($attrs['active']) === 1) {
-				$conf['cluster']['services'][$name] = array();
-				if(!is_null($attrs['monitor']))
-					$conf['cluster']['services'][$name]['monitor'] = intval($attrs['monitor']);
-				if(!is_null($attrs['timeout']))
-					$conf['cluster']['services'][$name]['timeout'] = intval($attrs['timeout']);
-
-				if(array_key_exists($name, $rsc_classes) && !is_null($rsc_classes[$name]))
-					$conf['cluster']['services'][$name]['rsc_class'] = $rsc_classes[$name];
-			}
-
-		$conf['cluster']['cluster_addr'] = array();
-		foreach($arr['cnodes'] as $node)
-			$conf['cluster']['cluster_addr'][] = $node['device'].':'.$node['address'];
-
-		foreach(array('name','itf_data','mailto','pingd') as $key)
-			if(strlen($arr['ha']['cluster_'.$key]) > 2)
-				$conf['cluster']['cluster_'.$key] = $arr['ha']['cluster_'.$key];
-		$conf['cluster']['cluster_group'] = $arr['ha']['cluster_group'] == '1';
-		$conf['cluster']['cluster_monitor']  = intval($arr['ha']['cluster_monitor']);
-		$conf['cluster']['cluster_timeout']  = intval($arr['ha']['cluster_timeout']);
-
-		$subnet = $this->_ip2subnet($arr['ha']['netaddr'], $arr['ha']['netmask']);
-		$conf['nodes'] = array(
-			'network_addr'     => $subnet,
-			'multicast_addr'   => $arr['ha']['mcast'],
-
-			'first_node'       => array(
-				'name'           => $arr['ha']['node1_name'],
-				'ip'             => $arr['ha']['node1_ip'],
-			),
-			'second_node'      => array(
-				'name'           => $arr['ha']['node2_name'],
-				'ip'             => $arr['ha']['node2_ip'],
-			)
-		);
-
-		if($this->_sysconfd->request_post('/ha_generate', $conf) === false)
-			return false;
-
-		// update commonconf
-        	if(($_commonconf = &$this->_xobj->get_module('commonconf')) === false)
-			return $false;
-		$_commonconf->notify_changes();
-
-		return true;
-	}
-
-	function _ip2subnet($ip, $netmask)
-	{
-		$dotted_ip = split('\.', $ip);
-		$dotted_nm = split('\.', $netmask);
-
-		$subnet = sprintf("%d.%d.%d.%d",
-			(((int)$dotted_ip[0]) & ((int)$dotted_nm[0])),
-			(((int)$dotted_ip[1]) & ((int)$dotted_nm[1])),
-			(((int)$dotted_ip[2]) & ((int)$dotted_nm[2])),
-			(((int)$dotted_ip[3]) & ((int)$dotted_nm[3]))
-		);
-
-		return($subnet);
+		return $pwd;
 	}
 
 }

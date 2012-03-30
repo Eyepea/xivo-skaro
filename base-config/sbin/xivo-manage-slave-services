@@ -1,0 +1,77 @@
+#!/bin/sh
+
+
+services="monit asterisk"
+
+usage() {
+    cat << EOF
+    usage: $(basename $0) action
+        action: start or stop to enable/disable slave services
+EOF
+}
+
+enable_asterisk() {
+    grep -q RUNASTERISK=no /etc/default/asterisk
+    if [ $? -eq 0 ]; then
+        sed -i 's/RUNASTERISK=no/RUNASTERISK=yes/' /etc/default/asterisk
+    fi
+    if [ ! -f /var/run/asterisk/asterisk.pid ]; then
+        /etc/init.d/asterisk start
+    fi
+}
+
+disable_asterisk() {
+    if [ -f /var/run/asterisk/asterisk.pid ]; then
+        /etc/init.d/asterisk stop
+    fi
+    grep -q RUNASTERISK=yes /etc/default/asterisk
+    if [ $? -eq 0 ]; then
+        sed -i 's/RUNASTERISK=yes/RUNASTERISK=no/' /etc/default/asterisk
+    fi
+}
+
+enable_monit() {
+    grep -q "startup=0" /etc/default/monit
+    if [ $? -eq 0 ]; then
+        sed -i 's/startup=0/startup=1/' /etc/default/monit
+    fi
+    if [ ! -f /var/run/monit.pid ]; then
+        /etc/init.d/monit start
+    fi
+}
+
+disable_monit() {
+    if [ -f /var/run/monit.pid ]; then
+        /etc/init.d/monit stop
+    fi
+    grep -q "startup=1" /etc/default/monit
+    if [ $? -eq 0 ]; then
+        sed -i 's/startup=1/startup=0/' /etc/default/monit
+    fi
+}
+
+set_berofos_to_slave_state() {
+    /usr/sbin/xivo-berofos --syslog slave
+}
+
+set_berofos_to_master_state() {
+    /usr/sbin/xivo-berofos --syslog master
+}
+
+enable_service() {
+    enable_asterisk
+    enable_monit
+    set_berofos_to_slave_state
+}
+
+disable_service() {
+    set_berofos_to_master_state
+    disable_monit
+    disable_asterisk
+}
+
+case $1 in
+    start) enable_service;;
+    stop)  disable_service;;
+    *) usage;;
+esac

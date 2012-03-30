@@ -128,7 +128,9 @@ switch($act)
 
 		$fm_save = $error = null;
 
-		$configdevice = $appprovdconfig->get($info['deviceconfig']['configdevice']);
+		$configdevice = false;
+		if (isset($info['deviceconfig']))
+			$configdevice = $appprovdconfig->get($info['deviceconfig']['configdevice']);
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('devicefeatures',$_QR) === true)
@@ -222,6 +224,8 @@ switch($act)
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
 		$appdevice = &$ipbx->get_application('device');
+
+		$appdevice->update();
 
 		$order = array();
 		if($sort[1] == 'ip')

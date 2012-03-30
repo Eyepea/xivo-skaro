@@ -102,7 +102,7 @@ switch($act)
 
 		$dhtml->set_js('extra-libs/jquery-ui/ui/minified/jquery.ui.datepicker.min.js', true);
 		$dhtml->set_js('extra-libs/jquery-ui/ui/i18n/jquery.ui.datepicker-'.$language.'.js', true);
-		$dhtml->set_js('js/xivo/configuration/manager/certificate.js');
+		$dhtml->set_js('js/xivo/configuration/manage/certificate.js');
 		break;
 
 	case 'edit':
@@ -110,7 +110,7 @@ switch($act)
 		$_TPL->set_var('id'      , $_QR['id']);
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/xivo/configuration/manager/certificate.js');
+		$dhtml->set_js('js/xivo/configuration/manage/certificate.js');
 		break;
 
 	case 'delete':
@@ -191,7 +191,7 @@ switch($act)
 		$_TPL->set_var('search'	, $search);
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/xivo/configuration/manager/certificate.js');
+		$dhtml->set_js('js/xivo/configuration/manage/certificate.js');
 }
 
 $_TPL->set_var('act'      , $act);

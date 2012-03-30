@@ -28,9 +28,9 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 	var $_netiface	= false;
 	var $_sysconfd	= false;
 
-	function xivo_application_xivo_object_iproute(&$xobj,&$dso)
+	function __construct(&$xobj,&$dso)
 	{
-		$this->xivo_application_xivo_object_abstract(&$xobj);
+		parent::__construct(&$xobj);
 
 		if(is_object($dso) === false)
 			trigger_error('Invalid Datastorage object',E_USER_ERROR);

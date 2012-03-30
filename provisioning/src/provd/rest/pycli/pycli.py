@@ -1,11 +1,9 @@
 # -*- coding: UTF-8 -*-
 
-"""A command-line interpreter that interact with provisioning servers.
-
-"""
+"""A command-line interpreter that interact with provd servers."""
 
 __license__ = """
-    Copyright (C) 2011  Avencall
+    Copyright (C) 2011-2012  Avencall
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,12 +18,6 @@ __license__ = """
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-# TODO help for object/class/method should be closer than the code who defines
-#      such object, with help of decorator or something alike, and/or refactor
-#      the help definition to have less redundancy
-# TODO lookup default value (like default port or default username) in config.py
-#      instead of duplicating them here ?
 
 import __builtin__
 import code
@@ -51,7 +43,9 @@ DEFAULT_HISTFILESIZE = 500
 parser = optparse.OptionParser(usage='usage: %prog [options] [hostname]')
 parser.add_option('-u', '--user', default=DEFAULT_USER,
                   help='user name for server authentication')
-parser.add_option('-p', '--port', default=DEFAULT_PORT,
+parser.add_option('-p', '--password',
+                  help='user name for server authentication')
+parser.add_option('--port', default=DEFAULT_PORT,
                   help='port number of the REST API')
 parser.add_option('-c', '--command',
                   help='specify the command to execute')
@@ -64,7 +58,10 @@ if not args:
 else:
     host = args[0]
 server_uri = 'http://%s:%s/provd' % (host, opts.port)
-password = getpass.getpass('%s@%s\'s password: ' % (opts.user, host))
+if opts.password is None:
+    password = getpass.getpass('%s@%s\'s password: ' % (opts.user, host))
+else:
+    password = opts.password
 credentials = (opts.user, password)
 
 ## create client object

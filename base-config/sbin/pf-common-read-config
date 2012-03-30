@@ -1,10 +1,34 @@
 #!/bin/sh
 
-. /usr/share/pf-common/read_base_config
-
-
 # TODO: use the _XIVO_* namespace for generated variables
 
+[ -r /etc/pf-xivo/common.conf ] && . /etc/pf-xivo/common.conf
+
+
+_PF_EMAIL_ALERTS_LIST="pv-tech-client-alerts"
+
+
+create_pf_email_alerts()
+{
+  LIST_NAME=$1
+  SERVICE_NAME=$2
+
+  echo "${LIST_NAME}+${XIVO_HOSTNAME}+${SERVICE_NAME}@lists.proformatique.com"
+}
+
+get_full_email_alerts()
+{
+  SERVICE_NAME=$1
+
+  if [ "${PF_MAINTENANCE}" = "1" ]; then
+    EXTRA_EMAIL_ALERTS=$(create_pf_email_alerts ${_PF_EMAIL_ALERTS_LIST} ${SERVICE_NAME})
+  else
+    EXTRA_EMAIL_ALERTS=
+  fi
+  echo "${ALERT_EMAILS} ${EXTRA_EMAIL_ALERTS}"
+}
+
+PRODUCT="XiVO"
 
 echo "Generating configuration"
 
@@ -29,10 +53,6 @@ if [ -n "${XIVO_NAMESERVERS}" ]; then
   for NS in ${XIVO_NAMESERVERS}; do
     XIVO_NAMESERVER_LIST="${XIVO_NAMESERVER_LIST}nameserver ${NS}\n"
   done
-# XIVO_NAMESERVERS MUST BE facultative
-#else
-#  echo "ERROR: no nameservers defined" >&2
-#  exit 1
 fi
 
 XIVO_DHCP_IFACES=""

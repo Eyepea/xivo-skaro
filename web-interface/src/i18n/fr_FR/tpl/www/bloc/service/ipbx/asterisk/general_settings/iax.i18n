@@ -564,7 +564,7 @@ Config asterisk: forceencryption
 Taille maximale des trunks: 
 
 ; hlp_fm_trunkmaxsize
-Config asterisk: trunkmaxsize
+Config asterisk: trunkmaxsize [0,512000] (défaut: 128000)
 
 ; fm_trunkmtu
 MTU des trunks: 
@@ -615,13 +615,13 @@ Config asterisk: parkinglot
 Nombre maximal d'appels par IP distante: 
 
 ; hlp_fm_maxcallnumbers
-Config asterisk: maxcallnumbers
+Config asterisk: maxcallnumbers [0,65535] (défaut: 2048)
 
 ; fm_maxcallnumbers_nonvalidated
 Nombre maximal d'appels global (validation des jetons d'appels désactivée): 
 
 ; hlp_fm_maxcallnumbers_nonvalidated
-Config asterisk: maxcallnumbers_nonvalidated
+Config asterisk: maxcallnumbers_nonvalidated (défaut: 8192)
 
 ; fm_shrinkcallerid
 Nettoyer le caller-id: 

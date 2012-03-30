@@ -21,6 +21,8 @@
 if(xivo_user::chk_acl('settings','configuration') === false)
 	$_QRY->go($_TPL->url('statistics/call_center'));
 
+$_I18N->load_file('tpl/www/bloc/statistics/statistics');
+
 dwho::load_class('dwho_prefs');
 $prefs = new dwho_prefs('stats_conf');
 

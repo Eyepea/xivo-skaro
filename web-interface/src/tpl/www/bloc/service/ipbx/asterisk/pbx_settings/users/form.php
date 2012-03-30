@@ -21,15 +21,15 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
-$info    = $this->get_var('info');
-$error   = $this->get_var('error');
+$info = $this->get_var('info');
+$error = $this->get_var('error');
 $element = $this->get_var('element');
 
 $voicemail_list = $this->get_var('voicemail_list');
 $agent_list = $this->get_var('agent_list');
 $profileclient_list = $this->get_var('profileclient_list');
 $rightcall = $this->get_var('rightcall');
-$schedules    = $this->get_var('schedules');
+$schedules = $this->get_var('schedules');
 $parking_list = $this->get_var('parking_list');
 
 if(empty($info['userfeatures']['voicemailid']) === true):
@@ -51,11 +51,6 @@ $line_list = false;
 if(dwho_issa('linefeatures',$info) === true
 &&($line_nb = count($info['linefeatures'])) > 0)
 	$line_list = $info['linefeatures'];
-
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 
 ?>
 

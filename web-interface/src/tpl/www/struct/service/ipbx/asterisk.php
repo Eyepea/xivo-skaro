@@ -21,8 +21,7 @@
 ?>
 <div id="r-ipbx">
 	<div id="s-asterisk" class="b-rubric">
-<?php
-	$this->mk_bloc('main');
-?>
+		<?php $this->file_include('struct/fm_save');?>
+		<?php $this->mk_bloc('main');?>
 	</div>
 </div>

@@ -23,10 +23,6 @@ $form = &$this->get_module('form');
 $info = $this->get_var('info');
 $element = $this->get_var('element');
 
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 ?>
 
 <div id="sb-part-first">
@@ -52,7 +48,7 @@ endif;
 	echo	$form->textarea(array('paragraph'	=> false,
 				      'label'		=> false,
 				      'name'		=> 'configfile[content]',
-				      'id'		=> 'it-context-description',
+				      'id'			=> 'it-configfile-description',
 				      'cols'		=> 90,
 				      'rows'		=> 30,
 				      'default'		=> $element['configfile']['content']['default'],

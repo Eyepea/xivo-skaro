@@ -423,34 +423,24 @@ class TemplatePluginHelper(object):
         self._env = Environment(loader=loader)
 
     def get_dev_template(self, filename, dev):
-        """Get the device template used for the device specific configuration
-        file.
-        
-        """
-        # XXX not sure device that device specific template should have the
-        #     form 'filename' + '.tpl'...
-        # get device-specific template
+        tpl_filenames = []
         if filename:
-            logger.info('Getting device specific template')
+            tpl_filenames.append(filename + '.tpl')
+        if u'model' in dev:
+            tpl_filenames.append(dev[u'model'] + '.tpl')
+        tpl_filenames.append('base.tpl')
+        return self._get_first_template_from_filenames(tpl_filenames)
+
+    def _get_first_template_from_filenames(self, tpl_filenames):
+        tpl_filename = None
+        for tpl_filename in tpl_filenames:
             try:
-                return self._env.get_template(filename + '.tpl')
+                tpl = self._env.get_template(tpl_filename)
+                logger.info('Using template %s', tpl_filename)
+                return tpl
             except TemplateNotFound:
-                logger.info('Device specific template not found.')
-        else:
-            logger.info('No device specific information available for device.')
-        # get model-specific template
-        if 'model' in dev:
-            logger.info('Getting model specific template')
-            model = dev['model']
-            try:
-                return self._env.get_template(model + '.tpl')
-            except TemplateNotFound:
-                logger.info('Model specific template not found.')
-        else:
-            logger.info('No model information available for device.')
-        # get base template
-        logger.info('Getting base template')
-        return self._env.get_template('base.tpl')
+                pass
+        raise TemplateNotFound(tpl_filename)
 
     def get_template(self, name):
         return self._env.get_template(name)

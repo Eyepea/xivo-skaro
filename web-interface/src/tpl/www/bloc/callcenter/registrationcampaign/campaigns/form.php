@@ -30,11 +30,6 @@ $queues  = $this->get_var('queues');
 $dhtml = &$this->get_module('dhtml');
 //$dhtml->write_js('var xivo_fm_user_suggest = \''.$dhtml->escape($user_suggest).'\';');
 
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
-
 ?>
 
 
@@ -87,7 +82,7 @@ endif;
 				  $('#it-campaign-end').datetime({
 									userLang	: 'fr',
 									americanMode: false,
-								});								
+								});
 
 			});
 	/* ]]> */

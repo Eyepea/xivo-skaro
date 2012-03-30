@@ -1,6 +1,5 @@
 # -*- coding: utf8 -*-
 
-__author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
     Copyright (C) 2010-2011  Avencall
 
@@ -23,24 +22,14 @@ from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
 from xivo.http_json_server import CMD_R
 
-class Xivo(object):
-    def __init__(self):
-        super(Xivo, self).__init__()
 
-        http_json_server.register(self.uuid, CMD_R,
-                        name='xivo_uuid', safe_init=self.safe_init)
-
-    def safe_init(self, options):
-        pass
-
-    def uuid(self, args, options):
-        """Return UUID (file /usr/share/pf-xivo/XIVO-UUID)"""
-        try:
-            with open('/usr/share/pf-xivo/XIVO-UUID') as f:
-                uuid = f.read()[:-1]
-        except:
-            raise HttpReqError(500, "cannot read xivo uuid", json=True)
-
+def uuid(args, options):
+    try:
+        with open('/usr/share/pf-xivo/XIVO-UUID') as f:
+            uuid = f.read()[:-1]
         return {'uuid': uuid}
+    except:
+        raise HttpReqError(500, "cannot read xivo uuid", json=True)
 
-xivosys = Xivo()
+
+http_json_server.register(uuid, CMD_R, name='xivo_uuid')

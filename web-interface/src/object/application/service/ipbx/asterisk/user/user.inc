@@ -967,7 +967,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			else
 			{
 				$ref['protocolid'] = 0;
-				$ref['name'] = $this->gen_password(6,true);
+				if($ref['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP) {
+					$ref['name'] = $ref['number'];
+				} else {
+					$ref['name'] = $this->gen_password(6,true);
+				}
 				if (isset($ref['rules_order']) === false)
 					$ref['rules_order'] = $i+1;
 			}
@@ -1493,6 +1497,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 				$arr['protocol']['interface'] = $line['name'];
+			elseif($protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP) {
+				$arr['protocol']['cid_name'] = str_replace('"','',$line['callerid']);
+				$arr['protocol']['cid_num'] = $line['number'];
+			}
 
 			$arr['callgroup'] = $this->get_result('callgroup');
 
@@ -1928,7 +1936,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if($issa_userfeatures === true)
 		{
-			if (dwho_issa('entityid',$arr['userfeatures']) === false)
+			if (isset($arr['userfeatures']['entityid']) === false)
 				$arr['userfeatures']['entityid'] = 1;
 
 			if(dwho_has_len($arr['userfeatures'],'firstname') === true)
@@ -2202,7 +2210,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		}
 
 		if(!is_null($mergewith))
+		{
+			unset($mergewith['linefeatures']);
 			$arr = $this->array_merge_recursive($mergewith,$arr);
+		}
+
 
 		if($this->set_edit($arr) === false
 		|| $this->edit() === false)

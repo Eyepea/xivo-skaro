@@ -62,10 +62,7 @@ $page = $url->pager($pager['pages'],
 	    onmouseout="this.className = this.tmp;"
 	    class="sb-content l-infos-<?=(($j % 2) + 1)?>on2">
 		<td class="td-left txt-left" colspan="2">
-		<?=$url->href_html($ref['name'],
-				   'service/ipbx/system_management/backupfiles',
-				   array('act'	=> 'download',
-					 'id'	=> $ref['name']));?>
+		<?=$url->href_html($ref['name'], '/backup/'.$ref['name']);?>
 		</td>
 		<td class="td-center"><?=$this->bbf('size_iec_'.$size[1],$size[0]);?></td>
 		<td class="td-right" colspan="2"><?=dwho_i18n::strftime_l($this->bbf('date_format_yymmddhhii'),

@@ -26,7 +26,7 @@ abstract class dwho_date
 											'unixtime'	=> '/^(\d{10})$/',
 											'date'		=> '/^(\d{4})-(\d{2})-(\d{2})$/',
 											'time'		=> '/^(\d{2}):(\d{2})(:(\d{2}))?$/',
-											'datetime_with_microseconds'	=> '/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}).(\d{5,6})$/',
+											'datetime_with_microseconds'	=> '/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}).(\d{1,6})$/',
 											'strtotime'	=> '/^[+-]?[0-9]+ (((sec|second|min|minute|hour|day|fortnight|forthnight|month|year)s?)|weeks|daytext)$/');
 	static private	$_listday		= array('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
 	static private	$_listmonth	  = array('january','february','march','april','may','june','july','august','september','october','november','december');
@@ -162,12 +162,12 @@ abstract class dwho_date
 	public static function all_to_unixtime($str)
 	{
 		$rs = time();
-		if (preg_match(self::$_regex['datetime'],$str) === 1)
+		if (preg_match(self::$_regex['unixtime'],$str) === 1)
+			$rs = (int) $str;
+		elseif (preg_match(self::$_regex['datetime'],$str) === 1)
 			$rs = (int) strtotime($str);
 		elseif (preg_match(self::$_regex['datetime_with_microseconds'],$str) === 1)
 			$rs = (int) strtotime($str);
-		elseif (preg_match(self::$_regex['unixtime'],$str) === 1)
-			$rs = (int) $str;
 		elseif (preg_match(self::$_regex['date'],$str) === 1)
 			$rs = (int) strtotime($str);
 		elseif (preg_match('/^(\d{4})-(\d{2})$/',$str) === 1)
@@ -329,7 +329,7 @@ abstract class dwho_date
 		#$month_process = strtotime('-1 month',$dbeg);
 		#$month_process = mktime(0, 0, 0, date('m',$month_process), 1, date('Y',$month_process));
 		$listmonth = array();
-		while ($month_process <= ((int) $dend))
+		while ($month_process <= $dend)
 		{
 			$dayname = strtolower(date('l',$month_process));
 			$month = date('m',$month_process);

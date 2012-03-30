@@ -1,0 +1,84 @@
+#!/bin/sh
+BACKUP_TYPE=$1
+if [ -z "${BACKUP_TYPE}" ]; then
+    echo "Please give backup type" >&2
+    exit 1
+fi
+BACKUP_FILE=$2
+if [ -z "${BACKUP_FILE}" ]; then
+    echo "Please give backup file" >&2
+    exit 1
+fi
+
+
+[ -e /etc/pf-xivo/common.conf ] && . /etc/pf-xivo/common.conf
+DEFAULT_MAX_SOUND_FILE_SIZE=10M
+DEFAULT_MAX_FILES_PER_SOUND_DIR=100
+
+
+case "${BACKUP_TYPE}" in
+  data)
+    BACKUP_LIST="/etc/asterisk /etc/dahdi /etc/dhcp /etc/pf-xivo /etc/wanpipe /var/lib/asterisk/ /var/lib/pf-xivo/ /var/spool/asterisk/ /var/log/asterisk/ /etc/network/interfaces /etc/resolv.conf /etc/hosts /etc/hostname /var/lib/pf-xivo-provd"
+    FILTER_DIRS="/var/lib/pf-xivo/sounds /var/lib/asterisk/sounds/custom /var/lib/asterisk/moh /var/spool/asterisk/voicemail /var/spool/asterisk/monitor"
+    # and dirs too...
+    EXCLUDE_FILES="/var/spool/asterisk/monitor /var/spool/asterisk/meetme"
+
+    # backup existing directories only
+    WOULD_BACKUP=
+    for FILE in ${BACKUP_LIST}; do
+        if [ -e "/${FILE}" ]; then
+            WOULD_BACKUP="${WOULD_BACKUP} ${FILE}"
+        fi
+    done
+
+    # exclude files from backup
+    EXCL_FILE=$(mktemp)
+    for FILE in ${EXCLUDE_FILES}; do
+        if [ -e ${FILE} ]; then
+            echo ${FILE} >>${EXCL_FILE}
+        fi
+    done
+    # filter out known heavy logs
+    ls /var/log/asterisk/debug* >>${EXCL_FILE} 2>/dev/null
+    ls /var/log/asterisk/full* >>${EXCL_FILE} 2>/dev/null
+    # filter out core files
+    ls /var/spool/asterisk/core.* >>${EXCL_FILE} 2>/dev/null
+    # filter out heavy sound files
+    MAX_SIZE=${XIVO_BACKUP_MAX_SOUND_FILE_SIZE:-${DEFAULT_MAX_SOUND_FILE_SIZE}}
+    find ${FILTER_DIRS} -type f -size +${MAX_SIZE} -print >>${EXCL_FILE} 2>/dev/null
+    # filter out sound directories with too much files
+    MAX_FILES=${XIVO_BACKUP_MAX_FILES_PER_SOUND_DIR:-${DEFAULT_MAX_FILES_PER_SOUND_DIR}}
+    for D in $(find ${FILTER_DIRS} -mindepth 1 -type d 2>/dev/null); do
+        COUNT=$(ls -1A ${D} | wc -l)
+        if [ ${COUNT} -gt ${MAX_FILES} ]; then
+            echo ${D} >>${EXCL_FILE}
+        fi
+    done
+    # remove leading slash in exclud list ...
+    sed -i -r 's#(^| )/#\1#g' ${EXCL_FILE}
+
+    # ... as well as in backup list
+    TAR_WOULD_BACKUP=$(echo "${WOULD_BACKUP}" | sed -r 's#(^| )/#\1#g')
+    tar cpz -C / --exclude-from=${EXCL_FILE} --ignore-failed-read -f ${BACKUP_FILE} ${TAR_WOULD_BACKUP} >/dev/null
+
+    rm -rf ${EXCL_FILE}
+    ;;
+  db)
+    TMPDIR=$(mktemp -d)
+    PG_DIR=pg-backup
+    PG_TMPDIR=${TMPDIR}/${PG_DIR}
+    mkdir ${PG_TMPDIR}
+
+    cd /var/lib/postgresql
+    sudo -u postgres pg_dump -Fc asterisk > ${PG_TMPDIR}/asterisk.dump
+    sudo -u postgres pg_dump -Fc xivo > ${PG_TMPDIR}/xivo.dump
+    cd ${OLDPWD}
+
+    tar cpzf ${BACKUP_FILE} -C ${TMPDIR} ${PG_DIR}
+    rm -r ${TMPDIR}
+    ;;
+  *)
+    echo "Unknown backup type" >&2
+    exit 1
+    ;;
+esac

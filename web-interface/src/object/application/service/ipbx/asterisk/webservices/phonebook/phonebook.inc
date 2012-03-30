@@ -148,9 +148,13 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 	function get_user_search($search,$disable=null)
 	{
-		$appuser = &$this->_service->get_application('user',null,false);
+		$appuser = &$this->_service->get_application('user');
 
-		if(($rs = $appuser->get_users_search_number($search,null,null,$disable)) === false
+		$order = array();
+		$order['firstname'] = SORT_ASC;
+		$order['lastname'] = SORT_ASC;
+
+		if(($rs = $appuser->get_users_search_number($search,$disable,$order)) === false
 		|| ($nb = count($rs)) === 0)
 			return(false);
 
@@ -158,15 +162,19 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$info['phone'] = $rs[$i]['number'];
+			if((dwho_issa('masterline', $rs[$i]) === true)
+			&& (empty($rs[$i]['masterline']['number']) === false)) {
+				$info['phone'] = $rs[$i]['masterline']['number'];
 
-			if(($info['name'] = $rs[$i]['fullname']) === '')
-				$info['name'] = $info['phone'];
+				if(($info['name'] = $rs[$i]['fullname']) === '')
+					$info['name'] = $info['phone'];
 
-			$info['type'] = 'local';
-			$info['identity'] = $info['name'];
+				$info['type'] = 'local';
+				$info['identity'] = $info['name'];
 
-			$r[] = $info;
+				$r[] = $info;
+			}
+
 		}
 
 		if(isset($r[0]) === false)

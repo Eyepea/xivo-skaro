@@ -5,10 +5,10 @@ Groupes d'interceptions > Ajouter
 Général
 
 ; smenu_members
-Membres sources
+Intercepteurs
 
 ; smenu_interceptors
-Membres intercepteurs
+Interceptés
 
 ; fm_pickup_name
 Nom : 

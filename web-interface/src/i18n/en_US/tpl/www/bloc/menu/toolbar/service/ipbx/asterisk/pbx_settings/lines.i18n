@@ -10,5 +10,8 @@ Add SIP
 ; toolbar_menu_add_iax
 Add IAX
 
+; toolbar_menu_add_sccp
+Add SCCP
+
 ; toolbar_menu_add_custom
 Add CUSTOM

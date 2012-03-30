@@ -30,9 +30,9 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 	var $_appprovdconfig	= false;
 	var $_commonconf = false;
 
-	function xivo_application_xivo_object_netiface(&$xobj)
+	public function __construct(&$xobj)
 	{
-		$this->xivo_application_xivo_object_abstract(&$xobj);
+		parent::__construct(&$xobj);
 
 		if(($this->_netiface = &$this->_xobj->get_module('netiface')) === false
 		|| ($this->_sysconfd = &$this->_xobj->get_module('sysconfd')) === false

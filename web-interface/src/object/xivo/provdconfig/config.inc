@@ -24,19 +24,13 @@ $array = array();
 $array['base'] = array();
 $array['base']['id'] = 'base';
 $array['base']['parent_ids'] = array();
-
 $array['base']['raw_config'] = array();
-$array['base']['raw_config']['sip_dtmf_mode'] = 'SIP-INFO';
-$array['base']['raw_config']['sip_lines'] = array();
-$array['base']['raw_config']['sip_lines'][1] = array();
-$array['base']['raw_config']['sccp_call_managers'] = array();
 
 // Config autoprov
 $array['autoprov'] = array();
 $array['autoprov']['id'] = 'autoprov';
 $array['autoprov']['role'] = 'autocreate';
 $array['autoprov']['parent_ids'] = array('base','defaultconfigdevice');
-
 $array['autoprov']['raw_config'] = array();
 $array['autoprov']['raw_config']['sip_lines'] = array();
 $array['autoprov']['raw_config']['sip_lines'][1] = array();
@@ -44,7 +38,6 @@ $array['autoprov']['raw_config']['sip_lines'][1]['display_name'] = 'Autoprov';
 $array['autoprov']['raw_config']['sip_lines'][1]['username'] ='autoprov';
 $array['autoprov']['raw_config']['sip_lines'][1]['password'] ='autoprov';
 $array['autoprov']['raw_config']['sip_lines'][1]['number'] ='autoprov';
-$array['autoprov']['raw_config']['sccp_call_managers'] = array();
 
 
 
@@ -66,17 +59,16 @@ $array['element']['tftp_port'] = array();
 $array['element']['tftp_port']['default'] = '';
 
 $array['element']['ntp_enabled'] = array();
-$array['element']['ntp_enabled']['value'] = array(0,1);
-$array['element']['ntp_enabled']['default'] = 1;
-$array['element']['ntp_enabled']['set'] = true;
+$array['element']['ntp_enabled']['value'] = array('',0,1);
+$array['element']['ntp_enabled']['default'] = '';
 
 $array['element']['ntp_ip'] = array();
 $array['element']['ntp_ip']['default'] = '';
 
 $array['element']['vlan_enabled'] = array();
-$array['element']['vlan_enabled']['value'] = array(0,1);
-$array['element']['vlan_enabled']['default'] = 0;
-$array['element']['vlan_enabled']['set'] = true;
+$array['element']['vlan_enabled']['value'] = array('',0,1);
+$array['element']['vlan_enabled']['default'] = '';
+$array['element']['vlan_enabled']['null'] = true;
 
 $array['element']['vlan_id'] = array();
 $array['element']['vlan_id']['default'] = '';
@@ -92,18 +84,19 @@ $array['element']['ntp_server_ip'] = array();
 $array['element']['ntp_server_ip']['default'] = '';
 
 $array['element']['syslog_enabled'] = array();
-$array['element']['syslog_enabled']['value'] = array(0,1);
-$array['element']['syslog_enabled']['default'] = 0;
-$array['element']['syslog_enabled']['set'] = true;
+$array['element']['syslog_enabled']['value'] = array('',0,1);
+$array['element']['syslog_enabled']['default'] = '';
+$array['element']['syslog_enabled']['null'] = true;
 
 $array['element']['syslog_ip'] = array();
 $array['element']['syslog_ip']['default'] = '';
 
 $array['element']['syslog_port'] = array();
-$array['element']['syslog_port']['default'] = 514;
+$array['element']['syslog_port']['default'] = '';
 
-$array['element']['syslog_level']['value'] = array('critical','error','warning','info','debug');
-$array['element']['syslog_level']['default'] = 'warning';
+$array['element']['syslog_level']['value'] = array('','critical','error','warning','info','debug');
+$array['element']['syslog_level']['default'] = '';
+$array['element']['syslog_level']['null'] = true;
 
 $array['element']['admin_username'] = array();
 $array['element']['admin_username']['default'] = '';
@@ -126,9 +119,9 @@ $array['element']['locale']['default'] = '';
 $array['element']['locale']['null'] = true;
 
 $array['element']['config_encryption_enabled'] = array();
-$array['element']['config_encryption_enabled']['value'] = array(0,1);
-$array['element']['config_encryption_enabled']['default'] = 0;
-$array['element']['config_encryption_enabled']['set'] = true;
+$array['element']['config_encryption_enabled']['value'] = array('',0,1);
+$array['element']['config_encryption_enabled']['default'] = '';
+$array['element']['config_encryption_enabled']['null'] = true;
 
 $array['element']['protocol'] = array();
 $array['element']['protocol']['value'] = array('SIP','SCCP');
@@ -168,11 +161,11 @@ $array['element']['sip_dtmf_mode']['default'] = '';
 $array['element']['sip_srtp_mode'] = array();
 #'disabled','preferred','required'
 $array['element']['sip_srtp_mode']['value'] = array('preferred','required');
-$array['element']['sip_srtp_mode']['default'] = 'required';
+$array['element']['sip_srtp_mode']['default'] = '';
 
 $array['element']['sip_transport'] = array();
 $array['element']['sip_transport']['value'] = array('udp','tcp','tls');
-$array['element']['sip_transport']['default'] = 'udp';
+$array['element']['sip_transport']['default'] = '';
 
 $array['element']['sip_servers_root_and_intermediate_certificates'] = array();
 $array['element']['sip_servers_root_and_intermediate_certificates']['default'] = '';
@@ -187,9 +180,9 @@ $array['element']['sip_local_key'] = array();
 $array['element']['sip_local_key']['default'] = '';
 
 $array['element']['sip_subscribe_mwi'] = array();
-$array['element']['sip_subscribe_mwi']['value'] = array(0,1);
-$array['element']['sip_subscribe_mwi']['default'] = 0;
-$array['element']['sip_subscribe_mwi']['set'] = true;
+$array['element']['sip_subscribe_mwi']['value'] = array('',0,1);
+$array['element']['sip_subscribe_mwi']['default'] = '';
+$array['element']['sip_subscribe_mwi']['null'] = true;
 
 // exten
 $array['element']['exten_dnd'] = array();
@@ -232,12 +225,12 @@ $array['filter']['ip'] = array('set' => false,
 				    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
 $array['filter']['http_port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['tftp_port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['ntp_enabled'] = array('bool' => true);
+$array['filter']['ntp_enabled'] = array('set' => false,'key' => $array['element']['ntp_enabled']['value']);
 $array['filter']['ntp_ip'] = array('set' => false,
 				    'chk'			=> 2,
 				    'callback'		=> 'dwho_network::valid_host',
 				    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
-$array['filter']['vlan_enabled'] = array('bool' => true);
+$array['filter']['vlan_enabled'] = array('set' => false,'key' => $array['element']['vlan_enabled']['value']);
 $array['filter']['vlan_id'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,4094));
 $array['filter']['vlan_priority'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,7));
 $array['filter']['vlan_pc_port_id'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,4094));
@@ -245,7 +238,7 @@ $array['filter']['syslog_ip'] = array('set' => false,
 				    'chk'			=> 2,
 				    'callback'		=> 'dwho_network::valid_host',
 				    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
-$array['filter']['syslog_enabled'] = array('bool' => true);
+$array['filter']['syslog_enabled'] = array('set' => false,'key' => $array['element']['syslog_enabled']['value']);
 $array['filter']['syslog_port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['syslog_level'] = array('key' => $array['element']['syslog_level']['value']);
 $array['filter']['admin_username'] = array('set' => false,'chk' => 2);
@@ -253,9 +246,9 @@ $array['filter']['admin_password'] = array('set' => false,'chk' => 2);
 $array['filter']['user_username'] = array('set' => false,'chk' => 2);
 $array['filter']['user_password'] = array('set' => false,'chk' => 2);
 $array['filter']['timezone'] = array('set' => false,'chk' => 2);
-$array['filter']['sip_subscribe_mwi'] = array('bool' => true);
+$array['filter']['sip_subscribe_mwi'] = array('set' => false, 'key' => $array['element']['sip_subscribe_mwi']['value']);
 $array['filter']['locale'] = array('set' => false,'chk' => 2,'minlen' =>5,'maxlen' => 5,'key' => $array['element']['locale']['value']);
-$array['filter']['config_encryption_enabled'] = array('bool' => true);
+$array['filter']['config_encryption_enabled'] = array('set' => false,'key' => $array['element']['config_encryption_enabled']['value']);
 $array['filter']['protocol'] = array('set' => false,'chk' => 2,'key' => $array['element']['protocol']['value']);
 $array['filter']['sip_dtmf_mode'] = array('set' => false,'chk' => 2,'key' => $array['element']['sip_dtmf_mode']['value']);
 $array['filter']['sip_srtp_mode'] = array('set' => false,'chk' => 2,'key' => $array['element']['sip_srtp_mode']['value']);

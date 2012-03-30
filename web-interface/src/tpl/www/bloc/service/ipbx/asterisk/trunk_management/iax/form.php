@@ -23,6 +23,7 @@ $url = $this->get_module('url');
 
 $info = $this->get_var('info');
 $element = $this->get_var('element');
+
 $context_list = $this->get_var('context_list');
 $privkeys = $this->get_var('privkeys');
 $pubkeys = $this->get_var('pubkeys');
@@ -47,11 +48,6 @@ $host_static = ($host !== '' && $host !== 'dynamic');
 
 if(($reg_active = $this->get_var('info','register','commented')) !== null):
 	$reg_active = dwho_bool($reg_active) === false;
-endif;
-
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 endif;
 
 ?>

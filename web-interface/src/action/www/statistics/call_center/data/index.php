@@ -70,9 +70,11 @@ else
 		$tpl_statistics->set_data_custom('axetype',$axetype);
 
 		$tpl_statistics->set_col_struct('queue');
+/*
 		$tpl_statistics->add_col('presented',
             					'direct',
             					'custom:queue,[key],presented');
+*/
 		$tpl_statistics->add_col('connect',
             					'direct',
             					'custom:queue,[key],connect');
@@ -88,18 +90,18 @@ else
             					'expression',
             					'{custom:queue,[key],qos}/{custom:queue,[key],connect}',
             					'percent');
-
+/*
 		$tpl_statistics->set_col_struct('agent');
 		$tpl_statistics->add_col('productivity',
             					'expression',
             					'{custom:agent,[key],calltime}/{custom:agent,[key],logintime}',
             					'percent');
-
+*/
 		$tpl_statistics->gener_table();
 		$table_general = $tpl_statistics->render_html(false,true);
 
-		$xivo_jqplot->init_data_full($tpl_statistics);
-		$xivo_jqplot->gener_graph('index_general','chart1','index_general');
+		#$xivo_jqplot->init_data_full($tpl_statistics);
+		#$xivo_jqplot->gener_graph('index_general','chart1','index_general');
 	}
 }
 

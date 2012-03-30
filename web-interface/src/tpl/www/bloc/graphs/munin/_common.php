@@ -45,7 +45,7 @@ $freqs    = $this->get_var('freqs');
             echo $url->href_html(
                 $url->img_html("$basedir/$basename$graph-$freq.png", 
                     "$graph $freq graph", "class=\"mini\""),
-                null, array("zoom" => "$domain-$graph-$freq"), null, $this->bbf("Zoom")
+                null, array("zoom" => "$domain-$graph-$freq"), null, $this->bbf("zoom")
             );
         }
 ?>

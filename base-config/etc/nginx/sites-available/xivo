@@ -26,8 +26,14 @@ server {
     root /usr/share/pf-xivo-web-interface/www;
 
     location / {
+        rewrite ^/backup/(.*) /backup.php?path=$1 last;
         index index.php;
-        include /etc/nginx/xivo_params; 
+        include /etc/nginx/xivo_params;
+    }
+
+    location /dlbackup/ {
+        internal;
+        alias   /var/backups/pf-xivo/;
     }
 
     location ^~ /extra-libs/jquery/        { alias /usr/share/javascript/jquery/; }
@@ -75,4 +81,5 @@ server {
     ssl  on;
     ssl_certificate /etc/nginx/ssl/server.crt;
     ssl_certificate_key /etc/nginx/ssl/server.key;
+    ssl_ciphers DEFAULT;
 }

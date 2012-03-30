@@ -1,11 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-"""Common code shared by the various xivo-aastra plugins.
-
-Support the 6730i, 6731i, 6739i, 6751i, 6753i, 6755i, 6757i, 9143i and 9180i.
-
-"""
-
 __license__ = """
     Copyright (C) 2010-2011  Avencall
 
@@ -23,9 +17,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# XXX does the CT models identify themselves differently ? i.e. does the
-#     57i CT identify itself as 57i or something like 57iCT ?
-
+import errno
 import logging
 import re
 import os.path
@@ -35,8 +27,8 @@ from provd import synchronize
 from provd.devices.config import RawConfigError
 from provd.plugins import StandardPlugin, FetchfwPluginHelper, \
     TemplatePluginHelper
-from provd.devices.pgasso import IMPROBABLE_SUPPORT, PROBABLE_SUPPORT, \
-    INCOMPLETE_SUPPORT, COMPLETE_SUPPORT, FULL_SUPPORT, BasePgAssociator
+from provd.devices.pgasso import IMPROBABLE_SUPPORT, COMPLETE_SUPPORT, \
+    FULL_SUPPORT, BasePgAssociator, UNKNOWN_SUPPORT
 from provd.servers.http import HTTPNoListingFileService
 from provd.util import norm_mac, format_mac
 from twisted.internet import defer, threads
@@ -59,8 +51,6 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
     def _do_extract(self, request):
         ua = request.getHeader('User-Agent')
         if ua:
-            # All information is present in the User-Agent header for
-            # Aastra
             return self._extract_from_ua(ua)
         return None
 
@@ -74,6 +64,8 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
         #   "Aastra6739i MAC:00-08-5D-13-CA-05 V:3.2.1.1013-SIP"
         #   "Aastra55i MAC:00-08-5D-20-DA-5B V:2.6.0.1008-SIP"
         #   "Aastra57i MAC:00-08-5D-19-E4-01 V:2.6.0.1008-SIP"
+        #   "Aastra6735i MAC:00-08-5D-2E-A0-94 V:3.2.2.6038-SIP"
+        #   "Aastra6737i MAC:00-08-5D-30-A6-CE V:3.2.2.6038-SIP"
         m = self._UA_REGEX.match(ua)
         if m:
             raw_model, raw_mac, raw_version = m.groups()
@@ -94,24 +86,18 @@ class BaseAastraHTTPDeviceInfoExtractor(object):
 
 
 class BaseAastraPgAssociator(BasePgAssociator):
-    def __init__(self, models, version, compat_models):
+    def __init__(self, models, version):
         BasePgAssociator.__init__(self)
         self._models = models
         self._version = version
-        self._compat_models = compat_models
 
     def _do_associate(self, vendor, model, version):
         if vendor == u'Aastra':
             if model in self._models:
                 if version == self._version:
                     return FULL_SUPPORT
-                if version and version[0] != self._version[0]:
-                    # not sharing the same major version
-                    return COMPLETE_SUPPORT - 1
                 return COMPLETE_SUPPORT
-            if model in self._compat_models:
-                return INCOMPLETE_SUPPORT
-            return PROBABLE_SUPPORT
+            return UNKNOWN_SUPPORT
         return IMPROBABLE_SUPPORT
 
 
@@ -121,6 +107,8 @@ class BaseAastraPlugin(StandardPlugin):
         # <model>: ([(<nb keys>, <keytype>), ...], <nb expansion modules>)
         u'6730i': ([(8, u'prgkey')], 0),
         u'6731i': ([(8, u'prgkey')], 0),
+        u'6735i': ([(6, u'prgkey'), (20, u'softkey')], 3),
+        u'6737i': ([(10, u'topsoftkey'), (20, u'softkey')], 3),
         u'6739i': ([(55, u'softkey')], 3),
         u'6753i': ([(6, u'prgkey')], 3),
         u'6755i': ([(6, u'prgkey'), (20, u'softkey')], 3),
@@ -383,7 +371,7 @@ class BaseAastraPlugin(StandardPlugin):
                                                                     self._TRUSTED_ROOT_CERTS_SUFFIX)
 
     def _add_parking(self, raw_config):
-        # to be optionally overriden in derived class
+        # to be optionally overridden in derived class
         pass
 
     def _dev_specific_filename(self, device):
@@ -420,21 +408,24 @@ class BaseAastraPlugin(StandardPlugin):
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
 
     def deconfigure(self, device):
-        # remove device configuration file
+        self._remove_configuration_file(device)
+        self._remove_certificate_file(device)
+
+    def _remove_configuration_file(self, device):
         path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))
         try:
             os.remove(path)
-        except OSError, e:
-            # ignore
-            logger.info('error while removing file: %s', e)
-        # remove device certificate file
+        except OSError as e:
+            logger.info('error while removing configuration file: %s', e)
+
+    def _remove_certificate_file(self, device):
         path = os.path.join(self._tftpboot_dir,
                             self._device_cert_or_key_filename(device, self._TRUSTED_ROOT_CERTS_SUFFIX))
         try:
             os.remove(path)
-        except OSError, e:
-            # ignore
-            logger.info('error while removing file: %s', e)
+        except OSError as e:
+            if e.errno != errno.ENOENT:
+                logger.info('error while removing certificate file: %s', e)
 
     def synchronize(self, device, raw_config):
         try:

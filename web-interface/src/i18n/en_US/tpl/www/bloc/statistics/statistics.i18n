@@ -1,4 +1,3 @@
-
 ; toolbar_fm_conf
 Choose a configuration
 
@@ -6,7 +5,10 @@ Choose a configuration
 No configuration selected for the home page.
 
 ; no_queue
-No file
+No queue
+
+; no_agent
+No agent
 
 ; no_conf
 No configuration
@@ -25,7 +27,7 @@ Summary
 
 ; hlp_fm_conf_period_cache-with_end
   %s
- 
+
 ; hlp_fm_conf_period_cache-without_end
 to date
 
@@ -470,11 +472,11 @@ Cache %s is not generated
 ; no_type_in_conf
 No entry in configuration
 
-; tbl-lnk-expotcsv
+; tbl-lnk-exportcsv
 CSV Export
 
 ; total_call_repartition_by_event
-Distribution of calls per event
+Total call distributed
 
 ; queue_performance
 Queues Performance

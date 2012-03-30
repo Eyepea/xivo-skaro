@@ -38,6 +38,7 @@ $array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_AU] = true;
 $array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_VOX] = true;
 $array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_SLIN] = true;
 $array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_MP3] = true;
+$array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_G722] = true;
 
 $array['element'] = array();
 

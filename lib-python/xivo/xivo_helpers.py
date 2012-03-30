@@ -164,11 +164,7 @@ def speed_dial_key_components(xleft, xright, fkext, monitoringext, isbsfilter):
     if isbsfilter:
         if (not right_part) or (not monitoringext):
             raise ValueError, "isbsfilter and ((not right_part) or (not monitoringext))"
-        monitoringext = str(monitoringext)
-        if right_part <= monitoringext:
-            components.extend([right_part, '*', monitoringext])
-        else:
-            components.extend([monitoringext, '*', right_part])
+        components.extend([right_part, '*', str(monitoringext)])
     elif right_part:
         components.append(str(right_part))
     return components

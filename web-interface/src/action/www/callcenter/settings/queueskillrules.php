@@ -40,8 +40,7 @@ switch($act)
 		// add a new item (either display add form (fm_send not set)
 		// 	OR save new entered item
 		$appqueue = &$ipbx->get_application('queue');
-		$fm_save = true;
-		$error	 = null;
+		$fm_save = $error = null;
 
 		$rules = array();
 
@@ -76,7 +75,7 @@ switch($act)
 
 	case 'edit':
 		$appqueue = &$ipbx->get_application('queue');
-	    $fm_save  = true;
+		$fm_save = $error = null;
 
 		// id not set or skillcat[id] not found => redirect to list view
 		if(isset($_QR['id']) === false || ($info = $appqueue->skillrules_getone($_QR['id'])) === false)

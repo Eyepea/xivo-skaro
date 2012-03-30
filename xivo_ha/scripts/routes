@@ -1,7 +1,0 @@
-#!/bin/sh
-
-# set all custom routes when node elected as master
-#
-
-# move in /etc/network/interfaces
-#/usr/sbin/pf-xivo-routes set

@@ -23,21 +23,16 @@ $url = &$this->get_module('url');
 
 $element = $this->get_var('element');
 $info = $this->get_var('info');
+
 $preslist = $this->get_var('preslist');
 $phonehintslist = $this->get_var('phonehintslist');
 $agentslist = $this->get_var('agentslist');
-
 $preferencesavail = $this->get_var('preferencesavail');
 $xletsavail = $this->get_var('xletsavail');
 $xletslocavail = $this->get_var('xletslocavail');
 
 $yesno = array($this->bbf('no'), $this->bbf('yes'));
 
-#$profiles = $this->get_var('profiles');
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 ?>
 
 <div id="sb-part-first" class="b-nodisplay">

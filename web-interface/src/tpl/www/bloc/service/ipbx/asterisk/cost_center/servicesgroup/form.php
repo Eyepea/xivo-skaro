@@ -25,13 +25,6 @@ $element = $this->get_var('element');
 $info = $this->get_var('info');
 $user = $this->get_var('user');
 
-$dhtml = &$this->get_module('dhtml');
-
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
-
 ?>
 
 <?php

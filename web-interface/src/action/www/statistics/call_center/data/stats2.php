@@ -57,13 +57,13 @@ switch ($axetype)
 }
 
 $tpl_statistics->set_data_custom('agent',$stats_agent->_result);
-
+/*
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('productivity',
 					'expression',
 					'{custom:agent,[key],calltime}/{custom:agent,[key],logintime}',
 					'percent');
-
+*/
 $tpl_statistics->set_col_struct('call_counter');
 $tpl_statistics->add_col('connect',
 					'direct',
@@ -77,7 +77,7 @@ $tpl_statistics->add_col('ringnoanswer',
 $tpl_statistics->add_col('outgoing',
 					'direct',
 					'-');
-
+/*
 $tpl_statistics->set_col_struct('total_time');
 $tpl_statistics->add_col('login',
 					'direct',
@@ -95,7 +95,8 @@ $tpl_statistics->add_col('traitment',
 					'direct',
 					'custom:agent,[key],traitmenttime',
 					'time');
-
+*/
+/*
 $tpl_statistics->set_col_struct('average_time');
 $tpl_statistics->add_col('dmt',
 					'expression',
@@ -109,7 +110,7 @@ $tpl_statistics->add_col('dmwu',
 					'direct',
 					'0',
 					'time');
-
+*/
 $tpl_statistics->gener_table();
 $table1 = $tpl_statistics;
 
@@ -132,16 +133,16 @@ $xivo_jqplot->init_data_full($tpl_statistics);
 switch ($axetype)
 {
 	case 'type':
-		$xivo_jqplot->gener_graph('prod_agent','chart1','productivity_by_agent');
+		#$xivo_jqplot->gener_graph('prod_agent','chart1','productivity_by_agent');
 		break;
 	case 'day':
 		break;
 	case 'week':
 	case 'month':
 	case 'year':
-		$xivo_jqplot->gener_graph('agent_stacked_total_time','astt','agent_total_time_for_login');
+		#$xivo_jqplot->gener_graph('agent_stacked_total_time','astt','agent_total_time_for_login');
 		#$xivo_jqplot->gener_graph('agent_stacked_average_time','asat','agent_average_time_for_login');
-		$xivo_jqplot->gener_graph('agent_perf','ap','agent_performance');
+		#$xivo_jqplot->gener_graph('agent_perf','ap','agent_performance');
 		break;
 	default:
 }

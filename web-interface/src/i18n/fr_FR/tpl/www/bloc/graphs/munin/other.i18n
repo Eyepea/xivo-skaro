@@ -1,20 +1,38 @@
 ; title_content_name
 Autres
 
-; dhcpd3
-Nombre d'adresses DHCP servies
+; diskstats_iops
+Opérations des disques
+
+; diskstats_latency
+Latence des disques
+
+; diskstats_throughput
+Débit des disques
+
+; diskstats_utilization
+Utilisation des disques
+
+; fw_packets
+Paquets reçus par le pare-feu
+
+; iostat_ios
+Temps de service des disques
+
+; munin_stats
+Temps de calcul Munin
+
+; nfs4_client
+Client NFS4
+
+; proc_pri
+Priorité des processus
+
+; threads
+Nombre de threads
 
 ; uptime
 Uptime du serveur
 
-; acpi
-Température du processeur
-
-; sensors_fan
-Vitesse de rotation des ventilateurs
-
-; sensors_temp
-Températures du système
-
-; sensors_volt
-Voltage de la carte mère
+; users
+Utilisateurs connectés

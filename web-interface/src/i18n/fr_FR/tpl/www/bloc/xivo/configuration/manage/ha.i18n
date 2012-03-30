@@ -1,0 +1,23 @@
+; title_content_name
+Haute disponibilité
+
+; fm_ha_node_type
+Type de noeud: 
+
+; fm_ha_node_type-opt(disabled)
+Désactivé
+
+; fm_ha_node_type-opt(slave)
+Esclave
+
+; fm_ha_node_type-opt(master)
+Maitre
+
+; fm_remote_address
+Adresse distante: 
+
+; fld_ha_part_slave
+Esclave
+
+; fld_ha_part_master
+Maitre

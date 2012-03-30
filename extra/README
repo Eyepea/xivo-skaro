@@ -1,4 +1,0 @@
-                   -:| extra tools for XiVO system |:-
-
-* phonebook_csv_export.py: XiVO phonebook export in CSV format.
-  Use with --help option to see usage

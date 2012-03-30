@@ -2,7 +2,7 @@
 Panel> Add
 
 ; smenu_general
-general
+General
 
 ; smenu_workweek
 Work Week
@@ -16,19 +16,28 @@ Queues
 ; smenu_qos
 Quality of Service
 
+; smenu_permissions
+Permissions
+
 ; smenu_agents
-agents
+Agents
+
+; smenu_permissions
+Permissions
 
 ; fm_description_general
 
 ; fm_name
-name:
+Name:
 
 ; fm_stats_conf_timezone 
 Timezone: 
 
 ; fm_default_delta
-interval:
+Interval:
+
+; xivo_user
+XiVO User authorized
 
 ; hlp_fm_default_delta
 Sets the time interval for the default view type. <br>
@@ -38,7 +47,7 @@ Available value: - [0-999] [day | week | month] s <br>
 Leave 0 for the current day.
 
 ; fm_conf_homepage
-Show on page:
+Show on summary page:
 
 ; fm_description_cache
 The dates for the cache should be in the form YYYY-MM.
@@ -65,7 +74,7 @@ start:
 end:
 
 ; stats_conf_period
-periods
+Periods
 
 ; fm_period1
 Period 1:
@@ -110,10 +119,13 @@ Saturday:
 Sunday:
 
 ; agent
-agents
+Agents
 
 ; create_agent
 Create an Agent
+
+; queue
+Queue
 
 ; user
 users
@@ -128,7 +140,7 @@ Queues
 Create a queue
 
 ; group
-groups
+Groups
 
 ; create_group
 Create a group
@@ -136,7 +148,7 @@ Create a group
 ; fm_description_stats_queue_qos
 Configuring QoS for queues and group in seconds
 
-;-Fm-queue_name
+; -fm-queue_name
 %s:
 
 ; no_queue

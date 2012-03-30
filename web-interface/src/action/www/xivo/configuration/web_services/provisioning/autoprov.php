@@ -23,18 +23,13 @@ $access_subcategory = 'autoprov';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-if(defined('XIVO_LOC_UI_ACTION') === true)
-	$act = XIVO_LOC_UI_ACTION;
-else
-	$act = $_QRY->get('act');
-
+$act = $_QRY->get('act');
 $ipbx = &$_SRE->get('ipbx');
 
 switch($act)
 {
 	case 'configure':
 		$_QRY = &dwho_gct::get('dwho_query');
-
 		if(dwho::load_class('dwho_json') === false
 		|| ($data = dwho_json::decode($_QRY->get_input(),true)) === false
 		|| is_array($data) === false
@@ -43,24 +38,20 @@ switch($act)
 			$http_response->set_status_line(400);
 			$http_response->send(true);
 		}
-
 		$appdevice = &$ipbx->get_application('device',null,false);
 		$linefeatures = &$ipbx->get_module('linefeatures');
 
-		$appdevice->update();
-
-		if(($device = $appdevice->get_by_ip($data['ip'])) === false
-		|| ($devicefeatures = $device['devicefeatures']) === false)
+		if($appdevice->update_by_ip($data['ip']) === false)
 			$http_response->set_status_line(400);
 		elseif($data['code'] === 'autoprov')
 		{
 			if ($appdevice->mode_autoprov(true) === false)
-			    $http_response->set_status_line(400);
+				$http_response->set_status_line(400);
 			else
-			    $http_response->set_status_line(200);
+				$http_response->set_status_line(200);
 		}
-		elseif(($line = $linefeatures->get_where(array('provisioningid' => $data['code']))) === false
-		|| $appdevice->update_config($line['id'],true) === false)
+		elseif(($line = $linefeatures->get_line_provisioniable($data['code'])) === false
+		|| $appdevice->associate_line($line['id'],true) === false)
 			$http_response->set_status_line(400);
 		else
 			$http_response->set_status_line(200);

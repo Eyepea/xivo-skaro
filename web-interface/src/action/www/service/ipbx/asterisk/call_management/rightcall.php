@@ -37,12 +37,9 @@ switch($act)
 		$userorder = array();
 		$userorder['firstname'] = SORT_ASC;
 		$userorder['lastname'] = SORT_ASC;
-		$userorder['number'] = SORT_ASC;
-		$userorder['context'] = SORT_ASC;
-		$userorder['name'] = SORT_ASC;
 
 		$appuser = &$ipbx->get_application('user',null,false);
-		$rcalluser['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
+		$rcalluser['list'] = $appuser->get_users_list(null,$userorder,null,true);
 
 		$grouporder = array();
 		$grouporder['name'] = SORT_ASC;

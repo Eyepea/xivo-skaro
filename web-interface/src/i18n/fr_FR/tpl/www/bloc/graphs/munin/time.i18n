@@ -6,3 +6,12 @@ Décalage temporel
 
 ; ntp_states
 &Eacute;tat des serveurs
+
+; ntp_kernel_err
+Erreurs NTP PLL
+
+; ntp_kernel_pll_freq
+Fréquence NTP PLL
+
+; ntp_kernel_pll_off
+Décalage NTP PLL

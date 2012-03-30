@@ -25,9 +25,9 @@ class xivo_application_xivo_object_provisioning extends xivo_application_xivo_ob
 	var $_commonconf = false;
 	var $_prov       = false;
 
-	function xivo_application_xivo_object_provisioning(&$xobj)
+	public function __construct(&$xobj)
 	{
-		$this->xivo_application_xivo_object_abstract(&$xobj);
+		parent::__construct(&$xobj);
 
 		if(($this->_commonconf = &$this->_xobj->get_module('commonconf'))    === false
 		|| ($this->_prov       = &$this->_xobj->get_module('provisioning'))  === false)
@@ -45,7 +45,7 @@ class xivo_application_xivo_object_provisioning extends xivo_application_xivo_ob
 	function set($arr)
     {
         $this->_reset();
-        
+
         if(($arr = $this->_prov->chk_values($arr)) === false)
             $this->_set_errors($this->_prov->get_filter_error());
 
@@ -61,7 +61,7 @@ class xivo_application_xivo_object_provisioning extends xivo_application_xivo_ob
         	'net4_ip_rest',
             'rest_port',
             'dhcp_integration');
-		
+
         foreach(array_keys($arr) as $key)
         {
             if(!in_array($key, $keys))

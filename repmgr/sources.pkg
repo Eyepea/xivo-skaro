@@ -1,6 +1,0 @@
-DEST_PATH=tarballs
-BASE_URL="http://projects.2ndquadrant.it/sites/default/files"
-TARBALL_PREFIX="repmgr-"
-SRC_DIR_PREFIX="repmgr-"
-PKG_NAME="repmgr"
-DFSG_EXCLUDE_PATTERNS=

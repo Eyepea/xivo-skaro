@@ -1,11 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-"""Common code shared by the the various xivo-technicolor plugins.
-
-Support the ST2022, ST2030 and TB30.
-
-"""
-
 __license__ = """
     Copyright (C) 2011  Avencall
 

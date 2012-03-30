@@ -18,18 +18,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$form         = &$this->get_module('form');
-$url          = $this->get_module('url');
+$form = &$this->get_module('form');
+$url = $this->get_module('url');
 
-$info         = $this->get_var('info');
-$element      = $this->get_var('element');
+$info = $this->get_var('info');
+$element = $this->get_var('element');
+
 $context_list = $this->get_var('contexts');
-$moh          = $this->get_var('moh');
-
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
+$moh = $this->get_var('moh');
 
 ?>
 

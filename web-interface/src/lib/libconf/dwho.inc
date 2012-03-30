@@ -31,8 +31,8 @@ $array['ini']['error'] = array(
                 'file'        => null);
 
 $array['ini']['locale'] = array(
-                'language'    => 'fr',
-                'territory'    => 'FR',
+                'language'    => 'en',
+                'territory'    => 'US',
                 'charset'    => 'UTF-8');
 
 $array['ini']['session'] = array(

@@ -23,12 +23,6 @@ $dhtml 	 = &$this->get_module('dhtml');
 
 $element = $this->get_var('element');
 
-if(($fm_save = $this->get_var('fm_save')) === true):
-	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
-elseif($fm_save === false):
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
-
 ?>
 
 <div class="b-infos b-form">

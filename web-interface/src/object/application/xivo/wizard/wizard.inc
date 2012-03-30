@@ -40,9 +40,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 	var $_xivo_dso_loaded  = false;
 	var $_savetmpfile      = '/tmp/wizard';
 
-	function xivo_application_xivo_object_wizard(&$xobj,$param=null,$components=true)
+	function __construct(&$xobj,$param=null,$components=true)
 	{
-		$this->xivo_application_xivo_object_abstract(&$xobj);
+		parent::__construct(&$xobj);
 
 		if(($this->_sysconfd = &$this->_xobj->get_module('sysconfd')) === false)
 			trigger_error('Unable to load sysconfd module',E_USER_ERROR);

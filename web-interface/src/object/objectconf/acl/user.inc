@@ -39,7 +39,6 @@ $array['tree']['service']['ipbx']['pbx_settings']['groups'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['voicemail'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['meetme'] = true;
 
-
 $array['tree']['service']['ipbx']['call_management'] = array();
 $array['tree']['service']['ipbx']['call_management']['incall'] = true;
 $array['tree']['service']['ipbx']['call_management']['outcall'] = true;
@@ -47,6 +46,7 @@ $array['tree']['service']['ipbx']['call_management']['rightcall'] = true;
 $array['tree']['service']['ipbx']['call_management']['callfilter'] = true;
 $array['tree']['service']['ipbx']['call_management']['pickup'] = true;
 $array['tree']['service']['ipbx']['call_management']['schedule'] = true;
+$array['tree']['service']['ipbx']['call_management']['cel'] = true;
 
 $array['tree']['service']['ipbx']['trunk_management'] = array();
 $array['tree']['service']['ipbx']['trunk_management']['sip'] = true;
@@ -134,6 +134,7 @@ $array['tree']['xivo']['configuration']['manage']['entity'] = true;
 $array['tree']['xivo']['configuration']['manage']['directories'] = true;
 $array['tree']['xivo']['configuration']['manage']['accesswebservice'] = true;
 $array['tree']['xivo']['configuration']['manage']['certificate'] = true;
+$array['tree']['xivo']['configuration']['manage']['ha'] = true;
 
 $array['tree']['xivo']['configuration']['network'] = array();
 $array['tree']['xivo']['configuration']['network']['interface'] = true;

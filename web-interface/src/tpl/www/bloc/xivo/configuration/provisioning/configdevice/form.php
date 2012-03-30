@@ -21,16 +21,12 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
-$info    = $this->get_var('info');
-$error   = $this->get_var('error');
+$info = $this->get_var('info');
+$error = $this->get_var('error');
+
 $plugininstalled = $this->get_var('plugininstalled');
 $listline = $this->get_var('listline');
 $element = $this->get_var('element');
-
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 
 ?>
 

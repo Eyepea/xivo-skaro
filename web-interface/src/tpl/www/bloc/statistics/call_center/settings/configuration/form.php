@@ -21,18 +21,15 @@
 
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
-$dhtml = &$this->get_module('dhtml');
+
+$info = $this->get_var('info');
+$element = $this->get_var('element');
 
 $listqos = $this->get_var('listqos');
 $queue = $this->get_var('queue');
 $agent = $this->get_var('agent');
-$info = $this->get_var('info');
-$element = $this->get_var('element');
 $xivouser = $this->get_var('xivouser');
 $list_client = $this->get_var('list_client');
-
-if($this->get_var('fm_save') === false)
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 
 ?>
 <script type="text/javascript">

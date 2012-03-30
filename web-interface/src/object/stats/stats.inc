@@ -32,7 +32,7 @@ class xivo_stats_lib
 	private	$_listday			= array('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
 	private	$_listmonth			= array('january','february','march','april','may','june','july','august','september','october','november','december');
 	private	$_listaxetype		= array('type','day','week','month','year');
-	private	$_listtype			= array('queue','agent','period','incall');
+	private	$_listtype			= array('queue','agent','period',); # 'incall'
 	private	$_listconftype		= array('queue','group','agent','user','incall');
 	public 	$_error				= array();
 	public 	$_queue_log_conf	= array();

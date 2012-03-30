@@ -22,18 +22,12 @@ $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
-$auth = $this->get_var('auth');
-$error = $this->get_var('error');
 $element = $this->get_var('element');
+
+$auth = $this->get_var('auth');
 $moh_list = $this->get_var('moh_list');
 $context_list = $this->get_var('context_list');
 //$parking_list = $this->get_var('parking_list');
-
-if(($fm_save = $this->get_var('fm_save')) === true):
-	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
-elseif($fm_save === false):
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 
 ?>
 <div class="b-infos b-form">
@@ -667,17 +661,14 @@ endif;
 				       'paragraph'	=> false),
 				 $this->get_var('info','localnet'));?>
 		<div class="bt-adddelete">
-			<a href="#"
-			   onclick="xivo_form_select_add_host_ipv4_subnet('it-localnet',
+			<a href="#" onclick="xivo_form_select_add_host_ipv4_subnet('it-localnet',
 									  prompt('<?=$dhtml->escape($this->bbf('localnet_add'));?>'));
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_add-localnet');?>">
 				<?=$url->img_html('img/site/button/mini/blue/add.gif',
 						  $this->bbf('bt_add-localnet'),
 						  'class="bt-addlist" id="bt-add-localnet" border="0"');?></a><br />
-			<a href="#"
-			   onclick="dwho.form.select_delete_entry('it-localnet');
-				    return(dwho.dom.free_focus());"
+			<a href="#" onclick="dwho.form.select_delete_entry('it-localnet'); return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_delete-localnet');?>">
 				<?=$url->img_html('img/site/button/mini/orange/delete.gif',
 						  $this->bbf('bt_delete-localnet'),
@@ -1249,18 +1240,12 @@ endif;
 ?>
 	</div>
 	<div class="inout-list">
-		<a href="#"
-		   onclick="dwho.form.move_selected('it-codeclist',
-						  'it-codec');
-			    return(dwho.dom.free_focus());"
+		<a href="#" onclick="dwho.form.move_selected('it-codeclist', 'it-codec'); return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_incodec');?>">
 			<?=$url->img_html('img/site/button/arrow-left.gif',
 					  $this->bbf('bt_incodec'),
 					  'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
-		<a href="#"
-		   onclick="dwho.form.move_selected('it-codec',
-						  'it-codeclist');
-			    return(dwho.dom.free_focus());"
+		<a href="#" onclick="dwho.form.move_selected('it-codec', 'it-codeclist'); return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outcodec');?>">
 			<?=$url->img_html('img/site/button/arrow-right.gif',
 					  $this->bbf('bt_outcodec'),
@@ -1278,16 +1263,12 @@ endif;
 				       'bbfopt'		=> array('argmode' => 'paramvalue')),
 				 $this->get_var('info','allow','var_val'));?>
 		<div class="bt-updown">
-			<a href="#"
-			   onclick="dwho.form.order_selected('it-codec',1);
-				    return(dwho.dom.free_focus());"
+			<a href="#" onclick="dwho.form.order_selected('it-codec',1); return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upcodec');?>">
 				<?=$url->img_html('img/site/button/arrow-up.gif',
 						  $this->bbf('bt_upcodec'),
 						  'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
-			<a href="#"
-			   onclick="dwho.form.order_selected('it-codec',-1);
-				    return(dwho.dom.free_focus());"
+			<a href="#" onclick="dwho.form.order_selected('it-codec',-1); return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downcodec');?>">
 				<?=$url->img_html('img/site/button/arrow-down.gif',
 						  $this->bbf('bt_downcodec'),

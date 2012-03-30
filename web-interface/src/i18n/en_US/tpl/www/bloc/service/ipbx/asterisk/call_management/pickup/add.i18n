@@ -5,10 +5,10 @@ Pickup groups > Add
 General
 
 ; smenu_members
-Source members
+Interceptors
 
 ; smenu_interceptors
-Pickup members
+Intercepted
 
 ; fm_pickup_name
 Name:

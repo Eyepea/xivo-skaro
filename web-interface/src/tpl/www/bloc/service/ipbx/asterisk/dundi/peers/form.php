@@ -18,18 +18,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$form    = &$this->get_module('form');
-$url     = $this->get_module('url');
+$form = &$this->get_module('form');
+$url = $this->get_module('url');
 
-$info    = $this->get_var('info');
+$info = $this->get_var('info');
 $element = $this->get_var('element');
+
 $privkeys = $this->get_var('privkeys');
 $pubkeys = $this->get_var('pubkeys');
 
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 ?>
 
 <div id="sb-part-first">
@@ -92,7 +89,7 @@ endif;
 	$form->text(array('desc'	=> $this->bbf('fm_dundipeer_include'),
 			  'name'	=> 'dundipeer[include]',
 			  'labelid'	=> 'dundipeer-include',
-			  'size'	=> 15,		
+			  'size'	=> 15,
 		    'help'	=> $this->bbf('hlp_fm_dundipeer-include'),
 			  'default'	=> $element['dundipeer']['include']['default'],
 			  'value'	=> $info['dundipeer']['include'],
@@ -102,7 +99,7 @@ endif;
 	$form->text(array('desc'	=> $this->bbf('fm_dundipeer_noinclude'),
 			  'name'	=> 'dundipeer[noinclude]',
 			  'labelid'	=> 'dundipeer-noinclude',
-			  'size'	=> 15,		
+			  'size'	=> 15,
 		    'help'	=> $this->bbf('hlp_fm_dundipeer-noinclude'),
 			  'default'	=> $element['dundipeer']['noinclude']['default'],
 			  'value'	=> $info['dundipeer']['noinclude'],

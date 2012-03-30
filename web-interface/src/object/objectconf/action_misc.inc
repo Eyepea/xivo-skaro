@@ -135,11 +135,6 @@ $array['xivo/configuration/web_services/restricted/network/mail'] = array(
 $array['xivo/configuration/web_services/restricted/network/dhcp'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/dhcp',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-/*
-$array['xivo/configuration/web_services/restricted/network/ha'] = array(
-	'path'		=> 'xivo/configuration/web_services/network/ha',
-	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
- */
 $array['xivo/configuration/web_services/restricted/support/monitoring'] = array(
 	'path'		=> 'xivo/configuration/web_services/support/monitoring',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
@@ -168,6 +163,9 @@ $array['xivo/configuration/web_services/private/provisioning/general'] = array(
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['xivo/configuration/web_services/private/provisioning/autoprov'] = array(
 	'path'		=> 'xivo/configuration/web_services/provisioning/autoprov',
+	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['xivo/configuration/web_services/private/provisioning/configregistrar'] = array(
+	'path'		=> 'xivo/configuration/web_services/provisioning/configregistrar',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
 
@@ -330,6 +328,9 @@ $array['service/ipbx/asterisk/web_services/restricted/call_management/outcall'] 
 $array['service/ipbx/asterisk/web_services/restricted/call_management/pickup'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/call_management/pickup',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+$array['service/ipbx/asterisk/web_services/restricted/call_management/cel'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/call_management/cel',
+	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 
 $array['service/ipbx/asterisk/web_services/private/call_management/incall'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/call_management/incall',
@@ -339,6 +340,9 @@ $array['service/ipbx/asterisk/web_services/private/call_management/outcall'] = a
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['service/ipbx/asterisk/web_services/private/call_management/pickup'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/call_management/pickup',
+	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['service/ipbx/asterisk/web_services/private/call_management/cel'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/call_management/cel',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
 $array['service/ipbx/asterisk/ui/call_management/schedule'] = array(

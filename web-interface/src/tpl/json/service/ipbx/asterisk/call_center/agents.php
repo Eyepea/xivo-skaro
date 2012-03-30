@@ -52,7 +52,7 @@ else
 		$arr['context'] = $ref['agentfeatures']['context'];
 		$arr['language'] = $ref['agentfeatures']['language'];
 		$arr['silent'] = $ref['agentfeatures']['silent'];
-		$arr['ackcall'] = $ref['agentoptions']['ackcall'];
+		$arr['ackcall'] = $ref['agentfeatures']['ackcall'];
 		$arr['endcall'] = $ref['agentoptions']['endcall'];
 		$arr['autologoff'] = $ref['agentoptions']['autologoff'];
 		$arr['autologoffunavail'] = $ref['agentoptions']['autologoffunavail'];

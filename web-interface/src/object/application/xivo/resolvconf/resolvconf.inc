@@ -26,9 +26,9 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 	var $_sysconfd    = false;
 	var $_commonconf  = false;
 
-	function xivo_application_xivo_object_resolvconf(&$xobj)
+	public function __construct(&$xobj)
 	{
-		$this->xivo_application_xivo_object_abstract(&$xobj);
+		parent::__construct(&$xobj);
 
 		if(($this->_resolvconf = &$this->_xobj->get_module('resolvconf')) === false
 		|| ($this->_sysconfd   = &$this->_xobj->get_module('sysconfd'))   === false
@@ -117,7 +117,7 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 
 		return($this->_return['resolvconf']);
 	}
-	
+
 	function set_sysconfd()
 	{
 		if(($rs = $this->get_result('resolvconf')) === null
@@ -140,7 +140,7 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 
 		return $this->_sysconfd->request_post('/resolv_conf', $args);
 	}
-	
+
 	function save_from_json()
 	{
 		if(($data = $this->_get_data_from_json()) === false

@@ -56,7 +56,7 @@ $array['xivo/configuration/manage/server'] = 'xivo/configuration/index.php/manag
 $array['xivo/configuration/manage/directories'] = 'xivo/configuration/index.php/manage/directories/';
 $array['xivo/configuration/manage/accesswebservice'] = 'xivo/configuration/index.php/manage/accesswebservice/';
 $array['xivo/configuration/manage/certificate'] = 'xivo/configuration/index.php/manage/certificate/';
-$array['xivo/configuration/manage/dahdihardware'] = 'xivo/configuration/index.php/manage/dahdihardware/';
+$array['xivo/configuration/manage/ha'] = 'xivo/configuration/index.php/manage/ha/';
 
 $array['xivo/configuration/json/restricted/manage/entity'] = 'xivo/configuration/json.php/restricted/manage/entity/';
 
@@ -69,23 +69,18 @@ $array['xivo/configuration/network/iproute'] = 'xivo/configuration/index.php/net
 $array['xivo/configuration/network/resolvconf'] = 'xivo/configuration/index.php/network/resolvconf/';
 $array['xivo/configuration/network/mail'] = 'xivo/configuration/index.php/network/mail/';
 $array['xivo/configuration/network/dhcp'] = 'xivo/configuration/index.php/network/dhcp/';
-//$array['xivo/configuration/network/ha'] = 'xivo/configuration/index.php/network/ha/';
-//$array['xivo/configuration/network/ha_stop'] = 'xivo/configuration/index.php/network/ha_stop/';
 
 $array['xivo/configuration/json/restricted/network/interface'] = 'xivo/configuration/json.php/restricted/network/interface/';
 $array['xivo/configuration/json/restricted/network/iproute'] = 'xivo/configuration/json.php/restricted/network/iproute/';
 $array['xivo/configuration/json/restricted/network/resolvconf'] = 'xivo/configuration/json.php/restricted/network/resolvconf/';
 $array['xivo/configuration/json/restricted/network/mail'] = 'xivo/configuration/json.php/restricted/network/mail/';
 $array['xivo/configuration/json/restricted/network/dhcp'] = 'xivo/configuration/json.php/restricted/network/dhcp/';
-//$array['xivo/configuration/json/restricted/network/ha'] = 'xivo/configuration/json.php/restricted/network/ha/';
-//$array['xivo/configuration/json/restricted/network/ha_stop'] = 'xivo/configuration/json.php/restricted/network/ha_stop/';
 
 $array['xivo/configuration/json/private/network/interface'] = 'xivo/configuration/json.php/private/network/interface/';
 $array['xivo/configuration/json/private/network/iproute'] = 'xivo/configuration/json.php/private/network/iproute/';
 $array['xivo/configuration/json/private/network/resolvconf'] = 'xivo/configuration/json.php/private/network/resolvconf/';
 $array['xivo/configuration/json/private/network/mail'] = 'xivo/configuration/json.php/private/network/mail/';
 $array['xivo/configuration/json/private/network/dhcp'] = 'xivo/configuration/json.php/private/network/dhcp/';
-//$array['xivo/configuration/json/private/network/ha_stop'] = 'xivo/configuration/json.php/private/network/ha_stop/';
 
 
 // support
@@ -105,6 +100,7 @@ $array['xivo/configuration/json/restricted/provisioning/autoprov'] = 'xivo/confi
 
 $array['xivo/configuration/json/private/provisioning/general'] = 'xivo/configuration/json.php/private/provisioning/general/';
 $array['xivo/configuration/json/private/provisioning/autoprov'] = 'xivo/configuration/json.php/private/provisioning/autoprov/';
+$array['xivo/configuration/json/private/provisioning/configregistrar'] = 'xivo/configuration/json.php/private/provisioning/configregistrar/';
 
 $array['xivo/configuration/ui/provisioning/plugin'] = 'xivo/configuration/ui.php/provisioning/plugin';
 $array['xivo/configuration/ui/provisioning/configs'] = 'xivo/configuration/ui.php/provisioning/configs';
@@ -114,8 +110,6 @@ $array['xivo/configuration/ui/provisioning/devices'] = 'xivo/configuration/ui.ph
 // controlsystem
 $array['xivo/configuration/controlsystem/commonconf'] = 'xivo/configuration/index.php/controlsystem/commonconf/';
 $array['xivo/configuration/controlsystem/network'] = 'xivo/configuration/index.php/controlsystem/network/';
-//$array['xivo/configuration/controlsystem/ha'] = 'xivo/configuration/index.php/controlsystem/ha/';
-//$array['xivo/configuration/controlsystem/ha_stop'] = 'xivo/configuration/index.php/controlsystem/ha_stop/';
 
 
 /*
@@ -206,13 +200,16 @@ $array['service/ipbx/call_management/callfilter'] = 'service/ipbx/index.php/call
 $array['service/ipbx/call_management/pickup'] = 'service/ipbx/index.php/call_management/pickup/';
 $array['service/ipbx/call_management/schedule'] = 'service/ipbx/index.php/call_management/schedule/';
 $array['service/ipbx/call_management/voicemenu'] = 'service/ipbx/index.php/call_management/voicemenu/';
+$array['service/ipbx/call_management/cel'] = 'service/ipbx/index.php/call_management/cel/';
 
 $array['service/ipbx/json/restricted/call_management/incall']  = 'service/ipbx/json.php/restricted/call_management/incall/';
 $array['service/ipbx/json/restricted/call_management/outcall'] = 'service/ipbx/json.php/restricted/call_management/outcall/';
 $array['service/ipbx/json/restricted/call_management/pickup']  = 'service/ipbx/json.php/restricted/call_management/pickup/';
+$array['service/ipbx/json/restricted/call_management/cel'] = 'service/ipbx/json.php/restricted/call_management/cel/';
 
 $array['service/ipbx/json/private/call_management/incall']     = 'service/ipbx/json.php/private/call_management/incall/';
 $array['service/ipbx/json/private/call_management/pickup']     = 'service/ipbx/json.php/private/call_management/pickup/';
+$array['service/ipbx/json/private/call_management/cel'] = 'service/ipbx/json.php/private/call_management/cel/';
 
 $array['service/ipbx/ui/call_management/schedule'] = 'service/ipbx/ui.php/call_management/schedule/';
 
@@ -392,10 +389,9 @@ $array['statistics/call_center/data/stats5']				= 'statistics/call_center/index.
 $array['statistics/call_center/settings/configuration']		= 'statistics/call_center/index.php/settings/configuration/';
 $array['statistics/call_center/settings/cache']				= 'statistics/call_center/index.php/settings/cache/';
 
-$array['statistics/cdr'] 						= 'statistics/cdr/index.php';
-$array['statistics/cdr/index'] 					= 'statistics/cdr/index.php';
-$array['statistics/cdr/search'] 				= 'statistics/cdr/index.php/search';
-$array['statistics/cdr/advanced_search'] 		= 'statistics/cdr/index.php/advanced_search';
+$array['statistics/cel'] 						= 'statistics/cel/index.php';
+$array['statistics/cel/index'] 					= 'statistics/cel/index.php';
+$array['statistics/cel/search'] 				= 'statistics/cel/index.php/search';
 
 $array['statistics/ui/call_center/genercache'] 				= 'statistics/ui.php/call_center/genercache';
 $array['statistics/ui/call_center/genergraphic'] 			= 'statistics/ui.php/call_center/genergraphic';

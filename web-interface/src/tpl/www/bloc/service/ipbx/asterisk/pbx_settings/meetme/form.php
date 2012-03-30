@@ -23,6 +23,7 @@ $url = &$this->get_module('url');
 
 $info = $this->get_var('info');
 $element = $this->get_var('element');
+
 $moh_list = $this->get_var('moh_list');
 $context_list = $this->get_var('context_list');
 
@@ -34,11 +35,6 @@ endif;
 
 $dhtml = &$this->get_module('dhtml');
 $dhtml->write_js('var xivo_fm_meetme_admin_suggest = \''.$dhtml->escape($admin_suggest).'\';');
-
-if($this->get_var('fm_save') === false):
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
-
 $dhtml->write_js('var jsi18n_no_number_in_context = "'.$this->bbf('no_number_in_context').'"');
 
 ?>

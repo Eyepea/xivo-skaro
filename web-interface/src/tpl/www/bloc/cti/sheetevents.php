@@ -24,15 +24,10 @@ $dhtml = &$this->get_module('dhtml');
 
 $info = $this->get_var('info');
 $element = $this->get_var('element');
+
 $error = $this->get_var('error');
 $customs = $this->get_var('customs');
 $sheetactionslist = $this->get_var('sheetactionslist');
-
-if(($fm_save = $this->get_var('fm_save')) === true):
-	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
-elseif($fm_save === false):
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
 
 if(isset($error_js[0]) === true)
 	$dhtml->write_js($error_js);
@@ -47,7 +42,7 @@ if(isset($error_js[0]) === true)
 <div class="sb-content">
 <form action="#" method="post" accept-charset="utf-8">
 <?php
-	echo	
+	echo
 		$form->hidden(array('name'	=> DWHO_SESS_NAME,
 				    'value'	=> DWHO_SESS_ID)),
 		$form->hidden(array('name'	=> 'fm_send',

@@ -52,25 +52,28 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		return($rs['device']);
 	}
 
-	public function get_device_list($search='',$assoc=false)
-	{
-		return($this->_get_devices('list',$search,$assoc));
-	}
-
-	private function _get_devices($type,$search='',$assoc=false)
+	public function get_device_by_ip($ip)
 	{
 		$this->reset();
 
-		switch ($type)
-		{
-			default:
-			case 'list':
-				$uri = $this->_build_uri(array('devices'));
+		$uri = $this->_build_uri(array('devices'));
+		$query = array();
+		array_push($query,array('q','{"ip":"'.$ip.'"}'));
+		$rs = $this->request_get($uri, $query);
+
+		if($this->_status_code !== 200
+		|| empty($rs['devices']) === true) {
+			return(false);
 		}
 
-		#$this->set_order($order);
-		#$this->set_limit($limit);
+		return($rs['devices'][0]);
+	}
 
+	public function get_all()
+	{
+		$this->reset();
+
+		$uri = $this->_build_uri(array('devices'));
 		$rs = $this->request_get($uri);
 
 		if (is_array($rs) === false
@@ -78,27 +81,14 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		|| ($nb = count($rs)) === 0)
 			return(false);
 
-		for($i=0;$i<$nb;$i++)
-		{
-			$ref = &$rs[$i];
-
-			if ($search !== ''
-			&& preg_match('/'.$search.'/', $ref['name']) === 0
-			&& preg_match('/'.$search.'/', $ref['description']) === 0)
-				unset($rs[$i]);
-		}
-
-		if((bool) $assoc === false)
-			return(array_values($rs));
-
-		return($rs);
+		return(array_values($rs));
 	}
 
 	private function _prepare_to($arr)
 	{
 		if (isset($arr['mac']) === true
 		&& $arr['mac'] === '')
-		    unset($arr['mac']);
+			unset($arr['mac']);
 
 		return($arr);
 	}
@@ -133,7 +123,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 
 		if (isset($arr['mac']) === true
 		&& $arr['mac'] === '')
-		    unset($arr['mac']);
+			unset($arr['mac']);
 
 		$data['device'] = $arr;
 
@@ -200,19 +190,15 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		return(true);
 	}
 
-	public function eval_config_device($id)
+	public function eval_config_device($deviceid)
 	{
-		if ($this->_provdconfig === false
-		|| empty($id) === true)
+		if (($conf = $this->_provdconfig->build_raw_config($deviceid)) === false)
 			return(false);
 
-		// create config for this device if not exist
-		if (($rs = $this->_provdconfig->get($id)) === false)
-		{
-			if (($conf = $this->_provdconfig->build_raw_config($id)) === false
-			|| $this->_provdconfig->edit($id,$conf) === false)
-				return(false);
-		}
+		if ($this->_provdconfig->get($deviceid) === false)
+			$this->_provdconfig->add($conf);
+		else
+			$this->_provdconfig->edit($deviceid,$conf);
 
 		return(true);
 	}
@@ -242,7 +228,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 
 		if (($device = $this->get($deviceid)) === false)
 		{
-			dwho_report::push('error', 'fail to edit config for this device: '.$deviceid);
+			dwho_report::push('error', 'fail to get config for this device: '.$deviceid);
 			return(false);
 		}
 
@@ -280,20 +266,17 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 
 		if (($conf = $this->_provdconfig->build_raw_config($deviceid,$lines)) === false)
 			return(false);
-
-		if ($this->_provdconfig->edit($deviceid,$conf) === false)
+		elseif ($this->_provdconfig->edit($deviceid,$conf) === false)
 		{
 			dwho_report::push('error', 'fail to edit config for this device: " '.$deviceid.' "');
 			return(false);
 		}
-
-		if($this->update_configid($deviceid,$deviceid) === false)
+		elseif($this->update_configid($deviceid,$deviceid) === false)
 		{
 			dwho_report::push('error', 'fail to edit config device: '.$deviceid);
 			return(false);
 		}
-
-		if ($synchronize === true
+		elseif ($synchronize === true
 		&& $this->synchronize($deviceid) === false)
 			dwho_report::push('warning', 'fail to synchronize this device: '.$deviceid);
 
@@ -323,11 +306,6 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 			dwho_report::push('warning', 'fail to synchronize this device: '.$deviceid);
 
 		return(true);
-	}
-
-	public function remove_config_from_line($deviceid)
-	{
-		return($this->remove_config($deviceid));
 	}
 }
 

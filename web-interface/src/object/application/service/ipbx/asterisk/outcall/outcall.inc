@@ -998,13 +998,19 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			return(false);
 
 		$where = array();
-		$where['exten'] = $this->_info['outcall']['exten'];
 		$where['context'] = $this->_info['outcall']['context'];
 
-		if((bool) $disable === false)
-			$r = $this->_extensions->enable_where($where);
-		else
-			$r = $this->_extensions->disable_where($where);
+		$dial_pattern = $this->_info['outcall']['dialpattern'];
+		$nb = count($dial_pattern);
+		for ($i=0; $i < $nb; $i++)
+		{
+			$where['exten'] = $dial_pattern[$i]['exten'];
+
+			if((bool) $disable === false)
+				$r = $this->_extensions->enable_where($where);
+			else
+				$r = $this->_extensions->disable_where($where);
+		}
 
 		if($this->_status === 'enable' || $this->_status === 'disable')
 			$this->_return['outcallmacro'] = $r;

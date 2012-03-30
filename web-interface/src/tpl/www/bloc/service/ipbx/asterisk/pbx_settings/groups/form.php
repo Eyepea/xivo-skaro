@@ -23,11 +23,12 @@ $url = &$this->get_module('url');
 
 $element = $this->get_var('element');
 $info = $this->get_var('info');
+
 $user = $this->get_var('user');
 $rightcall = $this->get_var('rightcall');
 $moh_list = $this->get_var('moh_list');
 $context_list = $this->get_var('context_list');
-$schedules    = $this->get_var('schedules');
+$schedules = $this->get_var('schedules');
 
 if(dwho_has_len($user['list']) === true):
 	$user_suggest = $this->get_var('user','fullname');
@@ -38,11 +39,6 @@ endif;
 $dhtml = &$this->get_module('dhtml');
 $dhtml->write_js('var xivo_fm_user_suggest = \''.$dhtml->escape($user_suggest).'\';');
 
-if($this->get_var('fm_save') === false):
-	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
-endif;
-
 ?>
 
 <div id="sb-part-first" class="b-nodisplay">
@@ -52,7 +48,7 @@ if (is_null($this->get_var('error','groupfeatures','number')))
 	$err_number = $this->get_var('error','extenumbers');
 else
 	$err_number = $this->get_var('error','groupfeatures','number');
-	   		
+
 	echo	$form->text(array('desc'	=> $this->bbf('fm_groupfeatures_name'),
 				  'name'	=> 'groupfeatures[name]',
 				  'labelid'	=> 'groupfeatures-name',
@@ -61,7 +57,7 @@ else
 				  'value'	=> $this->get_var('info','groupfeatures','name'),
 				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','groupfeatures','name')))),
-					   		
+
 		$form->text(array('desc'	=> $this->bbf('fm_groupfeatures_number'),
 				  'name'	=> 'groupfeatures[number]',
 				  'labelid'	=> 'groupfeatures-number',

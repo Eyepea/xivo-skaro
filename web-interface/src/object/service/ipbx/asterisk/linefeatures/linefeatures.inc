@@ -70,6 +70,17 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 		return($this->_prepare($rs));
 	}
 
+	function get_line_provisioniable($provisioningid)
+	{
+		if(($rs = $this->_dso->get(array('provisioningid' => $provisioningid))) === false)
+			return(false);
+
+		if ((int) $rs['device'] > 0)
+			return(false);
+
+		return($this->_prepare($rs));
+	}
+
 	function get($id,$orig=true,$disable=null)
 	{
 		$orig = (bool) $orig;
@@ -88,25 +99,6 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 			$this->_origin = $origin;
 
 		return($this->_prepare($r));
-	}
-
-	function get_where($arr,$orig=true,$disable=null,$id=null)
-	{
-		$orig = (bool) $orig;
-		$origin = $this->_origin;
-
-		if($orig === false)
-			$this->_origin = null;
-
-		if(($r = parent::get_where($arr,$disable,$id)) === false)
-		{
-			$this->_origin = $origin;
-			return(false);
-		}
-		else if($orig === false)
-			$this->_origin = $origin;
-
-		return($r);
 	}
 
 	function _mk_provisioning_id($protocol)
@@ -216,23 +208,6 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 		return($list);
 	}
 
-	function get_all_where($arr,$disable=null,$order=null,$limit=null)
-	{
-		if(($list = $this->_dso->get_all_where($arr,$disable,$order,$limit)) === false)
-			return(false);
-
-		$nb = count($list);
-		$list = array_values($list);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$data = &$list[$i];
-			$data = $this->_prepare($data);
-		}
-
-		return($list);
-	}
-
 	function search_number($value,$disable=null,$order=null,$limit=null)
 	{
 		return($this->search($value,$disable,$order,$limit,true));
@@ -299,6 +274,7 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 	{
 		$arr = array();
 		$arr['device'] = 0;
+
 		$where = array('device' => (string) $iddevice);
 
 		return(parent::edit_where($where,$arr));
