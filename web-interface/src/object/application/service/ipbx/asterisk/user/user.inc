@@ -972,9 +972,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				} else {
 					$ref['name'] = $this->gen_password(6,true);
 				}
-				if (isset($ref['rules_order']) === false)
-					$ref['rules_order'] = $i+1;
 			}
+			if (isset($ref['rules_order']) === false)
+				$ref['rules_order'] = $i+1;
 
 			$protocolname = $ref['protocol'];
 			$number = $ref['number'];
@@ -1455,7 +1455,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					continue;
 				if($this->_line->get($ref['id']) === false
 				||$this->_line->delete() === false)
-					dwho_report::push('error','Can\'t disassociate line: '.$ref['id'],'linefeatures');
+				{
+					dwho_report::push('error','Can\'t remove line: '.$ref['id'],'linefeatures');
+					$this->_set_error('line',$this->_line->get_error());
+					return(false);
+				}
 			}
 		}
 
@@ -2205,9 +2209,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	{
 		if(($data = $this->_get_data_from_json()) === false
 		|| ($arr = $this->_prepare_import($data, !is_null($mergewith))) === false)
-		{
 			return(false);
-		}
 
 		if(!is_null($mergewith))
 		{
@@ -2215,12 +2217,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$arr = $this->array_merge_recursive($mergewith,$arr);
 		}
 
-
 		if($this->set_edit($arr) === false
 		|| $this->edit() === false)
-		{
 			return(false);
-		}
 
 		return(true);
 	}

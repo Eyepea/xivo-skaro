@@ -60,7 +60,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 			$arr['commented'] = intval((bool) $disable);
 
 		$this->_dso->andwhere($arr,$this->_table['userfeatures']);
-		
+
 		if($initialized === true)
 		{
 			$this->_dso->innerjoin($this->_table['linefeatures'],
