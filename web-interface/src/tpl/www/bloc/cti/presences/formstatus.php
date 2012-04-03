@@ -27,17 +27,7 @@ $info = $this->get_var('info');
 $actionslist = $this->get_var('actionslist');
 
 $actionsavail = array(
-	'queueadd'        => $this->bbf('action-queueadd'),
-	'queueremove'     => $this->bbf('action-queueremove'),
-	'queuepause'      => $this->bbf('action-queuepause'),
-	'queueunpause'    => $this->bbf('action-queueunpause'),
-	'enablevoicemail' => $this->bbf('action-enablevoicemail'),
-	'callrecord'      => $this->bbf('action-callrecord'),
-	'incallfilter'    => $this->bbf('action-incallfilter'),
-	'enablednd'       => $this->bbf('action-enablednd'),
-	'enableunc'       => $this->bbf('action-enableunc'),
-	'enablebusy'      => $this->bbf('action-enablebusy'),
-	'enablerna'       => $this->bbf('action-enablerna'),
+	'enablednd'       => $this->bbf('action-enablednd')
 );
 
 $status = $this->get_var('status');
