@@ -108,7 +108,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		|| isset($rs['id']) === false)
 			return(false);
 
-		$this->eval_config_device($id);
+		$this->eval_config_device($rs['id']);
 
 		return($rs['id']);
 	}

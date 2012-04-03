@@ -95,7 +95,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			if(($devicefeatures = $this->_devicefeatures->get_where(array('deviceid' => $deviceid))) !== false
 			&& $this->get($devicefeatures['id'],null,true) !== false)
 			{
-				if ($devicefeatures['ip'] !== $ref['ip']
+				if ((isset($ref['ip'])
+					&& $devicefeatures['ip'] !== $ref['ip'])
 				|| $devicefeatures['mac'] !== $ref['mac']
 				|| (isset($ref['vendor'])
 					&& $devicefeatures['vendor'] !== $ref['vendor'])
@@ -541,6 +542,9 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 
 				if($this->get_errnb() > 0)
 					return false;
+
+				if (dwho_has_len($rs['ip']) === false)
+					unset($rs['ip']);
 
 				$this->_return['devicefeatures'] = $this->_provddevice->add($rs);
 				break;
