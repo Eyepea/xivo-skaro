@@ -29,16 +29,10 @@ $tagmenu = $xmlvendor->tag_menu();
 $argseparator = $xmlvendor->arg_separator();
 
 if(is_array($list) === false || ($nb = count($list)) === 0):
-	$previous = $this->url('service/ipbx/web_services/phonebook/search',true);
-
 	echo	'<',$tagmenu,' style="none" destroyOnExit="yes">',"\n",
 		'<MenuItem>',"\n",
 		'<Prompt>',$xmlvendor->escape($this->bbf('phone_noentries')),'</Prompt>',"\n",
 		'<URI></URI>',"\n",
-		'</MenuItem>',"\n",
-		'<MenuItem>',"\n",
-		'<Prompt>[',$xmlvendor->escape($this->bbf('phone_back')),']</Prompt>',"\n",
-		'<URI>',$previous,'</URI>',"\n",
 		'</MenuItem>',"\n",
 		'</',$tagmenu,'>',"\n";
 else:

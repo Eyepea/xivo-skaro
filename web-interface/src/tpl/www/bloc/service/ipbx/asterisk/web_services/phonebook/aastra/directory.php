@@ -42,7 +42,7 @@ if($prevpos > 0):
 			       $argseparator,
 			       false);
 else:
-	$previous = '';
+	$previous = null;
 endif;
 
 echo	'<',$tagmenu,' style="none" destroyOnExit="yes">',"\n";
@@ -51,16 +51,20 @@ if(is_array($list) === false || ($nb = count($list)) === 0):
 	echo	'<MenuItem>',"\n",
 		'<Prompt>',$xmlvendor->escape($this->bbf('phone_noentries')),'</Prompt>',"\n",
 		'<URI></URI>',"\n",
-		'</MenuItem>',"\n",
-		'<MenuItem>',"\n",
-		'<Prompt>[',$xmlvendor->escape($this->bbf('phone_back')),']</Prompt>',"\n",
-		'<URI>',$previous,'</URI>',"\n",
 		'</MenuItem>',"\n";
+	if(is_null($previous) === false):
+		echo	'<MenuItem>',"\n",
+			'<Prompt>[',$xmlvendor->escape($this->bbf('phone_back')),']</Prompt>',"\n",
+			'<URI>',$previous,'</URI>',"\n",
+			'</MenuItem>',"\n";
+	endif;
 else:
-	echo	'<MenuItem>',"\n",
-		'<Prompt>[',$xmlvendor->escape($this->bbf('phone_back')),']</Prompt>',"\n",
-		'<URI>',$previous,'</URI>',"\n",
-		'</MenuItem>',"\n";
+	if(is_null($previous) === false):
+		echo	'<MenuItem>',"\n",
+			'<Prompt>[',$xmlvendor->escape($this->bbf('phone_back')),']</Prompt>',"\n",
+			'<URI>',$previous,'</URI>',"\n",
+			'</MenuItem>',"\n";
+	endif;
 
 	for($i = 0;$i < $nb;$i++):
 		$ref = &$list[$i];
