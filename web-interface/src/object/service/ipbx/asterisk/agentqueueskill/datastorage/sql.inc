@@ -29,10 +29,10 @@ class xivo_service_asterisk_agentqueueskill_sql extends xivo_service_asterisk_ab
 		$this->_dso->new_select('agentqueueskill', array('weight'));
 		$this->_dso->where(array('agentid' => $agentid),'agentqueueskill');
 		$this->_dso->leftjoin('queueskill',
-			array('id' => (int) '"agentqueueskill"."skillid"'),
+			'queueskill.id = agentqueueskill.skillid',
 			null,
 			array('id', 'name'));
-		
+
 		$this->_dso->new_order('name', null, 'queueskill');
 		$res = $this->_dso->select_all(null, true);
 
