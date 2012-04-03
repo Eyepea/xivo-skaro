@@ -585,10 +585,10 @@ CREATE TABLE "ctistatus" (
 CREATE UNIQUE INDEX "ctistatus_presence_name" ON "ctistatus" (presence_id,name);
 
 INSERT INTO "ctistatus" VALUES(DEFAULT,1,'available','Disponible','enablednd(false)','#08FD20','1,2,3,4,5',0);
-INSERT INTO "ctistatus" VALUES(DEFAULT,1,'away','Sorti','enablednd(true)','#FDE50A','1,2,3,4,5',1);
-INSERT INTO "ctistatus" VALUES(DEFAULT,1,'outtolunch','Parti Manger','enablednd(true)','#001AFF','1,2,3,4,5',1);
+INSERT INTO "ctistatus" VALUES(DEFAULT,1,'away','Sorti','enablednd(false)','#FDE50A','1,2,3,4,5',1);
+INSERT INTO "ctistatus" VALUES(DEFAULT,1,'outtolunch','Parti Manger','enablednd(false)','#001AFF','1,2,3,4,5',1);
 INSERT INTO "ctistatus" VALUES(DEFAULT,1,'donotdisturb','Ne pas déranger','enablednd(true)','#FF032D','1,2,3,4,5',1);
-INSERT INTO "ctistatus" VALUES(DEFAULT,1,'berightback','Bientôt de retour','enablednd(true)','#FFB545','1,2,3,4,5',1);
+INSERT INTO "ctistatus" VALUES(DEFAULT,1,'berightback','Bientôt de retour','enablednd(false)','#FFB545','1,2,3,4,5',1);
 INSERT INTO "ctistatus" VALUES(DEFAULT,1,'disconnected','Déconnecté','','#202020','',0);
 
 
