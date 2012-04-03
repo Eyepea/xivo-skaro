@@ -31,27 +31,16 @@ $argseparator = $xmlvendor->arg_separator();
 if(is_array($list) === false || ($nb = count($list)) === 0):
 	$previous = $this->url('service/ipbx/web_services/phonebook/search',true);
 
-	if($xmlvendor->has_softkeys() === true):
-		$tagdirectory = $xmlvendor->tag_directory();
-
-		echo	'<',$tagdirectory,' previous="',$previous,'" destroyOnExit="yes">',"\n",
-			'<MenuItem>',"\n",
-			'<Prompt>',$xmlvendor->escape($this->bbf('phone_noentries')),'</Prompt>',"\n",
-			'<URI></URI>',"\n",
-			'</MenuItem>',"\n",
-			'</',$tagdirectory,'>';
-	else:
-		echo	'<',$tagmenu,' style="none" destroyOnExit="yes">',"\n",
-			'<MenuItem>',"\n",
-			'<Prompt>',$xmlvendor->escape($this->bbf('phone_noentries')),'</Prompt>',"\n",
-			'<URI></URI>',"\n",
-			'</MenuItem>',"\n",
-			'<MenuItem>',"\n",
-			'<Prompt>[',$xmlvendor->escape($this->bbf('phone_back')),']</Prompt>',"\n",
-			'<URI>',$previous,'</URI>',"\n",
-			'</MenuItem>',"\n",
-			'</',$tagmenu,'>',"\n";
-	endif;
+	echo	'<',$tagmenu,' style="none" destroyOnExit="yes">',"\n",
+		'<MenuItem>',"\n",
+		'<Prompt>',$xmlvendor->escape($this->bbf('phone_noentries')),'</Prompt>',"\n",
+		'<URI></URI>',"\n",
+		'</MenuItem>',"\n",
+		'<MenuItem>',"\n",
+		'<Prompt>[',$xmlvendor->escape($this->bbf('phone_back')),']</Prompt>',"\n",
+		'<URI>',$previous,'</URI>',"\n",
+		'</MenuItem>',"\n",
+		'</',$tagmenu,'>',"\n";
 else:
 	echo '<',$tagmenu,' style="none" destroyOnExit="yes">',"\n";
 
