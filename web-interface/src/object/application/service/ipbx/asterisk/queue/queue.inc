@@ -1502,7 +1502,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$catid = $this->_skillcat->get_list_where(array('name' => $data['category_name']));
 		if($catid === false)
 		{
-			$catid =  $this->_skillcat->add(array('id' => null, 'name' => $data['category_name']));
+			$catid =  $this->_skillcat->add(array('name' => $data['category_name']));
     		if(is_null($catid) || $catid === false)
 		        return(false);
 		}
