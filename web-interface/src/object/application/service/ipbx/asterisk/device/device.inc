@@ -157,7 +157,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 					dwho_report::push('error',$k.': '.$v,'error_device_'.$act);
 			}
 		}
-		elseif(preg_match('/'.XIVO_SRE_IPBX_AST_PROTO_SCCP.'/', $data['plugin']) === 1)
+		elseif(isset($data['plugin'])
+		&& preg_match('/'.XIVO_SRE_IPBX_AST_PROTO_SCCP.'/', $data['plugin']) === 1)
 			$this->_sccpdevice->init_device($data['mac']);
 
 		return(true);
@@ -542,9 +543,6 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 
 				if($this->get_errnb() > 0)
 					return false;
-
-				if (dwho_has_len($rs['ip']) === false)
-					unset($rs['ip']);
 
 				$this->_return['devicefeatures'] = $this->_provddevice->add($rs);
 				break;
