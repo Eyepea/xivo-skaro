@@ -74,7 +74,7 @@ class HAConfigManager(object):
         postgres_updater = self._postgres_config_updater_factory(ha_config)
         postgres_updater.update_pg_hba_file()
         postgres_updater.update_postgresql_file()
-        postgres_updater.reload_postgres_config()
+        postgres_updater.restart_postgres()
 
     def _update_cronfiles(self, ha_config):
         node_type = ha_config['node_type']
@@ -104,8 +104,6 @@ class _PostgresConfigUpdater(object):
     DEFAULT_CONFIG_DIR = '/etc/postgresql/9.0/main'
     PG_HBA_FILE = 'pg_hba.conf'
     POSTGRESQL_FILE = 'postgresql.conf'
-    PG_CLUSTER_VERSION = '9.0'
-    PG_CLUSTER_NAME = 'main'
 
     def __init__(self, ha_config, postgres_config_dir=DEFAULT_CONFIG_DIR):
         self._ha_config = ha_config
@@ -141,8 +139,8 @@ class _PostgresConfigUpdater(object):
         with open(self._postgresql_file, 'a') as fobj:
             fobj.write(listen_addresses_line)
 
-    def reload_postgres_config(self):
-        command_args = ['pg_ctlcluster', self.PG_CLUSTER_VERSION, self.PG_CLUSTER_NAME, 'reload']
+    def restart_postgres(self):
+        command_args = ['/etc/init.d/postgresql', 'restart']
         subprocess.check_call(command_args, close_fds=True)
 
 
