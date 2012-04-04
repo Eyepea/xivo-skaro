@@ -84,7 +84,7 @@ $array['element']['cipher']['default'] = 'aes';
 $array['element']['cipher']['null'] = true;
 
 $array['filter'] = array();
-$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
+$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 64);
 /*
 $array['filter']['password'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['CN'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
