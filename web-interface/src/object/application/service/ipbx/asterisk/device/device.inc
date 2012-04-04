@@ -97,7 +97,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			{
 				if ((isset($ref['ip'])
 					&& $devicefeatures['ip'] !== $ref['ip'])
-				|| $devicefeatures['mac'] !== $ref['mac']
+				|| (isset($ref['mac'])
+					|| $devicefeatures['mac'] !== $ref['mac'])
 				|| (isset($ref['vendor'])
 					&& $devicefeatures['vendor'] !== $ref['vendor'])
 				|| (isset($ref['model'])
@@ -106,7 +107,8 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 					&& $devicefeatures['plugin'] !== $ref['plugin'])
 				|| (isset($ref['config'])
 					&& $devicefeatures['config'] !== $ref['config'])
-				|| $devicefeatures['configured'] !== $ref['configured'])
+				|| (isset($ref['configured'])
+					&& $devicefeatures['configured'] !== $ref['configured']))
 					$act = 'edit';
 				else
 					continue;
@@ -147,15 +149,6 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			dwho_report::push('error',
 				dwho_i18n::babelfish('error_during_'.$act.'_device',array($deviceid)),
 				'error_device_'.$act);
-
-			foreach($this->get_error() as $k => $v)
-			{
-				if (is_array($v))
-					foreach($v as $kk => $vv)
-						dwho_report::push('error',$kk.': '.$vv,'error_device_'.$act);
-				else
-					dwho_report::push('error',$k.': '.$v,'error_device_'.$act);
-			}
 		}
 		elseif(isset($data['plugin'])
 		&& preg_match('/'.XIVO_SRE_IPBX_AST_PROTO_SCCP.'/', $data['plugin']) === 1)
