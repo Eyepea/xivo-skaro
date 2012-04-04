@@ -44,7 +44,7 @@ switch($act)
 	case 'add':
 		$fm_save = true;
 
-		if(isset($_QR['fm_send']) 	 === true)
+		if(isset($_QR['fm_send']) === true)
 		{
 			$now = new DateTime("now");
 			$end = DateTime::createFromFormat("Y-m-d", $_QR['validity-end-format']);
@@ -74,7 +74,8 @@ switch($act)
 				{ $cert[$k] = $v; }
 
 				// save item
-				if(($ret = $modcert->add(array_key_exists('is_ca',$_QR) && $_QR['is_ca'] == 1, $cert)) === true)
+				if(($rs = $modcert->set_cert($cert)) !== false
+				&& ($ret = $modcert->add(array_key_exists('is_ca',$_QR) && $_QR['is_ca'] == 1, $cert)) === true)
 					$_QRY->go($_TPL->url('xivo/configuration/manage/certificate'), $param);
 			}
 

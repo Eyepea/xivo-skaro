@@ -37,7 +37,6 @@ class xivo_object_certificate extends xivo_object_abstract
 		return $this->_sysconfd !== false;
 	}
 
-	#function get_all($none, $order, $limit, &$total)
 	function get_all()
 	{
 		function certs_sort($a, $b)
@@ -75,7 +74,6 @@ class xivo_object_certificate extends xivo_object_abstract
 
 		$total = count($certs);
 		return $certs;
-		#return array_slice($certs, $limit[0], $limit[1]);
 	}
 
 	function get($id)
@@ -98,6 +96,15 @@ class xivo_object_certificate extends xivo_object_abstract
 	function get_keys()
 	{
 		return $this->_sysconfd->request_get('/openssl_listkeys');
+	}
+
+	public function set_cert($arr)
+	{
+		if(is_array($arr) === false)
+			return(false);
+		if(($rs = $this->chk_values($arr)) === false)
+			return(false);
+		return($rs);
 	}
 
 	function add($is_ca, $arr)

@@ -85,6 +85,7 @@ $array['element']['cipher']['null'] = true;
 
 $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
+/*
 $array['filter']['password'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['CN'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['C'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
@@ -92,7 +93,8 @@ $array['filter']['ST'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['L'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['O'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['OU'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
-$array['filter']['emailAddress'] = array('set' => false,'chk' => 2,'maxlen' => 255,'callback' => 'dwho_network::valid_email');
+*/
+$array['filter']['emailAddress'] = array('set' => true,'chk' => 1,'maxlen' => 255,'callback' => 'dwho_network::valid_email');
 $array['filter']['ca'] = array('set' => false, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['ca_password'] = array('set' => false, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['length'] = array('set' => true, 'chk' => 1, 'cast' => 'uint');
