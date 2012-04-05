@@ -1129,11 +1129,13 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 						$this->_status = '';
 						return(false);
 					}
-					else if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+					else if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM
+							|| $this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
 						$this->delete_hints();
 					else
 					{
-						if($this->_info['linefeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+						if($this->_info['linefeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM
+								|| $this->_info['linefeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP)
 							$hints = $this->add_hints();
 						else
 							$hints = $this->edit_hints();
