@@ -1259,7 +1259,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if ($this->_info['linefeatures']['device'] !== $rs['device'])
 		{
 			// Delete the old device associated.
-			if (dwho_has_len($this->_info['linefeatures']['device']) === true)
+			if (empty($this->_info['linefeatures']['device']) === false)
 			{
 				if (($device = $this->_device->get($this->_info['linefeatures']['device'],null,true)) === false)
 				{
@@ -1273,7 +1273,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					return(false);
 			}
 			// Add the new device associated.
-			if (dwho_has_len($rs['device']) === true)
+			if (empty($rs['device']) === false)
 			{
 				$linefeaturesid = $this->_info['linefeatures']['id'];
 				$this->_set_result_var('linefeatures', 'id',$linefeaturesid);
