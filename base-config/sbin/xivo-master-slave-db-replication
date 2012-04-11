@@ -28,8 +28,8 @@ su postgres -c "psql -h $SLAVE_IP $DB_NAME < out_master.sql > /dev/null"
 
 su postgres -c "pg_dump -h $SLAVE_IP -c $PG_DUMP_OPTIONS $DB_NAME > out_slave.sql"
 
-master_md5=$(md5sum out_master.sql | awk '{print $1}')
-slave_md5=$(md5sum out_slave.sql | awk '{print $1}')
+master_md5=$(cat out_master.sql | sort > out_master.sorted.sql &&  md5sum out_master.sorted.sql | awk '{print $1}')
+slave_md5=$(cat out_slave.sql | sort > out_slave.sorted.sql && md5sum out_slave.sorted.sql | awk '{print $1}')
 
 if [ "$master_md5" != "$slave_md5" ]; then
     su postgres -c "cat $SLAVE_BACKUP | psql -h $SLAVE_IP $DB_NAME"
