@@ -11,6 +11,7 @@ PG_DUMP_OPTIONS='--exclude-table cel --exclude-table cel_id_seq'
 
 panic() {
     echo "Slave replication failed: $*" | mutt root@localhost
+    echo "Slave replication failed: $*"
     exit 1
 }
 
@@ -22,7 +23,6 @@ if [ $? -ne 0 ]; then
 fi
 
 su postgres -c "pg_dump --clean $PG_DUMP_OPTIONS $DB_NAME > out_master.sql"
-
 master_md5=$(cat out_master.sql | sort > out_master.sorted.sql &&  md5sum out_master.sorted.sql | awk '{print $1}')
 
 sed -i 's/DROP SCHEMA public;//' out_master.sql
