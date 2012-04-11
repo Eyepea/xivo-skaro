@@ -729,40 +729,19 @@ class AutocreateConfigDeviceUpdater(object):
         defer.returnValue(False)
 
 
-class RemoveDuplicateDeviceUpdater(object):
-    """Device updater that doesn't update the device but check if there's
-    a duplicate device in the device collection.
-    
-    Duplicate happens in the following situation, for example:
-    - you manually add a device to the device collection, specifying only
-      its MAC address and config 
-    - you are using an add device retriever
-    - your device make it impossible to extract its MAC address on its
-      first request (for example, it does a TFTP request with no reference
-      to its MAC address in its first request)
-    - this means a new device is created in the device collection by the
-      add device retriever the first time the device make a request to
-      the server
-    - eventually, your device make a request where its MAC address is
-      extractable, and the original device you manually created is retrieved
-      at this point, but there's now a "duplicate" device in the
-      device collection.
-    
-    """
-
+class RemoveOutdatedIpDeviceUpdater(object):
     def __init__(self, app):
         self._app = app
 
     @defer.inlineCallbacks
     def update(self, device, dev_info, request, request_type):
-        logger.debug('In RemoveDuplicateDeviceUpdater')
-        if u'ip' not in device and u'ip' in dev_info:
-            dup_devices = yield self._app.dev_find({u'ip': dev_info[u'ip'],
-                                                    u'added': u'auto'})
-            for dup_device in dup_devices:
-                logger.info('Evicting duplicate device %s', device)
-                self._app.dev_delete(dup_device[ID_KEY])
-        defer.returnValue(False)
+        logger.debug('In RemoveOutdatedIpDeviceUpdater')
+        if u'ip' in dev_info:
+            selector = {u'ip': dev_info[u'ip'], u'id': {'$ne': device[u'id']}}
+            outdated_devices = yield self._app.dev_find(selector)
+            for outdated_device in outdated_devices:
+                del outdated_device[u'ip']
+                self._app.dev_update(outdated_device)
 
 
 class CompositeDeviceUpdater(object):
