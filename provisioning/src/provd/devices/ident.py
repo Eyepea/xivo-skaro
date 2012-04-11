@@ -542,11 +542,7 @@ class IDeviceUpdater(Interface):
     
     This operation can have side effect, like updating the device. In fact,
     being able to do side effects is why this interface exist.
-    
-    Also, you should refrain from doing stupid thing, like removing the
-    'ip' key. This break this interface contract, and will yield to
-    exception, incorrect behaviors elsewhere in the application.  
-    
+
     """
 
     def update(device, dev_info, request, request_type):
