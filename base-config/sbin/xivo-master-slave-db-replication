@@ -7,7 +7,7 @@ if [ -z $SLAVE_IP ]; then
 fi
 DB_NAME='asterisk'
 SLAVE_BACKUP='out_slave_backup.sql'
-PG_DUMP_OPTIONS='-T cel -T cel_id_seq'
+PG_DUMP_OPTIONS='--exclude-table cel --exclude-table cel_id_seq'
 
 panic() {
     echo "Slave replication failed: $*" | mutt root@localhost
@@ -16,26 +16,31 @@ panic() {
 
 cd /tmp
 
-su postgres -c "pg_dump -h $SLAVE_IP -c $DB_NAME > $SLAVE_BACKUP"
+su postgres -c "pg_dump --host $SLAVE_IP --clean $DB_NAME > $SLAVE_BACKUP"
 if [ $? -ne 0 ]; then
     panic "Slave down"
 fi
 
-su postgres -c "pg_dump -c $PG_DUMP_OPTIONS $DB_NAME > out_master.sql"
-asterisk -rx "module reload cel_pgsql.so"
-
-su postgres -c "psql -h $SLAVE_IP $DB_NAME < out_master.sql > /dev/null"
-
-su postgres -c "pg_dump -h $SLAVE_IP -c $PG_DUMP_OPTIONS $DB_NAME > out_slave.sql"
+su postgres -c "pg_dump --clean $PG_DUMP_OPTIONS $DB_NAME > out_master.sql"
 
 master_md5=$(cat out_master.sql | sort > out_master.sorted.sql &&  md5sum out_master.sorted.sql | awk '{print $1}')
+
+sed -i 's/DROP SCHEMA public;//' out_master.sql
+sed -i 's/CREATE SCHEMA public;//' out_master.sql
+
+asterisk -rx "module reload cel_pgsql.so"
+
+su postgres -c "psql --host $SLAVE_IP $DB_NAME < out_master.sql > /dev/null"
+
+su postgres -c "pg_dump --host $SLAVE_IP --clean $PG_DUMP_OPTIONS $DB_NAME > out_slave.sql"
+
 slave_md5=$(cat out_slave.sql | sort > out_slave.sorted.sql && md5sum out_slave.sorted.sql | awk '{print $1}')
 
 if [ "$master_md5" != "$slave_md5" ]; then
-    su postgres -c "cat $SLAVE_BACKUP | psql -h $SLAVE_IP $DB_NAME"
+    su postgres -c "psql --host $SLAVE_IP $DB_NAME < $SLAVE_BACKUP > /dev/null"
     rm -f out_*.sql
     panic "md5sum didnt match"
 else
-    echo "Slave replication completed succesfully"
     rm -f out_*.sql
+    echo "Slave replication completed succesfully"
 fi
