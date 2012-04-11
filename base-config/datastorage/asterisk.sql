@@ -848,7 +848,7 @@ INSERT INTO "features" VALUES (DEFAULT,0,0,0,'features.conf','general','parkpos'
 INSERT INTO "features" VALUES (DEFAULT,0,0,0,'features.conf','general','context','parkedcalls');
 INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','parkinghints','no');
 INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','parkingtime','45');
-INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','comebacktoorigin','no');
+INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','comebacktoorigin','yes');
 INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','courtesytone',NULL);
 INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','parkedplay','caller');
 INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','parkedcalltransfers','no');
