@@ -426,12 +426,45 @@ class SearchDeviceRetriever(object):
         return defer.succeed(None)
 
 
-def IpDeviceRetriever(app):
-    """Retrieve device object by looking up in a device manager for an
-    object which IP is the same as the device info object.
-    
-    """
-    return SearchDeviceRetriever(app, u'ip')
+class IpDeviceRetriever(object):
+    implements(IDeviceRetriever)
+
+    def __init__(self, app):
+        self._app = app
+
+    @defer.inlineCallbacks
+    def retrieve(self, dev_info):
+        logger.debug('In IpDeviceRetriever')
+        if u'ip' in dev_info:
+            devices = yield self._app.dev_find({u'ip': dev_info[u'ip']})
+            matching_device = self._get_matching_device(devices, dev_info)
+            defer.returnValue(matching_device)
+        defer.returnValue(None)
+
+    def _get_matching_device(self, devices, dev_info):
+        candidate_devices = self._get_candidate_devices(devices, dev_info)
+        nb_candidates = len(candidate_devices)
+        if nb_candidates == 1:
+            return candidate_devices[0]
+        elif nb_candidates > 1:
+            logger.warning('Multiple device match in IP device retriever: %r', candidate_devices)
+        return None
+
+    def _get_candidate_devices(self, devices, dev_info):
+        devices_by_id = dict((device[u'id'], device) for device in devices)
+        self._filter_devices_by_key(devices_by_id, dev_info, u'mac')
+        self._filter_devices_by_key(devices_by_id, dev_info, u'vendor')
+        self._filter_devices_by_key(devices_by_id, dev_info, u'model')
+        return devices_by_id.values()
+
+    def _filter_devices_by_key(self, devices_by_id, dev_info, key):
+        if key in dev_info:
+            key_value = dev_info[key]
+            for device in devices_by_id.values():
+                if key in device:
+                    if device[key] != key_value:
+                        device_id = device[u'id']
+                        del devices_by_id[device_id]
 
 
 def MacDeviceRetriever(app):
