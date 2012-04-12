@@ -48,29 +48,10 @@ if(($rightcalls = $apprightcall->get_rightcalls_list(null, $order, null, true)) 
 	$rightcall['list'] = $rightcalls;
 }
 
-#$appqueue = &$ipbx->get_application('queue');
-#$_TPL->set_var('queueskills', $appqueue->userskills_get($_QR['id']));
-
 if(isset($_QR['fm_send']) === true
 && dwho_issa('userfeatures',$_QR) === true)
 {
-/*
-	$queueskills = array();
-
-	// skipping the last one (empty entry)
-	$count = count($_QR['queueskill-skill']) - 1;
-	for($i = 0; $i < $count; $i++)
-	{
-		$queueskills[] = array(
-		'userid' => $_QR['id'],
-		'skillid' => $_QR['queueskill-skill'][$i],
-		'weight' => $_QR['queueskill-weight'][$i],
-		);
-	}
-	$skillerr = $appqueue->userskills_setedit($queueskills);
-*/
 	if($appuser->set_edit($_QR) === false
-#	|| $skillerr === false
 	|| $appuser->edit() === false)
 	{
 		$fm_save = false;
@@ -81,16 +62,9 @@ if(isset($_QR['fm_send']) === true
 
 		$return = array_merge($return,$result);
 		$error = $appuser->get_error();
-/*
-		$error['queueskills'] = $appqueue->userskills_get_error();
-
-		$_TPL->set_var('queueskills', $queueskills);
-*/
 	}
 	else
 	{
-		// updating skills
-		#$appqueue->userskills_edit($_QR['id'], $queueskills);
 		/**
 		 * sip reload: refresh pickup groups
 		 * */
