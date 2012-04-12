@@ -1,5 +1,4 @@
 #!/bin/sh
-
 SLAVE_IP=$1
 if [ -z $SLAVE_IP ]; then
     echo "No IP specified"
@@ -7,7 +6,8 @@ if [ -z $SLAVE_IP ]; then
 fi
 DB_NAME='asterisk'
 SLAVE_BACKUP='out_slave_backup.sql'
-PG_DUMP_OPTIONS='--exclude-table cel --exclude-table cel_id_seq'
+EXCLUDE_TABLES='--exclude-table cel --exclude-table cel_id_seq'
+PG_DUMP_OPTIONS="--clean $EXCLUDE_TABLES"
 
 panic() {
     echo "Slave replication failed: $*" | mutt root@localhost
@@ -17,22 +17,20 @@ panic() {
 
 cd /tmp
 
-su postgres -c "pg_dump --host $SLAVE_IP --clean $DB_NAME > $SLAVE_BACKUP"
+su postgres -c "pg_dump --host $SLAVE_IP $PG_DUMP_OPTIONS $DB_NAME > $SLAVE_BACKUP"
 if [ $? -ne 0 ]; then
     panic "Slave down"
 fi
 
-su postgres -c "pg_dump --clean $PG_DUMP_OPTIONS $DB_NAME > out_master.sql"
+su postgres -c "pg_dump $PG_DUMP_OPTIONS $DB_NAME > out_master.sql"
 master_md5=$(cat out_master.sql | sort > out_master.sorted.sql &&  md5sum out_master.sorted.sql | awk '{print $1}')
+asterisk -rx "module reload cel_pgsql.so"
 
 sed -i 's/DROP SCHEMA public;//' out_master.sql
 sed -i 's/CREATE SCHEMA public;//' out_master.sql
-
-asterisk -rx "module reload cel_pgsql.so"
-
 su postgres -c "psql --host $SLAVE_IP $DB_NAME < out_master.sql > /dev/null"
 
-su postgres -c "pg_dump --host $SLAVE_IP --clean $PG_DUMP_OPTIONS $DB_NAME > out_slave.sql"
+su postgres -c "pg_dump --host $SLAVE_IP $PG_DUMP_OPTIONS $DB_NAME > out_slave.sql"
 
 slave_md5=$(cat out_slave.sql | sort > out_slave.sorted.sql && md5sum out_slave.sorted.sql | awk '{print $1}')
 
