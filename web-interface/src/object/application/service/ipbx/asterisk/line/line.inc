@@ -1523,6 +1523,13 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		|| ($protocol = &$this->_service->get_protocol_module($this->_info['linefeatures']['protocol'])) === false)
 			return(false);
 
+		if(isset($this->_info['protocol']['voicemailmailbox']))
+		{
+			$this->_set_error('voicemail', dwho_i18n::babelfish('user_need_lines_to_have_voicemail'));
+			dwho_report::push('error', dwho_i18n::babelfish('user_need_lines_to_have_voicemail'));
+			return(false);
+		}
+
 		$r = $protocol->delete($this->_info['protocol']['id']);
 
 		if($this->_status === 'delete')
