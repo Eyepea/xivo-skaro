@@ -95,7 +95,7 @@ switch($act)
 
 		function cafilter($cert)
 		{
-			return isset($cert['is_ca']) && $cert['is_ca'] && count($cert['types']) == 2;
+			return isset($cert['CA']) && $cert['CA'] && count($cert['types']) == 2;
 		}
 
 		$authorities = array_filter($modcert->get_all(), "cafilter");
