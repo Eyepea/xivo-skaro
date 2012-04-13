@@ -96,7 +96,6 @@ $array['filter']['OU'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
 */
 $array['filter']['emailAddress'] = array('set' => true,'chk' => 1,'maxlen' => 255,'callback' => 'dwho_network::valid_email');
 $array['filter']['ca'] = array('set' => false, 'chk' => 1, 'maxlen' => 255);
-$array['filter']['ca_password'] = array('set' => false, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['length'] = array('set' => true, 'chk' => 1, 'cast' => 'uint');
 $array['filter']['validity'] = array('set' => true, 'chk' => 1, 'cast' => 'uint');
 $array['filter']['is_ca'] = array('bool' => true);
