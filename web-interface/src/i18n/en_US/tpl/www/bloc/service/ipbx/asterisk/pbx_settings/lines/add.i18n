@@ -479,7 +479,7 @@ Anonymous
 Customize
 
 ; fm_linefeatures_preprocess-subroutine
-Subroutine preprocess:
+Preprocess subroutine:
 
 ; fm_protocol_insecure
 Insecure:

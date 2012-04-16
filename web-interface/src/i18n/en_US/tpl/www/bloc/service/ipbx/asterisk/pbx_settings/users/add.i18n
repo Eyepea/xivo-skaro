@@ -329,7 +329,7 @@ Anonymous
 Customize
 
 ; fm_userfeatures_preprocess-subroutine
-Subroutine preprocess:
+Preprocess subroutine:
 
 ; col_phonefunckey-fknum
 Key
