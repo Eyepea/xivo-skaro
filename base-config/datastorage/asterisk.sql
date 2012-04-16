@@ -194,7 +194,7 @@ CREATE TABLE "cel" (
  "context" varchar (80) NOT NULL , 
  "channame" varchar (80) NOT NULL ,
  "appname" varchar (80) NOT NULL ,
- "appdata" varchar (80) NOT NULL , 
+ "appdata" varchar (256) NOT NULL ,
  "amaflags" int NOT NULL ,
  "accountcode" varchar (20) NOT NULL ,
  "peeraccount" varchar (20) NOT NULL ,
