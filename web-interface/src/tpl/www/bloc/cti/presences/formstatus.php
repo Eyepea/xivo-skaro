@@ -135,12 +135,12 @@ $count = count($actionslist);
 				<th class="th-center"><?=$this->bbf('col_'.$type.'-args');?></th>
 				<th class="th-right">
 					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
-									  $this->bbf('col_'.$type.'-add'),
+									  $this->bbf('col_row-add'),
 									  'border="0"'),
 							   '#',
 							   null,
 							   'onclick="dwho.dom.make_table_list(\''.$type.'\',this); return(dwho.dom.free_focus());"',
-							   $this->bbf('col_'.$type.'-add'));?>
+							   $this->bbf('col_row-add'));?>
 				</th>
 			</tr>
 			</thead>
@@ -179,12 +179,12 @@ $count = count($actionslist);
 				</td>
 				<td class="td-right">
 					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
-									  $this->bbf('opt_'.$type.'-delete'),
+									  $this->bbf('opt_row-delete'),
 									  'border="0"'),
 							   '#',
 							   null,
 							   'onclick="dwho.dom.make_table_list(\''.$type.'\',this,1); return(dwho.dom.free_focus());"',
-							   $this->bbf('opt_'.$type.'-delete'));?>
+							   $this->bbf('opt_row-delete'));?>
 				</td>
 			</tr>
 
@@ -226,12 +226,12 @@ $count = count($actionslist);
 				</td>
 				<td class="td-right">
 					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
-									  $this->bbf('opt_'.$type.'-delete'),
+									  $this->bbf('opt_row-delete'),
 									  'border="0"'),
 							   '#',
 							   null,
 							   'onclick="dwho.dom.make_table_list(\''.$type.'\',this,1); return(dwho.dom.free_focus());"',
-							   $this->bbf('opt_'.$type.'-delete'));?>
+							   $this->bbf('opt_row-delete'));?>
 				</td>
 			</tr>
 			</tbody>
