@@ -98,7 +98,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 				if ((isset($ref['ip'])
 					&& $devicefeatures['ip'] !== $ref['ip'])
 				|| (isset($ref['mac'])
-					|| $devicefeatures['mac'] !== $ref['mac'])
+					&& $devicefeatures['mac'] !== $ref['mac'])
 				|| (isset($ref['vendor'])
 					&& $devicefeatures['vendor'] !== $ref['vendor'])
 				|| (isset($ref['model'])
