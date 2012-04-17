@@ -62,8 +62,11 @@ Activer le transfert sur occupation
 Activer le transfert sur non réponse
 
 ; action-queuepause_all
-Activer la pause sur toute les files
+Activer la pause sur toutes les files
 
 ; action-queueunpause_all
-Desactiver la pause sur toute les files
+Désactiver la pause sur toutes les files
+
+; action-agentlogoff
+Délogger l'agent
 

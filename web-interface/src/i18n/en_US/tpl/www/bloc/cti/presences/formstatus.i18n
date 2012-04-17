@@ -75,3 +75,6 @@ Activate pause to all queue
 
 ; action-queueunpause_all
 Disable pause to all queue
+
+; action-agentlogoff
+Agent logoff

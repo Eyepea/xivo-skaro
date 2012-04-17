@@ -29,7 +29,8 @@ $actionslist = $this->get_var('actionslist');
 $actionsavail = array(
 	'enablednd'       => $this->bbf('action-enablednd'),
 	'queuepause_all'       => $this->bbf('action-queuepause_all'),
-	'queueunpause_all'       => $this->bbf('action-queueunpause_all')
+	'queueunpause_all'       => $this->bbf('action-queueunpause_all'),
+	'agentlogoff'       => $this->bbf('action-agentlogoff')
 );
 
 $status = $this->get_var('status');
