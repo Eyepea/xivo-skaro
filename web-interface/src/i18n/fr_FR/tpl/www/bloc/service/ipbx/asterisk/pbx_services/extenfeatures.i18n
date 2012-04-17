@@ -22,6 +22,9 @@ Messagerie vocale
 ; smenu_agent
 Agent
 
+; smenu_agents
+Agents
+
 ; smenu_groups
 Groupes
 
@@ -212,7 +215,7 @@ Délai d'attente :
 %s min. %s sec.
 
 ; fm_generalfeatures_parkpos
-Extensions des appels parkés :
+Extensions pour parquer les appels :
 
 ; fm_generalfeatures_parkfindnext
 Trouver l'appel suivant :
@@ -221,7 +224,7 @@ Trouver l'appel suivant :
 Utiliser les annonces ADSI :
 
 ; fm_generalfeatures_featuredigittimeout
-Délai d'attente pour la numérotation d'une fonctionnalité  :
+Délai d'attente pour la numérotation d'une fonctionnalité :
 
 ; fm_generalfeatures_featuredigittimeout-opt(1)
 1 milliseconde
@@ -290,16 +293,16 @@ Autoriser l'enregistrement par DTMF sur reprise d'appel parqué :
 Musique d'attente jouée aux appels parqués : 
 
 ; fm_generalfeatures_atxfernoanswertimeout
-Durée d'attente de réponse pour un transfer annoncé : 
+Durée d'attente de réponse pour un transfer indirect :
 
 ; fm_generalfeatures_atxferdropcall
-Annuler le transfer si l'emetteur raccroche : 
+Annuler le transfert si l'emetteur raccroche :
 
 ; fm_generalfeatures_atxferloopdelay
-Durée d'attente entre deux essais (transfer annoncé) : 
+Durée d'attente entre deux essais (transfer indirect) :
 
 ; fm_generalfeatures_atxfercallbackretries
-Nombre d'essais (transfer annoncé) : 
+Nombre d'essais (transfert indirect) :
 
 ; fm_extenfeatures_enable-paging
 Activer l'intercom :
