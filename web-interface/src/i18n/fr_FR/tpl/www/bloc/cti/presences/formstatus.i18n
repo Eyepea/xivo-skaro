@@ -61,3 +61,9 @@ Activer le transfert sur occupation
 ; action-enablerna
 Activer le transfert sur non réponse
 
+; action-queuepause_all
+Activer la pause sur toute les files
+
+; action-queueunpause_all
+Desactiver la pause sur toute les files
+

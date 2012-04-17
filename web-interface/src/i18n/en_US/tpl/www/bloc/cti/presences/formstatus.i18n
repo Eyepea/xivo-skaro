@@ -70,3 +70,8 @@ Activate transfer on busy
 ; action-enablerna
 Activate transfer on non-answer
 
+; action-queuepause_all
+Activate pause to all queue
+
+; action-queueunpause_all
+Disable pause to all queue
