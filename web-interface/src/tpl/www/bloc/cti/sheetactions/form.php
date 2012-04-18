@@ -41,12 +41,12 @@ $informations = $this->get_var('informations');
 				  'default'	=> $element['sheetactions']['name']['default'],
 				  'value'	=> $info['sheetactions']['name']));
 
-	echo	$form->text(array('desc'	=> $this->bbf('fm_sheetactions_whom'),
-				  'name'	=> 'sheetactions[whom]',
-				  'labelid'	=> 'sheetactions-whom',
-				  'size'	=> 15,
-				  'default'	=> $element['sheetactions']['whom']['default'],
-				  'value'	=> $info['sheetactions']['whom']));
+#	echo	$form->text(array('desc'	=> $this->bbf('fm_sheetactions_whom'),
+#				  'name'	=> 'sheetactions[whom]',
+#				  'labelid'	=> 'sheetactions-whom',
+#				  'size'	=> 15,
+#				  'default'	=> $element['sheetactions']['whom']['default'],
+#				  'value'	=> $info['sheetactions']['whom']));
 
 	echo    $form->checkbox(array('desc' => $this->bbf('fm_sheetactions_focus'),
 						'name' => 'sheetactions[focus]',
@@ -54,111 +54,7 @@ $informations = $this->get_var('informations');
 						'checked' => $info['sheetactions']['focus']));
 
 ?>
-<!-- ///////////////////////////////// CONTEXTS ///////////////////////////// -->
-    <div class="fm-paragraph fm-description">
-        <fieldset id="cti-sheetactions_context">
-            <legend><?=$this->bbf('cti-sheetactions-context');?></legend>
-            <div id="sheetactions_context" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('contextlist',$this->bbf('ms_seek'))?>
-                <div class="slt-outlist">
-<?php
-                echo    $form->select(array('name'  => 'contextlist',
-                            'label' => false,
-                            'id'    => 'it-contextlist',
-                            'key'   => 'name',
-                            'altkey'    => 'id',
-                            'multiple'  => true,
-                            'size'  => 5,
-                            'paragraph' => false),
-                            $info['context']['list']);
-?>
-                </div>
-                <div class="inout-list">
-                    <a href="#"
-                    onclick="dwho.form.move_selected('it-contextlist','it-context');
-                    return(dwho.dom.free_focus());"
-                    title="<?=$this->bbf('bt_inaccess_sheetactions');?>">
-                    <?=$url->img_html('img/site/button/arrow-left.gif',
-                            $this->bbf('bt_inaccess_sheetactions'),
-                            'class="bt-inlist" id="bt-inaccess_sheetactions" border="0"');?></a><br />
 
-                    <a href="#"
-                    onclick="dwho.form.move_selected('it-context','it-contextlist');
-                    return(dwho.dom.free_focus());"
-                    title="<?=$this->bbf('bt_outaccess_sheetactions');?>">
-                    <?=$url->img_html('img/site/button/arrow-right.gif',
-                            $this->bbf('bt_outaccess_sheetactions'),
-                            'class="bt-outlist" id="bt-outaccess_sheetactions" border="0"');?></a>
-                </div>
-                <div class="slt-inlist">
-<?php
-                echo    $form->select(array('name'  => 'context[]',
-                        'label' => false,
-                        'id'    => 'it-context',
-                        'key'   => 'name',
-                        'altkey'    => 'id',
-                        'multiple'  => true,
-                        'size'  => 5,
-                        'paragraph' => false),
-                    $info['context']['slt']);
-?>
-                </div>
-            </div>
-        </fieldset>
-        <div class="clearboth"></div>
-	</div>
-
-<!-- ///////////////////////////////// PROFILS ///////////////////////////// -->
-    <div class="fm-paragraph fm-description">
-        <fieldset id="cti-sheetactions_capaids">
-            <legend><?=$this->bbf('cti-sheetactions-capaids');?></legend>
-            <div id="sheetactions_capaids" class="fm-paragraph fm-multilist">
-				<?=$form->input_for_ms('capaidslist',$this->bbf('ms_seek'))?>
-                <div class="slt-outlist">
-<?php
-                echo    $form->select(array('name'  => 'capaidslist',
-                            'label'     => false,
-                            'id'        => 'it-capaidslist',
-                            'key'       => false,
-                            'multiple'  => true,
-                            'size'      => 5,
-                            'paragraph' => false),
-                            $info['capaids']['list']);
-?>
-                </div>
-                <div class="inout-list">
-                    <a href="#"
-                    onclick="dwho.form.move_selected('it-capaidslist','it-capaids');
-                    return(dwho.dom.free_focus());"
-                    title="<?=$this->bbf('bt_inaccess_sheetactions');?>">
-                    <?=$url->img_html('img/site/button/arrow-left.gif',
-                            $this->bbf('bt_inaccess_sheetactions'),
-                            'class="bt-inlist" id="bt-inaccess_sheetactions" border="0"');?></a><br />
-
-                    <a href="#"
-                    onclick="dwho.form.move_selected('it-capaids','it-capaidslist');
-                    return(dwho.dom.free_focus());"
-                    title="<?=$this->bbf('bt_outaccess_sheetactions');?>">
-                    <?=$url->img_html('img/site/button/arrow-right.gif',
-                            $this->bbf('bt_outaccess_sheetactions'),
-                            'class="bt-outlist" id="bt-outaccess_sheetactions" border="0"');?></a>
-                </div>
-                <div class="slt-inlist">
-<?php
-                echo    $form->select(array('name'  => 'capaids[]',
-                        'label'     => false,
-                        'id'        => 'it-capaids',
-                        'key'       => false,
-                        'multiple'  => true,
-                        'size'      => 5,
-                        'paragraph' => false),
-                    $info['capaids']['slt']);
-?>
-                </div>
-            </div>
-        </fieldset>
-        <div class="clearboth"></div>
-	</div>
 	<br />
 	<div class="fm-paragraph fm-description">
 		<p>
@@ -179,7 +75,7 @@ $informations = $this->get_var('informations');
 
 <?=$form->checkbox(array('desc'	=> $this->bbf('fm_sheetactions_disable'),
 	'name'		=> 'sheetactions[disable]',
-	'value'		=> $info['sheetactions']['disable'],
+	'checked'		=> $info['sheetactions']['disable'],
 	'id'		=> 'it-sheetactions-disable',
 	'default'	=> !$element['sheetactions']['disable']['default']));?>
 <?php
@@ -246,14 +142,13 @@ $informations = $this->get_var('informations');
 				</td>
 				<td>
 	<?php
-					echo $form->text(array('paragraph'	=> false,
-								   'name'		=> 'screencol2['.$i.']',
-								   'id'			=> false,
-								   'label'		=> false,
-								   'size'		=> 15,
-								   'key'		=> false,
-								   'value'		=> $v[1],
-								   'default'	=> ''));
+		echo $form->select(array('paragraph'	=> false,
+				    'name'	=> 'screencol2['.$i.']',
+				    'empty'	=> true,
+				    'key'	=> false,
+#				    'default'		=> $element['userfeatures']['timezone']['default'],
+				    'selected'	=> $v[1]),
+			      array("text","url","urlx", "picture", "phone", "form"));
 	 ?>
 				</td>
 				<td>
@@ -326,13 +221,13 @@ $informations = $this->get_var('informations');
 				</td>
 				<td>
 	<?php
-					echo $form->text(array('paragraph'	=> false,
-								   'name'		=> 'screencol2[]',
-								   'id'		=> false,
-								   'label'		=> false,
-								   'size'		=> 15,
-								   'key'		=> false,
-								   'default'	=> ''));
+
+		echo  $form->select(array('paragraph'	=> false,
+				    'name'	=> 'screencol2[]',
+				    'empty'	=> true,
+				    'key'	=> false),
+			      array("text","url","urlx", "picture", "phone", "form"));
+
 	 ?>
 				</td>
 				<td>
@@ -422,14 +317,12 @@ $informations = $this->get_var('informations');
 				</td>
 				<td>
 	<?php
-					echo $form->text(array('paragraph'	=> false,
-								   'name'		=> 'systrayscol2[]',
-								   'id'		=> false,
-								   'label'		=> false,
-								   'size'		=> 15,
-								   'key'		=> false,
-								   'value'		=> $v[1],
-								   'default'	=> ''));
+		echo $form->select(array('paragraph'	=> false,
+				    'name'	=> 'systrayscol2[]',
+				    'empty'	=> true,
+				    'key'	=> false,
+				    'selected'	=> $v[1]),
+			      array("title","body"));
 	 ?>
 				</td>
 				<td>
@@ -494,13 +387,11 @@ $informations = $this->get_var('informations');
 				</td>
 				<td>
 	<?php
-					echo $form->text(array('paragraph'	=> false,
-								   'name'		=> 'systrayscol2[]',
-								   'id'		=> false,
-								   'label'		=> false,
-								   'size'		=> 15,
-								   'key'		=> false,
-								   'default'	=> ''));
+		echo $form->select(array('paragraph'	=> false,
+				    'name'	=> 'systrayscol2[]',
+				    'empty'	=> true,
+				    'key'	=> false),
+			      array("title","body"));
 	 ?>
 				</td>
 				<td>

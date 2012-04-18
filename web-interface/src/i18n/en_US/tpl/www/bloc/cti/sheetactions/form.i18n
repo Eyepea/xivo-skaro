@@ -1,9 +1,6 @@
 ; fm_sheetactions_name
 Name :
 
-; fm_sheetactions_whom
-Recipient:
-
 ; fm_sheetactions_focus
 Focus:
 
@@ -47,4 +44,4 @@ Add »
 « Remove
 
 ; fm_sheetactions_disable
-Activated: 
+Disabled: 
