@@ -221,15 +221,6 @@
 				    'selected'	=> $this->get_var('info','protocol','allowtransfer')),
 			      $element['protocol']['sip']['allowtransfer']['value']),
 
-		$form->select(array('desc'	=> $this->bbf('fm_protocol_pickupcontext'),
-					    'name'	=> 'protocol[pickupcontext]',
-					    'labelid'	=> 'protocol-pickupcontext',
-					    'key'	=> 'identity',
-					    'altkey'	=> 'name',
-					    'help'		=> $this->bbf('hlp_fm_pickupcontext'),
-					    'selected'	=> $this->get_var('info', 'protocol', 'pickupcontext')),
-				      $context_list),
-
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_autoframing'),
 				    'name'	=> 'protocol[autoframing]',
 				    'labelid'	=> 'protocol-autoframing',

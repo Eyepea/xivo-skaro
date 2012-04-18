@@ -653,9 +653,6 @@ Activate callforward key
 ; hlp_fm_pickupexten
 Enable Pickup function to direct pickup an extension
 
-; hlp_fm_pickupcontext
-Context where direct pickup search for extensions. If not set will be ignored
-
 ; hlp_fm_pickupmodeanswer
 If <b>asterisk mode</b>, the call has been answered when picked up.<br/>If <b>call manager mode</b>, the phone who picked up the call rings the call
 

@@ -388,9 +388,6 @@ Touche NPD:
 ; fm_protocol_pickupmodeanswer
 Décrocher l'appel avant interception: 
 
-; fm_protocol_pickupcontext
-Contexte d'interception directe: 
-
 ; fm_protocol_pickupexten
 Interception directe: 
 
@@ -459,9 +456,6 @@ Activate callforward key
 
 ; hlp_fm_pickupexten
 Autorise la fonction Pickup à intercepter une extension
-
-; hlp_fm_pickupcontext
-Contexte dans lequel la fonction Pickup recherchera les extensions. Ignoré si non défini
 
 ; hlp_fm_pickupmodeanswer
 en mode *Asterisk*, l'appel est décroché avant l'interception.<br/>En mode *Call manager*, le téléphone intercepté continue à sonner

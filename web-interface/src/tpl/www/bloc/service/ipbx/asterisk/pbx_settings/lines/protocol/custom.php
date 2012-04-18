@@ -27,7 +27,6 @@ $element = $this->get_var('element');
 
 ?>
 
-<div id="sb-part-first" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_protocol_interface'),
 				  'name'	=> 'protocol[interface]',
@@ -66,17 +65,3 @@ $element = $this->get_var('element');
 			'</div>';
 	endif;
 ?>
-</div>
-
-<div id="sb-part-signalling" class="b-nodisplay">
-<?php
-	echo	$form->select(array('desc'	=> $this->bbf('fm_protocol_pickupcontext'),
-					    'name'	=> 'protocol[pickupcontext]',
-					    'labelid'	=> 'protocol-pickupcontext',
-					    'key'	=> 'identity',
-					    'altkey'	=> 'name',
-					    'help'		=> $this->bbf('hlp_fm_pickupcontext'),
-					    'selected'	=> $this->get_var('info', 'protocol', 'pickupcontext')),
-				      $context_list);
-?>
-</div>
