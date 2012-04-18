@@ -559,6 +559,8 @@ CREATE TABLE "ctisheetevents" (
  "incomingqueue" varchar(50),
  "incominggroup" varchar(50),
  "incomingdid" varchar(50),
+ "outcall" varchar(50),
+ "hangup" varchar(50),
  "dial" varchar(50),
  "link" varchar(50),
  "unlink" varchar(50),
@@ -566,7 +568,7 @@ CREATE TABLE "ctisheetevents" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctisheetevents" VALUES(DEFAULT,'','','','','','','dial','','','{"custom-example1": "custom1"}');
+INSERT INTO "ctisheetevents" VALUES(DEFAULT,'','','','','','','','','dial','','','{"custom-example1": "custom1"}');
 
 
 DROP TABLE IF EXISTS "ctistatus";
