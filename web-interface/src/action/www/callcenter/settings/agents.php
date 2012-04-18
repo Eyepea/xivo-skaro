@@ -170,7 +170,7 @@ switch($act)
 			}
 			else
 			{
-				$this->ipbx->discuss(array('xivo[queuemember,update]'));
+				$ipbx->discuss(array('xivo[queuemember,update]'));
 				$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 			}
 		}
@@ -229,7 +229,7 @@ switch($act)
 
 		$appagentgroup->delete();
 
-		$this->ipbx->discuss(array('xivo[queuemember,update]'));
+		$ipbx->discuss(array('xivo[queuemember,update]'));
 		$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 		break;
 	case 'deletes':
@@ -249,7 +249,7 @@ switch($act)
 				$appagentgroup->delete();
 		}
 
-		$this->ipbx->discuss(array('xivo[queuemember,update]'));
+		$ipbx->discuss(array('xivo[queuemember,update]'));
 		$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 		break;
 	case 'enables':
