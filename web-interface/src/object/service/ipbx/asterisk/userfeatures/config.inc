@@ -232,7 +232,7 @@ $array['filter']['passwdclient'] = array('set'		=> false,
 					 'minlen'	=> 4,
 					 'maxlen'	=> 64,
 					 'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
-$array['filter']['profileclient'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/','maxlen' => 64);
+$array['filter']['profileclient'] = array('set' => false,'chk' => 2);
 $array['filter']['enablehint'] = array('bool' => true);
 $array['filter']['enablevoicemail'] = array('bool' => true);
 $array['filter']['enablexfer'] = array('bool' => true);
