@@ -77,7 +77,7 @@ switch($act)
 			}
 			else
 			{
-				$this->ipbx->discuss(array('xivo[queuemember,update]'));
+				$ipbx->discuss(array('xivo[queuemember,update]'));
 				$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 			}
 		}
