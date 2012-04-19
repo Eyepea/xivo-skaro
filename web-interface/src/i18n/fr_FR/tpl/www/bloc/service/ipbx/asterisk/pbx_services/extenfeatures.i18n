@@ -272,13 +272,13 @@ Autoriser l'enregistrement par DTMF sur reprise d'appel parqué :
 Musique d'attente jouée aux appels parqués : 
 
 ; fm_generalfeatures_atxfernoanswertimeout
-Durée d'attente de réponse pour un transfer indirect :
+Délai de non-réponse pour un transfert indirect :
 
 ; fm_generalfeatures_atxferdropcall
 Annuler le transfert si l'emetteur raccroche :
 
 ; fm_generalfeatures_atxferloopdelay
-Durée d'attente entre deux essais (transfer indirect) :
+Délai d'attente entre deux essais (transfert indirect) :
 
 ; fm_generalfeatures_atxfercallbackretries
 Nombre d'essais (transfert indirect) :
