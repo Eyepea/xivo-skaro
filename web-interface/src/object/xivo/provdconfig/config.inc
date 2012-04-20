@@ -114,7 +114,7 @@ $array['element']['timezone'] = array();
 $array['element']['timezone']['default'] = '';
 
 $array['element']['locale'] = array();
-$array['element']['locale']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA');
+$array['element']['locale']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA', 'nl_NL');
 $array['element']['locale']['default'] = '';
 $array['element']['locale']['null'] = true;
 
