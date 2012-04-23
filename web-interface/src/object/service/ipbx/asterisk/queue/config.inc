@@ -93,7 +93,7 @@ $array['element']['announce-holdtime']['default'] = 'no';
 $array['element']['announce-holdtime']['setdef'] = true;
 
 $array['element']['announce-round-seconds'] = array();
-$array['element']['announce-round-seconds']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60);
+$array['element']['announce-round-seconds']['value'] = array(0,5,10,15,20,30);
 $array['element']['announce-round-seconds']['default'] = 0;
 $array['element']['announce-round-seconds']['setdef'] = true;
 
@@ -271,7 +271,7 @@ $array['filter']['periodic-announce-frequency'] = array('set'	=> false,
 								       105,120,135,150,165,180,
 								       210,225,240,255,270,285,300));
 $array['filter']['announce-holdtime'] = array('set' => false,'chk' => 2,'key' => array('no','yes','once'));
-$array['filter']['announce-round-seconds'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
+$array['filter']['announce-round-seconds'] = array('set' => false,'chk' => 2,'cast' => 'uint', 'key' => array(0,5,10,15,20,30));
 $array['filter']['monitor-format'] = array('set' => false,'chk' => 2,'key' => array('gsm','wav','wav49'));
 $array['filter']['monitor-type'] = array('set' => false,'chk' => 2,'key' => array('no','mixmonitor'));
 $array['filter']['joinempty'] = array('set' => false,'chk' => 2);
