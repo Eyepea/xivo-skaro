@@ -327,9 +327,11 @@ switch($act)
 			}
 			$_QR['queuefeatures']['nonctipresence']    = implode(',',$cti);
 
-			if(is_array($_QR['queue']['joinempty']))
+			if(isset($_QR['queue']['joinempty'])
+			&& is_array($_QR['queue']['joinempty']))
 				$_QR['queue']['joinempty'] = implode(',', $_QR['queue']['joinempty']);
-			if(is_array($_QR['queue']['leavewhenempty']))
+			if(isset($_QR['queue']['leavewhenempty'])
+			&& is_array($_QR['queue']['leavewhenempty']))
 				$_QR['queue']['leavewhenempty'] = implode(',', $_QR['queue']['leavewhenempty']);
 
 			if($appqueue->set_edit($_QR) === false
