@@ -220,6 +220,9 @@ Contexts
 ; acl(service-ipbx-system_management-extensions)
 Extensions
 
+; acl(service-ipbx-system_management-ldapfilter)
+LDAP filters
+
 ; acl(service-ipbx-trunk_management)
 Trunk management
 
