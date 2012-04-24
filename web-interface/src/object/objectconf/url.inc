@@ -52,7 +52,7 @@ $array['xivo/configuration/json/private/support/monitoring'] = 'xivo/configurati
 $array['xivo/configuration/manage/user'] = 'xivo/configuration/index.php/manage/user/';
 $array['xivo/configuration/manage/entity'] = 'xivo/configuration/index.php/manage/entity/';
 $array['xivo/configuration/manage/server'] = 'xivo/configuration/index.php/manage/server/';
-//$array['xivo/configuration/manage/ldapserver'] = 'xivo/configuration/index.php/manage/ldapserver/';
+$array['xivo/configuration/manage/ldapserver'] = 'xivo/configuration/index.php/manage/ldapserver/';
 $array['xivo/configuration/manage/directories'] = 'xivo/configuration/index.php/manage/directories/';
 $array['xivo/configuration/manage/accesswebservice'] = 'xivo/configuration/index.php/manage/accesswebservice/';
 $array['xivo/configuration/manage/certificate'] = 'xivo/configuration/index.php/manage/certificate/';
@@ -249,7 +249,7 @@ $array['service/ipbx/json/phonebook/local'] = 'service/ipbx/json.php/phonebook/l
 $array['service/ipbx/system_management/backupfiles'] = 'service/ipbx/index.php/system_management/backupfiles/';
 $array['service/ipbx/system_management/configfiles'] = 'service/ipbx/index.php/system_management/configfiles/';
 $array['service/ipbx/system_management/context'] = 'service/ipbx/index.php/system_management/context/';
-//$array['service/ipbx/system_management/ldapfilter'] = 'service/ipbx/index.php/system_management/ldapfilter/';
+$array['service/ipbx/system_management/ldapfilter'] = 'service/ipbx/index.php/system_management/ldapfilter/';
 
 $array['service/ipbx/json/restricted/system_management/context'] = 'service/ipbx/json.php/restricted/system_management/context/';
 $array['service/ipbx/json/restricted/system_management/extensions'] = 'service/ipbx/json.php/restricted/system_management/extensions/';

@@ -64,6 +64,7 @@ $array['tree']['service']['ipbx']['system_management'] = array();
 $array['tree']['service']['ipbx']['system_management']['backupfiles'] = true;
 $array['tree']['service']['ipbx']['system_management']['configfiles'] = true;
 $array['tree']['service']['ipbx']['system_management']['context'] = true;
+$array['tree']['service']['ipbx']['system_management']['ldapfilter'] = true;
 
 $array['tree']['service']['ipbx']['control_system'] = array();
 $array['tree']['service']['ipbx']['control_system']['logfiles'] = true;
@@ -135,6 +136,7 @@ $array['tree']['xivo']['configuration']['manage']['directories'] = true;
 $array['tree']['xivo']['configuration']['manage']['accesswebservice'] = true;
 $array['tree']['xivo']['configuration']['manage']['certificate'] = true;
 $array['tree']['xivo']['configuration']['manage']['ha'] = true;
+$array['tree']['xivo']['configuration']['manage']['ldapserver'] = true;
 
 $array['tree']['xivo']['configuration']['network'] = array();
 $array['tree']['xivo']['configuration']['network']['interface'] = true;

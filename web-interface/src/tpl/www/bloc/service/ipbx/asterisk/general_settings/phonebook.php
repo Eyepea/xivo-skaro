@@ -36,10 +36,10 @@ $element = $this->get_var('element');
 <div class="sb-smenu">
 	<ul>
 		<li id="dwsm-tab-1"
-			class="dwsm-blur-last"
-			onclick="dwho_submenu.select(this,'sb-part-first',1);"
-			onmouseout="dwho_submenu.blur(this,1);"
-			onmouseover="dwho_submenu.focus(this,1);">
+			class="dwsm-blur"
+			onclick="dwho_submenu.select(this,'sb-part-first');"
+			onmouseout="dwho_submenu.blur(this);"
+			onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center"><a href="#first"><?=$this->bbf('smenu_access');?></a></span>
 			</div>
@@ -59,20 +59,16 @@ $element = $this->get_var('element');
 		</li>
 */
 ?>
-<?php
-/* LDAP - COMMENTED
-		<li id="dwsm-tab-3"
-		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
-		    onmouseout="dwho_submenu.blur(this,1);"
-		    onmouseover="dwho_submenu.focus(this,1);">
+		<li id="dwsm-tab-2"
+			class="dwsm-blur-last"
+			onclick="dwho_submenu.select(this,'sb-part-last',1);"
+			onmouseout="dwho_submenu.blur(this,1);"
+			onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center"><a href="#last"><?=$this->bbf('smenu_ldapfilters');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 			</li>
-*/
-?>
 	</ul>
 </div>
 
@@ -191,15 +187,13 @@ $element = $this->get_var('element');
 ?>
 </div>
 
-<?php
-/* LDAP - COMMENTED
 <div id="sb-part-last" class="b-nodisplay">
-\<?php
+<?php
 	if($info['ldapfilter']['list'] !== false):
-\?>
+?>
 		<div id="ldapfilterlist" class="fm-paragraph fm-multilist">
 			<div class="slt-outlist">
-\<?php
+<?php
 		echo	$form->select(array('name'	=> 'ldapfilterlist',
 					    'label'	=> false,
 					    'id'	=> 'it-ldapfilterlist',
@@ -210,7 +204,7 @@ $element = $this->get_var('element');
 					    'size'	=> 5,
 					    'paragraph'	=> false),
 				      $info['ldapfilter']['list']);
-\?>
+?>
 			</div>
 			<div class="inout-list">
 				<a href="#"
@@ -229,7 +223,7 @@ $element = $this->get_var('element');
 							  'class="bt-outlist" id="bt-outldapfilter" border="0"');?></a>
 			</div>
 			<div class="slt-inlist">
-\<?php
+<?php
 		echo	$form->select(array('name'	=> 'ldapfilter[]',
 					    'label'	=> false,
 					    'id'	=> 'it-ldapfilter',
@@ -240,11 +234,11 @@ $element = $this->get_var('element');
 					    'size'	=> 5,
 					    'paragraph'	=> false),
 				      $info['ldapfilter']['slt']);
-\?>
+?>
 			</div>
 		</div>
 		<div class="clearboth"></div>
-\<?php
+<?php
 	else:
 		echo	'<div class="txt-center">',
 			$url->href_htmln($this->bbf('create_ldapfilter'),
@@ -252,10 +246,9 @@ $element = $this->get_var('element');
 					'act=add'),
 			'</div>';
 	endif;
-\?>
-	</div>
-*/
 ?>
+	</div>
+
 	<?=$form->submit(array('name'	=> 'submit',
 			       'id'	=> 'it-submit',
 			       'value'	=> $this->bbf('fm_bt-save')));?>
