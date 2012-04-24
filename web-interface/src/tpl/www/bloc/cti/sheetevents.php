@@ -79,7 +79,6 @@ if(isset($error_js[0]) === true)
 				    'default'	=> $element['ctisheetevents']['agentlinked']['default'],
 			      	'selected' => $info['ctisheetevents']['agentlinked']),
 				$sheetactionslist),
-/*
 		$form->select(array('desc'	=> $this->bbf('fm_sheetevents_agentunlinked'),
 				    'name'	=> 'ctisheetevents[agentunlinked]',
 				    'labelid'	=> 'agentunlinked',
@@ -111,15 +110,13 @@ if(isset($error_js[0]) === true)
 				    'default'	=> $element['ctisheetevents']['incominggroup']['default'],
 			      	'selected' => $info['ctisheetevents']['incominggroup']),
 				$sheetactionslist),
-*/
         $form->select(array('desc'  => $this->bbf('fm_sheetevents_outcall'),
                     'name'  => 'ctisheetevents[outcall]',
                     'labelid'   => 'outcall',
                     'key'   => false,
                     'default'   => $element['ctisheetevents']['outcall']['default'],
                     'selected' => $info['ctisheetevents']['outcall']),
-                $sheetactionslist);
-/*
+                $sheetactionslist),
         $form->select(array('desc'  => $this->bbf('fm_sheetevents_hangup'),
                     'name'  => 'ctisheetevents[hangup]',
                     'labelid'   => 'hangup',
@@ -135,7 +132,6 @@ if(isset($error_js[0]) === true)
 				    'default'	=> $element['ctisheetevents']['faxreceived']['default'],
 			      	'selected' => $info['ctisheetevents']['faxreceived']),
                                 $sheetactionslist);
-*/
 		$type = 'custom';
 		$count = count($customs);
 		$errdisplay = '';
@@ -150,14 +146,13 @@ if(isset($error_js[0]) === true)
 				<th class="th-left"><?=$this->bbf('col_1');?></th>
 				<th class="th-center"><?=$this->bbf('col_2');?></th>
 				<th class="th-right">
-				<!--	<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
+				<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
 									  $this->bbf('col_add'),
 									  'border="0"'),
 							   '#',
 							   null,
 							   'onclick="dwho.dom.make_table_list(\''.$type.'\',this); return(dwho.dom.free_focus());"',
 							   $this->bbf('col_add'));?>
-				-->
 				</th>
 			</tr>
 			</thead>

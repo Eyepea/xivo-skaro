@@ -148,7 +148,7 @@ $informations = $this->get_var('informations');
 				    'key'	=> false,
 #				    'default'		=> $element['userfeatures']['timezone']['default'],
 				    'selected'	=> $v[1]),
-			      array("text","url","urlx", "picture", "phone", "form"));
+			      array("title", "text","url","urlx", "picture", "phone", "form"));
 	 ?>
 				</td>
 				<td>
@@ -226,7 +226,7 @@ $informations = $this->get_var('informations');
 				    'name'	=> 'screencol2[]',
 				    'empty'	=> true,
 				    'key'	=> false),
-			      array("text","url","urlx", "picture", "phone", "form"));
+			      array("title", "text","url","urlx", "picture", "phone", "form"));
 
 	 ?>
 				</td>
@@ -444,9 +444,9 @@ $informations = $this->get_var('informations');
 			<thead>
 			<tr class="sb-top">
 
-				<th class="th-left"><?=$this->bbf('col_1');?></th>
-				<th class="th-center"><?=$this->bbf('col_2');?></th>
-				<th class="th-center"><?=$this->bbf('col_3');?></th>
+<!--				<th class="th-left"><?=$this->bbf('col_1');?></th> -->
+<!-- 				<th class="th-center"><?=$this->bbf('col_2');?></th> -->
+<!-- 				<th class="th-center"><?=$this->bbf('col_3');?></th> -->
 				<th class="th-center"><?=$this->bbf('col_4');?></th>
 				<th class="th-right">
 					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
@@ -467,42 +467,6 @@ $informations = $this->get_var('informations');
 
 		?>
 			<tr class="fm-paragraph<?=$errdisplay?>">
-				<td class="td-left txt-center">
-	<?php
-					echo $form->text(array('paragraph'	=> false,
-								   'name'		=> 'infoscol1[]',
-								   'id'		=> false,
-								   'label'		=> false,
-								   'size'		=> 15,
-								   'key'		=> false,
-								   'value'		=> $v[0],
-								   'default'	=> ''));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
-								   'name'		=> 'infoscol2[]',
-								   'id'		=> false,
-								   'label'		=> false,
-								   'size'		=> 15,
-								   'key'		=> false,
-								   'value'		=> $v[1],
-								   'default'	=> ''));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
-								   'name'		=> 'infoscol3[]',
-								   'id'		=> false,
-								   'label'		=> false,
-								   'size'		=> 15,
-								   'key'		=> false,
-								   'value'		=> $v[2],
-								   'default'	=> ''));
-	 ?>
-				</td>
 				<td>
 	<?php
 					echo $form->text(array('paragraph'	=> false,
@@ -540,39 +504,6 @@ $informations = $this->get_var('informations');
 		<table class="b-nodisplay">
 			<tbody id="ex-<?=$type?>">
 			<tr class="fm-paragraph">
-				<td class="td-left txt-center">
-	<?php
-					echo $form->text(array('paragraph'	=> false,
-								   'name'		=> 'infoscol1[]',
-								   'id'		=> false,
-								   'label'		=> false,
-								   'size'		=> 15,
-								   'key'		=> false,
-								   'default'	=> ''));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
-								   'name'		=> 'infoscol2[]',
-								   'id'		=> false,
-								   'label'		=> false,
-								   'size'		=> 15,
-								   'key'		=> false,
-								   'default'	=> ''));
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
-								   'name'		=> 'infoscol3[]',
-								   'id'		=> false,
-								   'label'		=> false,
-								   'size'		=> 15,
-								   'key'		=> false,
-								   'default'	=> ''));
-	 ?>
-				</td>
 				<td>
 	<?php
 					echo $form->text(array('paragraph'	=> false,
