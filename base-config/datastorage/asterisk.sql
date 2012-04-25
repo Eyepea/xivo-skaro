@@ -301,32 +301,6 @@ CREATE TABLE "ctiaccounts" (
 );
 
 
-DROP TABLE IF EXISTS "ctiagentstatus";
-CREATE TABLE "ctiagentstatus" (
- "id" SERIAL,
- "idgroup" integer,
- "name" varchar(255),
- "color" varchar(128),
- PRIMARY KEY("id")
-);
-
-INSERT INTO "ctiagentstatus" VALUES(DEFAULT,1,'Logué','#0DFF25');
-INSERT INTO "ctiagentstatus" VALUES(DEFAULT,1,'Délogué','#030303');
-INSERT INTO "ctiagentstatus" VALUES(DEFAULT,1,'En communication','#FF032D');
-
-
-DROP TABLE IF EXISTS "ctiagentstatusgroup";
-CREATE TABLE "ctiagentstatusgroup" (
- "id" SERIAL,
- "name" varchar(255),
- "description" varchar(255),
- "deletable" INTEGER, -- BOOLEAN
- PRIMARY KEY("id")
-);
-
-INSERT INTO "ctiagentstatusgroup" VALUES(DEFAULT,'xivo','De base non supprimable',0);
-
-
 DROP TABLE IF EXISTS "ctilog";
 CREATE TABLE "ctilog" (
  "id" SERIAL,
