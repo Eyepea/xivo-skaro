@@ -78,7 +78,6 @@ $array['tree']['service']['cti']['general_settings']['general']       = true;
 $array['tree']['service']['cti']['general_settings']['profiles']      = true;
 $array['tree']['service']['cti']['general_settings']['presences']     = true;
 $array['tree']['service']['cti']['general_settings']['phonehints']    = true;
-$array['tree']['service']['cti']['general_settings']['agentstatus']   = true;
 $array['tree']['service']['cti']['directories']                       = array();
 $array['tree']['service']['cti']['directories']['directories']        = true;
 $array['tree']['service']['cti']['directories']['reversedirectories'] = true;

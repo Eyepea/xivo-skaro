@@ -26,7 +26,6 @@ $info = $this->get_var('info');
 
 $preslist = $this->get_var('preslist');
 $phonehintslist = $this->get_var('phonehintslist');
-$agentslist = $this->get_var('agentslist');
 $preferencesavail = $this->get_var('preferencesavail');
 $xletsavail = $this->get_var('xletsavail');
 $xletslocavail = $this->get_var('xletslocavail');
@@ -80,15 +79,6 @@ $yesno = array($this->bbf('no'), $this->bbf('yes'));
 				   'altkey'		=> 'name',
 				   'selected'	=> $info['ctiprofiles']['phonehints']
 			 ),$phonehintslist);
-
-	echo $form->select(array('desc'		=> $this->bbf('fm_profiles_agents'),
-				   'name'		=> 'agents',
-				   'id'			=> false,
-				   'label'		=> false,
-				   'key'		=> 'name',
-				   'altkey'		=> 'name',
-				   'selected'	=> $info['ctiprofiles']['agents']
-			 ),$agentslist);
 ?>
 	</fieldset>
 

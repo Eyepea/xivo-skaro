@@ -31,9 +31,6 @@ Presence:
 ; fm_profiles_phonehints
 Phonehints:
 
-; fm_profiles_agents 
-Agent: 
-
 ; cti-profiles-services
 Services
 

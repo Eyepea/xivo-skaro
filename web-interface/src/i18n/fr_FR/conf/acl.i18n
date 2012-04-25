@@ -61,9 +61,6 @@ Répertoires inverses
 ; acl(service-cti-general_settings)
 Paramètres globaux
 
-; acl(service-cti-general_settings-agentstatus)
-Agents
-
 ; acl(service-cti-general_settings-general)
 Options générales
 

@@ -61,9 +61,6 @@ Reverse directory
 ; acl(service-cti-general_settings)
 Global settings
 
-; acl(service-cti-general_settings-agentstatus)
-Agents
-
 ; acl(service-cti-general_settings-general)
 General options
 
