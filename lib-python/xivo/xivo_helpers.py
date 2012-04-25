@@ -277,7 +277,7 @@ def db_connect(db_uri=None):
     db_close()
 
     if not db_uri:
-        conf_obj = ConfigParser()
+        conf_obj = ConfigParser.RawConfigParser()
         conf_obj.readfp(open(AGI_CONFFILE))
         db_uri = conf_obj.get('db', 'db_uri')
 
