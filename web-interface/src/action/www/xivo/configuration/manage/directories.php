@@ -31,7 +31,20 @@ $param['act'] = 'list';
 
 $result = $fm_save = $error = null;
 
-$prefixes = array('sqlite', 'mysql', 'file', 'phonebook', 'internal');
+define('XIVO_PHONEBOOK_TYPE_SQLITE', 0);
+define('XIVO_PHONEBOOK_TYPE_MYSQL', 1);
+define('XIVO_PHONEBOOK_TYPE_FILE', 2);
+define('XIVO_PHONEBOOK_TYPE_WEBSERVICES', 3);
+define('XIVO_PHONEBOOK_TYPE_INTERNAL', 4);
+define('XIVO_PHONEBOOK_TYPE_PHONEBOOK', 5);
+
+$prefixes = array(
+		XIVO_PHONEBOOK_TYPE_SQLITE => 'sqlite',
+		XIVO_PHONEBOOK_TYPE_MYSQL => 'mysql',
+		XIVO_PHONEBOOK_TYPE_FILE => 'file',
+		XIVO_PHONEBOOK_TYPE_WEBSERVICES => 'webservices',
+		XIVO_PHONEBOOK_TYPE_INTERNAL => 'internal',
+		XIVO_PHONEBOOK_TYPE_PHONEBOOK => 'phonebook');
 
 switch($act)
 {
@@ -43,8 +56,7 @@ switch($act)
 			$data = array();
 			switch($_QR['type'])
 			{
-				case 1:
-				{
+				case XIVO_PHONEBOOK_TYPE_MYSQL:
 					$uri = "mysql://";
 					if($_QR['user'] != '')
 						$uri .= $_QR['user'];
@@ -53,22 +65,19 @@ switch($act)
 					if($_QR['user'] != '')
 						$uri .= "@";
 					$uri .= $_QR['host'] . ":" .$_QR['port'] . "/" .$_QR['dbname'] . "?table=" . $_QR['tablename'];
-
 					break;
-				}
-				case 3:
-					$uri = $_QR['uri']; break;
-				// internal
-				case 4:
-					$uri = 'internal'; break;
-				// phonebook
-				case 5:
-					$uri = 'phonebook'; break;
+				case XIVO_PHONEBOOK_TYPE_WEBSERVICES:
+					$uri = $_QR['uri'];
+					break;
+				case XIVO_PHONEBOOK_TYPE_INTERNAL:
+					$uri = 'internal';
+					break;
+				case XIVO_PHONEBOOK_TYPE_PHONEBOOK:
+					$uri = 'phonebook';
+					break;
 				default:
-				{
 					$uri = $prefixes[$_QR['type']] . "://" . $_QR['uri'];
 					break;
-				}
 			}
 
 			$data['uri']         = $uri;
@@ -86,7 +95,7 @@ switch($act)
 				$result  = $_DIR->get_filter_result();
 				$error   = $_DIR->get_filter_error();
 			}
-			else 
+			else
 			{
 				$_QRY->go($_TPL->url('xivo/configuration/manage/directories'), $param);
 			}
@@ -100,10 +109,10 @@ switch($act)
 		$element['dbname']['default'] = '';
 		$element['user']['default'] = '';
 		$element['password']['default'] = '';
-		
+
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
-	
+
 		$_TPL->set_var('info',$info);
 		$_TPL->set_var('element',$element);
 		break;
@@ -119,8 +128,7 @@ switch($act)
 			$data = array();
 			switch($_QR['type'])
 			{
-				case 1:
-				{
+				case XIVO_PHONEBOOK_TYPE_MYSQL:
 					$uri = "mysql://";
 					if($_QR['user'] != '')
 						$uri .= $_QR['user'];
@@ -130,22 +138,18 @@ switch($act)
 						$uri .= "@";
 					$uri .= $_QR['host'] . ":" .$_QR['port'] . "/" .$_QR['dbname'] . "?table=" . $_QR['tablename'];
 					break;
-				}
-				case 3:
-				{
+				case XIVO_PHONEBOOK_TYPE_WEBSERVICES:
 					$uri = $_QR['uri'];
 					break;
-				}
-				case 4:
-					$uri = 'internal'; break;
-				// phonebook
-				case 5:
-					$uri = 'phonebook'; break;
+				case XIVO_PHONEBOOK_TYPE_INTERNAL:
+					$uri = 'internal';
+					break;
+				case XIVO_PHONEBOOK_TYPE_PHONEBOOK:
+					$uri = 'phonebook';
+					break;
 				default:
-				{
 					$uri = $prefixes[$_QR['type']] . "://" . $_QR['uri'];
 					break;
-				}
 			}
 
 			$data['uri'] = $uri;
@@ -162,7 +166,7 @@ switch($act)
 				$result = $_DIR->get_filter_result();
 				$error = $_DIR->get_filter_error();
 			}
-			else 
+			else
 			{
 				$_QRY->go($_TPL->url('xivo/configuration/manage/directories'),$param);
 			}
@@ -181,9 +185,9 @@ switch($act)
 		$parsed = $uriobject->parse_uri($return['uri']);
 		$return['type'] = -1;
 		if($parsed['path'] == 'internal')
-			$return['type'] = 4;
+			$return['type'] = XIVO_PHONEBOOK_TYPE_INTERNAL;
 		else if($parsed['path'] == 'phonebook')
-			$return['type'] = 5;
+			$return['type'] = XIVO_PHONEBOOK_TYPE_PHONEBOOK;
 		else
 		{
 			foreach($prefixes as $k => $p)
@@ -195,20 +199,29 @@ switch($act)
 
 		# If we can't find type assume it's webservice
 		if($return['type'] == -1)
-			$return['type'] = 3;
+			$return['type'] = XIVO_PHONEBOOK_TYPE_WEBSERVICES;
 
-		# Only for MySQL (id 1 in $prefixes)
-		if($return['type'] == 1)
+		switch($return['type'])
 		{
-			$return['host'] = $parsed['authority']['host'];
-			$return['port'] = $parsed['authority']['port'];
-			$return['user'] = $parsed['authority']['user'];
-			$return['password'] = $parsed['authority']['passwd'];
-
-
-			$return['dbname'] = $parsed['path'];
-			$pattern = '-/-';
-			$return['dbname'] = preg_replace($pattern, '', $return['dbname']);
+			case XIVO_PHONEBOOK_TYPE_MYSQL:
+				$return['host'] = $parsed['authority']['host'];
+				$return['port'] = $parsed['authority']['port'];
+				$return['user'] = $parsed['authority']['user'];
+				$return['password'] = $parsed['authority']['passwd'];
+				$return['dbname'] = $parsed['path'];
+				$pattern = '-/-';
+				$return['dbname'] = preg_replace($pattern, '', $return['dbname']);
+				break;
+			case XIVO_PHONEBOOK_TYPE_WEBSERVICES:
+			case XIVO_PHONEBOOK_TYPE_INTERNAL:
+			case XIVO_PHONEBOOK_TYPE_PHONEBOOK:
+				break;
+			default:
+				$start = strlen($prefixes[$return['type']]) + 3;
+				$uri = substr($return['uri'], $start);
+				if ($uri !== false)
+					$return['uri'] = $uri;
+				break;
 		}
 
 		$dhtml = &$_TPL->get_module('dhtml');
