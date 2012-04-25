@@ -95,6 +95,7 @@ if(isset($error_js[0]) === true)
 			      	'selected' => $info['ctisheetevents']['incomingdid']),
 				$sheetactionslist),
 
+        /*
 		$form->select(array('desc'	=> $this->bbf('fm_sheetevents_incomingqueue'),
 				    'name'	=> 'ctisheetevents[incomingqueue]',
 				    'labelid'	=> 'incomingqueue',
@@ -117,14 +118,16 @@ if(isset($error_js[0]) === true)
                     'default'   => $element['ctisheetevents']['outcall']['default'],
                     'selected' => $info['ctisheetevents']['outcall']),
                 $sheetactionslist),
+         */
         $form->select(array('desc'  => $this->bbf('fm_sheetevents_hangup'),
                     'name'  => 'ctisheetevents[hangup]',
                     'labelid'   => 'hangup',
                     'key'   => false,
                     'default'   => $element['ctisheetevents']['hangup']['default'],
                     'selected' => $info['ctisheetevents']['hangup']),
-                $sheetactionslist),
+                $sheetactionslist);
 
+        /*
 		$form->select(array('desc'	=> $this->bbf('fm_sheetevents_faxreceived'),
 				    'name'	=> 'ctisheetevents[faxreceived]',
 				    'labelid'	=> 'faxreceived',
@@ -132,6 +135,7 @@ if(isset($error_js[0]) === true)
 				    'default'	=> $element['ctisheetevents']['faxreceived']['default'],
 			      	'selected' => $info['ctisheetevents']['faxreceived']),
                                 $sheetactionslist);
+         */
 		$type = 'custom';
 		$count = count($customs);
 		$errdisplay = '';
