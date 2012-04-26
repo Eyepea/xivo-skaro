@@ -519,9 +519,7 @@ CREATE TABLE "ctisheetactions" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctisheetactions" VALUES(DEFAULT,'dial','sheet_action_dial','["default"]','dest','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} de {xivo-calleridnum}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ],"40": [ "Numéro appelé","phone","Inconnu","{xivo-calledidnum}" ]}','{"10": [ ","title","","Appel {xivo-direction}" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1,0);
-INSERT INTO "ctisheetactions" VALUES(DEFAULT,'queue','sheet_action_queue','["default"]','dest','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ ","title","","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','file:///etc/pf-xivo/xivo-ctid/form.ui','{}',0,1,0);
-INSERT INTO "ctisheetactions" VALUES(DEFAULT,'custom1','sheet_action_custom1','["default"]','all','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} (Custom)" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ ","title","","Appel {xivo-direction} (Custom)" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1,0);
+INSERT INTO "ctisheetactions" VALUES(DEFAULT,'XiVO','Modèle de fiche de base.','[]','dest','[]','{"10": [ "Nom","title","","{xivo-calleridname}",0 ],"20": [ "Numéro","text","","{xivo-calleridnum}",0 ],"30": [ "Origine","text","","{xivo-origin}",0 ],"40": [ "File attente","text","","{xivo-queuename}",0 ]}','{"10": [ "Nom","title","","{xivo-calledidname}" ],"20": [ "Numéro","body","","{xivo-calleridnum}" ],"30": [ "Origine","body","","{xivo-origin}" ]}','','{}',0,1,1);
 
 
 DROP TABLE IF EXISTS "ctisheetevents";
@@ -542,7 +540,7 @@ CREATE TABLE "ctisheetevents" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctisheetevents" VALUES(DEFAULT,'','','','','','','','','dial','','','{"custom-example1": "custom1"}');
+INSERT INTO "ctisheetevents" VALUES(DEFAULT,'','','','','','','','','XiVO','','','{"": ""}');
 
 
 DROP TABLE IF EXISTS "ctistatus";
