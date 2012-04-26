@@ -38,13 +38,25 @@ define('XIVO_PHONEBOOK_TYPE_WEBSERVICES', 3);
 define('XIVO_PHONEBOOK_TYPE_INTERNAL', 4);
 define('XIVO_PHONEBOOK_TYPE_PHONEBOOK', 5);
 
-$prefixes = array(
-		XIVO_PHONEBOOK_TYPE_SQLITE => 'sqlite',
-		XIVO_PHONEBOOK_TYPE_MYSQL => 'mysql',
-		XIVO_PHONEBOOK_TYPE_FILE => 'file',
-		XIVO_PHONEBOOK_TYPE_WEBSERVICES => 'webservices',
-		XIVO_PHONEBOOK_TYPE_INTERNAL => 'internal',
-		XIVO_PHONEBOOK_TYPE_PHONEBOOK => 'phonebook');
+$types = array(
+	XIVO_PHONEBOOK_TYPE_SQLITE => array(
+		'scheme' => 'sqlite',
+		'name' => 'Sqlite'),
+	XIVO_PHONEBOOK_TYPE_MYSQL => array(
+		'scheme' => 'mysql',
+		'name' => 'MySQL'),
+	XIVO_PHONEBOOK_TYPE_FILE => array(
+		'scheme' => 'file',
+		'name' => 'File'),
+	XIVO_PHONEBOOK_TYPE_WEBSERVICES => array(
+		'scheme' => 'webservices',
+		'name' => 'Webservices'),
+	XIVO_PHONEBOOK_TYPE_INTERNAL => array(
+		'scheme' => 'internal',
+		'name' => 'Internal'),
+	XIVO_PHONEBOOK_TYPE_PHONEBOOK => array(
+		'scheme' => 'phonebook',
+		'name' => 'Phonebook'));
 
 switch($act)
 {
@@ -76,7 +88,7 @@ switch($act)
 					$uri = 'phonebook';
 					break;
 				default:
-					$uri = $prefixes[$_QR['type']] . "://" . $_QR['uri'];
+					$uri = $types[$_QR['type']]['scheme'] . '://' . $_QR['uri'];
 					break;
 			}
 
@@ -148,7 +160,7 @@ switch($act)
 					$uri = 'phonebook';
 					break;
 				default:
-					$uri = $prefixes[$_QR['type']] . "://" . $_QR['uri'];
+					$uri = $types[$_QR['type']]['scheme'] . '://' . $_QR['uri'];
 					break;
 			}
 
@@ -190,9 +202,9 @@ switch($act)
 			$return['type'] = XIVO_PHONEBOOK_TYPE_PHONEBOOK;
 		else
 		{
-			foreach($prefixes as $k => $p)
+			foreach($types as $k => $p)
 			{
-				if(strcasecmp($parsed['scheme'], $p) == 0)
+				if(strcasecmp($parsed['scheme'], $p['scheme']) == 0)
 					$return['type'] = $k;
 			}
 		}
@@ -217,8 +229,8 @@ switch($act)
 			case XIVO_PHONEBOOK_TYPE_PHONEBOOK:
 				break;
 			default:
-				$start = strlen($prefixes[$return['type']]) + 3;
-				$uri = substr($return['uri'], $start);
+				$scheme = $types[$return['type']]['scheme'];
+				$uri = substr($return['uri'], strlen($scheme) + 3);
 				if ($uri !== false)
 					$return['uri'] = $uri;
 				break;
@@ -268,6 +280,7 @@ switch($act)
 $_TPL->set_var('act',$act);
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('error',$error);
+$_TPL->set_var('types', $types);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
