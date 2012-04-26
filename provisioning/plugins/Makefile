@@ -19,6 +19,7 @@ build :
 	$(PGBUILD) -B -s . -d $(PLUGINS_PATH)
 	$(PGBUILD) -P -s $(PLUGINS_PATH) -d $(DEV_PATH)
 	$(PGBUILD) -D -s $(DEV_PATH) -d $(DEV_PATH)
+	chmod +r $(DEV_PATH)/*
 
 
 .PHONY : upload
@@ -34,6 +35,7 @@ download-stable :
 .PHONY : build-stable
 build-stable :
 	$(PGBUILD) -D -s $(STABLE_PATH) -d $(STABLE_PATH)
+	chmod +r $(STABLE_PATH)/*
 
 
 .PHONY : upload-stable
