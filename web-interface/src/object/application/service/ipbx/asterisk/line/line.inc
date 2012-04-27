@@ -1263,15 +1263,16 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			// Delete the old device associated.
 			if (empty($this->_info['linefeatures']['device']) === false)
 			{
-				if (($device = $this->_device->get($this->_info['linefeatures']['device'],null,true)) === false)
+				$old_deviceid = $this->_info['linefeatures']['device'];
+				if (($device = $this->_device->get($old_deviceid,null,true)) === false)
 				{
-					dwho_report::push('error', 'device doesn\'t exist: '.$device['deviceid']);
+					dwho_report::push('error', 'device doesn\'t exist: '.$old_deviceid);
 					return(false);
 				}
 				elseif ($this->_device->remove_line($this->_info['linefeatures']['num']) === false)
 					return(false);
-				elseif ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP
-				&& $this->_sccpdevice->init_device($device['mac'],'') === false)
+				elseif ($this->_info['linefeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP
+				&& $this->_sccpdevice->init_device($device['devicefeatures']['mac'],'') === false)
 					return(false);
 			}
 			// Add the new device associated.
@@ -1297,7 +1298,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				}
 				elseif($this->_provddevice->update_config_from_line($arr,$device['deviceid']) === false)
 					return(false);
-				elseif ($protocol === XIVO_SRE_IPBX_AST_PROTO_SCCP
+				elseif ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP
 				&& $this->_sccpdevice->init_device($device['mac'],$rs['number'],$vm_number) === false)
 					return(false);
 			}
