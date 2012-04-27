@@ -1,5 +1,5 @@
 {
-    "version": "0.1.10",
+    "version": "0.1.11",
     "description": "Plugin for Cisco 7912G, 7940G and 7960G in version 8.1.2 of the SCCP software.",
     "description_fr": "Greffon pour Cisco 7912G, 7940G et 7960G en version 8.1.2 du logiciel SCCP.",
     "capabilities": {
