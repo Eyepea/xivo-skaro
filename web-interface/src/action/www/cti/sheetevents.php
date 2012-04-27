@@ -48,14 +48,15 @@ if(isset($_QR['fm_send']) === true)
 	$parting = array();
 
 	$str = "{";
-	foreach($_QR['customcol1'] as $k=>$v)
-	{
-		$tv = trim($v);
-		if($tv != '')
-		{
-			$str .= '"'.$tv.'": "'.trim($_QR['customcol2'][$k]).'",';
-		}
-	}
+    # Custom events commented out and removed from template untill correctly implemented.
+	#foreach($_QR['customcol1'] as $k=>$v)
+	#{
+	#	$tv = trim($v);
+	#	if($tv != '')
+	#	{
+	#		$str .= '"'.$tv.'": "'.trim($_QR['customcol2'][$k]).'",';
+	#	}
+	#}
 	$str = trim($str, ',').'}';
 	$_QR['ctisheetevents']['custom'] = $str;
 	if(($rs = $sheetevents->chk_values($_QR['ctisheetevents'])) === false)

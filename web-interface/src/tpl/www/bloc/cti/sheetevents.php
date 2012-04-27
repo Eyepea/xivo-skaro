@@ -142,6 +142,7 @@ if(isset($error_js[0]) === true)
 
 ?>
 	<p>&nbsp;</p>
+<!--
 	<div class="sb-list">
 		<table>
 			<thead>
@@ -253,6 +254,7 @@ if(isset($error_js[0]) === true)
 			</tbody>
 		</table>
 	</div>
+-->
 
 <?php
 	echo	$form->submit(array('name'	=> 'submit',
