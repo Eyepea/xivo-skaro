@@ -78,4 +78,4 @@ You must enter a number to a Local channel
 VOiP Interface can't disabled
 
 ; user_need_lines_to_have_voicemail
-Need at least one line to have a voicemail
+Cannot remove a line when user has a voicemail

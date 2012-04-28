@@ -40,14 +40,10 @@ $array['element']['password']['default'] = '';
 
 $array['element']['length'] = array();
 $array['element']['length']['value'] = array(1024,2048);
-$array['element']['length']['default'] = '';
+$array['element']['length']['default'] = 1024;
 
 $array['element']['validity-end'] = array();
 $array['element']['validity-end']['default'] = '';
-
-$array['element']['validity'] = array();
-$array['element']['validity']['value'] = range(0,3650);
-$array['element']['validity']['default'] = '';
 
 $array['element']['subject'] = array();
 
@@ -84,7 +80,8 @@ $array['element']['cipher']['default'] = 'aes';
 $array['element']['cipher']['null'] = true;
 
 $array['filter'] = array();
-$array['filter']['name'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
+$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 64);
+/*
 $array['filter']['password'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['CN'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['C'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
@@ -92,11 +89,10 @@ $array['filter']['ST'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['L'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['O'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['OU'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
-$array['filter']['emailAddress'] = array('set' => true, 'chk' => 1, 'maxlen' => 255);
+*/
+$array['filter']['emailAddress'] = array('set' => true,'chk' => 1,'maxlen' => 255,'callback' => 'dwho_network::valid_email');
 $array['filter']['ca'] = array('set' => false, 'chk' => 1, 'maxlen' => 255);
-$array['filter']['ca_password'] = array('set' => false, 'chk' => 1, 'maxlen' => 255);
 $array['filter']['length'] = array('set' => true, 'chk' => 1, 'cast' => 'uint');
-$array['filter']['validity'] = array('set' => true, 'chk' => 1, 'cast' => 'uint');
 $array['filter']['is_ca'] = array('bool' => true);
 $array['filter']['autosigned'] = array('bool' => true);
 $array['filter']['cipher'] = array('set' => false, 'chk' => 2, 'key' => array('aes','des','des3','idea'));

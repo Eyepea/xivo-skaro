@@ -551,10 +551,27 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		&& isset($lines[1]['linefeatures'])
 		&& isset($lines[1]['linefeatures']['protocol']))
 			$protocolname = $lines[1]['linefeatures']['protocol'];
+		else if (isset($raw_config['protocol'])
+		&& is_string($raw_config['protocol']))
+			$protocolname = strtolower($raw_config['protocol']);
 
 		switch ($protocolname)
 		{
 			case 'sccp':
+				if (is_null($raw) === false) {
+					$build_raw_config = $this->build_raw_config_device($raw);
+					$raw_config = array_merge($raw_config,$build_raw_config);
+
+					foreach ($raw_config as $key => $val)
+					{
+						if (substr($key, 0, 5) === 'exten'
+						|| isset($build_raw_config[$key]))
+							continue;
+
+						unset($raw_config[$key]);
+					}
+				}
+
 				$confregistrar = $this->get('default');
 				$raw_config['protocol'] = 'SCCP';
 				$raw_config['sccp_call_managers'] = array();

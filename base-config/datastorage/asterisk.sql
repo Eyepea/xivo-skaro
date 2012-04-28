@@ -194,7 +194,7 @@ CREATE TABLE "cel" (
  "context" varchar (80) NOT NULL , 
  "channame" varchar (80) NOT NULL ,
  "appname" varchar (80) NOT NULL ,
- "appdata" varchar (80) NOT NULL , 
+ "appdata" varchar (512) NOT NULL ,
  "amaflags" int NOT NULL ,
  "accountcode" varchar (20) NOT NULL ,
  "peeraccount" varchar (20) NOT NULL ,
@@ -299,32 +299,6 @@ CREATE TABLE "ctiaccounts" (
  "label" varchar(128) NOT NULL,
  PRIMARY KEY("login")
 );
-
-
-DROP TABLE IF EXISTS "ctiagentstatus";
-CREATE TABLE "ctiagentstatus" (
- "id" SERIAL,
- "idgroup" integer,
- "name" varchar(255),
- "color" varchar(128),
- PRIMARY KEY("id")
-);
-
-INSERT INTO "ctiagentstatus" VALUES(DEFAULT,1,'Logué','#0DFF25');
-INSERT INTO "ctiagentstatus" VALUES(DEFAULT,1,'Délogué','#030303');
-INSERT INTO "ctiagentstatus" VALUES(DEFAULT,1,'En communication','#FF032D');
-
-
-DROP TABLE IF EXISTS "ctiagentstatusgroup";
-CREATE TABLE "ctiagentstatusgroup" (
- "id" SERIAL,
- "name" varchar(255),
- "description" varchar(255),
- "deletable" INTEGER, -- BOOLEAN
- PRIMARY KEY("id")
-);
-
-INSERT INTO "ctiagentstatusgroup" VALUES(DEFAULT,'xivo','De base non supprimable',0);
 
 
 DROP TABLE IF EXISTS "ctilog";
@@ -545,9 +519,7 @@ CREATE TABLE "ctisheetactions" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctisheetactions" VALUES(DEFAULT,'dial','sheet_action_dial','["default"]','dest','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} de {xivo-calleridnum}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ],"40": [ "Numéro appelé","phone","Inconnu","{xivo-calledidnum}" ]}','{"10": [ ","title","","Appel {xivo-direction}" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1,0);
-INSERT INTO "ctisheetactions" VALUES(DEFAULT,'queue','sheet_action_queue','["default"]','dest','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ ","title","","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','file:///etc/pf-xivo/xivo-ctid/form.ui','{}',0,1,0);
-INSERT INTO "ctisheetactions" VALUES(DEFAULT,'custom1','sheet_action_custom1','["default"]','all','["agentsup","agent","client"]','{"10": [ ","text","Inconnu","Appel {xivo-direction} (Custom)" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ ","title","","Appel {xivo-direction} (Custom)" ],"20": [ ","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ ","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ ","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1,0);
+INSERT INTO "ctisheetactions" VALUES(DEFAULT,'XiVO','Modèle de fiche de base.','[]','dest','[]','{"10": [ "Nom","title","","{xivo-calleridname}",0 ],"20": [ "Numéro","text","","{xivo-calleridnum}",0 ],"30": [ "Origine","text","","{xivo-origin}",0 ]}','{"10": [ "Nom","title","","{xivo-calledidname}" ],"20": [ "Numéro","body","","{xivo-calleridnum}" ],"30": [ "Origine","body","","{xivo-origin}" ]}','','{}',0,1,1);
 
 
 DROP TABLE IF EXISTS "ctisheetevents";
@@ -559,6 +531,8 @@ CREATE TABLE "ctisheetevents" (
  "incomingqueue" varchar(50),
  "incominggroup" varchar(50),
  "incomingdid" varchar(50),
+ "outcall" varchar(50),
+ "hangup" varchar(50),
  "dial" varchar(50),
  "link" varchar(50),
  "unlink" varchar(50),
@@ -566,7 +540,7 @@ CREATE TABLE "ctisheetevents" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctisheetevents" VALUES(DEFAULT,'','','','','','','dial','','','{"custom-example1": "custom1"}');
+INSERT INTO "ctisheetevents" VALUES(DEFAULT,'','','','','','','','','XiVO','','','{"": ""}');
 
 
 DROP TABLE IF EXISTS "ctistatus";
@@ -585,11 +559,11 @@ CREATE TABLE "ctistatus" (
 CREATE UNIQUE INDEX "ctistatus_presence_name" ON "ctistatus" (presence_id,name);
 
 INSERT INTO "ctistatus" VALUES(DEFAULT,1,'available','Disponible','enablednd(false)','#08FD20','1,2,3,4,5',0);
-INSERT INTO "ctistatus" VALUES(DEFAULT,1,'away','Sorti','enablednd(true)','#FDE50A','1,2,3,4,5',1);
-INSERT INTO "ctistatus" VALUES(DEFAULT,1,'outtolunch','Parti Manger','enablednd(true)','#001AFF','1,2,3,4,5',1);
+INSERT INTO "ctistatus" VALUES(DEFAULT,1,'away','Sorti','enablednd(false)','#FDE50A','1,2,3,4,5',1);
+INSERT INTO "ctistatus" VALUES(DEFAULT,1,'outtolunch','Parti Manger','enablednd(false)','#001AFF','1,2,3,4,5',1);
 INSERT INTO "ctistatus" VALUES(DEFAULT,1,'donotdisturb','Ne pas déranger','enablednd(true)','#FF032D','1,2,3,4,5',1);
-INSERT INTO "ctistatus" VALUES(DEFAULT,1,'berightback','Bientôt de retour','enablednd(true)','#FFB545','1,2,3,4,5',1);
-INSERT INTO "ctistatus" VALUES(DEFAULT,1,'disconnected','Déconnecté','','#202020','',0);
+INSERT INTO "ctistatus" VALUES(DEFAULT,1,'berightback','Bientôt de retour','enablednd(false)','#FFB545','1,2,3,4,5',1);
+INSERT INTO "ctistatus" VALUES(DEFAULT,1,'disconnected','Déconnecté','agentlogoff()','#202020','',0);
 
 
 DROP TABLE IF EXISTS "devicefeatures";
@@ -848,7 +822,7 @@ INSERT INTO "features" VALUES (DEFAULT,0,0,0,'features.conf','general','parkpos'
 INSERT INTO "features" VALUES (DEFAULT,0,0,0,'features.conf','general','context','parkedcalls');
 INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','parkinghints','no');
 INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','parkingtime','45');
-INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','comebacktoorigin','no');
+INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','comebacktoorigin','yes');
 INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','courtesytone',NULL);
 INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','parkedplay','caller');
 INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','parkedcalltransfers','no');

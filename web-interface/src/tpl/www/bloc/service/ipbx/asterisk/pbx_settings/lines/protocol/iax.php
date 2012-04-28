@@ -169,15 +169,6 @@ $element = $this->get_var('element');
 				    'selected'	=> $this->get_var('info','protocol','qualifyfreqnotok')),
 			      $element['protocol']['iax']['qualifyfreqnotok']['value']),
 
-		$form->select(array('desc'	=> $this->bbf('fm_protocol_pickupcontext'),
-					    'name'	=> 'protocol[pickupcontext]',
-					    'labelid'	=> 'protocol-pickupcontext',
-					    'key'	=> 'identity',
-					    'altkey'	=> 'name',
-					    'help'		=> $this->bbf('hlp_fm_pickupcontext'),
-					    'selected'	=> $this->get_var('info', 'protocol', 'pickupcontext')),
-				      $context_list),
-
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_jitterbuffer'),
 				    'name'	=> 'protocol[jitterbuffer]',
 				    'labelid'	=> 'protocol-jitterbuffer',

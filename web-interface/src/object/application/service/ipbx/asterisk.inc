@@ -278,7 +278,10 @@ abstract class xivo_application_asterisk_abstract extends xivo_application_servi
 	function set_contextnummember($context,$number='')
 	{
 		if(($r = $this->_contextnummember->set($context,$number)) === false)
+		{
 			$this->_set_error('contextnummember',$this->_contextnummember->get_error());
+			dwho_report::push('error', dwho_i18n::babelfish('error('.$this->_contextnummember->get_error().')'));
+		}
 
 		$this->_set_result('contextnummember',$this->_contextnummember->get_result());
 

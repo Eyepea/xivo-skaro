@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 # -*- coding: UTF-8 -*-
 
 """A tool for building provd plugins."""

@@ -77,14 +77,18 @@ if [ -d /proc/net/vlan ]; then
     fi
 fi
 
+# cleanup wrong graphs
 dir="/var/www/munin/localdomain/localhost.localdomain"
 bck_dir="${dir}.bck"
 temp_dir="/tmp/munin"
-# create backup
-rsync -aq $dir/ $bck_dir/ --delete
-# remove old graph
-rsync -aq $dir/ $temp_dir/
-rm -rf $dir/vlan_* > /dev/null 2>&1
+if [ -d $dir ]; then
+    # create backup
+    rsync -aq $dir/ $bck_dir/ --delete
+    # remove old graph
+    rsync -aq $dir/ $temp_dir/
+    rm -rf $dir/vlan_* > /dev/null 2>&1
+fi
+
 ls /etc/munin/plugins/vlan_* > /dev/null 2>&1
 if [ $? -eq 0 ]; then
     for vlan in $(ls /etc/munin/plugins/vlan_*); do

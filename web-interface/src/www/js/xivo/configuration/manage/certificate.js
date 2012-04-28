@@ -10,7 +10,7 @@ function certinit(mode) {
         $('#it-validity-end').datepicker({
             changeMonth: true,
             changeYear: true,
-            minDate: +1,
+            minDate: +30,
             altField: '#it-validity-end-format',
             altFormat: 'yy-mm-dd'
         });

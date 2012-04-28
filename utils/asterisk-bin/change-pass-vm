@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2006-2010  Avencall
 
@@ -22,12 +21,16 @@ import sys
 from xivo import xivo_helpers
 
 if len(sys.argv) != 4:
-    raise ValueError, "Missing args!"
+    raise ValueError("Missing args!")
+
+context = sys.argv[1]
+mailbox = sys.argv[2]
+new_password = sys.argv[3]
 
 cursor = xivo_helpers.db_connect().cursor()
 cursor.query("UPDATE voicemail "
              "SET password = %s "
              "WHERE context = %s "
              "AND mailbox = %s",
-             parameters = (sys.argv[3], sys.argv[1], sys.argv[2]))
+             parameters=(new_password, context, mailbox))
 xivo_helpers.db_close()

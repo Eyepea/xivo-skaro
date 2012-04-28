@@ -432,7 +432,7 @@ endif;
 	else:
 		echo	'<div class="txt-center">',
 			$url->href_htmln($this->bbf('create_user'),
-					'callcenter/settings/users',
+					'service/ipbx/pbx_settings/users',
 					'act=add'),
 			'</div>';
 	endif;

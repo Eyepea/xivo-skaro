@@ -28,6 +28,12 @@ Groupe entrant:
 ; fm_sheetevents_faxreceived
 Réception fax:
 
+; fm_sheetevents_outcall
+Appel sortant:
+
+; fm_sheetevents_hangup
+Raccroché:
+
 ; col_1
 Événement personnalisé
 

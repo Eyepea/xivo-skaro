@@ -80,6 +80,14 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
+		if(xivo_user::chk_acl('manage','ldapserver') === true):
+			echo	'<dd id="mn-manage--ldapserver">',
+				$url->href_html($this->bbf('mn_left_manage-ldapserver'),
+						'xivo/configuration/manage/ldapserver',
+						'act=list'),
+				'</dd>';
+		endif;
+
 		echo '</dl>';
 	endif;
 
@@ -143,12 +151,12 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
-		if(xivo_user::chk_acl('support','limits') === true):
-			echo	'<dd id="mn-support--limits">',
-				$url->href_html($this->bbf('mn_left_support-limits'),
-						'xivo/configuration/support/limits'),
-				'</dd>';
-		endif;
+// 		if(xivo_user::chk_acl('support','limits') === true):
+// 			echo	'<dd id="mn-support--limits">',
+// 				$url->href_html($this->bbf('mn_left_support-limits'),
+// 						'xivo/configuration/support/limits'),
+// 				'</dd>';
+// 		endif;
 
 		echo '</dl>';
 	endif;

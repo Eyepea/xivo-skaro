@@ -31,7 +31,16 @@ $err = $this->get_var('error','linefeatures');
 $list_device = array();
 $nb_device = count($list_device_line);
 for($i=0; $i<$nb_device; $i++):
-	$list_device[$i] = $list_device_line[$i]['devicefeatures'];
+	$cur_device = $list_device_line[$i]['devicefeatures'];
+	$trimmed_mac = trim($cur_device['mac']);
+	$trimmed_ip = trim($cur_device['ip']);
+	if(empty($trimmed_mac) === false) {
+		$cur_device['display'] = 'MAC: '.$cur_device['mac'];
+		$list_device[$i] = $cur_device;
+	} else if(empty($trimmed_ip) === false) {
+		$cur_device['display'] = 'IP: '.$cur_device['ip'];
+		$list_device[$i] = $cur_device;
+	}
 endfor;
 
 ?>
@@ -252,7 +261,7 @@ if($list !== false):
 				    'name'		=> 'linefeatures[device][]',
 				    'id'		=> 'linefeatures-device',
 				    'label'		=> false,
-				    'key'		=> 'mac',
+				    'key'		=> 'display',
 				    'altkey'	=> 'id',
 				    'empty'		=> true,
 				    'default'	=> $element['linefeatures']['device']['default'],
@@ -397,7 +406,7 @@ endif;
 				    'name'		=> 'linefeatures[device][]',
 				    'id'		=> 'linefeatures-device',
 				    'label'		=> false,
-				    'key'		=> 'mac',
+				    'key'		=> 'display',
 				    'altkey'	=> 'id',
 				    'default'	=> $element['linefeatures']['device']['default'],
 				    'empty'		=> true),

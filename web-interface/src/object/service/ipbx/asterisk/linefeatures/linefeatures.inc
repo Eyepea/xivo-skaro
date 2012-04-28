@@ -160,8 +160,6 @@ class xivo_service_asterisk_linefeatures extends xivo_service_asterisk_abstract
 
 		if (isset($arr['num']) === true)
 			$arr['num'] = (int) $arr['num'];
-		else
-			$arr['num'] = 0;
 
 		if (isset($arr['line_num']) === true)
 			$arr['line_num'] = (int) $arr['line_num'];

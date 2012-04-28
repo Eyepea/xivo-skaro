@@ -117,7 +117,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		$this->_dso->new_select('queueskillcat', array('count' => (object) 'COUNT(*)'));
 		if(!is_null($search) && strlen($search) > 0)
 			$this->_dso->orwherecontain("name", $search);
-		
+
 		$res = $this->_dso->select_all(null, true);
 
 		$this->_dso->reset_order();
@@ -141,7 +141,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		$this->_dso->add_group('name', 'queueskillcat');
 		$this->_dso->new_order('name', null, 'queueskillcat');
 		$this->_dso->limit($limit);
-		
+
 		$res = $this->_dso->select_all(null, true);
 
 		$this->_dso->reset_order();
@@ -150,18 +150,18 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		return($res);
 	}
 
-    function skills_json_get($id=null,$filter=null)
+    function skills_json_get($id=null,$filter=null,$limit=null)
 	{
 		$this->_dso->new_select('queueskill', array('id', 'name', 'description', 'printscreen'));
 		$this->_dso->leftjoin('queueskillcat',
     		'queueskillcat.id = queueskill.catid',
     		null,
     		array('category_name' => 'name'));
-		
+
         // search by ID
         if(!is_null($id))
         {
-            $this->_dso->where(array('"queueskill".id' => $id));
+            $this->_dso->where(array('id' => $id),'queueskill');
         }
         // search by string match (LIKE)
         else if(!is_null($filter))
@@ -172,10 +172,9 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
             $this->_dso->orwherecontain('name'        , $filter, true, 'queueskillcat');
         }
 
-
 		$this->_dso->new_order('id', null, 'queueskill');
 		$this->_dso->limit($limit);
-		
+
 		if(!is_null($id))
 		{ $res = $this->_dso->select_single(); }
 		else
@@ -186,7 +185,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 
 		return($res);
 	}
-    
+
 	function skills_getone($id)
 	{
 		if(!is_int($id))
@@ -222,7 +221,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 			'queueskillcat.id = queueskill.catid',
 			null,
 			array('category' => 'name'));
-		
+
 		$this->_dso->new_order('name', null, 'queueskillcat');
 		$this->_dso->add_order('name', null, 'queueskill');
 
@@ -254,14 +253,14 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		if(!is_null($search) && strlen($search) > 0)
 		{
 			$this->_dso->wherecontain("name", $search);
-			
+
 			if($inrule)
                 $this->_dso->orwherecontain('rule' , $search);
 		}
 
 		$this->_dso->new_order('name', null, 'queueskillrule');
 		$this->_dso->limit($limit);
-		
+
 		$res = $this->_dso->select_all(null, true);
 
 		$this->_dso->reset_order();
@@ -292,7 +291,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 	{
 		if(!is_int($id))
 		{ return false; }
-		
+
 		$this->_dso->new_select('userqueueskill');
 		$this->_dso->where(array('userid' => $id));
 
@@ -300,9 +299,9 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 			'queueskill.id = userqueueskill.skillid',
 			null,
 			null);
-		
+
 		$this->_dso->new_order('name', null, 'queueskill');
-		
+
 		$res = $this->_dso->select_all(null, true);
 
 		$this->_dso->reset_order();
@@ -314,7 +313,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 	{
 		if(!is_int($id))
 		{ return false; }
-		
+
 		$this->_dso->new_select('agentqueueskill');
 		$this->_dso->where(array('agentid' => $id));
 
@@ -322,9 +321,9 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 			'queueskill.id = agentqueueskill.skillid',
 			null,
 			null);
-		
+
 		$this->_dso->new_order('name', null, 'queueskill');
-		
+
 		$res = $this->_dso->select_all(null, true);
 
 		$this->_dso->reset_order();

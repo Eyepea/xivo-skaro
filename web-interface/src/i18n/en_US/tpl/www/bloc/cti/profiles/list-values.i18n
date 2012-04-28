@@ -119,22 +119,22 @@ Ad libitum
 
 
 ; xlet-agents
-Agents (list) (experimental)
+Agents (list)
 
 ; xlet-agentsnext
 Agents (list, next) (experimental)
 
 ; xlet-agentdetails
-Agents (detail) (experimental)
+Agents (detail)
 
 ; xlet-queues
-Queues (list) (experimental)
+Queues (list)
 
 ; xlet-queuedetails
-Queues (detail) (experimental)
+Queues (detail)
 
 ; xlet-queueentrydetails
-Queues (entries detail) (experimental)
+Queues (entries detail)
 
 ; xlet-calls
 Calls (experimental)
@@ -143,7 +143,7 @@ Calls (experimental)
 Switchboard (experimental)
 
 ; xlet-customerinfo
-Customer info (experimental)
+Customer info
 
 ; xlet-datetime
 Datetime

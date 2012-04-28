@@ -78,4 +78,4 @@ Vous devez renseigner un numero pour un canal Local
 Vous ne pouvez pas désactiver l'interface voix.
 
 ; user_need_lines_to_have_voicemail
-Au moins une ligne est requise pour avoir une boîte vocale
+Impossible de supprimer une ligne pour un utilisateur ayant une boite vocale

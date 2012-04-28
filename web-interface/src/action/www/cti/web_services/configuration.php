@@ -102,7 +102,6 @@ switch($act)
             # object display options referred to by the profiles
             'userstatus'       => array(),
             'phonestatus'      => array(),
-            'agentstatus'      => array(),
             'channelstatus'    => array()
         );
 
@@ -394,7 +393,6 @@ switch($act)
                     'ipbxcommands' => "itm_ipbxcommands",
                     'userstatus' => $pf['presence'],
                     'phonestatus' => "itm_phonestatus",
-                    'agentstatus' => "itm_agentstatus",
                     'channelstatus' => "itm_channelstatus",
                     #'callcenter_type' => $pf['callcenter_type']
                 );

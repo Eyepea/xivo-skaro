@@ -567,8 +567,8 @@ function dwho_trunc(&$str,$nb=0,$end='',$chr=null,$trim=false)
  * \brief Checks that $a[$k] exists, $a being an array and $k being the key
  *
  * There are two options :
- * If $t is true, the return is true if the key exists else false.
- * If $t is false, the return is the value of $a[$k]
+ * If $t is true, the return is the value of $a[$k]
+ * If $t is false, the return is true if the key exists else false.
  *
  * If $f is true, existence is checked with isset.
  * If $f is false, existence is checked with array_key_exists.

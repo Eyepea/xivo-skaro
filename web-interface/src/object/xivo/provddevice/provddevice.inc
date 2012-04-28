@@ -84,13 +84,14 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		return(array_values($rs));
 	}
 
-	private function _prepare_to($arr)
+	private function _prepare_data_to_provd($data)
 	{
-		if (isset($arr['mac']) === true
-		&& $arr['mac'] === '')
-			unset($arr['mac']);
-
-		return($arr);
+		foreach ($data as $key => $val)
+		{
+			if (dwho_has_len($val) === false)
+				unset($data[$key]);
+		}
+		return($data);
 	}
 
 	public function add($arr)
@@ -99,16 +100,14 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 			return(false);
 
 		$uri = $this->_build_uri(array('devices'));
-
-		$data['device'] = $this->_prepare_to($arr);
-
+		$data['device'] = $this->_prepare_data_to_provd($arr);
 		$rs = $this->request_post($uri,$data);
 
 		if($this->_status_code !== 201
 		|| isset($rs['id']) === false)
 			return(false);
 
-		$this->eval_config_device($id);
+		$this->eval_config_device($rs['id']);
 
 		return($rs['id']);
 	}
@@ -120,13 +119,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 			return(false);
 
 		$uri = $this->_build_uri(array('devices',$id));
-
-		if (isset($arr['mac']) === true
-		&& $arr['mac'] === '')
-			unset($arr['mac']);
-
-		$data['device'] = $arr;
-
+		$data['device'] = $this->_prepare_data_to_provd($arr);
 		$rs = $this->request_put($uri,$data);
 
 		if($this->_status_code !== 204)

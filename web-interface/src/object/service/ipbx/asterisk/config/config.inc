@@ -100,12 +100,6 @@ $array['module']['contextnumbers']['datastorage'] = true;
 $array['module']['contextnummember'] = array();
 $array['module']['contextnummember']['datastorage'] = true;
 
-$array['module']['ctiagentstatus'] = array();
-$array['module']['ctiagentstatus']['datastorage'] = true;
-
-$array['module']['ctiagentstatusgroup'] = array();
-$array['module']['ctiagentstatusgroup']['datastorage'] = true;
-
 $array['module']['ctiaccounts'] = array();
 $array['module']['ctiaccounts']['datastorage'] = true;
 

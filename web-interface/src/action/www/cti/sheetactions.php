@@ -95,21 +95,22 @@ switch($act)
 
 			$cpt = 10;
 			$str = "{";
-			foreach($_QR['infoscol1'] as $k => $v)
+			foreach($_QR['infoscol4'] as $k => $v)
 			{
-				if((trim($_QR['infoscol1'][$k]) != '') || (trim($_QR['infoscol2'][$k]) != '') || (trim($_QR['infoscol3'][$k]) != '') || (trim($_QR['infoscol4'][$k]) != ''))
+				if(trim($_QR['infoscol4'][$k]) != '')
 				{
 					$str .= '"'.$cpt.'": ';
-					$str .= '[ "'.trim($v).'",';
-					$str .= '"'.trim($_QR['infoscol2'][$k]).'",';
-					$str .= '"'.trim($_QR['infoscol3'][$k]).'",';
-					$str .= '"'.trim($_QR['infoscol4'][$k]).'" ]';
+					$str .= '[ "",';
+					$str .= '"urlauto",';
+					$str .= '"",';
+					$str .= '"'.trim($v).'" ]';
 					$cpt += 10;
 				}
 				$str .= ',';
 			}
 			$str = trim($str, ',');
 			$str .= '}';
+
 			$_QR['sheetactions']['action_info'] = $str;
 
 			$_QR['sheetactions']['deletable'] = 1;
@@ -230,21 +231,22 @@ switch($act)
 
 			$cpt = 10;
 			$str = "{";
-			foreach($_QR['infoscol1'] as $k => $v)
+			foreach($_QR['infoscol4'] as $k => $v)
 			{
-				if((trim($_QR['infoscol1'][$k]) != '') || (trim($_QR['infoscol2'][$k]) != '') || (trim($_QR['infoscol3'][$k]) != '') || (trim($_QR['infoscol4'][$k]) != ''))
+				if(trim($_QR['infoscol4'][$k]) != '')
 				{
 					$str .= '"'.$cpt.'": ';
-					$str .= '[ "'.trim($v).'",';
-					$str .= '"'.trim($_QR['infoscol2'][$k]).'",';
-					$str .= '"'.trim($_QR['infoscol3'][$k]).'",';
-					$str .= '"'.trim($_QR['infoscol4'][$k]).'" ]';
+					$str .= '[ "",';
+					$str .= '"urlauto",';
+					$str .= '"",';
+					$str .= '"'.trim($v).'" ]';
 					$cpt += 10;
 				}
 				$str .= ',';
 			}
 			$str = trim($str, ',');
 			$str .= '}';
+            
 			$_QR['sheetactions']['action_info'] = $str;
 
 			$_QR['sheetactions']['deletable'] = 1;

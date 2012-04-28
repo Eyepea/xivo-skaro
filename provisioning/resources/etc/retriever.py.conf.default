@@ -2,6 +2,8 @@
 
 mac_retriever = MacDeviceRetriever(app)
 sn_retriever = SerialNumberDeviceRetriever(app)
+uuid_retriever = UUIDDeviceRetriever(app)
 ip_retriever = IpDeviceRetriever(app)
 add_retriever = AddDeviceRetriever(app)
-retriever = FirstCompositeDeviceRetriever([mac_retriever, sn_retriever, ip_retriever, add_retriever])
+retriever = FirstCompositeDeviceRetriever([mac_retriever, sn_retriever, uuid_retriever,
+                                           ip_retriever, add_retriever])

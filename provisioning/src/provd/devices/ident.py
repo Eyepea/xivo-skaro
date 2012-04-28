@@ -426,12 +426,45 @@ class SearchDeviceRetriever(object):
         return defer.succeed(None)
 
 
-def IpDeviceRetriever(app):
-    """Retrieve device object by looking up in a device manager for an
-    object which IP is the same as the device info object.
-    
-    """
-    return SearchDeviceRetriever(app, u'ip')
+class IpDeviceRetriever(object):
+    implements(IDeviceRetriever)
+
+    def __init__(self, app):
+        self._app = app
+
+    @defer.inlineCallbacks
+    def retrieve(self, dev_info):
+        logger.debug('In IpDeviceRetriever')
+        if u'ip' in dev_info:
+            devices = yield self._app.dev_find({u'ip': dev_info[u'ip']})
+            matching_device = self._get_matching_device(devices, dev_info)
+            defer.returnValue(matching_device)
+        defer.returnValue(None)
+
+    def _get_matching_device(self, devices, dev_info):
+        candidate_devices = self._get_candidate_devices(devices, dev_info)
+        nb_candidates = len(candidate_devices)
+        if nb_candidates == 1:
+            return candidate_devices[0]
+        elif nb_candidates > 1:
+            logger.warning('Multiple device match in IP device retriever: %r', candidate_devices)
+        return None
+
+    def _get_candidate_devices(self, devices, dev_info):
+        devices_by_id = dict((device[u'id'], device) for device in devices)
+        self._filter_devices_by_key(devices_by_id, dev_info, u'mac')
+        self._filter_devices_by_key(devices_by_id, dev_info, u'vendor')
+        self._filter_devices_by_key(devices_by_id, dev_info, u'model')
+        return devices_by_id.values()
+
+    def _filter_devices_by_key(self, devices_by_id, dev_info, key):
+        if key in dev_info:
+            key_value = dev_info[key]
+            for device in devices_by_id.values():
+                if key in device:
+                    if device[key] != key_value:
+                        device_id = device[u'id']
+                        del devices_by_id[device_id]
 
 
 def MacDeviceRetriever(app):
@@ -509,11 +542,7 @@ class IDeviceUpdater(Interface):
     
     This operation can have side effect, like updating the device. In fact,
     being able to do side effects is why this interface exist.
-    
-    Also, you should refrain from doing stupid thing, like removing the
-    'ip' key. This break this interface contract, and will yield to
-    exception, incorrect behaviors elsewhere in the application.  
-    
+
     """
 
     def update(device, dev_info, request, request_type):
@@ -700,40 +729,19 @@ class AutocreateConfigDeviceUpdater(object):
         defer.returnValue(False)
 
 
-class RemoveDuplicateDeviceUpdater(object):
-    """Device updater that doesn't update the device but check if there's
-    a duplicate device in the device collection.
-    
-    Duplicate happens in the following situation, for example:
-    - you manually add a device to the device collection, specifying only
-      its MAC address and config 
-    - you are using an add device retriever
-    - your device make it impossible to extract its MAC address on its
-      first request (for example, it does a TFTP request with no reference
-      to its MAC address in its first request)
-    - this means a new device is created in the device collection by the
-      add device retriever the first time the device make a request to
-      the server
-    - eventually, your device make a request where its MAC address is
-      extractable, and the original device you manually created is retrieved
-      at this point, but there's now a "duplicate" device in the
-      device collection.
-    
-    """
-
+class RemoveOutdatedIpDeviceUpdater(object):
     def __init__(self, app):
         self._app = app
 
     @defer.inlineCallbacks
     def update(self, device, dev_info, request, request_type):
-        logger.debug('In RemoveDuplicateDeviceUpdater')
-        if u'ip' not in device and u'ip' in dev_info:
-            dup_devices = yield self._app.dev_find({u'ip': dev_info[u'ip'],
-                                                    u'added': u'auto'})
-            for dup_device in dup_devices:
-                logger.info('Evicting duplicate device %s', device)
-                self._app.dev_delete(dup_device[ID_KEY])
-        defer.returnValue(False)
+        logger.debug('In RemoveOutdatedIpDeviceUpdater')
+        if u'ip' in dev_info:
+            selector = {u'ip': dev_info[u'ip'], u'id': {'$ne': device[u'id']}}
+            outdated_devices = yield self._app.dev_find(selector)
+            for outdated_device in outdated_devices:
+                del outdated_device[u'ip']
+                self._app.dev_update(outdated_device)
 
 
 class CompositeDeviceUpdater(object):

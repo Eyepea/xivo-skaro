@@ -21,6 +21,10 @@ VLAN=0
 {% endif %}
 
 [sip]
+CallPkupFlg=sc
+{% if exten_pickup_call %}
+CallPkupSC={{exten_pickup_call}}X
+{% endif %}
 {% for line_no in range(1, 5) -%}
 {% set line_no = line_no|string -%}
 {% if line_no in sip_lines -%}

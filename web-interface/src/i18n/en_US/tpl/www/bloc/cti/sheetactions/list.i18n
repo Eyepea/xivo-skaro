@@ -1,11 +1,11 @@
 ; col_name
-Action
+Model
 
 ; col_description
 Description
 
 ; no_sheetactions
-No action
+No model
 
 ; opt_delete_confirm
 Delete this item ?

@@ -13,15 +13,20 @@ prgkey3 type: speeddial
 prgkey3 value: {{ exten_dnd }}
 {% endif -%}
 
-prgkey4 type: directory
+{% if exten_pickup_call -%}
+prgkey4 type: speeddial
+prgkey4 value: {{ exten_pickup_call }}
+{% endif -%}
 
-prgkey5 type: callers
+prgkey5 type: services
 
-prgkey6 type: services
+prgkey6 type: none
+
+prgkey7 type: none
 
 {% if X_xivo_phonebook_ip -%}
-prgkey7 type: xml
-prgkey7 value: https://{{ X_xivo_phonebook_ip }}/service/ipbx/web_services.php/phonebook/search/
+prgkey8 type: xml
+prgkey8 value: https://{{ X_xivo_phonebook_ip }}/service/ipbx/web_services.php/phonebook/search/
 {% endif -%}
 
 {% include 'base.tpl' %}

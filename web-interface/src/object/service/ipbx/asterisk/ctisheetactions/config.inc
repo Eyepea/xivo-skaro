@@ -31,7 +31,8 @@ $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
 
 $array['element']['whom'] = array();
-$array['element']['whom']['default'] = '';
+$array['element']['whom']['default'] = 'dest';
+$array['element']['whom']['forcedef'] = true;
 
 $array['element']['capaids'] = array();
 $array['element']['capaids']['default'] = '';

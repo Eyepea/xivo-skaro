@@ -28,6 +28,12 @@ Incoming Group:
 ; fm_sheetevents_faxreceived
 Fax reception:
 
+; fm_sheetevents_outcall
+Outgoing Call:
+
+; fm_sheetevents_hangup
+Hangup:
+
 ; col_1
 Custom Event
 

@@ -44,13 +44,12 @@ switch($act)
 	case 'add':
 		$fm_save = true;
 
-		if(isset($_QR['fm_send']) 	 === true)
+		if(isset($_QR['fm_send']) === true)
 		{
 			$now = new DateTime("now");
 			$end = DateTime::createFromFormat("Y-m-d", $_QR['validity-end-format']);
 
 			if(strlen($_QR['name']) > 0 && $end !== false) {
-
 				// cleanup
 				$cert = array(
 					'name'     => $_QR['name'],
@@ -63,15 +62,20 @@ switch($act)
 				{
 					$cert['autosigned'] = isset($_QR['autosigned']);
 
-					if(!array_key_exists('autosigned',$_QR) || $_QR['autosigned'] != 1)
-					{ $cert['ca'] = $_QR['ca_authority']; $cert['ca_password'] = $_QR['ca_password']; }
+					if((!array_key_exists('autosigned',$_QR) || $_QR['autosigned'] != 1)
+					&& isset($_QR['ca_authority']))
+					{
+						$cert['ca'] = $_QR['ca_authority'];
+						$cert['ca_password'] = $_QR['ca_password'];
+					}
 				}
 
 				foreach($_QR['subject'] as $k => $v)
 				{ $cert[$k] = $v; }
 
 				// save item
-				if(($ret = $modcert->add(array_key_exists('is_ca',$_QR) && $_QR['is_ca'] == 1, $cert)) === true)
+				if(($rs = $modcert->set_cert($cert)) !== false
+				&& ($ret = $modcert->add(array_key_exists('is_ca',$_QR) && $_QR['is_ca'] == 1, $cert)) === true)
 					$_QRY->go($_TPL->url('xivo/configuration/manage/certificate'), $param);
 			}
 
@@ -80,7 +84,7 @@ switch($act)
 				$error['validity-end'] = 'invalid';
 			if(strlen($_QR['name']) === 0)
 				$error['name'] = 'empty';
-			if($ret['code'] == 403)
+			if(isset($ret) && $ret['code'] == 403)
 				$error['ca_password'] = 'invalidpwd';
 
 			$_TPL->set_var('error', $error);
@@ -91,7 +95,7 @@ switch($act)
 
 		function cafilter($cert)
 		{
-			return isset($cert['is_ca']) && $cert['is_ca'] && count($cert['types']) == 2;
+			return isset($cert['CA']) && $cert['CA'] && count($cert['types']) == 2;
 		}
 
 		$authorities = array_filter($modcert->get_all(), "cafilter");

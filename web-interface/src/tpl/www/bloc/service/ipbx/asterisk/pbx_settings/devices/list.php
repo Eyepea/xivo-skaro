@@ -175,7 +175,7 @@ $page = $url->pager($pager['pages'],
 			</label>
 		</td>
 		<td><?=(dwho_has_len($phonenumber) === true ? $phonenumber : '-')?></td>
-		<td><?=$devicefeatures['ip'];?></td>
+		<td><?=(dwho_has_len($devicefeatures['ip']) === true ? $devicefeatures['ip'] : '-')?></td>
 		<td><?=(dwho_has_len($devicefeatures['vendor']) === true ? $devicefeatures['vendor'] : '-')?></td>
 		<td><?=(dwho_has_len($devicefeatures['model']) === true ? $devicefeatures['model'] : '-')?></td>
 		<td><?=(dwho_has_len($devicefeatures['plugin']) === true ? $devicefeatures['plugin'] : '-')?></td>

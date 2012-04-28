@@ -76,14 +76,6 @@ $array['contextnummember'] = array();
 $array['contextnummember']['table'] = 'contextnummember';
 $array['contextnummember']['primary'] = array('context' => '','type' => '','typeval' => '');
 
-$array['ctiagentstatus'] = array();
-$array['ctiagentstatus']['table'] = 'ctiagentstatus';
-$array['ctiagentstatus']['primary'] = array('id' => '');
-
-$array['ctiagentstatusgroup'] = array();
-$array['ctiagentstatusgroup']['table'] = 'ctiagentstatusgroup';
-$array['ctiagentstatusgroup']['primary'] = array('id' => '');
-
 $array['ctiaccounts'] = array();
 $array['ctiaccounts']['table'] = 'ctiaccounts';
 $array['ctiaccounts']['primary'] = array('label' => '');
