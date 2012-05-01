@@ -343,9 +343,6 @@ Général
 ; fm_phonefunckey_type-opt(featuremap-automon)
 Enregistrement d'appel à la volée
 
-; fm_phonefunckey_type-opt(featuremap-disconnect)
-Raccrocher
-
 ; fm_phonefunckey_type-opt(extenfeatures-phonestatus)
 Statut du téléphone
 

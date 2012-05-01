@@ -51,11 +51,6 @@ $array['type']['featuremap-automon']['category'] = 'extension-general';
 $array['type']['featuremap-automon']['name'] = 'featuremap-automon';
 $array['type']['featuremap-automon']['extension'] = true;
 
-$array['type']['featuremap-disconnect'] = array();
-$array['type']['featuremap-disconnect']['category'] = 'extension-general';
-$array['type']['featuremap-disconnect']['name'] = 'featuremap-disconnect';
-$array['type']['featuremap-disconnect']['extension'] = true;
-
 $array['type']['extenfeatures-phonestatus'] = array();
 $array['type']['extenfeatures-phonestatus']['category'] = 'extension-general';
 $array['type']['extenfeatures-phonestatus']['name'] = 'extenfeatures-phonestatus';

@@ -158,14 +158,6 @@ if(isset($error_js[0]) === true)
 				  'default'	=> $element['featuremap']['automon']['default'],
 				  'invalid'	=> isset($invalid['featuremap']['automon']))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_featuremap_disconnect'),
-				  'name'	=> 'featuremap[disconnect]',
-				  'labelid'	=> 'featuremap-disconnect',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('featuremap','disconnect','var_val'),
-				  'default'	=> $element['featuremap']['disconnect']['default'],
-				  'invalid'	=> isset($invalid['featuremap']['disconnect']))),
-
 		$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-recsnd'),
 				      'name'	=> 'extenfeatures[recsnd][enable]',
 				      'labelid'	=> 'extenfeatures-enable-recsnd',

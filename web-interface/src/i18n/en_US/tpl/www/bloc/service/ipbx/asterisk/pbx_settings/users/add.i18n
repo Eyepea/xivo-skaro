@@ -421,9 +421,6 @@ Blind transfer
 ; fm_phonefunckey_type-opt(featuremap-atxfer)
 Indirect transfer
 
-; fm_phonefunckey_type-opt(featuremap-disconnect)
-Hangup
-
 ; fm_phonefunckey_type-optgroup(extension-forwards)
 Forwards
 
