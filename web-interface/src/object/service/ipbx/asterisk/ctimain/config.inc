@@ -100,9 +100,6 @@ $array['element']['asterisklist'] = array();
 $array['element']['asterisklist']['default'] = 'xivo';
 $array['element']['asterisklist']['value'] = array('xivo');
 
-$array['element']['updates_period'] = array();
-$array['element']['updates_period']['default'] = 3600;
-
 $array['element']['socket_timeout'] = array();
 $array['element']['socket_timeout']['default'] = 10;
 
@@ -132,7 +129,6 @@ $array['filter']['announce_port'] 	= array('set' => false, 'chk' => 2, 'cast' =>
 $array['filter']['tlscertfile'] 	= array('set' => false, 'chk' => 2, 'cast' => 'sgraph', 'maxlen' => 128);
 $array['filter']['tlsprivkeyfile'] 		= array('set' => false, 'chk' => 2, 'cast' => 'sgraph', 'maxlen' => 128);
 $array['filter']['asterisklist'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
-$array['filter']['updates_period'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(60,86400));
 $array['filter']['socket_timeout'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,20));
 $array['filter']['login_timeout'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,20));
 $array['filter']['parting_astid_context'] = array('set' => false, 'chk' => 2, 'key' => array('astid', 'context', 'context,astid'));

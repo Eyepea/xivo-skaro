@@ -471,22 +471,12 @@ endif;
 	<legend><?=$this->bbf('cti-intervals');?></legend>
 <?php
 
-	echo	$form->text(array('desc'	=> $this->bbf('fm_cti_updates_period'),
-					'name'		=> 'cti[updates_period]',
-					'labelid'	=> 'cti_updates_period',
-					'value'		=> $info['ctimain']['updates_period'],
-					'regexp'	=> '[[:int:]]',
-					'default'	=> $element['ctimain']['updates_period']['default'],
-#					'help'		=> $this->bbf('hlp_fm_cti_updates_period')
-					)),
-
-			$form->text(array('desc'	=> $this->bbf('fm_cti_socket_timeout'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_cti_socket_timeout'),
 					'name'		=> 'cti[socket_timeout]',
 					'labelid'	=> 'cti_socket_timeout',
 					'value'		=> $info['ctimain']['socket_timeout'],
 					'regexp'	=> '[[:int:]]',
 					'default'	=> $element['ctimain']['socket_timeout']['default'],
-#					'help'		=> $this->bbf('hlp_fm_cti_socket_timeout')
 					)),
 
 			$form->text(array('desc'	=> $this->bbf('fm_cti_login_timeout'),
@@ -495,7 +485,6 @@ endif;
 					'value'		=> $info['ctimain']['login_timeout'],
 					'regexp'	=> '[[:int:]]',
 					'default'	=> $element['ctimain']['login_timeout']['default'],
-#					'help'		=> $this->bbf('hlp_fm_cti_login_timeout')
 					));
 ?>
 </fieldset>
