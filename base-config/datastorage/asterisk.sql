@@ -408,6 +408,7 @@ CREATE TABLE "ctimain" (
  "asterisklist" varchar(128),
  "tlscertfile" varchar(128),
  "tlsprivkeyfile" varchar(128),
+ "updates_period" INTEGER,
  "socket_timeout" INTEGER,
  "login_timeout" INTEGER,
  "parting_astid_context" varchar(255),

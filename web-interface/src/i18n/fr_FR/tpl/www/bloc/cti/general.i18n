@@ -112,6 +112,12 @@ Echéances
 ; cti-xivo_servers
 Serveurs XiVO
 
+; fm_cti_updates_period
+Intervalle de mise à jour:
+
+; hlp_fm_cti_updates_period
+aide intervalle màj
+
 ; fm_cti_socket_timeout
 Délai d'expiration du socket:
 

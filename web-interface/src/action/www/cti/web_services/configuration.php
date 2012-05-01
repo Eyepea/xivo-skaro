@@ -278,6 +278,7 @@ switch($act)
         $out['main']['incoming_tcp'] = $tcpdefs;
         $out['main']['incoming_udp'] = $udpdefs;
         $out['main']['sockettimeout'] = $load_ctimain['socket_timeout'];
+        $out['main']['updates_period'] = $load_ctimain['updates_period'];
         $out['main']['logintimeout'] = $load_ctimain['login_timeout'];
         $out['main']['asterisk_queuestat_db'] = $db_queuelogger;
         $out['main']['ctilog_db_uri'] = $db_ctilog;

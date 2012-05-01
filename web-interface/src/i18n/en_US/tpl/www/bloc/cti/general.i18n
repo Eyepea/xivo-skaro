@@ -112,6 +112,12 @@ Timeouts
 ; cti-xivo_servers
 XiVO server
 
+; fm_cti_updates_period
+Update period:
+
+; hlp_fm_cti_updates_period
+Update period help
+
 ; fm_cti_socket_timeout
 Socket timeout:
 
