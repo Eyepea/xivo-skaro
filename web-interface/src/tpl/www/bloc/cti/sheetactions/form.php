@@ -473,7 +473,7 @@ $informations = $this->get_var('informations');
 								   'name'		=> 'infoscol4[]',
 								   'id'		=> false,
 								   'label'		=> false,
-								   'size'		=> 15,
+								   'size'		=> 75,
 								   'key'		=> false,
 								   'value'		=> $v[3],
 								   'default'	=> ''));
@@ -510,7 +510,7 @@ $informations = $this->get_var('informations');
 								   'name'		=> 'infoscol4[]',
 								   'id'		=> false,
 								   'label'		=> false,
-								   'size'		=> 15,
+								   'size'		=> 75,
 								   'key'		=> false,
 								   'default'	=> ''));
 	 ?>
