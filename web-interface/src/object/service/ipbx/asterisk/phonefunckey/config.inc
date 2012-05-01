@@ -206,53 +206,6 @@ $array['type']['extenfeatures-agentdynamiclogin']['supervisable'] = true;
 $array['type']['extenfeatures-agentdynamiclogin']['destination'] = true;
 $array['type']['extenfeatures-agentdynamiclogin']['progfunckey'] = true;
 
-$array['type']['extenfeatures-grouptogglemember'] = array();
-$array['type']['extenfeatures-grouptogglemember']['category'] = 'extension-groups';
-$array['type']['extenfeatures-grouptogglemember']['name'] = 'extenfeatures-grouptogglemember';
-$array['type']['extenfeatures-grouptogglemember']['extension'] = false;
-$array['type']['extenfeatures-grouptogglemember']['supervisable'] = true;
-$array['type']['extenfeatures-grouptogglemember']['destination'] = true;
-$array['type']['extenfeatures-grouptogglemember']['progfunckey'] = true;
-
-$array['type']['extenfeatures-groupaddmember'] = array();
-$array['type']['extenfeatures-groupaddmember']['category'] = 'extension-groups';
-$array['type']['extenfeatures-groupaddmember']['name'] = 'extenfeatures-groupaddmember';
-$array['type']['extenfeatures-groupaddmember']['extension'] = false;
-$array['type']['extenfeatures-groupaddmember']['supervisable'] = true;
-$array['type']['extenfeatures-groupaddmember']['destination'] = true;
-$array['type']['extenfeatures-groupaddmember']['progfunckey'] = true;
-
-$array['type']['extenfeatures-groupremovemember'] = array();
-$array['type']['extenfeatures-groupremovemember']['category'] = 'extension-groups';
-$array['type']['extenfeatures-groupremovemember']['name'] = 'extenfeatures-groupremovemember';
-$array['type']['extenfeatures-groupremovemember']['extension'] = false;
-$array['type']['extenfeatures-groupremovemember']['supervisable'] = true;
-$array['type']['extenfeatures-groupremovemember']['destination'] = true;
-$array['type']['extenfeatures-groupremovemember']['progfunckey'] = true;
-
-$array['type']['extenfeatures-queuetogglemember'] = array();
-$array['type']['extenfeatures-queuetogglemember']['category'] = 'extension-groups';
-$array['type']['extenfeatures-queuetogglemember']['name'] = 'extenfeatures-queuetogglemember';
-$array['type']['extenfeatures-queuetogglemember']['extension'] = false;
-$array['type']['extenfeatures-queuetogglemember']['supervisable'] = true;
-$array['type']['extenfeatures-queuetogglemember']['destination'] = true;
-$array['type']['extenfeatures-queuetogglemember']['progfunckey'] = true;
-
-$array['type']['extenfeatures-queueaddmember'] = array();
-$array['type']['extenfeatures-queueaddmember']['category'] = 'extension-groups';
-$array['type']['extenfeatures-queueaddmember']['name'] = 'extenfeatures-queueaddmember';
-$array['type']['extenfeatures-queueaddmember']['extension'] = false;
-$array['type']['extenfeatures-queueaddmember']['supervisable'] = true;
-$array['type']['extenfeatures-queueaddmember']['destination'] = true;
-$array['type']['extenfeatures-queueaddmember']['progfunckey'] = true;
-
-$array['type']['extenfeatures-queueremovemember'] = array();
-$array['type']['extenfeatures-queueremovemember']['category'] = 'extension-groups';
-$array['type']['extenfeatures-queueremovemember']['name'] = 'extenfeatures-queueremovemember';
-$array['type']['extenfeatures-queueremovemember']['extension'] = false;
-$array['type']['extenfeatures-queueremovemember']['supervisable'] = true;
-$array['type']['extenfeatures-queueremovemember']['destination'] = true;
-
 $array['type']['generalfeatures-parkext'] = array();
 $array['type']['generalfeatures-parkext']['category'] = 'extension-parking';
 $array['type']['generalfeatures-parkext']['name'] = 'generalfeatures-parkext';

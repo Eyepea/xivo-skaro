@@ -430,27 +430,6 @@ Déconnecte un agent statique
 ; fm_phonefunckey_type-opt(extenfeatures-agentdynamiclogin)
 Connecte un agent dynamique
 
-; fm_phonefunckey_type-optgroup(extension-groups)
-Groupes
-
-; fm_phonefunckey_type-opt(extenfeatures-grouptogglemember)
-Ajoute/enlève un membre d'un groupe
-
-; fm_phonefunckey_type-opt(extenfeatures-groupaddmember)
-Ajoute un membre dans un groupe
-
-; fm_phonefunckey_type-opt(extenfeatures-groupremovemember)
-Enlève un membre d'un groupe
-
-; fm_phonefunckey_type-opt(extenfeatures-queuetogglemember)
-Ajoute/enlève un membre d'une file d'attente
-
-; fm_phonefunckey_type-opt(extenfeatures-queueaddmember)
-Ajoute un membre dans une file d'attente
-
-; fm_phonefunckey_type-opt(extenfeatures-queueremovemember)
-Enlève un membre d'une file d'attente
-
 ; fm_phonefunckey_type-optgroup(extension-parking)
 Parking
 

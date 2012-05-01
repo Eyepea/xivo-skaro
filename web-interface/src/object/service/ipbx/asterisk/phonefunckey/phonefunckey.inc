@@ -75,12 +75,6 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 					case 'agentstaticlogin':
 					case 'agentstaticlogoff':
 					case 'agentstaticlogtoggle':
-					case 'groupaddmember':
-					case 'groupremovemember':
-					case 'grouptogglemember':
-					case 'queueaddmember':
-					case 'queueremovemember':
-					case 'queuetogglemember':
 						$data['type'] = $data['typeextenumbers'].'-'.$data['typevalextenumbers'];
 						$data['typeval'] = $data['typevalextenumbersright'];
 						return($data);
@@ -187,12 +181,6 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 			case 'extenfeatures-agentstaticlogin':
 			case 'extenfeatures-agentstaticlogoff':
 			case 'extenfeatures-agentstaticlogtoggle':
-			case 'extenfeatures-groupaddmember':
-			case 'extenfeatures-groupremovemember':
-			case 'extenfeatures-grouptogglemember':
-			case 'extenfeatures-queueaddmember':
-			case 'extenfeatures-queueremovemember':
-			case 'extenfeatures-queuetogglemember':
 				if(dwho_has_len($arr['typeval']) === false)
 					return(false);
 				$r['typeextenumbers'] = 'extenfeatures';
@@ -263,12 +251,6 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 					case 'agentstaticlogin':
 					case 'agentstaticlogoff':
 					case 'agentstaticlogtoggle':
-					case 'groupaddmember':
-					case 'groupremovemember':
-					case 'grouptogglemember':
-					case 'queueaddmember':
-					case 'queueremovemember':
-					case 'queuetogglemember':
 						if($typeright !== substr($typeval,0,5))
 							return(false);
 						break;
@@ -326,12 +308,6 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 					case 'agentstaticlogin':
 					case 'agentstaticlogoff':
 					case 'agentstaticlogtoggle':
-					case 'groupaddmember':
-					case 'groupremovemember':
-					case 'grouptogglemember':
-					case 'queueaddmember':
-					case 'queueremovemember':
-					case 'queuetogglemember':
 						if($typeright !== substr($typeval,0,5))
 							return(false);
 						break;

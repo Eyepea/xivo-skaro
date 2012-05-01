@@ -137,18 +137,6 @@ if($nb > 0):
 				    array('agenttype'	=> 'extenfeatures-agentstaticlogoff'));
 		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-agent',
 				    array('agenttype'	=> 'extenfeatures-agentdynamiclogin'));
-		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
-				    array('grouptype'	=> 'extenfeatures-grouptogglemember'));
-		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
-				    array('grouptype'	=> 'extenfeatures-groupaddmember'));
-		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
-				    array('grouptype'	=> 'extenfeatures-groupremovemember'));
-		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
-				    array('grouptype'	=> 'extenfeatures-queuetogglemember'));
-		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
-				    array('grouptype'	=> 'extenfeatures-queueaddmember'));
-		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
-				    array('grouptype'	=> 'extenfeatures-queueremovemember'));
 		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/bosssecretary');
 		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/custom');
 
@@ -211,18 +199,6 @@ endif;
 			    array('agenttype'	=> 'extenfeatures-agentstaticlogoff'));
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-agent',
 			    array('agenttype'	=> 'extenfeatures-agentdynamiclogin'));
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
-			    array('grouptype'	=> 'extenfeatures-grouptogglemember'));
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
-			    array('grouptype'	=> 'extenfeatures-groupaddmember'));
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
-			    array('grouptype'	=> 'extenfeatures-groupremovemember'));
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
-			    array('grouptype'	=> 'extenfeatures-queuetogglemember'));
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
-			    array('grouptype'	=> 'extenfeatures-queueaddmember'));
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
-			    array('grouptype'	=> 'extenfeatures-queueremovemember'));
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/bosssecretary');
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/custom');
 
