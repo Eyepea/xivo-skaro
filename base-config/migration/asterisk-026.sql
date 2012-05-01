@@ -19,6 +19,14 @@
 
 BEGIN;
 
-INSERT INTO "ctisheetactions" VALUES(DEFAULT,'XiVO','Modèle de fiche de base.','[]','dest','[]','{"10": [ "Nom","title","","{xivo-calleridname}",0 ],"20": [ "Numéro","text","","{xivo-calleridnum}",0 ],"30": [ "Origine","text","","{xivo-origin}",0 ]}','{"10": [ "Nom","title","","{xivo-calledidname}" ],"20": [ "Numéro","body","","{xivo-calleridnum}" ],"30": [ "Origine","body","","{xivo-origin}" ]}','','{}',0,1,1);
+DELETE FROM "extensions" WHERE "name" IN
+    ('groupaddmember', 'groupremovemember', 'grouptogglemember',
+     'queueaddmember', 'queueremovemember', 'queuetogglemember');
+DELETE FROM "extenumbers" WHERE "typeval" IN
+    ('groupaddmember', 'groupremovemember', 'grouptogglemember',
+     'queueaddmember', 'queueremovemember', 'queuetogglemember');
+DELETE FROM "phonefunckey" WHERE "typevalextenumbers" IN
+    ('groupaddmember', 'groupremovemember', 'grouptogglemember',
+     'queueaddmember', 'queueremovemember', 'queuetogglemember');
 
 COMMIT;
