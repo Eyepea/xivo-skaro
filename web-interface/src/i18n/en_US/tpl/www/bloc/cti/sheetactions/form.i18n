@@ -49,7 +49,7 @@ Disabled:
 ; col_add
 Add
 
-; opt_systray-delete
+; opt_systrays-delete
 Delete
 
 ; opt_informations-delete
