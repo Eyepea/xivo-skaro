@@ -39,3 +39,15 @@ Description
 
 ; fm_sheetactions_disable
 Désactivé : 
+
+; col_add
+Ajouter
+
+; opt_systray-delete
+Supprimer
+
+; opt_informations-delete
+Supprimer
+
+; opt_screens-delete
+Supprimer

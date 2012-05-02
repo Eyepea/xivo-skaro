@@ -45,3 +45,15 @@ Add »
 
 ; fm_sheetactions_disable
 Disabled: 
+
+; col_add
+Add
+
+; opt_systray-delete
+Delete
+
+; opt_informations-delete
+Delete
+
+; opt_screens-delete
+Delete
