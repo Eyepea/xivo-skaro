@@ -47,6 +47,7 @@ switch($act)
         $ctistatus = &$ipbx->get_module('ctistatus');
         $ctipresences = &$ipbx->get_module('ctipresences');
         $ctiphonehints = &$ipbx->get_module('ctiphonehints');
+        $ctiphonehintsgroup = &$ipbx->get_module('ctiphonehintsgroup');
         $ctirdid = &$ipbx->get_module('ctireversedirectories');
         $ctiaccounts = &$ipbx->get_module('ctiaccounts');
 
@@ -80,9 +81,8 @@ switch($act)
         $load_sheetactions = $ctisheetactions->get_all();
         $load_sheetevents = $ctisheetevents->get_all();
         $load_profiles = $ctiprofiles->get_all();
-        $load_status = $ctistatus->get_all();
         $load_presences = $ctipresences->get_all();
-        $load_phonehints = $ctiphonehints->get_all();
+        $load_phonehintsgroups = $ctiphonehintsgroup->get_all();
         $load_rdid = $ctirdid->get_all();
         $load_accounts = $ctiaccounts->get_all();
         $list = $app->get_server_list();
@@ -337,18 +337,28 @@ switch($act)
         }
 
         # PHONEHINTS (LINE STATUSES)
-        if(isset($load_phonehints) === true
-        && is_array($load_phonehints) === true)
+        if(isset($load_phonehintsgroups) === true
+        && is_array($load_phonehintsgroups) === true)
         {
             $hintsout = array();
-            foreach($load_phonehints as $ph)
+            foreach($load_phonehintsgroups as $phonehintsgroup)
             {
-                $phid = $ph['number'];
-                $hintsout[$phid] = array();
-                $hintsout[$phid]['longname'] = $ph['name'];
-                $hintsout[$phid]['color'] = $ph['color'];
+                $where = array('idgroup' => $phonehintsgroup['id']);
+                if(($load_phonehints = $ctiphonehints->get_all_where($where)) === false)
+                    continue;
+
+                $phonehintsgroup_id = $phonehintsgroup['name'];
+                $hintsout[$phonehintsgroup_id] = array();
+
+                foreach($load_phonehints as $phonehint)
+                {
+                    $phonehint_id = $phonehint['number'];
+                    $hintsout[$phonehintsgroup_id][$phonehint_id] = array();
+                    $hintsout[$phonehintsgroup_id][$phonehint_id]['longname'] = $phonehint['name'];
+                    $hintsout[$phonehintsgroup_id][$phonehint_id]['color'] = $phonehint['color'];
+                }
             }
-            $out['phonestatus']['itm_phonestatus'] = $hintsout;
+            $out['phonestatus'] = $hintsout;
         }
 
         $out['regcommands']['itm_regcommands'] = array("login_id", "login_pass", "login_capas",
@@ -392,7 +402,7 @@ switch($act)
                     'regcommands' => "itm_regcommands",
                     'ipbxcommands' => "itm_ipbxcommands",
                     'userstatus' => $pf['presence'],
-                    'phonestatus' => "itm_phonestatus",
+                    'phonestatus' => $pf['phonehints'],
                     'channelstatus' => "itm_channelstatus",
                     #'callcenter_type' => $pf['callcenter_type']
                 );
