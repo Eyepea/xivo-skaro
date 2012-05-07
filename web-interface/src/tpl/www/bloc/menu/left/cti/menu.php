@@ -60,12 +60,6 @@ $dhtml = &$this->get_module('dhtml');
 					'cti/phonehints'),
 				'</dd>';
 		endif;
-		if(xivo_user::chk_acl('cti','general_settings/channelstatus', 'service') === true):
-			echo	'<dd id="mn-channelstatus">',
-				$url->href_html($this->bbf('mn_left_ctisettings-channelstatus'),
-					'cti/channelstatus'),
-				'</dd>';
-		endif;
 	echo	'</dl>';
 	endif;
 

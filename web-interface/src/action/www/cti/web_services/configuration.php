@@ -102,7 +102,6 @@ switch($act)
             # object display options referred to by the profiles
             'userstatus'       => array(),
             'phonestatus'      => array(),
-            'channelstatus'    => array()
         );
 
         # CONTEXTS
@@ -403,7 +402,6 @@ switch($act)
                     'ipbxcommands' => "itm_ipbxcommands",
                     'userstatus' => $pf['presence'],
                     'phonestatus' => $pf['phonehints'],
-                    'channelstatus' => "itm_channelstatus",
                     #'callcenter_type' => $pf['callcenter_type']
                 );
                 $out['services']["itm_services_".$pfid] = explode(',', $pf['services']);
