@@ -304,58 +304,46 @@ class xivo_application_service_asterisk_ctiphonehintsgroup extends xivo_applicat
 	{
 		$r = true;
 
-		$this->_status = 'delete';
 		$this->_return = array();
 
-		if($this->get_errnb() > 0
-		|| $this->delete_phonehintsgroup() === false)
+		if($this->delete_phonehintsgroup() === false
+		|| $this->delete_phonehints() === false)
 		{
 			$r = false;
-			$this->_reverse_delete();
 		}
 
-		$this->_status = '';
-
-		return($r);
+		return $r;
 	}
 
 	function delete_phonehintsgroup()
 	{
-		if(dwho_issa('phonehintsgroup',$this->_info) === false
-		|| (string) $this->_info['phonehintsgroup']['id'] === '1')
-			return(false);
+		if(dwho_issa('phonehintsgroup',$this->_info) === false)
+			return false;
 
-		$r = $this->_ctiphonehintsgroup->delete($this->_info['phonehintsgroup']['id']);
+		$phonehintsgroup_id = (int) $this->_info['phonehintsgroup']['id'];
+		if($phonehintsgroup_id === 1)
+			return false;
+
+		$r = $this->_ctiphonehintsgroup->delete($phonehintsgroup_id);
 
 		if($this->_status === 'delete')
 			$this->_return['phonehintsgroup'] = $r;
 
-		return($r);
+		return $r;
 	}
 
-	function _reverse_delete()
+	function delete_phonehints()
 	{
-		if($this->_status !== 'delete'
-		|| is_array($this->_return) === false
-		|| empty($this->_return) === true)
-			return(false);
+		if(dwho_issa('phonehintsgroup',$this->_info) === false)
+			return false;
 
-		foreach($this->_return as $key => $val)
-		{
-			if($val === false)
-				continue;
+		$phonehintsgroup_id = (int) $this->_info['phonehintsgroup']['id'];
+		if($phonehintsgroup_id === 1)
+			return false;
 
-			switch($key)
-			{
-				case 'phonehintsgroup':
-                    if(isset($this->_origin['phonehintsgroup']) === true
-                    && $this->_origin['phonehintsgroup'] !== false)
-                        $this->_ctiphonehintsgroup->add_origin($this->_origin['phonehintsgroup']);
-					break;
-			}
-		}
+		$r = $this->_ctiphonehints->delete_where(array('idgroup' => $phonehintsgroup_id));
 
-		return(true);
+		return $r;
 	}
 }
 
