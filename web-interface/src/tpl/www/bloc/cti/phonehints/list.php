@@ -68,7 +68,6 @@ $page = $url->pager($pager['pages'],
 	else:
 		for($i = 0;$i < $nb;$i++):
 			$ref = &$list[$i];
-			$icon = 'enable';
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"
@@ -83,7 +82,7 @@ $page = $url->pager($pager['pages'],
 		</td>
 		<td class="txt-left" title="<?=dwho_alttitle($ref['ctiphonehints']['name']);?>">
 <?php
-			echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');
+			echo	$url->img_html('img/site/flag/enable.gif',null,'class="icons-list"');
 ?>
 			<?=$ref['ctiphonehints']['name']?>
 		</td>
@@ -94,8 +93,9 @@ $page = $url->pager($pager['pages'],
 						       $this->bbf('opt_modify'),
 						       'border="0"'),
 					'cti/phonehints',
-					array('act'	=> 'edit',
-					      'idphonehints'	=> $ref['ctiphonehints']['id']),
+					array('act' => 'edit',
+							'idphonehints' => $ref['ctiphonehints']['id'],
+							'idgroup' => $this->get_var('idgroup')),
 					null,
 					$this->bbf('opt_modify')),"\n";
 

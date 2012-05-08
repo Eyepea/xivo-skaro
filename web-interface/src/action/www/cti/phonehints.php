@@ -106,6 +106,7 @@ switch($act)
 		break;
 
 	case 'edit':
+		$param['act'] = 'list';
 		$app = &$ipbx->get_application('ctiphonehints');
 
 		if(isset($_QR['idphonehints']) === false
