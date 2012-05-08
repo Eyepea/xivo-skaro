@@ -731,7 +731,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			}
 
 			if(dwho_issa('voicemail',$arr) === true
-			&& dwho_has_len($arr['voicemail'],'mailbox') === true
 			&& ($linefeatures = $this->get_result_var('linefeatures',0)) !== null)
 			{
 				$context = (string) $linefeatures['context'];
