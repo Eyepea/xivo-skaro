@@ -1,7 +1,7 @@
-Index: asterisk-1.8.11.0/apps/app_meetme.c
+Index: asterisk-1.8.12.0/apps/app_meetme.c
 ===================================================================
---- asterisk-1.8.11.0.orig/apps/app_meetme.c
-+++ asterisk-1.8.11.0/apps/app_meetme.c
+--- asterisk-1.8.12.0.orig/apps/app_meetme.c
++++ asterisk-1.8.12.0/apps/app_meetme.c
 @@ -116,15 +116,27 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revisi
  						</argument>
  						<para>Play an intro announcement in conference.</para>
@@ -1331,7 +1331,7 @@ Index: asterisk-1.8.11.0/apps/app_meetme.c
 +		ast_set_flag64(&user->adminflags, ADMINFLAG_MUTED);
  		break;
  	case 78: /* N: Mute all (non-admin) users */
- 		ao2_callback(cnf->usercontainer, OBJ_NODATA, user_set_muted_cb, NULL);
+ 		ao2_callback(cnf->usercontainer, OBJ_NODATA, user_set_muted_cb, &cnf);
  		break;					
  	case 109: /* m: Unmute */ 
 -		user->adminflags &= ~(ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED | ADMINFLAG_T_REQUEST);
