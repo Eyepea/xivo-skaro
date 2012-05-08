@@ -1,9 +1,9 @@
 remove genudevrules generation, provide by debian/dahdi.linux.udev to fix #2560
-Index: dahdi-linux-2.6.0/Makefile
+Index: dahdi-linux-2.6.1/Makefile
 ===================================================================
---- dahdi-linux-2.6.0.orig/Makefile	2012-02-13 10:42:49.809139390 -0500
-+++ dahdi-linux-2.6.0/Makefile	2012-02-13 10:42:52.719141297 -0500
-@@ -139,7 +139,6 @@
+--- dahdi-linux-2.6.1.orig/Makefile
++++ dahdi-linux-2.6.1/Makefile
+@@ -139,7 +139,6 @@ uninstall-include:
  
  install-devices:
  	install -d $(DESTDIR)$(UDEV_DIR)
