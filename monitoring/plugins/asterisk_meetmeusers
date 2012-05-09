@@ -80,7 +80,7 @@ $pop->print("");
 
 ## Request status of messages.
 $pop->print("Action: command");
-$pop->print("Command: meetme");
+$pop->print("Command: meetme list");
 $pop->print("");
 
 my $nb = 0;

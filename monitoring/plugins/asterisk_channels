@@ -95,7 +95,7 @@ $pop->print("");
 
 ## Request status of messages.
 $pop->print("Action: command");
-$pop->print("Command: show channels");
+$pop->print("Command: core show channels");
 $pop->print("");
 my $result;
 my $nb = 0;
