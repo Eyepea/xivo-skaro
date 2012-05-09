@@ -84,8 +84,8 @@ if(isset($_QR['fm_send']) === true)
 
 	if(($rs = $appagentglobalparams->save_agent_global_params($_QR['agentglobalparams'])) !== false)
 	{
-		$info['agentglobalparams'] = $rs['result'];
-		$error['agentglobalparams'] = $rs['error'];
+		$info['agentglobalparams'] = $appagentglobalparams->get_result('agentglobalparams');
+		$error['agentglobalparams'] = $appagentglobalparams->get_error();
 
 		if(isset($rs['error'][0]) === true)
 			$fm_save = false;
@@ -167,9 +167,12 @@ if(isset($_QR['fm_send']) === true)
 	}
 }
 
+$_TPL->set_var('beep_list',$appoptionsagents->get_beep());
+$_TPL->set_var('goodbye_list',$appoptionsagents->get_goodbye());
 $_TPL->set_var('fm_save'      , $fm_save);
 $_TPL->set_var('error'        , $error);
 $_TPL->set_var('generalagents', $info['generalagents']);
+$_TPL->set_var('agentglobalparams', $info['agentglobalparams']);
 $_TPL->set_var('generalqueues', $info['generalqueues']);
 $_TPL->set_var('generalmeetme', $info['generalmeetme']);
 $_TPL->set_var('userinternal' , $info['userinternal']);

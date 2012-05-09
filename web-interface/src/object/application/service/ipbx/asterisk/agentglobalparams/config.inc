@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Avencall
+# Copyright (C) 2006-2012  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@
 #
 
 $array = array();
-
-$array['element'] = array();
 
 $array['element']['endcall'] = array();
 $array['element']['endcall']['value'] = array('no','yes');
@@ -65,6 +63,7 @@ $array['element']['savecallsin'] = array();
 $array['element']['savecallsin']['default'] = '';
 
 $array['element']['custom_beep'] = array();
+$array['element']['custom_beep']['value'] = array('beep');
 $array['element']['custom_beep']['default'] = 'beep';
 $array['element']['custom_beep']['setdef'] = true;
 
@@ -75,7 +74,7 @@ $array['filter']['maxlogintries'] = array('cast' => 'uint','between' => array(0,
 $array['filter']['goodbye'] = array('set'	=> false,
 				    'chk'	=> 2,
 				    'maxlen'	=> 255,
-				    'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.'$/');
+				    'regexp'	=> '/^[\/'.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']+$/');
 $array['filter']['updatecdr'] = array('bool' => true);
 $array['filter']['recordagentcalls'] = array('bool' => true);
 $array['filter']['recordformat'] = array('set'	=> false,
@@ -94,6 +93,6 @@ $array['filter']['savecallsin'] = array('set' => false,
 $array['filter']['custom_beep'] = array('set'		=> false,
 					'chk'		=> 2,
 					'maxlen'	=> 255,
-					'regexp'	=> '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']$/');
+					'regexp'	=> '/^[\/'.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']+$/');
 
 ?>
