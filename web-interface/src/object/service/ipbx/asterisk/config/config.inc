@@ -61,6 +61,9 @@ $array['module']['agentfeatures']['datastorage'] = true;
 $array['module']['agentgroup'] = array();
 $array['module']['agentgroup']['datastorage'] = true;
 
+$array['module']['agentglobalparams'] = array();
+$array['module']['agentglobalparams']['datastorage'] = true;
+
 $array['module']['attachment'] = array();
 $array['module']['attachment']['datastorage'] = true;
 

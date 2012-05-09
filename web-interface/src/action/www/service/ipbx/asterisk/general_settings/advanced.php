@@ -29,6 +29,10 @@ $appoptionsagents = &$appagents->get_module('agentoptions');
 $info['agentoptions']  = $appoptionsagents->get_all_by_category();
 $element['agentoptions']  = $appoptionsagents->get_elements();
 
+$appagentglobalparams =  &$ipbx->get_application('agentglobalparams');
+$info['agentglobalparams']  = $appagentglobalparams->get_options('agents');
+$element['agentglobalparams']  = $appagentglobalparams->get_elements();
+
 $appqueues = &$ipbx->get_apprealstatic('queues');
 $appgeneralqueues = &$appqueues->get_module('general');
 $info['generalqueues'] = $appgeneralqueues->get_all_by_category();
@@ -55,6 +59,7 @@ $error['generalagents'] = array();
 $error['agentoptions']  = array();
 $error['generalqueues'] = array();
 $error['generalmeetme'] = array();
+$error['agentglobalparams'] = array();
 
 $fm_save = null;
 
@@ -74,13 +79,13 @@ if(isset($_QR['fm_send']) === true)
 			$fm_save = true;
 	}
 
-	if(dwho_issa('agentoptions',$_QR) === false)
-		$_QR['agentoptions'] = array();
+	if(dwho_issa('agentglobalparams',$_QR) === false)
+		$_QR['agentglobalparams'] = array();
 
-	if(($rs = $appoptionsagents->set_save_all($_QR['agentoptions'])) !== false)
+	if(($rs = $appagentglobalparams->save_agent_global_params($_QR['agentglobalparams'])) !== false)
 	{
-		$info['agentoptions'] = $rs['result'];
-		$error['agentoptions'] = $rs['error'];
+		$info['agentglobalparams'] = $rs['result'];
+		$error['agentglobalparams'] = $rs['error'];
 
 		if(isset($rs['error'][0]) === true)
 			$fm_save = false;

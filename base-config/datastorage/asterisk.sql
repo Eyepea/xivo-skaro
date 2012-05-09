@@ -1586,7 +1586,6 @@ INSERT INTO "staticagent" VALUES (DEFAULT,1,0,0,'agents.conf','agents','recordag
 INSERT INTO "staticagent" VALUES (DEFAULT,1,0,0,'agents.conf','agents','recordformat','wav');
 INSERT INTO "staticagent" VALUES (DEFAULT,1,1000000,0,'agents.conf','agents','group',1);
 
-
 DROP TABLE IF EXISTS "staticiax";
 CREATE TABLE "staticiax" (
  "id" SERIAL,
@@ -2714,6 +2713,25 @@ CREATE TABLE "callcenter_campaigns_records" (
 	PRIMARY KEY ("id")
 );
 
+DROP TABLE IF EXISTS "agentglobalparams";
+CREATE TABLE "agentglobalparams" (
+ "id" SERIAL,
+ "category" varchar(128) NOT NULL,
+ "option_name" varchar(255) NOT NULL,
+ "option_value" varchar(255),
+ PRIMARY KEY("id")
+);
+INSERT INTO "agentglobalparams" VALUES (DEFAULT,'general','multiplelogin','yes');
+INSERT INTO "agentglobalparams" VALUES (DEFAULT,'general','persistentagents','yes');
+INSERT INTO "agentglobalparams" VALUES (DEFAULT,'agents','recordagentcalls','no');
+INSERT INTO "agentglobalparams" VALUES (DEFAULT,'agents','recordformat','wav');
+INSERT INTO "agentglobalparams" VALUES (DEFAULT,'agents','endcall','yes');
+INSERT INTO "agentglobalparams" VALUES (DEFAULT,'agents','autologoffunavail','no');
+INSERT INTO "agentglobalparams" VALUES (DEFAULT,'agents','maxlogintries','0');
+INSERT INTO "agentglobalparams" VALUES (DEFAULT,'agents','goodbye','vm-goodbye');
+INSERT INTO "agentglobalparams" VALUES (DEFAULT,'agents','urlprefix','');
+INSERT INTO "agentglobalparams" VALUES (DEFAULT,'agents','savecallsin','');
+INSERT INTO "agentglobalparams" VALUES (DEFAULT,'agents','custom_beep','beep');
 
 -- grant all rights to asterisk.* for asterisk user
 CREATE OR REPLACE FUNCTION execute(text) 

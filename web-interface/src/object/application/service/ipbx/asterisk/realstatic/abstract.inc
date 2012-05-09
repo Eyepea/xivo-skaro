@@ -369,7 +369,6 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 				$rs['var_val'] = '';
 
 			$this->_multi = (bool) dwho_ak('multi',$list[$key],true);
-
 			if($this->set($rs) === false
 			|| ($pre_save = $this->_chk_pre_save($rs)) === false
 			|| ($pre_save !== 1 && $this->save() === false) === true)

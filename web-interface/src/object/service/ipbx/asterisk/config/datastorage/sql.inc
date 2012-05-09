@@ -28,6 +28,10 @@ $array['agentfeatures'] = array();
 $array['agentfeatures']['table'] = 'agentfeatures';
 $array['agentfeatures']['primary'] = array('id' => '');
 
+$array['agentglobalparams'] = array();
+$array['agentglobalparams']['table'] = 'agentglobalparams';
+$array['agentglobalparams']['primary'] = array('id' => '');
+
 $array['agentgroup'] = array();
 $array['agentgroup']['table'] = 'agentgroup';
 $array['agentgroup']['primary'] = array('id' => '');
