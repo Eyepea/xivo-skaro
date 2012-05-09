@@ -369,7 +369,8 @@ switch($act)
                                                        "featuresput", "featuresget", "faxsend",
                                                        "logfromclient", "getqueuesstats", "directory",
                                                        "records_campaign",
-                                                       "history");
+                                                       "history",
+                                                       "logout");
 
         $out['ipbxcommands']['itm_ipbxcommands'] = array("originate",
                                                          "sipnotify",
