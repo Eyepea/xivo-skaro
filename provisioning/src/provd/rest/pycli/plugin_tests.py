@@ -914,6 +914,7 @@ def _full():
             u'exten_fwd_disable_all': u'*fwddisable',
             u'exten_park': u'*park',
             u'exten_pickup_group': u'*pckgrp',
+            u'exten_pickup_call': u'*pckcall',
             u'exten_voicemail': u'*vmail',
             u'funckeys': {
                 u'1': {
