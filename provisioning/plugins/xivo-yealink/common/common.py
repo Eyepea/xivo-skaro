@@ -166,7 +166,7 @@ class BaseYealinkPlugin(StandardPlugin):
         value = funckey_dict[u'value']
         lines.append(u'Value = %s' % value)
         if exten_pickup_call:
-            lines.append(u'PickupValue = %s' % (exten_pickup_call, value))
+            lines.append(u'PickupValue = %s%s' % (exten_pickup_call, value))
         lines.append(u'Label = %s' % funckey_dict.get(u'label', u''))
         return lines
     
