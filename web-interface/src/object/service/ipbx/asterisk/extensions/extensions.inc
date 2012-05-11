@@ -426,57 +426,6 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		return($this->delete_where($where));
 	}
 
-	function new_hints($name,$protocol,$exten,$disable=null)
-	{
-		$id = count($this->_exten) + 1;
-
-		if(($r = $this->chk_hints($name,$protocol,$exten,$disable)) === false)
-			return(false);
-
-		$this->_exten[$id][0] = $r;
-
-		return($id);
-	}
-
-	function chk_hints($name,$protocol,$exten,$disable=null)
-	{
-		$r = array();
-		$r['context'] = XIVO_SRE_IPBX_AST_CONTEXT_HINTS;
-
-		if(($r['app'] = $this->_sre->mk_interface($name,$protocol)) === false)
-			return(false);
-
-		$r['exten'] = $this->_sre->clean_extension($exten);
-
-		if($disable !== null)
-			$r['commented'] = (bool) $disable;
-
-		return($this->chk_values($r,true,false,false));
-	}
-
-	function get_hints($name,$protocol,$exten)
-	{
-		$where = array();
-
-		if(($where['app'] = $this->_sre->mk_interface($name,$protocol)) === false)
-			return(false);
-
-		$where['exten'] = $this->_sre->clean_extension($exten);
-		$where['context'] = XIVO_SRE_IPBX_AST_CONTEXT_HINTS;
-
-		return($this->get_where($where));
-	}
-
-	function add_hints($id)
-	{
-		return($this->add_exten($id));
-	}
-
-	function delete_hints($id)
-	{
-		return($this->delete_exten($id));
-	}
-
 	function _load_filter_appdata()
 	{
 		if(isset($this->_filter_appdata) === false)
@@ -534,18 +483,18 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		else
 		{
 			$nbarg = count($cfg['arg']);
-	
+
 			if(count($appdata) > $nbarg)
 			{
 				$apparg1 = array_slice($appdata,0,$nbarg);
 				$apparg2 = array_slice($appdata,$nbarg);
-	
+
 				if(empty($apparg2) === false)
 					$apparg1[$nbarg-1] .= ','.implode(',',$apparg2);
-	
+
 				$appdata = $apparg1;
 			}
-			
+
 		}
 
 		if($this->_load_filter_appdata() === false
