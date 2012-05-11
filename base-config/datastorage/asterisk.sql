@@ -38,7 +38,7 @@ CREATE TYPE "accessfeatures_feature" AS ENUM ('phonebook');
 
 CREATE TABLE "accessfeatures" (
  "id" SERIAL,
- "host" varchar(255) NOT NULL DEFAULT '',
+ "host" VARCHAR(255) NOT NULL DEFAULT '',
  "feature" accessfeatures_feature NOT NULL,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("id")
@@ -55,12 +55,12 @@ CREATE TABLE "agentfeatures" (
  "id" SERIAL,
  "agentid" INTEGER NOT NULL,
  "numgroup" INTEGER NOT NULL,
- "firstname" varchar(128) NOT NULL DEFAULT '',
- "lastname" varchar(128) NOT NULL DEFAULT '',
- "number" varchar(40) NOT NULL,
- "passwd" varchar(128) NOT NULL,
- "context" varchar(39) NOT NULL,
- "language" varchar(20) NOT NULL,
+ "firstname" VARCHAR(128) NOT NULL DEFAULT '',
+ "lastname" VARCHAR(128) NOT NULL DEFAULT '',
+ "number" VARCHAR(40) NOT NULL,
+ "passwd" VARCHAR(128) NOT NULL,
+ "context" VARCHAR(39) NOT NULL,
+ "language" VARCHAR(20) NOT NULL,
  "silent" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  -- features
  "autologoff" INTEGER DEFAULT NULL,
@@ -83,8 +83,8 @@ DROP TABLE IF EXISTS "agentgroup";
 CREATE TABLE "agentgroup" (
  "id" SERIAL,
  "groupid" INTEGER NOT NULL,
- "name" varchar(128) NOT NULL DEFAULT '',
- "groups" varchar(255) NOT NULL DEFAULT '',
+ "name" VARCHAR(128) NOT NULL DEFAULT '',
+ "groups" VARCHAR(255) NOT NULL DEFAULT '',
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "deleted" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
@@ -106,12 +106,12 @@ CREATE TABLE "agentqueueskill" (
 DROP TABLE IF EXISTS "attachment";
 CREATE TABLE "attachment" (
  "id" SERIAL,
- "name" varchar(64) NOT NULL,
- "object_type" varchar(16) NOT NULL,
+ "name" VARCHAR(64) NOT NULL,
+ "object_type" VARCHAR(16) NOT NULL,
  "object_id" INTEGER NOT NULL,
  "file" bytea,
  "size" INTEGER NOT NULL,
- "mime" varchar(64) NOT NULL
+ "mime" VARCHAR(64) NOT NULL
 );
 
 CREATE UNIQUE INDEX "attachment__uidx__object_type__object_id" ON "attachment"("object_type","object_id");
@@ -125,7 +125,7 @@ CREATE TYPE callerid_mode AS ENUM ('prepend', 'overwrite', 'append');
 CREATE TYPE callerid_type AS ENUM ('callfilter','incall','group','queue');
 CREATE TABLE "callerid" (
  "mode" callerid_mode,
- "callerdisplay" varchar(80) NOT NULL DEFAULT '',
+ "callerdisplay" VARCHAR(80) NOT NULL DEFAULT '',
  "type" callerid_type NOT NULL,
  "typeval" INTEGER NOT NULL,
  PRIMARY KEY("type","typeval")
@@ -143,8 +143,8 @@ CREATE TYPE "callfilter_callfrom" AS ENUM ('internal', 'external', 'all');
 
 CREATE TABLE "callfilter" (
  "id" SERIAL,
- "name" varchar(128) NOT NULL DEFAULT '',
- "context" varchar(39) NOT NULL,
+ "name" VARCHAR(128) NOT NULL DEFAULT '',
+ "context" VARCHAR(39) NOT NULL,
  "type" callfilter_type NOT NULL,
  "bosssecretary" callfilter_bosssecretary,
  "callfrom" callfilter_callfrom,
@@ -168,7 +168,7 @@ CREATE TABLE "callfiltermember" (
  "id" SERIAL,
  "callfilterid" INTEGER NOT NULL DEFAULT 0,
  "type" callfiltermember_type NOT NULL,
- "typeval" varchar(128) NOT NULL DEFAULT 0,
+ "typeval" VARCHAR(128) NOT NULL DEFAULT 0,
  "ringseconds" INTEGER NOT NULL DEFAULT 0,
  "priority" INTEGER NOT NULL DEFAULT 0,
  "bstype" generic_bsfilter CHECK (bstype in ('boss', 'secretary')),
@@ -182,26 +182,26 @@ CREATE UNIQUE INDEX "callfiltermember__uidx__callfilterid_type_typeval" ON "call
 DROP TABLE IF EXISTS "cel";
 CREATE TABLE "cel" (
  "id" serial , 
- "eventtype" varchar (30) NOT NULL ,
+ "eventtype" VARCHAR (30) NOT NULL ,
  "eventtime" timestamp NOT NULL ,
- "userdeftype" varchar(255) NOT NULL ,
- "cid_name" varchar (80) NOT NULL , 
- "cid_num" varchar (80) NOT NULL ,
- "cid_ani" varchar (80) NOT NULL , 
- "cid_rdnis" varchar (80) NOT NULL ,
- "cid_dnid" varchar (80) NOT NULL ,
- "exten" varchar (80) NOT NULL ,
- "context" varchar (80) NOT NULL , 
- "channame" varchar (80) NOT NULL ,
- "appname" varchar (80) NOT NULL ,
- "appdata" varchar (512) NOT NULL ,
+ "userdeftype" VARCHAR(255) NOT NULL ,
+ "cid_name" VARCHAR (80) NOT NULL , 
+ "cid_num" VARCHAR (80) NOT NULL ,
+ "cid_ani" VARCHAR (80) NOT NULL , 
+ "cid_rdnis" VARCHAR (80) NOT NULL ,
+ "cid_dnid" VARCHAR (80) NOT NULL ,
+ "exten" VARCHAR (80) NOT NULL ,
+ "context" VARCHAR (80) NOT NULL , 
+ "channame" VARCHAR (80) NOT NULL ,
+ "appname" VARCHAR (80) NOT NULL ,
+ "appdata" VARCHAR (512) NOT NULL ,
  "amaflags" int NOT NULL ,
- "accountcode" varchar (20) NOT NULL ,
- "peeraccount" varchar (20) NOT NULL ,
- "uniqueid" varchar (150) NOT NULL ,
- "linkedid" varchar (150) NOT NULL , 
- "userfield" varchar (255) NOT NULL ,
- "peer" varchar (80) NOT NULL ,
+ "accountcode" VARCHAR (20) NOT NULL ,
+ "peeraccount" VARCHAR (20) NOT NULL ,
+ "uniqueid" VARCHAR (150) NOT NULL ,
+ "linkedid" VARCHAR (150) NOT NULL , 
+ "userfield" VARCHAR (255) NOT NULL ,
+ "peer" VARCHAR (80) NOT NULL ,
  PRIMARY KEY("id")
 );
 
@@ -210,10 +210,10 @@ CREATE INDEX "cel__idx__uniqueid" ON "cel"("uniqueid");
 
 DROP TABLE IF EXISTS "context";
 CREATE TABLE "context" (
- "name" varchar(39) NOT NULL,
- "displayname" varchar(128) NOT NULL DEFAULT '',
- "entity" varchar(64),
- "contexttype" varchar(40) NOT NULL DEFAULT 'internal',
+ "name" VARCHAR(39) NOT NULL,
+ "displayname" VARCHAR(128) NOT NULL DEFAULT '',
+ "entity" VARCHAR(64),
+ "contexttype" VARCHAR(40) NOT NULL DEFAULT 'internal',
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("name")
@@ -222,8 +222,8 @@ CREATE TABLE "context" (
 
 DROP TABLE IF EXISTS "contextinclude";
 CREATE TABLE "contextinclude" (
- "context" varchar(39) NOT NULL,
- "include" varchar(39) NOT NULL,
+ "context" VARCHAR(39) NOT NULL,
+ "include" VARCHAR(39) NOT NULL,
  "priority" INTEGER NOT NULL DEFAULT 0,
  PRIMARY KEY("context","include")
 );
@@ -231,10 +231,10 @@ CREATE TABLE "contextinclude" (
 
 DROP TABLE IF EXISTS "contextmember";
 CREATE TABLE "contextmember" (
- "context" varchar(39) NOT NULL,
- "type" varchar(32) NOT NULL,
- "typeval" varchar(128) NOT NULL DEFAULT '',
- "varname" varchar(128) NOT NULL DEFAULT '',
+ "context" VARCHAR(39) NOT NULL,
+ "type" VARCHAR(32) NOT NULL,
+ "typeval" VARCHAR(128) NOT NULL DEFAULT '',
+ "varname" VARCHAR(128) NOT NULL DEFAULT '',
  PRIMARY KEY("context","type","typeval","varname")
 );
 
@@ -250,10 +250,10 @@ DROP TYPE  IF EXISTS "contextnumbers_type";
 CREATE TYPE "contextnumbers_type" AS ENUM ('user', 'group', 'queue', 'meetme', 'incall');
 
 CREATE TABLE "contextnumbers" (
- "context" varchar(39) NOT NULL,
+ "context" VARCHAR(39) NOT NULL,
  "type" contextnumbers_type NOT NULL,
- "numberbeg" varchar(16) NOT NULL DEFAULT '',
- "numberend" varchar(16) NOT NULL DEFAULT '',
+ "numberbeg" VARCHAR(16) NOT NULL DEFAULT '',
+ "numberend" VARCHAR(16) NOT NULL DEFAULT '',
  "didlength" INTEGER NOT NULL DEFAULT 0,
  PRIMARY KEY("context","type","numberbeg","numberend")
 );
@@ -261,10 +261,10 @@ CREATE TABLE "contextnumbers" (
 
 DROP TABLE IF EXISTS "contextnummember";
 CREATE TABLE "contextnummember" (
- "context" varchar(39) NOT NULL,
+ "context" VARCHAR(39) NOT NULL,
  "type" contextnumbers_type NOT NULL,
- "typeval" varchar(128) NOT NULL DEFAULT 0,
- "number" varchar(40) NOT NULL DEFAULT '',
+ "typeval" VARCHAR(128) NOT NULL DEFAULT 0,
+ "number" VARCHAR(40) NOT NULL DEFAULT '',
  PRIMARY KEY("context","type","typeval")
 );
 
@@ -276,9 +276,9 @@ CREATE INDEX "contextnummember__idx__number" ON "contextnummember"("number");
 DROP TABLE IF EXISTS "contexttype";
 CREATE TABLE "contexttype" (
  "id" SERIAL,
- "name" varchar(40) NOT NULL,
- "commented" integer,
- "deletable" integer,
+ "name" VARCHAR(40) NOT NULL,
+ "commented" INTEGER,
+ "deletable" INTEGER,
  "description" text,
  PRIMARY KEY("id")
 );
@@ -294,9 +294,9 @@ INSERT INTO "contexttype" VALUES(DEFAULT, 'others', 0, 0, '');
 
 DROP TABLE IF EXISTS "ctiaccounts";
 CREATE TABLE "ctiaccounts" (
- "login" varchar(64) NOT NULL,
- "password" varchar(64) NOT NULL,
- "label" varchar(128) NOT NULL,
+ "login" VARCHAR(64) NOT NULL,
+ "password" VARCHAR(64) NOT NULL,
+ "label" VARCHAR(128) NOT NULL,
  PRIMARY KEY("login")
 );
 
@@ -305,12 +305,12 @@ DROP TABLE IF EXISTS "ctilog";
 CREATE TABLE "ctilog" (
  "id" SERIAL,
  "eventdate" TIMESTAMP,
- "loginclient" varchar(64),
- "company" varchar(64),
- "status" varchar(64),
- "action" varchar(64),
- "arguments" varchar(255),
- "callduration" integer,
+ "loginclient" VARCHAR(64),
+ "company" VARCHAR(64),
+ "status" VARCHAR(64),
+ "action" VARCHAR(64),
+ "arguments" VARCHAR(255),
+ "callduration" INTEGER,
  PRIMARY KEY("id")
 );
 
@@ -318,7 +318,7 @@ CREATE TABLE "ctilog" (
 DROP TABLE IF EXISTS "cticontexts";
 CREATE TABLE "cticontexts" (
  "id" SERIAL,
- "name" varchar(50),
+ "name" VARCHAR(50),
  "directories" text NOT NULL,
  "display" text NOT NULL,
  "description" text NOT NULL,
@@ -332,12 +332,12 @@ INSERT INTO "cticontexts" VALUES(DEFAULT,'default','xivodir,internal','Display',
 DROP TABLE IF EXISTS "ctidirectories";
 CREATE TABLE "ctidirectories" (
  "id" SERIAL,
- "name" varchar(255),
- "uri" varchar(255),
- "delimiter" varchar(20),
+ "name" VARCHAR(255),
+ "uri" VARCHAR(255),
+ "delimiter" VARCHAR(20),
  "match_direct" text NOT NULL,
  "match_reverse" text NOT NULL,
- "description" varchar(255),
+ "description" VARCHAR(255),
  "deletable" INTEGER, -- BOOLEAN
  PRIMARY KEY("id")
 );
@@ -349,8 +349,8 @@ INSERT INTO "ctidirectories" VALUES(DEFAULT,'internal','internal','','["userfeat
 DROP TABLE IF EXISTS "ctidirectoryfields";
 CREATE TABLE "ctidirectoryfields" (
  "dir_id" INTEGER,
- "fieldname" varchar(255),
- "value" varchar(255),
+ "fieldname" VARCHAR(255),
+ "value" VARCHAR(255),
  PRIMARY KEY("dir_id", "fieldname")
 );
 
@@ -369,7 +369,7 @@ INSERT INTO "ctidirectoryfields" VALUES(2, 'phone', 'linefeatures.number');
 DROP TABLE IF EXISTS "ctidisplays";
 CREATE TABLE "ctidisplays" (
  "id" SERIAL,
- "name" varchar(50),
+ "name" VARCHAR(50),
  "data" text NOT NULL,
  "deletable" INTEGER, -- BOOLEAN
  "description" text NOT NULL,
@@ -382,36 +382,36 @@ INSERT INTO "ctidisplays" VALUES(DEFAULT,'Display','{"10": [ "Nom","","","{db-fi
 DROP TABLE IF EXISTS "ctimain";
 CREATE TABLE "ctimain" (
  "id" SERIAL, 
- "commandset" varchar(20),
- "ami_ip" varchar(16),
+ "commandset" VARCHAR(20),
+ "ami_ip" VARCHAR(16),
  "ami_port" INTEGER,
- "ami_login" varchar(64),
- "ami_password" varchar(64),
- "fagi_ip" varchar(16),
+ "ami_login" VARCHAR(64),
+ "ami_password" VARCHAR(64),
+ "fagi_ip" VARCHAR(16),
  "fagi_port" INTEGER,
  "fagi_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
- "cti_ip" varchar(16),
+ "cti_ip" VARCHAR(16),
  "cti_port" INTEGER,
  "cti_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
- "ctis_ip" varchar(16),
+ "ctis_ip" VARCHAR(16),
  "ctis_port" INTEGER,
  "ctis_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
- "webi_ip" varchar(16),
+ "webi_ip" VARCHAR(16),
  "webi_port" INTEGER,
  "webi_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
- "info_ip" varchar(16),
+ "info_ip" VARCHAR(16),
  "info_port" INTEGER,
  "info_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
- "announce_ip" varchar(16),
+ "announce_ip" VARCHAR(16),
  "announce_port" INTEGER,
  "announce_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
- "asterisklist" varchar(128),
- "tlscertfile" varchar(128),
- "tlsprivkeyfile" varchar(128),
+ "asterisklist" VARCHAR(128),
+ "tlscertfile" VARCHAR(128),
+ "tlsprivkeyfile" VARCHAR(128),
  "updates_period" INTEGER,
  "socket_timeout" INTEGER,
  "login_timeout" INTEGER,
- "parting_astid_context" varchar(255),
+ "parting_astid_context" VARCHAR(255),
  PRIMARY KEY("id")
 );
 
@@ -421,10 +421,10 @@ INSERT INTO "ctimain" VALUES(DEFAULT, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_us
 DROP TABLE IF EXISTS "ctiphonehints";
 CREATE TABLE "ctiphonehints" (
  "id" SERIAL,
- "idgroup" integer,
- "number" varchar(8),
- "name" varchar(255),
- "color" varchar(128),
+ "idgroup" INTEGER,
+ "number" VARCHAR(8),
+ "name" VARCHAR(255),
+ "color" VARCHAR(128),
  PRIMARY KEY("id")
 );
 
@@ -442,8 +442,8 @@ INSERT INTO "ctiphonehints" VALUES(DEFAULT,1,'16','En Attente','#F7FF05');
 DROP TABLE IF EXISTS "ctiphonehintsgroup";
 CREATE TABLE "ctiphonehintsgroup" (
  "id" SERIAL,
- "name" varchar(255),
- "description" varchar(255),
+ "name" VARCHAR(255),
+ "description" VARCHAR(255),
  "deletable" INTEGER, -- BOOLEAN
  PRIMARY KEY("id")
 );
@@ -454,8 +454,8 @@ INSERT INTO "ctiphonehintsgroup" VALUES(DEFAULT,'xivo','De base non supprimable'
 DROP TABLE IF EXISTS "ctipresences";
 CREATE TABLE "ctipresences" (
  "id" SERIAL,
- "name" varchar(255),
- "description" varchar(255),
+ "name" VARCHAR(255),
+ "description" VARCHAR(255),
  "deletable" INTEGER, -- BOOLEAN
  PRIMARY KEY("id")
 );
@@ -467,14 +467,14 @@ DROP TABLE IF EXISTS "ctiprofiles";
 CREATE TABLE "ctiprofiles" (
  "id" SERIAL,
  "xlets" text,
- "maxgui" integer,
- "appliname" varchar(255),
- "name" varchar(40) unique,
- "presence" varchar(255),
- "phonehints" varchar(255),
- "agents" varchar(255),
- "services" varchar(255),
- "preferences" varchar(2048),
+ "maxgui" INTEGER,
+ "appliname" VARCHAR(255),
+ "name" VARCHAR(40) unique,
+ "presence" VARCHAR(255),
+ "phonehints" VARCHAR(255),
+ "agents" VARCHAR(255),
+ "services" VARCHAR(255),
+ "preferences" VARCHAR(2048),
  "deletable" INTEGER, -- BOOLEAN
  PRIMARY KEY("id")
 );
@@ -490,7 +490,7 @@ INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "search", "dock", "fcms", "N/A" ],[
 DROP TABLE IF EXISTS "ctireversedirectories";
 CREATE TABLE "ctireversedirectories" (
  "id" SERIAL,
- "context" varchar(50),
+ "context" VARCHAR(50),
  "extensions" text,
  "directories" text NOT NULL,
  "description" text NOT NULL,
@@ -504,10 +504,10 @@ INSERT INTO "ctireversedirectories" VALUES(DEFAULT,'*', '*', '["xivodir"]','Rép
 DROP TABLE IF EXISTS "ctisheetactions";
 CREATE TABLE "ctisheetactions" (
  "id" SERIAL,
- "name" varchar(50),
+ "name" VARCHAR(50),
  "description" text NOT NULL,
- "context" varchar(50),
- "whom" varchar(50),
+ "context" VARCHAR(50),
+ "whom" VARCHAR(50),
  "capaids" text NOT NULL,
  "sheet_info" text,
  "systray_info" text,
@@ -525,17 +525,17 @@ INSERT INTO "ctisheetactions" VALUES(DEFAULT,'XiVO','Modèle de fiche de base.',
 DROP TABLE IF EXISTS "ctisheetevents";
 CREATE TABLE "ctisheetevents" (
  "id" SERIAL,
- "agentlinked" varchar(50),
- "agentunlinked" varchar(50),
- "faxreceived" varchar(50),
- "incomingqueue" varchar(50),
- "incominggroup" varchar(50),
- "incomingdid" varchar(50),
- "outcall" varchar(50),
- "hangup" varchar(50),
- "dial" varchar(50),
- "link" varchar(50),
- "unlink" varchar(50),
+ "agentlinked" VARCHAR(50),
+ "agentunlinked" VARCHAR(50),
+ "faxreceived" VARCHAR(50),
+ "incomingqueue" VARCHAR(50),
+ "incominggroup" VARCHAR(50),
+ "incomingdid" VARCHAR(50),
+ "outcall" VARCHAR(50),
+ "hangup" VARCHAR(50),
+ "dial" VARCHAR(50),
+ "link" VARCHAR(50),
+ "unlink" VARCHAR(50),
  "custom" text NOT NULL,
  PRIMARY KEY("id")
 );
@@ -547,11 +547,11 @@ DROP TABLE IF EXISTS "ctistatus";
 CREATE TABLE "ctistatus" (
  "id" SERIAL,
  "presence_id" INTEGER,
- "name" varchar(255),
- "display_name" varchar(255),
- "actions" varchar(255),
- "color" varchar(20),
- "access_status" varchar(255),
+ "name" VARCHAR(255),
+ "display_name" VARCHAR(255),
+ "actions" VARCHAR(255),
+ "color" VARCHAR(20),
+ "access_status" VARCHAR(255),
  "deletable" INTEGER, -- BOOLEAN
  PRIMARY KEY("id")
 );
@@ -569,16 +569,16 @@ INSERT INTO "ctistatus" VALUES(DEFAULT,1,'disconnected','Déconnecté','agentlog
 DROP TABLE IF EXISTS "devicefeatures";
 CREATE TABLE "devicefeatures" (
  "id" SERIAL,
- "deviceid" varchar(32) NOT NULL,
- "config" varchar(32),
- "plugin" varchar(64),
- "ip" varchar(39),
+ "deviceid" VARCHAR(32) NOT NULL,
+ "config" VARCHAR(32),
+ "plugin" VARCHAR(64),
+ "ip" VARCHAR(39),
  "mac" character(17) NOT NULL,
- "sn" varchar(64),
- "vendor" varchar(32) NOT NULL,
- "model" varchar(32) NOT NULL,
- "version" varchar(32),
- "proto" varchar(16) NOT NULL,
+ "sn" VARCHAR(64),
+ "vendor" VARCHAR(32) NOT NULL,
+ "model" VARCHAR(32) NOT NULL,
+ "version" VARCHAR(32),
+ "proto" VARCHAR(16) NOT NULL,
  "internal" INTEGER NOT NULL DEFAULT 0,
  "configured" INTEGER NOT NULL DEFAULT 0,
  "commented" INTEGER NOT NULL DEFAULT 0,
@@ -637,10 +637,10 @@ CREATE TYPE "dialaction_action" AS ENUM ('none',
 CREATE TABLE "dialaction" (
  "event" dialaction_event NOT NULL,
  "category" dialaction_category,
- "categoryval" varchar(128) NOT NULL DEFAULT '',
+ "categoryval" VARCHAR(128) NOT NULL DEFAULT '',
  "action" dialaction_action NOT NULL,
- "actionarg1" varchar(255) DEFAULT NULL,
- "actionarg2" varchar(255) DEFAULT NULL,
+ "actionarg1" VARCHAR(255) DEFAULT NULL,
+ "actionarg2" VARCHAR(255) DEFAULT NULL,
  "linked" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("event","category","categoryval")
 );
@@ -651,13 +651,13 @@ CREATE INDEX "dialaction__idx__action_actionarg1" ON "dialaction"("action","acti
 DROP TABLE IF EXISTS "dialpattern";
 CREATE TABLE "dialpattern" (
  "id" SERIAL,
- "type" varchar(32) NOT NULL,
- "typeid" integer NOT NULL,
- "externprefix" varchar(64),
- "prefix" varchar(32),
- "exten" varchar(40) NOT NULL,
- "stripnum" integer,
- "callerid" varchar(80),
+ "type" VARCHAR(32) NOT NULL,
+ "typeid" INTEGER NOT NULL,
+ "externprefix" VARCHAR(64),
+ "prefix" VARCHAR(32),
+ "exten" VARCHAR(40) NOT NULL,
+ "stripnum" INTEGER,
+ "callerid" VARCHAR(80),
  PRIMARY KEY("id")
 );
 
@@ -668,12 +668,12 @@ DROP TABLE IF EXISTS "extensions";
 CREATE TABLE "extensions" (
  "id" SERIAL,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "context" varchar(39) NOT NULL DEFAULT '',
- "exten" varchar(40) NOT NULL DEFAULT '',
+ "context" VARCHAR(39) NOT NULL DEFAULT '',
+ "exten" VARCHAR(40) NOT NULL DEFAULT '',
  "priority" INTEGER NOT NULL DEFAULT 0,
- "app" varchar(128) NOT NULL DEFAULT '',
- "appdata" varchar(128) NOT NULL DEFAULT '',
- "name" varchar(128) NOT NULL DEFAULT '',
+ "app" VARCHAR(128) NOT NULL DEFAULT '',
+ "appdata" VARCHAR(128) NOT NULL DEFAULT '',
+ "name" VARCHAR(128) NOT NULL DEFAULT '',
  PRIMARY KEY("id")
 );
 
@@ -733,11 +733,11 @@ CREATE TYPE "extenumbers_type" AS ENUM ('extenfeatures',
 
 CREATE TABLE "extenumbers" (
  "id" SERIAL,
- "exten" varchar(40) NOT NULL DEFAULT '',
+ "exten" VARCHAR(40) NOT NULL DEFAULT '',
  "extenhash" char(40) NOT NULL DEFAULT '',
- "context" varchar(39) NOT NULL,
+ "context" VARCHAR(39) NOT NULL,
  "type" extenumbers_type NOT NULL,
- "typeval" varchar(255) NOT NULL DEFAULT '',
+ "typeval" VARCHAR(255) NOT NULL DEFAULT '',
  PRIMARY KEY("id")
 );
 
@@ -796,10 +796,10 @@ CREATE TABLE "features" (
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "filename" varchar(128) NOT NULL,
- "category" varchar(128) NOT NULL,
- "var_name" varchar(128) NOT NULL,
- "var_val" varchar(255),
+ "filename" VARCHAR(128) NOT NULL,
+ "category" VARCHAR(128) NOT NULL,
+ "var_name" VARCHAR(128) NOT NULL,
+ "var_val" VARCHAR(255),
  PRIMARY KEY("id")
 );
 
@@ -899,15 +899,15 @@ CREATE UNIQUE INDEX "parkinglot__idx__name" ON "parkinglot"("name");
 DROP TABLE IF EXISTS "groupfeatures";
 CREATE TABLE "groupfeatures" (
  "id" SERIAL,
- "name" varchar(128) NOT NULL,
- "number" varchar(40) NOT NULL DEFAULT '',
- "context" varchar(39) NOT NULL,
+ "name" VARCHAR(128) NOT NULL,
+ "number" VARCHAR(40) NOT NULL DEFAULT '',
+ "context" VARCHAR(39) NOT NULL,
  "transfer_user" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "transfer_call" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "write_caller" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "write_calling" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "timeout" INTEGER NOT NULL DEFAULT 0,
- "preprocess_subroutine" varchar(39),
+ "preprocess_subroutine" VARCHAR(39),
  "deleted" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("id")
 );
@@ -920,9 +920,9 @@ CREATE INDEX "groupfeatures__idx__context" ON "groupfeatures"("context");
 DROP TABLE IF EXISTS "incall";
 CREATE TABLE "incall" (
  "id" SERIAL,
- "exten" varchar(40) NOT NULL,
- "context" varchar(39) NOT NULL,
- "preprocess_subroutine" varchar(39),
+ "exten" VARCHAR(40) NOT NULL,
+ "context" VARCHAR(39) NOT NULL,
+ "preprocess_subroutine" VARCHAR(39),
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
@@ -938,21 +938,21 @@ CREATE TABLE "linefeatures" (
  "id" SERIAL,
  "protocol" "trunk_protocol" NOT NULL,
  "protocolid" INTEGER NOT NULL,
- "iduserfeatures" integer DEFAULT 0,
- "config" varchar(128),
- "device" varchar(32),
- "configregistrar" varchar(128),
- "name" varchar(128) NOT NULL,
- "number" varchar(40),
- "context" varchar(39) NOT NULL,
- "provisioningid" integer NOT NULL,
- "rules_type" varchar(16),
- "rules_time" varchar(8),
- "rules_order" integer DEFAULT 0,
- "rules_group" varchar(16),
+ "iduserfeatures" INTEGER DEFAULT 0,
+ "config" VARCHAR(128),
+ "device" VARCHAR(32),
+ "configregistrar" VARCHAR(128),
+ "name" VARCHAR(128) NOT NULL,
+ "number" VARCHAR(40),
+ "context" VARCHAR(39) NOT NULL,
+ "provisioningid" INTEGER NOT NULL,
+ "rules_type" VARCHAR(16),
+ "rules_time" VARCHAR(8),
+ "rules_order" INTEGER DEFAULT 0,
+ "rules_group" VARCHAR(16),
  "num" INTEGER DEFAULT 0,
  "line_num" INTEGER DEFAULT 0,
- "ipfrom" varchar(15),
+ "ipfrom" VARCHAR(15),
  "internal" INTEGER NOT NULL DEFAULT 0,
  "commented" INTEGER NOT NULL DEFAULT 0,
  "description" text,
@@ -979,15 +979,15 @@ CREATE TYPE "ldapfilter_additionaltype" AS ENUM ('office', 'home', 'mobile', 'fa
 CREATE TABLE "ldapfilter" (
  "id" SERIAL,
  "ldapserverid" INTEGER NOT NULL,
- "name" varchar(128) NOT NULL DEFAULT '',
- "user" varchar(255),
- "passwd" varchar(255),
- "basedn" varchar(255) NOT NULL DEFAULT '',
- "filter" varchar(255) NOT NULL DEFAULT '',
- "attrdisplayname" varchar(255) NOT NULL DEFAULT '',
- "attrphonenumber" varchar(255) NOT NULL DEFAULT '',
+ "name" VARCHAR(128) NOT NULL DEFAULT '',
+ "user" VARCHAR(255),
+ "passwd" VARCHAR(255),
+ "basedn" VARCHAR(255) NOT NULL DEFAULT '',
+ "filter" VARCHAR(255) NOT NULL DEFAULT '',
+ "attrdisplayname" VARCHAR(255) NOT NULL DEFAULT '',
+ "attrphonenumber" VARCHAR(255) NOT NULL DEFAULT '',
  "additionaltype" ldapfilter_additionaltype NOT NULL,
- "additionaltext" varchar(16) NOT NULL DEFAULT '',
+ "additionaltext" VARCHAR(16) NOT NULL DEFAULT '',
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
@@ -1010,36 +1010,36 @@ CREATE TYPE "meetmefeatures_announcejoinleave" AS ENUM ('no', 'yes', 'noreview')
 CREATE TABLE "meetmefeatures" (
  "id" SERIAL,
  "meetmeid" INTEGER NOT NULL,
- "name" varchar(80) NOT NULL,
- "confno" varchar(40) NOT NULL,
- "context" varchar(39) NOT NULL,
+ "name" VARCHAR(80) NOT NULL,
+ "confno" VARCHAR(40) NOT NULL,
+ "context" VARCHAR(39) NOT NULL,
  "admin_typefrom" meetmefeatures_admin_typefrom,
  "admin_internalid" INTEGER,
- "admin_externalid" varchar(40),
+ "admin_externalid" VARCHAR(40),
  "admin_identification" meetmefeatures_admin_identification NOT NULL,
  "admin_mode" meetmefeatures_mode NOT NULL,
  "admin_announceusercount" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "admin_announcejoinleave" meetmefeatures_announcejoinleave NOT NULL,
  "admin_moderationmode" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "admin_initiallymuted" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "admin_musiconhold" varchar(128),
+ "admin_musiconhold" VARCHAR(128),
  "admin_poundexit" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "admin_quiet" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "admin_starmenu" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "admin_closeconflastmarkedexit" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "admin_enableexitcontext" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "admin_exitcontext" varchar(39),
+ "admin_exitcontext" VARCHAR(39),
  "user_mode" meetmefeatures_mode NOT NULL,
  "user_announceusercount" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "user_hiddencalls" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "user_announcejoinleave" meetmefeatures_announcejoinleave NOT NULL,
  "user_initiallymuted" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "user_musiconhold" varchar(128),
+ "user_musiconhold" VARCHAR(128),
  "user_poundexit" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "user_quiet" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "user_starmenu" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "user_enableexitcontext" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "user_exitcontext" varchar(39),
+ "user_exitcontext" VARCHAR(39),
  "talkeroptimization" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "record" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "talkerdetection" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
@@ -1050,11 +1050,11 @@ CREATE TABLE "meetmefeatures" (
  "timeannounceclose" INTEGER,
  "maxusers" INTEGER NOT NULL default 0,
  "startdate" INTEGER,
- "emailfrom" varchar(255),
- "emailfromname" varchar(255),
- "emailsubject" varchar(255),
+ "emailfrom" VARCHAR(255),
+ "emailfromname" VARCHAR(255),
+ "emailsubject" VARCHAR(255),
  "emailbody" text NOT NULL,
- "preprocess_subroutine" varchar(39),
+ "preprocess_subroutine" VARCHAR(39),
  "description" text NOT NULL,
  "commented" INTEGER DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("id")
@@ -1070,9 +1070,9 @@ DROP TABLE IF EXISTS "meetmeguest";
 CREATE TABLE "meetmeguest" (
  "id" SERIAL,
  "meetmefeaturesid" INTEGER NOT NULL,
- "fullname" varchar(255) NOT NULL,
- "telephonenumber" varchar(40),
- "email" varchar(320),
+ "fullname" VARCHAR(255) NOT NULL,
+ "telephonenumber" VARCHAR(40),
+ "email" VARCHAR(320),
  PRIMARY KEY("id")
 );
 
@@ -1083,10 +1083,10 @@ CREATE TABLE "musiconhold" (
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "filename" varchar(128) NOT NULL,
- "category" varchar(128) NOT NULL,
- "var_name" varchar(128) NOT NULL,
- "var_val" varchar(128),
+ "filename" VARCHAR(128) NOT NULL,
+ "category" VARCHAR(128) NOT NULL,
+ "var_name" VARCHAR(128) NOT NULL,
+ "var_val" VARCHAR(128),
  PRIMARY KEY("id")
 );
 
@@ -1101,11 +1101,11 @@ INSERT INTO "musiconhold" VALUES (DEFAULT,0,0,0,'musiconhold.conf','default','di
 DROP TABLE IF EXISTS "operator";
 CREATE TABLE "operator" (
  "id" SERIAL,
- "name" varchar(64) NOT NULL,
+ "name" VARCHAR(64) NOT NULL,
  "default_price" double precision,
- "default_price_is" varchar(16) DEFAULT 'minute'::varchar NOT NULL,
- "currency" varchar(16) NOT NULL,
- "disable" integer DEFAULT 0 NOT NULL,
+ "default_price_is" VARCHAR(16) DEFAULT 'minute'::VARCHAR NOT NULL,
+ "currency" VARCHAR(16) NOT NULL,
+ "disable" INTEGER DEFAULT 0 NOT NULL,
  "description" text NOT NULL,
  PRIMARY KEY("id")
 );
@@ -1116,12 +1116,12 @@ CREATE UNIQUE INDEX "operator__uidx__name" ON "operator"("name");
 DROP TABLE IF EXISTS "operator_destination";
 CREATE TABLE "operator_destination" (
  "id" SERIAL,
- "operator_id" integer NOT NULL,
- "name" varchar(64) NOT NULL,
- "exten" varchar(40) NOT NULL,
+ "operator_id" INTEGER NOT NULL,
+ "name" VARCHAR(64) NOT NULL,
+ "exten" VARCHAR(40) NOT NULL,
  "price" double precision,
- "price_is" varchar(16) DEFAULT 'minute'::varchar NOT NULL,
- "disable" integer DEFAULT 0 NOT NULL,
+ "price_is" VARCHAR(16) DEFAULT 'minute'::VARCHAR NOT NULL,
+ "disable" INTEGER DEFAULT 0 NOT NULL,
  PRIMARY KEY("id")
 );
 
@@ -1130,8 +1130,8 @@ CREATE UNIQUE INDEX "operator_destination__uidx__name" ON "operator_destination"
 
 DROP TABLE IF EXISTS "operator_trunk";
 CREATE TABLE "operator_trunk" (
- "operator_id" integer NOT NULL,
- "trunk_id" integer NOT NULL,
+ "operator_id" INTEGER NOT NULL,
+ "trunk_id" INTEGER NOT NULL,
  PRIMARY KEY("operator_id","trunk_id")
 );
 
@@ -1139,11 +1139,11 @@ CREATE TABLE "operator_trunk" (
 DROP TABLE IF EXISTS "outcall";
 CREATE TABLE "outcall" (
  "id" SERIAL,
- "name" varchar(128) NOT NULL,
- "context" varchar(39) NOT NULL,
+ "name" VARCHAR(128) NOT NULL,
+ "context" VARCHAR(39) NOT NULL,
  "useenum" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "internal" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "preprocess_subroutine" varchar(39),
+ "preprocess_subroutine" VARCHAR(39),
  "hangupringtime" INTEGER NOT NULL DEFAULT 0,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
@@ -1181,12 +1181,12 @@ CREATE TYPE "phonebook_title" AS ENUM ('mr', 'mrs', 'ms');
 CREATE TABLE "phonebook" (
  "id" SERIAL,
  "title" phonebook_title NOT NULL,
- "firstname" varchar(128) NOT NULL DEFAULT '',
- "lastname" varchar(128) NOT NULL DEFAULT '',
- "displayname" varchar(64) NOT NULL DEFAULT '',
- "society" varchar(128) NOT NULL DEFAULT '',
- "email" varchar(255) NOT NULL DEFAULT '',
- "url" varchar(255) NOT NULL DEFAULT '',
+ "firstname" VARCHAR(128) NOT NULL DEFAULT '',
+ "lastname" VARCHAR(128) NOT NULL DEFAULT '',
+ "displayname" VARCHAR(64) NOT NULL DEFAULT '',
+ "society" VARCHAR(128) NOT NULL DEFAULT '',
+ "email" VARCHAR(255) NOT NULL DEFAULT '',
+ "url" VARCHAR(255) NOT NULL DEFAULT '',
  "image" BYTEA,
  "description" text NOT NULL,
  PRIMARY KEY("id")
@@ -1201,12 +1201,12 @@ CREATE TYPE "phonebookaddress_type" AS ENUM ('home', 'office', 'other');
 CREATE TABLE "phonebookaddress" (
  "id" SERIAL,
  "phonebookid" INTEGER NOT NULL,
- "address1" varchar(30) NOT NULL DEFAULT '',
- "address2" varchar(30) NOT NULL DEFAULT '',
- "city" varchar(128) NOT NULL DEFAULT '',
- "state" varchar(128) NOT NULL DEFAULT '',
- "zipcode" varchar(16) NOT NULL DEFAULT '',
- "country" varchar(3) NOT NULL DEFAULT '',
+ "address1" VARCHAR(30) NOT NULL DEFAULT '',
+ "address2" VARCHAR(30) NOT NULL DEFAULT '',
+ "city" VARCHAR(128) NOT NULL DEFAULT '',
+ "state" VARCHAR(128) NOT NULL DEFAULT '',
+ "zipcode" VARCHAR(16) NOT NULL DEFAULT '',
+ "country" VARCHAR(3) NOT NULL DEFAULT '',
  "type" phonebookaddress_type NOT NULL,
  PRIMARY KEY("id")
 );
@@ -1222,7 +1222,7 @@ CREATE TYPE "phonebooknumber_type" AS ENUM ('home', 'office', 'mobile', 'fax', '
 CREATE TABLE "phonebooknumber" (
  "id" SERIAL,
  "phonebookid" INTEGER NOT NULL,
- "number" varchar(40) NOT NULL DEFAULT '',
+ "number" VARCHAR(40) NOT NULL DEFAULT '',
  "type" phonebooknumber_type NOT NULL,
  PRIMARY KEY("id")
 );
@@ -1240,12 +1240,12 @@ CREATE TYPE "phonefunckey_typeextenumbersright" AS ENUM ('agent', 'group', 'meet
 CREATE TABLE "phonefunckey" (
  "iduserfeatures" INTEGER NOT NULL,
  "fknum" INTEGER NOT NULL,
- "exten" varchar(40),
+ "exten" VARCHAR(40),
  "typeextenumbers" phonefunckey_typeextenumbers,
- "typevalextenumbers" varchar(255),
+ "typevalextenumbers" VARCHAR(255),
  "typeextenumbersright" phonefunckey_typeextenumbersright,
- "typevalextenumbersright" varchar(255),
- "label" varchar(32),
+ "typevalextenumbersright" VARCHAR(255),
+ "label" VARCHAR(32),
  "supervision" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "progfunckey" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  PRIMARY KEY("iduserfeatures","fknum")
@@ -1267,33 +1267,33 @@ CREATE TYPE "queue_monitor_type" AS ENUM ('no', 'mixmonitor');
 CREATE TYPE "queue_category" AS ENUM ('group', 'queue');
 
 CREATE TABLE "queue" (
- "name" varchar(128) NOT NULL,
- "musicclass" varchar(128),
- "announce" varchar(128),
- "context" varchar(39),
+ "name" VARCHAR(128) NOT NULL,
+ "musicclass" VARCHAR(128),
+ "announce" VARCHAR(128),
+ "context" VARCHAR(39),
  "timeout" INTEGER DEFAULT 0,
  "monitor-type" queue_monitor_type,
- "monitor-format" varchar(128),
- "queue-youarenext" varchar(128),
- "queue-thereare" varchar(128),
- "queue-callswaiting" varchar(128),
- "queue-holdtime" varchar(128),
- "queue-minutes" varchar(128),
- "queue-seconds" varchar(128),
- "queue-thankyou" varchar(128),
- "queue-reporthold" varchar(128),
+ "monitor-format" VARCHAR(128),
+ "queue-youarenext" VARCHAR(128),
+ "queue-thereare" VARCHAR(128),
+ "queue-callswaiting" VARCHAR(128),
+ "queue-holdtime" VARCHAR(128),
+ "queue-minutes" VARCHAR(128),
+ "queue-seconds" VARCHAR(128),
+ "queue-thankyou" VARCHAR(128),
+ "queue-reporthold" VARCHAR(128),
  "periodic-announce" text,
  "announce-frequency" INTEGER,
  "periodic-announce-frequency" INTEGER,
  "announce-round-seconds" INTEGER,
- "announce-holdtime" varchar(4),
+ "announce-holdtime" VARCHAR(4),
  "retry" INTEGER,
  "wrapuptime" INTEGER,
  "maxlen" INTEGER,
  "servicelevel" INTEGER,
- "strategy" varchar(11),
- "joinempty" varchar(255),
- "leavewhenempty" varchar(255),
+ "strategy" VARCHAR(11),
+ "joinempty" VARCHAR(255),
+ "leavewhenempty" VARCHAR(255),
  "eventmemberstatus" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "eventwhencalled" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "ringinuse" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
@@ -1303,18 +1303,18 @@ CREATE TABLE "queue" (
  "timeoutrestart" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "category" queue_category NOT NULL,
- "timeoutpriority" varchar(10) NOT NULL DEFAULT 'app',
+ "timeoutpriority" VARCHAR(10) NOT NULL DEFAULT 'app',
  "autofill" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "autopause" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "setinterfacevar" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "setqueueentryvar" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "setqueuevar" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "membermacro" varchar(1024),
- "min-announce-frequency" integer NOT NULL DEFAULT 60,
+ "membermacro" VARCHAR(1024),
+ "min-announce-frequency" INTEGER NOT NULL DEFAULT 60,
  "random-periodic-announce" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "announce-position" varchar(1024) NOT NULL DEFAULT 'yes',
- "announce-position-limit" integer NOT NULL DEFAULT 5,
- "defaultrule" varchar(1024) DEFAULT NULL,
+ "announce-position" VARCHAR(1024) NOT NULL DEFAULT 'yes',
+ "announce-position-limit" INTEGER NOT NULL DEFAULT 5,
+ "defaultrule" VARCHAR(1024) DEFAULT NULL,
  PRIMARY KEY("name")
 );
 
@@ -1341,10 +1341,10 @@ CREATE INDEX "queue_info_queue_name_index" ON "queue_info" ("queue_name");
 DROP TABLE IF EXISTS "queuefeatures";
 CREATE TABLE "queuefeatures" (
  "id" SERIAL,
- "name" varchar(128) NOT NULL,
- "displayname" varchar(128) NOT NULL,
- "number" varchar(40) NOT NULL DEFAULT '',
- "context" varchar(39),
+ "name" VARCHAR(128) NOT NULL,
+ "displayname" VARCHAR(128) NOT NULL,
+ "number" VARCHAR(40) NOT NULL DEFAULT '',
+ "context" VARCHAR(39),
  "data_quality" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "hitting_callee" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "hitting_caller" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
@@ -1354,10 +1354,10 @@ CREATE TABLE "queuefeatures" (
  "transfer_call" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "write_caller" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "write_calling" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "url" varchar(255) NOT NULL DEFAULT '',
- "announceoverride" varchar(128) NOT NULL DEFAULT '',
+ "url" VARCHAR(255) NOT NULL DEFAULT '',
+ "announceoverride" VARCHAR(128) NOT NULL DEFAULT '',
  "timeout" INTEGER NOT NULL DEFAULT 0,
- "preprocess_subroutine" varchar(39),
+ "preprocess_subroutine" VARCHAR(39),
  "announce_holdtime" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  -- DIVERSIONS
  "ctipresence" VARCHAR(1024) DEFAULT NULL,
@@ -1378,18 +1378,18 @@ DROP TYPE  IF EXISTS "queuemember_usertype";
 CREATE TYPE "queuemember_usertype" AS ENUM ('agent', 'user');
 
 CREATE TABLE "queuemember" (
- "queue_name" varchar(128) NOT NULL,
- "interface" varchar(128) NOT NULL,
+ "queue_name" VARCHAR(128) NOT NULL,
+ "interface" VARCHAR(128) NOT NULL,
  "penalty" INTEGER NOT NULL DEFAULT 0,
  "call-limit" INTEGER NOT NULL DEFAULT 0,
  "paused" INTEGER, -- BOOLEAN
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "usertype" queuemember_usertype NOT NULL,
  "userid" INTEGER NOT NULL,
- "channel" varchar(25) NOT NULL,
+ "channel" VARCHAR(25) NOT NULL,
  "category" queue_category NOT NULL,
- "skills" varchar(64) NOT NULL DEFAULT '',
- "state_interface" varchar(128) NOT NULL DEFAULT '',
+ "skills" VARCHAR(64) NOT NULL DEFAULT '',
+ "state_interface" VARCHAR(128) NOT NULL DEFAULT '',
  PRIMARY KEY("queue_name","interface")
 );
 
@@ -1428,8 +1428,8 @@ CREATE TABLE "queuepenaltychange" (
 DROP TABLE IF EXISTS "rightcall";
 CREATE TABLE "rightcall" (
  "id" SERIAL,
- "name" varchar(128) NOT NULL DEFAULT '',
- "passwd" varchar(40) NOT NULL DEFAULT '',
+ "name" VARCHAR(128) NOT NULL DEFAULT '',
+ "passwd" VARCHAR(40) NOT NULL DEFAULT '',
  "authorization" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
@@ -1443,7 +1443,7 @@ DROP TABLE IF EXISTS "rightcallexten";
 CREATE TABLE "rightcallexten" (
  "id" SERIAL,
  "rightcallid" INTEGER NOT NULL DEFAULT 0,
- "exten" varchar(40) NOT NULL DEFAULT '',
+ "exten" VARCHAR(40) NOT NULL DEFAULT '',
  "extenhash" char(40) NOT NULL DEFAULT '',
  PRIMARY KEY("id")
 );
@@ -1460,7 +1460,7 @@ CREATE TABLE "rightcallmember" (
  "id" SERIAL,
  "rightcallid" INTEGER NOT NULL DEFAULT 0,
  "type" rightcallmember_type NOT NULL,
- "typeval" varchar(128) NOT NULL DEFAULT 0,
+ "typeval" VARCHAR(128) NOT NULL DEFAULT 0,
  PRIMARY KEY("id")
 );
 
@@ -1543,9 +1543,9 @@ CREATE UNIQUE INDEX "serverfeatures__uidx__serverid_feature_type" ON "serverfeat
 DROP TABLE IF EXISTS "servicesgroup";
 CREATE TABLE "servicesgroup" (
  "id" SERIAL,
- "name" varchar(64) NOT NULL,
- "accountcode" varchar(20),
- "disable" integer DEFAULT 0 NOT NULL,
+ "name" VARCHAR(64) NOT NULL,
+ "accountcode" VARCHAR(20),
+ "disable" INTEGER DEFAULT 0 NOT NULL,
  "description" text,
  PRIMARY KEY("id")
 );
@@ -1556,8 +1556,8 @@ CREATE UNIQUE INDEX "servicesgroup__uidx__accountcode" ON "servicesgroup"("accou
 
 DROP TABLE IF EXISTS "servicesgroup_user";
 CREATE TABLE "servicesgroup_user" (
- "servicesgroup_id" integer NOT NULL,
- "userfeatures_id" integer NOT NULL,
+ "servicesgroup_id" INTEGER NOT NULL,
+ "userfeatures_id" INTEGER NOT NULL,
  PRIMARY KEY("servicesgroup_id","userfeatures_id")
 );
 
@@ -1570,10 +1570,10 @@ CREATE TABLE "staticagent" (
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "filename" varchar(128) NOT NULL,
- "category" varchar(128) NOT NULL,
- "var_name" varchar(128) NOT NULL,
- "var_val" varchar(255),
+ "filename" VARCHAR(128) NOT NULL,
+ "category" VARCHAR(128) NOT NULL,
+ "var_name" VARCHAR(128) NOT NULL,
+ "var_val" VARCHAR(255),
  PRIMARY KEY("id")
 );
 
@@ -1592,10 +1592,10 @@ CREATE TABLE "staticiax" (
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "filename" varchar(128) NOT NULL,
- "category" varchar(128) NOT NULL,
- "var_name" varchar(128) NOT NULL,
- "var_val" varchar(255),
+ "filename" VARCHAR(128) NOT NULL,
+ "category" VARCHAR(128) NOT NULL,
+ "var_name" VARCHAR(128) NOT NULL,
+ "var_val" VARCHAR(255),
  PRIMARY KEY("id")
 );
 
@@ -1660,10 +1660,10 @@ CREATE TABLE "staticmeetme" (
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "filename" varchar(128) NOT NULL,
- "category" varchar(128) NOT NULL,
- "var_name" varchar(128) NOT NULL,
- "var_val" varchar(128),
+ "filename" VARCHAR(128) NOT NULL,
+ "category" VARCHAR(128) NOT NULL,
+ "var_name" VARCHAR(128) NOT NULL,
+ "var_val" VARCHAR(128),
  PRIMARY KEY("id")
 );
 
@@ -1683,10 +1683,10 @@ CREATE TABLE "staticqueue" (
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "filename" varchar(128) NOT NULL,
- "category" varchar(128) NOT NULL,
- "var_name" varchar(128) NOT NULL,
- "var_val" varchar(128),
+ "filename" VARCHAR(128) NOT NULL,
+ "category" VARCHAR(128) NOT NULL,
+ "var_name" VARCHAR(128) NOT NULL,
+ "var_val" VARCHAR(128),
  PRIMARY KEY("id")
 );
 
@@ -1705,10 +1705,10 @@ CREATE TABLE "staticsip" (
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "filename" varchar(128) NOT NULL,
- "category" varchar(128) NOT NULL,
- "var_name" varchar(128) NOT NULL,
- "var_val" varchar(255),
+ "filename" VARCHAR(128) NOT NULL,
+ "category" VARCHAR(128) NOT NULL,
+ "var_name" VARCHAR(128) NOT NULL,
+ "var_val" VARCHAR(255),
  PRIMARY KEY("id")
 );
 
@@ -1868,9 +1868,9 @@ CREATE TABLE "staticvoicemail" (
  "cat_metric" INTEGER NOT NULL DEFAULT 0,
  "var_metric" INTEGER NOT NULL DEFAULT 0,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "filename" varchar(128) NOT NULL,
- "category" varchar(128) NOT NULL,
- "var_name" varchar(128) NOT NULL,
+ "filename" VARCHAR(128) NOT NULL,
+ "category" VARCHAR(128) NOT NULL,
+ "var_name" VARCHAR(128) NOT NULL,
  "var_val" text,
  PRIMARY KEY("id")
 );
@@ -1978,10 +1978,10 @@ CREATE TYPE "usercustom_category" AS ENUM ('user', 'trunk');
 
 CREATE TABLE "usercustom" (
  "id" SERIAL,
- "name" varchar(40),
- "context" varchar(39),
- "interface" varchar(128) NOT NULL,
- "intfsuffix" varchar(32) NOT NULL DEFAULT '',
+ "name" VARCHAR(40),
+ "context" VARCHAR(39),
+ "interface" VARCHAR(128) NOT NULL,
+ "intfsuffix" VARCHAR(32) NOT NULL DEFAULT '',
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "protocol" "trunk_protocol" NOT NULL DEFAULT 'custom',
  "category" usercustom_category NOT NULL,
@@ -2001,20 +2001,20 @@ CREATE TYPE "userfeatures_voicemailtype" AS ENUM ('asterisk', 'exchange');
 
 CREATE TABLE "userfeatures" (
  "id" SERIAL,
- "firstname" varchar(128) NOT NULL DEFAULT '',
- "lastname" varchar(128) NOT NULL DEFAULT '',
+ "firstname" VARCHAR(128) NOT NULL DEFAULT '',
+ "lastname" VARCHAR(128) NOT NULL DEFAULT '',
  "voicemailtype" userfeatures_voicemailtype,
  "voicemailid" INTEGER,
  "agentid" INTEGER,
  "pictureid" INTEGER,
- "entityid" integer,
- "callerid" varchar(160),
+ "entityid" INTEGER,
+ "callerid" VARCHAR(160),
  "ringseconds" INTEGER NOT NULL DEFAULT 30,
  "simultcalls" INTEGER NOT NULL DEFAULT 5,
  "enableclient" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
- "loginclient" varchar(64) NOT NULL DEFAULT '',
- "passwdclient" varchar(64) NOT NULL DEFAULT '',
- "profileclient" varchar(64) NOT NULL DEFAULT '',
+ "loginclient" VARCHAR(64) NOT NULL DEFAULT '',
+ "passwdclient" VARCHAR(64) NOT NULL DEFAULT '',
+ "profileclient" VARCHAR(64) NOT NULL DEFAULT '',
  "enablehint" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "enablevoicemail" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "enablexfer" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
@@ -2023,27 +2023,27 @@ CREATE TABLE "userfeatures" (
  "incallfilter" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "enablednd" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "enableunc" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "destunc" varchar(128) NOT NULL DEFAULT '',
+ "destunc" VARCHAR(128) NOT NULL DEFAULT '',
  "enablerna" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "destrna" varchar(128) NOT NULL DEFAULT '',
+ "destrna" VARCHAR(128) NOT NULL DEFAULT '',
  "enablebusy" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "destbusy" varchar(128) NOT NULL DEFAULT '',
- "musiconhold" varchar(128) NOT NULL DEFAULT '',
- "outcallerid" varchar(80) NOT NULL DEFAULT '',
- "mobilephonenumber" varchar(128) NOT NULL DEFAULT '',
- "userfield" varchar(128) NOT NULL DEFAULT '',
+ "destbusy" VARCHAR(128) NOT NULL DEFAULT '',
+ "musiconhold" VARCHAR(128) NOT NULL DEFAULT '',
+ "outcallerid" VARCHAR(80) NOT NULL DEFAULT '',
+ "mobilephonenumber" VARCHAR(128) NOT NULL DEFAULT '',
+ "userfield" VARCHAR(128) NOT NULL DEFAULT '',
  "bsfilter" generic_bsfilter NOT NULL DEFAULT 'no',
- "preprocess_subroutine" varchar(39),
- "timezone" varchar(128),
- "language" varchar(20),
- "ringintern" varchar(64),
- "ringextern" varchar(64),
- "ringgroup" varchar(64),
- "ringforward" varchar(64),
- "rightcallcode" varchar(16),
- "alarmclock" varchar(5) NOT NULL DEFAULT '',
- "pitch" varchar(16),
- "pitchdirection" varchar(16),
+ "preprocess_subroutine" VARCHAR(39),
+ "timezone" VARCHAR(128),
+ "language" VARCHAR(20),
+ "ringintern" VARCHAR(64),
+ "ringextern" VARCHAR(64),
+ "ringgroup" VARCHAR(64),
+ "ringforward" VARCHAR(64),
+ "rightcallcode" VARCHAR(16),
+ "alarmclock" VARCHAR(5) NOT NULL DEFAULT '',
+ "pitch" VARCHAR(16),
+ "pitchdirection" VARCHAR(16),
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
@@ -2083,52 +2083,52 @@ CREATE TYPE "useriax_category" AS ENUM ('user', 'trunk');
 
 CREATE TABLE "useriax" (
  "id" SERIAL,
- "name" varchar(40) NOT NULL, -- user / peer --
+ "name" VARCHAR(40) NOT NULL, -- user / peer --
  "type" useriax_type NOT NULL, -- user / peer --
- "username" varchar(80), -- peer --
- "secret" varchar(80) NOT NULL DEFAULT '', -- peer / user --
- "dbsecret" varchar(255) NOT NULL DEFAULT '', -- peer / user --
- "context" varchar(39), -- peer / user --
- "language" varchar(20), -- general / user --
- "accountcode" varchar(20), -- general / user --
+ "username" VARCHAR(80), -- peer --
+ "secret" VARCHAR(80) NOT NULL DEFAULT '', -- peer / user --
+ "dbsecret" VARCHAR(255) NOT NULL DEFAULT '', -- peer / user --
+ "context" VARCHAR(39), -- peer / user --
+ "language" VARCHAR(20), -- general / user --
+ "accountcode" VARCHAR(20), -- general / user --
  "amaflags" useriax_amaflags DEFAULT 'default', -- general / user --
- "mailbox" varchar(80), -- peer --
- "callerid" varchar(160), -- user / peer --
- "fullname" varchar(80), -- user / peer --
- "cid_number" varchar(80), -- user / peer --
+ "mailbox" VARCHAR(80), -- peer --
+ "callerid" VARCHAR(160), -- user / peer --
+ "fullname" VARCHAR(80), -- user / peer --
+ "cid_number" VARCHAR(80), -- user / peer --
  "trunk" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- user / peer --
  "auth" useriax_auth NOT NULL DEFAULT 'plaintext,md5', -- user / peer --
  "encryption" useriax_encryption DEFAULT NULL, -- user / peer --
  "forceencryption" useriax_encryption DEFAULT NULL,
  "maxauthreq" INTEGER, -- general / user --
- "inkeys" varchar(80), -- user / peer --
- "outkey" varchar(80), -- peer --
+ "inkeys" VARCHAR(80), -- user / peer --
+ "outkey" VARCHAR(80), -- peer --
  "adsi" INTEGER, -- BOOLEAN -- general / user / peer --
  "transfer" useriax_transfer, -- general / user / peer --
  "codecpriority" useriax_codecpriority, -- general / user --
  "jitterbuffer" INTEGER, -- BOOLEAN -- general / user / peer --
  "forcejitterbuffer" INTEGER, -- BOOLEAN -- general / user / peer --
  "sendani" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- peer --
- "qualify" varchar(4) NOT NULL DEFAULT 'no', -- peer --
+ "qualify" VARCHAR(4) NOT NULL DEFAULT 'no', -- peer --
  "qualifysmoothing" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- peer --
  "qualifyfreqok" INTEGER NOT NULL DEFAULT 60000, -- peer --
  "qualifyfreqnotok" INTEGER NOT NULL DEFAULT 10000, -- peer --
- "timezone" varchar(80), -- peer --
- "disallow" varchar(100), -- general / user / peer --
+ "timezone" VARCHAR(80), -- peer --
+ "disallow" VARCHAR(100), -- general / user / peer --
  "allow" text, -- general / user / peer --
- "mohinterpret" varchar(80), -- general / user / peer --
- "mohsuggest" varchar(80), -- general / user / peer --
- "deny" varchar(31), -- user / peer --
- "permit" varchar(31), -- user / peer --
- "defaultip" varchar(255), -- peer --
- "sourceaddress" varchar(255), -- peer --
- "setvar" varchar(100) NOT NULL DEFAULT '', -- user --
- "host" varchar(255) NOT NULL DEFAULT 'dynamic', -- peer --
+ "mohinterpret" VARCHAR(80), -- general / user / peer --
+ "mohsuggest" VARCHAR(80), -- general / user / peer --
+ "deny" VARCHAR(31), -- user / peer --
+ "permit" VARCHAR(31), -- user / peer --
+ "defaultip" VARCHAR(255), -- peer --
+ "sourceaddress" VARCHAR(255), -- peer --
+ "setvar" VARCHAR(100) NOT NULL DEFAULT '', -- user --
+ "host" VARCHAR(255) NOT NULL DEFAULT 'dynamic', -- peer --
  "port" INTEGER, -- peer --
- "mask" varchar(15), -- peer --
- "regexten" varchar(80), -- peer --
- "peercontext" varchar(80), -- peer --
- "ipaddr" varchar(255) NOT NULL DEFAULT '',
+ "mask" VARCHAR(15), -- peer --
+ "regexten" VARCHAR(80), -- peer --
+ "peercontext" VARCHAR(80), -- peer --
+ "ipaddr" VARCHAR(255) NOT NULL DEFAULT '',
  "regseconds" INTEGER NOT NULL DEFAULT 0,
  "immediate" INTEGER DEFAULT NULL, -- BOOLEAN
  "keyrotate" INTEGER DEFAULT NULL, -- BOOLEAN
@@ -2136,7 +2136,7 @@ CREATE TABLE "useriax" (
  "protocol" "trunk_protocol" NOT NULL DEFAULT 'iax',
  "category" useriax_category NOT NULL,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "requirecalltoken" varchar(4) NOT NULL DEFAULT 'no', -- peer--
+ "requirecalltoken" VARCHAR(4) NOT NULL DEFAULT 'no', -- peer--
  PRIMARY KEY("id")
 );
 
@@ -2169,26 +2169,26 @@ CREATE TYPE "usersip_session_refresher" AS ENUM ('uac','uas');
 
 CREATE TABLE "usersip" (
  "id" SERIAL,
- "name" varchar(40) NOT NULL, -- user / peer --
+ "name" VARCHAR(40) NOT NULL, -- user / peer --
  "type" useriax_type NOT NULL, -- user / peer --
- "username" varchar(80), -- peer --
- "secret" varchar(80) NOT NULL DEFAULT '', -- user / peer --
- "md5secret" varchar(32) NOT NULL DEFAULT '', -- user / peer --
- "context" varchar(39), -- general / user / peer --
- "language" varchar(20), -- general / user / peer --
- "accountcode" varchar(20), -- user / peer --
+ "username" VARCHAR(80), -- peer --
+ "secret" VARCHAR(80) NOT NULL DEFAULT '', -- user / peer --
+ "md5secret" VARCHAR(32) NOT NULL DEFAULT '', -- user / peer --
+ "context" VARCHAR(39), -- general / user / peer --
+ "language" VARCHAR(20), -- general / user / peer --
+ "accountcode" VARCHAR(20), -- user / peer --
  "amaflags" useriax_amaflags NOT NULL DEFAULT 'default', -- user / peer --
 
  "allowtransfer" INTEGER, -- BOOLEAN -- general / user / peer --
- "fromuser" varchar(80), -- peer --
- "fromdomain" varchar(255), -- general / peer --
- "mailbox" varchar(80), -- peer --
+ "fromuser" VARCHAR(80), -- peer --
+ "fromdomain" VARCHAR(255), -- general / peer --
+ "mailbox" VARCHAR(80), -- peer --
  "subscribemwi" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- peer --
  "buggymwi" INTEGER, -- BOOLEAN -- general / user / peer --
  "call-limit" INTEGER NOT NULL DEFAULT 0, -- user / peer --
- "callerid" varchar(160), -- general / user / peer --
- "fullname" varchar(80), -- user / peer --
- "cid_number" varchar(80), -- user / peer --
+ "callerid" VARCHAR(160), -- general / user / peer --
+ "fullname" VARCHAR(80), -- user / peer --
+ "cid_number" VARCHAR(80), -- user / peer --
  "maxcallbitrate" INTEGER, -- general / user / peer --
  "insecure" usersip_insecure, -- general / user / peer --
  "nat" usersip_nat, -- general / user / peer --
@@ -2202,13 +2202,13 @@ CREATE TABLE "usersip" (
  "allowoverlap" INTEGER, -- BOOLEAN -- general / user / peer --
  "dtmfmode" usersip_dtmfmode, -- general / user / peer --
  "rfc2833compensate" INTEGER, -- BOOLEAN -- general / user / peer --
- "qualify" varchar(4), -- general / peer --
+ "qualify" VARCHAR(4), -- general / peer --
  "g726nonstandard" INTEGER, -- BOOLEAN -- general / user / peer --
- "disallow" varchar(100), -- general / user / peer --
+ "disallow" VARCHAR(100), -- general / user / peer --
  "allow" text, -- general / user / peer --
  "autoframing" INTEGER, -- BOOLEAN -- general / user / peer --
- "mohinterpret" varchar(80), -- general / user / peer --
- "mohsuggest" varchar(80), -- general / user / peer --
+ "mohinterpret" VARCHAR(80), -- general / user / peer --
+ "mohsuggest" VARCHAR(80), -- general / user / peer --
  "useclientcode" INTEGER, -- BOOLEAN -- general / user / peer --
  "progressinband" usersip_progressinband, -- general / user / peer --
 
@@ -2217,55 +2217,55 @@ CREATE TABLE "usersip" (
  "rtptimeout" INTEGER, -- general / peer --
  "rtpholdtimeout" INTEGER, -- general / peer --
  "rtpkeepalive" INTEGER, -- general / peer --
- "deny" varchar(31), -- user / peer --
- "permit" varchar(31), -- user / peer --
- "defaultip" varchar(255), -- peer --
+ "deny" VARCHAR(31), -- user / peer --
+ "permit" VARCHAR(31), -- user / peer --
+ "defaultip" VARCHAR(255), -- peer --
 
- "setvar" varchar(100) NOT NULL DEFAULT '', -- user / peer --
- "host" varchar(255) NOT NULL DEFAULT 'dynamic', -- peer --
+ "setvar" VARCHAR(100) NOT NULL DEFAULT '', -- user / peer --
+ "host" VARCHAR(255) NOT NULL DEFAULT 'dynamic', -- peer --
  "port" INTEGER, -- peer --
- "regexten" varchar(80), -- peer --
- "subscribecontext" varchar(80), -- general / user / peer --
- "fullcontact" varchar(255), -- peer --
- "vmexten" varchar(40), -- general / peer --
+ "regexten" VARCHAR(80), -- peer --
+ "subscribecontext" VARCHAR(80), -- general / user / peer --
+ "fullcontact" VARCHAR(255), -- peer --
+ "vmexten" VARCHAR(40), -- general / peer --
  "callingpres" INTEGER, -- BOOLEAN -- user / peer --
- "ipaddr" varchar(255) NOT NULL DEFAULT '',
+ "ipaddr" VARCHAR(255) NOT NULL DEFAULT '',
  "regseconds" INTEGER NOT NULL DEFAULT 0,
- "regserver" varchar(20),
- "lastms" varchar(15) NOT NULL DEFAULT '',
+ "regserver" VARCHAR(20),
+ "lastms" VARCHAR(15) NOT NULL DEFAULT '',
  "parkinglot" INTEGER DEFAULT NULL,
  "protocol" "trunk_protocol" NOT NULL DEFAULT 'sip',
  "category" useriax_category NOT NULL,
 
- "outboundproxy" varchar(1024),
+ "outboundproxy" VARCHAR(1024),
 	-- asterisk 1.8 new values
- "transport" varchar(255) DEFAULT NULL,
- "remotesecret" varchar(255) DEFAULT NULL,
+ "transport" VARCHAR(255) DEFAULT NULL,
+ "remotesecret" VARCHAR(255) DEFAULT NULL,
  "directmedia" usersip_directmedia DEFAULT NULL,
  "callcounter" INTEGER DEFAULT NULL, -- BOOLEAN
- "busylevel" integer DEFAULT NULL,
+ "busylevel" INTEGER DEFAULT NULL,
  "ignoresdpversion" INTEGER DEFAULT NULL, -- BOOLEAN
  "session-timers" usersip_session_timers DEFAULT NULL,
- "session-expires" integer DEFAULT NULL,
- "session-minse" integer DEFAULT NULL,
+ "session-expires" INTEGER DEFAULT NULL,
+ "session-minse" INTEGER DEFAULT NULL,
  "session-refresher" usersip_session_refresher DEFAULT NULL,
- "callbackextension" varchar(255) DEFAULT NULL,
+ "callbackextension" VARCHAR(255) DEFAULT NULL,
  "registertrying" INTEGER DEFAULT NULL, -- BOOLEAN
- "timert1" integer DEFAULT NULL,
- "timerb" integer DEFAULT NULL,
+ "timert1" INTEGER DEFAULT NULL,
+ "timerb" INTEGER DEFAULT NULL,
  
- "qualifyfreq" integer DEFAULT NULL,
- "contactpermit" varchar(1024) DEFAULT NULL,
- "contactdeny" varchar(1024) DEFAULT NULL,
- "unsolicited_mailbox" varchar(1024) DEFAULT NULL,
+ "qualifyfreq" INTEGER DEFAULT NULL,
+ "contactpermit" VARCHAR(1024) DEFAULT NULL,
+ "contactdeny" VARCHAR(1024) DEFAULT NULL,
+ "unsolicited_mailbox" VARCHAR(1024) DEFAULT NULL,
  "use_q850_reason" INTEGER DEFAULT NULL, -- BOOLEAN
  "encryption" INTEGER DEFAULT NULL, -- BOOLEAN
  "snom_aoc_enabled" INTEGER DEFAULT NULL, -- BOOLEAN
- "maxforwards" integer DEFAULT NULL,
- "disallowed_methods" varchar(1024) DEFAULT NULL,
+ "maxforwards" INTEGER DEFAULT NULL,
+ "disallowed_methods" VARCHAR(1024) DEFAULT NULL,
  "textsupport" INTEGER DEFAULT NULL, -- BOOLEAN
- "callgroup" varchar(64) DEFAULT '', -- i.e: 1,4-9
- "pickupgroup" varchar(64) DEFAULT '',   -- i.e: 1,3-9
+ "callgroup" VARCHAR(64) DEFAULT '', -- i.e: 1,4-9
+ "pickupgroup" VARCHAR(64) DEFAULT '',   -- i.e: 1,3-9
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- user / peer --
  PRIMARY KEY("id")
 );
@@ -2284,17 +2284,17 @@ CREATE TYPE "voicemail_passwordlocation" AS ENUM ('spooldir','voicemail');
 
 CREATE TABLE "voicemail" (
  "uniqueid" SERIAL,
- "context" varchar(39) NOT NULL,
- "mailbox" varchar(40) NOT NULL,
- "password" varchar(80) NOT NULL DEFAULT '',
- "fullname" varchar(80) NOT NULL DEFAULT '',
- "email" varchar(80),
- "pager" varchar(80),
- "dialout" varchar(39),
- "callback" varchar(39),
- "exitcontext" varchar(39),
- "language" varchar(20),
- "tz" varchar(80),
+ "context" VARCHAR(39) NOT NULL,
+ "mailbox" VARCHAR(40) NOT NULL,
+ "password" VARCHAR(80) NOT NULL DEFAULT '',
+ "fullname" VARCHAR(80) NOT NULL DEFAULT '',
+ "email" VARCHAR(80),
+ "pager" VARCHAR(80),
+ "dialout" VARCHAR(39),
+ "callback" VARCHAR(39),
+ "exitcontext" VARCHAR(39),
+ "language" VARCHAR(20),
+ "tz" VARCHAR(80),
  "attach" INTEGER, -- BOOLEAN
  "saycid" INTEGER, -- BOOLEAN
  "review" INTEGER, -- BOOLEAN
@@ -2308,22 +2308,22 @@ CREATE TABLE "voicemail" (
  "forcegreetings" INTEGER, -- BOOLEAN
  "hidefromdir" voicemail_hidefromdir NOT NULL DEFAULT 'no',
  "maxmsg" INTEGER,
- "emailsubject" varchar(1024),
+ "emailsubject" VARCHAR(1024),
  "emailbody" text,
- "imapuser" varchar(1024),
- "imappassword" varchar(1024),
- "imapfolder" varchar(1024),
- "imapvmsharedid" varchar(1024),
- "attachfmt" varchar(1024),
- "serveremail" varchar(1024),
- "locale" varchar(1024),
+ "imapuser" VARCHAR(1024),
+ "imappassword" VARCHAR(1024),
+ "imapfolder" VARCHAR(1024),
+ "imapvmsharedid" VARCHAR(1024),
+ "attachfmt" VARCHAR(1024),
+ "serveremail" VARCHAR(1024),
+ "locale" VARCHAR(1024),
  "tempgreetwarn" INTEGER DEFAULT NULL, -- BOOLEAN
  "messagewrap" INTEGER DEFAULT NULL, -- BOOLEAN
  "moveheard" INTEGER DEFAULT NULL, -- BOOLEAN
- "minsecs" integer DEFAULT NULL,
- "maxsecs" integer DEFAULT NULL,
+ "minsecs" INTEGER DEFAULT NULL,
+ "maxsecs" INTEGER DEFAULT NULL,
  "nextaftercmd" INTEGER DEFAULT NULL, -- BOOLEAN
- "backupdeleted" integer DEFAULT NULL,
+ "backupdeleted" INTEGER DEFAULT NULL,
  "volgain" float DEFAULT NULL,
  "passwordlocation" voicemail_passwordlocation DEFAULT NULL,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
@@ -2348,9 +2348,9 @@ CREATE UNIQUE INDEX "voicemailfeatures__uidx__voicemailid" ON "voicemailfeatures
 DROP TABLE IF EXISTS "voicemenu";
 CREATE TABLE "voicemenu" (
  "id" SERIAL,
- "name" varchar(29) NOT NULL DEFAULT '',
- "number" varchar(40) NOT NULL,
- "context" varchar(39) NOT NULL,
+ "name" VARCHAR(29) NOT NULL DEFAULT '',
+ "number" VARCHAR(40) NOT NULL,
+ "context" VARCHAR(39) NOT NULL,
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  "description" text NOT NULL,
  PRIMARY KEY("id")
@@ -2365,7 +2365,7 @@ CREATE UNIQUE INDEX "voicemenu__uidx__name" ON "voicemenu"("name");
 DROP TABLE IF EXISTS "queueskillcat";
 CREATE TABLE "queueskillcat" (
  "id" SERIAL,
- "name" varchar(64) NOT NULL DEFAULT '',
+ "name" VARCHAR(64) NOT NULL DEFAULT '',
  PRIMARY KEY("id")
 );
 
@@ -2377,9 +2377,9 @@ DROP TABLE IF EXISTS "queueskill";
 CREATE TABLE "queueskill" (
  "id" SERIAL,
  "catid" INTEGER NOT NULL DEFAULT 1,
- "name" varchar(64) NOT NULL DEFAULT '',
+ "name" VARCHAR(64) NOT NULL DEFAULT '',
  "description" text,
- "printscreen" varchar(5),
+ "printscreen" VARCHAR(5),
  PRIMARY KEY("id")
 );
 
@@ -2391,7 +2391,7 @@ CREATE UNIQUE INDEX "queueskill__uidx__name" ON "queueskill"("name");
 DROP TABLE IF EXISTS "queueskillrule";
 CREATE TABLE "queueskillrule" (
  "id" SERIAL,
- "name" varchar(64) NOT NULL DEFAULT '',
+ "name" VARCHAR(64) NOT NULL DEFAULT '',
  "rule" text,
  PRIMARY KEY("id")
 );
@@ -2412,9 +2412,9 @@ DROP TABLE IF EXISTS "general";
 CREATE TABLE "general"
 (
  "id" SERIAL,
- "timezone"         varchar(128),
+ "timezone"         VARCHAR(128),
  "exchange_trunkid" INTEGER DEFAULT NULL,
- "exchange_exten"   varchar(128) DEFAULT NULL,
+ "exchange_exten"   VARCHAR(128) DEFAULT NULL,
  "dundi"            INTEGER NOT NULL DEFAULT 0, -- boolean
  PRIMARY KEY("id")
 );
@@ -2452,16 +2452,16 @@ CREATE TABLE "iaxcallnumberlimits" (
 
 DROP TABLE IF EXISTS "queue_log" ;
 CREATE TABLE "queue_log" (
- "time" varchar(26) DEFAULT ''::varchar NOT NULL,
- "callid" varchar(32) DEFAULT ''::varchar NOT NULL,
- "queuename" varchar(50) DEFAULT ''::varchar NOT NULL,
- "agent" varchar(50) DEFAULT ''::varchar NOT NULL,
- "event" varchar(20) DEFAULT ''::varchar NOT NULL,
- "data1" varchar(30) DEFAULT ''::varchar,
- "data2" varchar(30) DEFAULT ''::varchar,
- "data3" varchar(30) DEFAULT ''::varchar,
- "data4" varchar(30) DEFAULT ''::varchar,
- "data5" varchar(30) DEFAULT ''::varchar
+ "time" VARCHAR(26) DEFAULT ''::VARCHAR NOT NULL,
+ "callid" VARCHAR(32) DEFAULT ''::VARCHAR NOT NULL,
+ "queuename" VARCHAR(50) DEFAULT ''::VARCHAR NOT NULL,
+ "agent" VARCHAR(50) DEFAULT ''::VARCHAR NOT NULL,
+ "event" VARCHAR(20) DEFAULT ''::VARCHAR NOT NULL,
+ "data1" VARCHAR(30) DEFAULT ''::VARCHAR,
+ "data2" VARCHAR(30) DEFAULT ''::VARCHAR,
+ "data3" VARCHAR(30) DEFAULT ''::VARCHAR,
+ "data4" VARCHAR(30) DEFAULT ''::VARCHAR,
+ "data5" VARCHAR(30) DEFAULT ''::VARCHAR
  );
 
 CREATE INDEX queue_log__idx_time ON queue_log USING btree ("time");
@@ -2716,9 +2716,9 @@ CREATE TABLE "callcenter_campaigns_records" (
 DROP TABLE IF EXISTS "agentglobalparams";
 CREATE TABLE "agentglobalparams" (
  "id" SERIAL,
- "category" varchar(128) NOT NULL,
- "option_name" varchar(255) NOT NULL,
- "option_value" varchar(255),
+ "category" VARCHAR(128) NOT NULL,
+ "option_name" VARCHAR(255) NOT NULL,
+ "option_value" VARCHAR(255),
  PRIMARY KEY("id")
 );
 INSERT INTO "agentglobalparams" VALUES (DEFAULT,'general','multiplelogin','yes');
