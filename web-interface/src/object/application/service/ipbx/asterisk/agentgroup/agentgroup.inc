@@ -23,8 +23,6 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_agentgroup extends xivo_application_asterisk_abstract
 {
 	var $_agentgroup	= false;
-	var $_appagents		= false;
-	var $_staticagentgroup	= false;
 	var $_agentmember	= null;
 	var $_queuemember	= null;
 	var $_contextlist	= array();
@@ -34,9 +32,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
-		if(($this->_agentgroup = &$this->_service->get_module('agentgroup')) === false
-		|| ($this->_appagents = &$this->_service->get_apprealstatic('agents')) === false
-		|| ($this->_staticagentgroup = &$this->_appagents->get_module('group')) === false)
+		if(($this->_agentgroup = &$this->_service->get_module('agentgroup')) === false)
 			return(false);
 		else if((bool) $components === true)
 			$this->load_components();
@@ -59,13 +55,10 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 	{
 		$this->_info = $this->_origin = array();
 
-		if(($this->_info['agentgroup'] = $this->_agentgroup->get($id)) === false
-		|| ($this->_info['staticagentgroup'] = $this->_staticagentgroup->get_group(
-							$this->_info['agentgroup']['groupid'])) === false)
+		if(($this->_info['agentgroup'] = $this->_agentgroup->get($id)) === false)
 			return(false);
 
 		$this->_origin['agentgroup'] = $this->_agentgroup->get_origin();
-		$this->_origin['staticagentgroup'] = $this->_staticagentgroup->get_origin();
 
 		if($this->_components === false)
 			return($this->_info);
@@ -163,10 +156,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 		{
 			$info['agentgroup'] = $rs[$i];
 
-			if(($info['staticagentgroup'] = $this->_staticagentgroup->get_group(
-									$info['agentgroup']['groupid'],
-									$disable)) !== false
-			&& ($info['nb_amember'] = $agentfeatures->get_nb(
+			if(($info['nb_amember'] = $agentfeatures->get_nb(
 							array('numgroup' => $info['agentgroup']['id']),
 							$disable)) !== false)
 				$r[$info['agentgroup']['id']] = $info;
@@ -196,21 +186,18 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 	function _set($action,$arr)
 	{
 		$this->_reset();
-
 		if(($action !== 'add' && $action !== 'edit') === true
 		|| dwho_issa('agentgroup',$arr) === false)
 			return(false);
 
 		$arr['agentgroup']['groupid'] = 0;
 		$this->set_agentgroup($arr['agentgroup']);
-		$this->set_staticagentgroup();
 
 		if(dwho_issa('agent-select',$arr) === true)
 			$this->set_agentmember($arr['agent-select']);
 
 		if(dwho_issa('queue',$arr) === true && dwho_issa('queue-select',$arr) === true)
 			$this->set_queuemember($arr['queue'],$arr['queue-select'],0);
-
 		return(($this->get_errnb() < 1));
 	}
 
@@ -232,19 +219,6 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 		$this->_set_result('agentgroup',$rs);
 
 		return(true);
-	}
-
-	function set_staticagentgroup()
-	{
-		$arr = array();
-		$arr['group'] = 1;
-
-		if(($r = $this->_staticagentgroup->set_group($arr)) === false)
-			$this->_set_error('staticagentgroup',$this->_staticagentgroup->get_error('agent'));
-
-		$this->_set_result('staticagentgroup',$this->_staticagentgroup->get_result('agent'));
-
-		return($r);
 	}
 
 	function set_agentmember($list)
@@ -321,12 +295,10 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 		$this->_status = 'add';
 		$this->_return = array();
-		$staticagentgroupid = null;
 
 		if($this->get_errnb() > 0
 		|| ($agentgroupid = $this->add_agentgroup()) === false
-		|| ($staticagentgroupid = $this->add_staticagentgroup($agentgroupid)) === false
-		|| $this->update_agentgroup($agentgroupid,$staticagentgroupid) === false
+		|| $this->update_agentgroup($agentgroupid) === false
 		|| $this->add_agentmember($agentgroupid) === false
 		|| $this->add_queuemember($agentgroupid) === false)
 		{
@@ -351,24 +323,14 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 		return(($this->_return['agentgroup'] = $this->_agentgroup->add($rs)));
 	}
 
-	function add_staticagentgroup($agentgroupid)
+	function update_agentgroup($agentgroupid)
 	{
-		if(($agentgroupid = dwho_ulongint($agentgroupid)) === 0
-		|| ($rs = $this->_staticagentgroup->add_group($agentgroupid)) === null
-		|| $rs === false)
-			return(false);
 
-		return(($this->_return['staticagentgroup'] = $this->_staticagentgroup->get_return()));
-	}
-
-	function update_agentgroup($agentgroupid,$staticagentgroupid)
-	{
-		if(($agentgroupid = dwho_ulongint($agentgroupid)) === 0
-		|| ($staticagentgroupid = dwho_ulongint($staticagentgroupid)) === 0)
+		if(($agentgroupid = dwho_ulongint($agentgroupid)) === 0)
 			return(false);
 
 		return($this->_agentgroup->edit($agentgroupid,
-						array('groupid'	=> $staticagentgroupid)));
+						array('groupid'	=> $agentgroupid)));
 	}
 
 	function add_agentmember($agentgroupid)
@@ -440,9 +402,6 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 				case 'agentgroup':
 					$this->_agentgroup->delete($val);
 					break;
-				case 'staticagentgroup':
-					$this->_staticagentgroup->delete_group($this->_status,$val);
-					break;
 				case 'agentmember':
 					$this->_agentmember->reverse_save($this->_status);
 					break;
@@ -468,7 +427,6 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 		if($this->get_errnb() > 0
 		|| $this->edit_agentgroup() === false
-		|| $this->edit_staticagentgroup() === false
 		|| $this->edit_agentmember() === false
 		|| $this->edit_queuemember() === false)
 		{
@@ -491,18 +449,6 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 		$rs['groupid'] = $this->_info['agentgroup']['groupid'];
 
 		return(($this->_return['agentgroup'] = $this->_agentgroup->edit($this->_info['agentgroup']['id'],$rs)));
-	}
-
-	function edit_staticagentgroup()
-	{
-		if(dwho_issa('staticagentgroup',$this->_info) === false
-		|| dwho_issa('agentgroup',$this->_info) === false
-		|| ($rs = $this->_staticagentgroup->edit_group($this->_info['staticagentgroup']['id'],
-							       $this->_info['agentgroup']['id'])) === null
-		|| $rs === false)
-			return(false);
-
-		return(($this->_return['staticagentgroup'] = $this->_staticagentgroup->get_return()));
 	}
 
 	function edit_agentmember()
@@ -586,13 +532,6 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 					else
 						$this->_agentgroup->edit_origin($this->_origin['agentgroup']);
 					break;
-				case 'staticagentgroup':
-					if(isset($this->_origin['staticagentgroup']) === false
-					|| $this->_origin['staticagentgroup'] === false)
-						$this->delete_staticagentgroup();
-					else
-						$this->_staticagentgroup->edit_origin($this->_origin['staticagentgroup']);
-					break;
 				case 'agentmember':
 					$this->_agentmember->reverse_save($this->_status);
 					break;
@@ -618,7 +557,6 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 		if($this->get_errnb() > 0
 		|| $this->delete_agentgroup() === false
-		|| $this->delete_staticagentgroup() === false
 		|| $this->delete_agentmember() === false
 		|| $this->delete_queuemember() === false)
 		{
@@ -641,19 +579,6 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 		if($this->_status === 'delete')
 			$this->_return['agentgroup'] = $r;
-
-		return($r);
-	}
-
-	function delete_staticagentgroup()
-	{
-		if(dwho_issa('staticagentgroup',$this->_info) === false
-		|| ($r = $this->_staticagentgroup->delete_group($this->_status,
-								$this->_info['staticagentgroup']['id'])) === null
-		|| $r === false)
-			return(false);
-		else if($this->_status === 'delete')
-			$this->_return['staticagentgroup'] = $r;
 
 		return($r);
 	}
@@ -711,11 +636,6 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 					if(dwho_issa('agentgroup',$this->_origin) === true)
 						$this->_agentgroup->recover($this->_origin['agentgroup']['id']);
 					break;
-				case 'staticagentgroup':
-					if(isset($this->_origin['staticagentgroup']) === true
-					&& $this->_origin['staticagentgroup'] !== false)
-						$this->_staticagentgroup->add_origin($this->_origin['staticagentgroup']);
-					break;
 				case 'agentmember':
 					$this->_agentmember->reverse_delete($this->_status);
 					break;
@@ -738,7 +658,6 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 		$this->_return = array();
 
 		if($this->enable_agentgroup() === false
-		|| $this->enable_staticagentgroup() === false
 		|| $this->enable_agentmember() === false)
 		{
 			$r = false;
@@ -758,7 +677,6 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 		$this->_return = array();
 
 		if($this->disable_agentgroup() === false
-		|| $this->disable_staticagentgroup() === false
 		|| $this->disable_agentmember() === false)
 		{
 			$r = false;
@@ -791,31 +709,6 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 		if($this->_status === 'enable' || $this->_status === 'disable')
 			$this->_return['agentgroup'] = $r;
-
-		return($r);
-	}
-
-	function enable_staticagentgroup()
-	{
-		return($this->_enable_disable_staticagentgroup(false));
-	}
-
-	function disable_staticagentgroup()
-	{
-		return($this->_enable_disable_staticagentgroup(true));
-	}
-
-	function _enable_disable_staticagentgroup($disable=false)
-	{
-		if(dwho_issa('staticagentgroup',$this->_info) === false)
-			return(false);
-		else if((bool) $disable === false)
-			$r = $this->_staticagentgroup->enable($this->_info['staticagentgroup']['id']);
-		else
-			$r = $this->_staticagentgroup->disable($this->_info['staticagentgroup']['id']);
-
-		if($this->_status === 'enable' || $this->_status === 'disable')
-			$this->_return['staticagentgroup'] = $r;
 
 		return($r);
 	}
@@ -878,9 +771,6 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 			{
 				case 'agentgroup':
 					$this->_enable_disable_agentgroup($disable);
-					break;
-				case 'staticagentgroup':
-					$this->_enable_disable_staticagentgroup($disable);
 					break;
 				case 'agentmember':
 					$this->_enable_disable_agentmember($disable);

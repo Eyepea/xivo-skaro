@@ -75,11 +75,8 @@ $page = $url->pager($pager['pages'],
 		for($i = 0;$i < $nb;$i++):
 
 			$ref = &$list[$i];
-
 			if($ref['agentfeatures']['commented'] === true):
 				$icon = 'disable';
-			elseif($ref['agent']['commented'] === true):
-				$icon = 'unavailable';
 			else:
 				$icon = 'enable';
 			endif;
@@ -103,8 +100,8 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td><?=$ref['agent']['number']?></td>
-		<td><?=(dwho_has_len($ref['agent']['passwd']) === true ? $ref['agent']['passwd'] : '-')?></td>
+		<td><?=$ref['agentfeatures']['number']?></td>
+		<td><?=(dwho_has_len($ref['agentfeatures']['passwd']) === true ? $ref['agentfeatures']['passwd'] : '-')?></td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',

@@ -106,11 +106,6 @@ $qmember = $this->get_var('qmember');
 			      $this->get_var('agentgroup_list'));
 
 ?>
-<?=$form->hidden(array('name' => 'agentoptions[musiconhold]','value' => 'default'));?>
-<?=$form->hidden(array('name' => 'agentoptions[ackcall]','value' => 'no'));?>
-<?=$form->hidden(array('name' => 'agentoptions[autologoff]','value' => 0));?>
-<?=$form->hidden(array('name' => 'agentoptions[wrapuptime]','value' => 'default'));?>
-<?=$form->hidden(array('name' => 'agentoptions[maxlogintries]','value' => 0));?>
 </div>
 
 <div id="sb-part-queueskills" class="b-nodisplay">

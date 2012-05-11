@@ -276,10 +276,6 @@ $array['serverfeatures'] = array();
 $array['serverfeatures']['table'] = 'serverfeatures';
 $array['serverfeatures']['primary'] = array('id' => '');
 
-$array['staticagent'] = array();
-$array['staticagent']['table'] = 'staticagent';
-$array['staticagent']['primary'] = array('id' => '');
-
 $array['staticiax'] = array();
 $array['staticiax']['table'] = 'staticiax';
 $array['staticiax']['primary'] = array('id' => '');

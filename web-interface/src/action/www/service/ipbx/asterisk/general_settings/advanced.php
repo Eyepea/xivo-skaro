@@ -20,11 +20,6 @@
 $info = array();
 $element = array();
 
-$appagents = &$ipbx->get_apprealstatic('agents');
-$appgeneralagents = &$appagents->get_module('general');
-$info['generalagents'] = $appgeneralagents->get_all_by_category();
-$element['generalagents'] = $appgeneralagents->get_elements();
-
 $appagentglobalparams =  &$ipbx->get_application('agentglobalparams');
 $info['agentglobalparams']  = $appagentglobalparams->get_options('agents');
 $element['agentglobalparams']  = $appagentglobalparams->get_elements();
@@ -169,7 +164,7 @@ $_TPL->set_var('beep_list',$appagentglobalparams->get_beep());
 $_TPL->set_var('goodbye_list',$appagentglobalparams->get_goodbye());
 $_TPL->set_var('fm_save'      , $fm_save);
 $_TPL->set_var('error'        , $error);
-$_TPL->set_var('generalagents', $info['generalagents']);
+$_TPL->set_var('agentgeneralparams', $info['agentgeneralparams']);
 $_TPL->set_var('agentglobalparams', $info['agentglobalparams']);
 $_TPL->set_var('generalqueues', $info['generalqueues']);
 $_TPL->set_var('generalmeetme', $info['generalmeetme']);

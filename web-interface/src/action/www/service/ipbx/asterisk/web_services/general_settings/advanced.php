@@ -23,12 +23,6 @@ $access_subcategory = 'advanced';
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $info = array();
-$appagents = &$ipbx->get_apprealstatic('agents');
-$appgeneralagents = &$appagents->get_module('general');
-$info['generalagents'] = $appgeneralagents->get_all_by_category();
-
-$appoptionsagents = &$appagents->get_module('agentoptions');
-$info['agentoptions']  = $appoptionsagents->get_all_by_category();
 
 $appqueues = &$ipbx->get_apprealstatic('queues');
 $appgeneralqueues = &$appqueues->get_module('general');
@@ -54,7 +48,6 @@ switch($act)
 {
 	case 'view':
 	default:
-		//$info = $appgeneraliax->get_all_val_by_category();
 
 		$_TPL->set_var('info',$info);
 		break;

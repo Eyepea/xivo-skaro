@@ -23,9 +23,6 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_agentmember_abstract extends xivo_application_service_asterisk_abstract
 {
 	var $_agentfeatures	= false;
-	var $_appagents		= false;
-	var $_agent		= false;
-	var $_agentoptions	= false;
 	var $_agentinfo		= array();
 	var $_agentorigin	= array();
 	var $_defgroup		= XIVO_SRE_IPBX_AST_AGENT_GROUP_DEFAULT;
@@ -34,10 +31,7 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 	{
 		$this->xivo_application_service_asterisk_abstract(&$service);
 
-		if(($this->_agentfeatures = &$this->_service->get_module('agentfeatures')) === false
-		|| ($this->_appagents = &$this->_service->get_apprealstatic('agents')) === false
-		|| ($this->_agent = &$this->_appagents->get_module('agent')) === false
-		|| ($this->_agentoptions = &$this->_appagents->get_module('agentoptions')) === false)
+		if(($this->_agentfeatures = &$this->_service->get_module('agentfeatures')) === false)
 			return(false);
 
 		return($this->load_init());
@@ -53,7 +47,6 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 
 	function _reset_agentinfo()
 	{
-		$this->_agentinfo = array();
 		$this->_agentorigin = array();
 	}
 
@@ -126,11 +119,7 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 	{
 		$info = array();
 
-		if(($info['agentfeatures'] = $this->_agentfeatures->get($id,$disable)) === false
-		|| ($info['agent'] = $this->_agent->get_agent(
-							$info['agentfeatures']['agentid'])) === false
-		|| ($info['agentoptions'] = $this->_agentoptions->get_agentoptions(
-							($info['agent']['var_metric']-1))) === false)
+		if(($info['agentfeatures'] = $this->_agentfeatures->get($id,$disable)) === false)
 			return(false);
 
 		$id = $info['agentfeatures']['id'];
@@ -138,9 +127,6 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 		$this->_agentinfo[$id] = $info;
 
 		$this->_agentorigin[$id]['agentfeatures'] = $this->_agentfeatures->get_origin();
-		$this->_agentorigin[$id]['agent'] = $this->_agent->get_origin();
-		$this->_agentorigin[$id]['agentoptions'] = $this->_agentoptions->get_origin();
-
 		return($info);
 	}
 
@@ -176,12 +162,7 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 			$this->_return[$aid] = array();
 			$return = &$this->_return[$aid];
 
-			if(($return['agenfeatures'] = $this->_agentfeatures->edit($aid,$info)) === false
-			|| ($return['agent'] = $this->_agent->edit_group($origin['agent']['id'],
-									 $agentgroupid)) === false
-			|| ($return['agentoptions'] = $this->_agentoptions->edit_var_metric(
-								($return['agent']-1),
-								$origin['agentoptions'][0]['var_metric'])) === false)
+			if(($return['agenfeatures'] = $this->_agentfeatures->edit($aid,$info)) === false)
 				return(false);
 		}
 
@@ -215,12 +196,7 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 			$this->_return[$aid] = array();
 			$return = &$this->_return[$aid];
 
-			if(($return['agentfeatures'] = $this->_agentfeatures->edit($aid,$info)) === false
-			|| ($return['agent'] = $this->_agent->edit_group($origin['agent']['id'],
-									 $this->_defgroup)) === false
-			|| ($return['agentoptions'] = $this->_agentoptions->edit_var_metric(
-								($return['agent']-1),
-								$origin['agentoptions'][0]['var_metric'])) === false)
+			if(($return['agentfeatures'] = $this->_agentfeatures->edit($aid,$info)) === false)
 				return(false);
 		}
 
@@ -268,31 +244,9 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 			&& $val['agentfeatures'] !== false)
 				$this->_agentfeatures->edit_origin($ref['agentfeatures']);
 
-			if(isset($val['agent'],$ref['agent']) === true && $val['agent'] !== false)
-				$this->_agent->edit_origin($ref['agent']);
-
-			if(isset($val['agentoptions'],$ref['agentoptions']) === true
-			&& $val['agentoptions'] !== false)
-				$this->_agentoptions->edit_origin_list($ref['agentoptions']);
 		}
 
 		return(true);
-	}
-
-	function enable_agent($id)
-	{
-		if(($id = dwho_ulongint($id)) === 0)
-			return(false);
-
-		return($this->_agent->enable($id));
-	}
-
-	function disable_agent($id)
-	{
-		if(($id = dwho_ulongint($id)) === 0)
-			return(false);
-
-		return($this->_agent->disable($id));
 	}
 }
 

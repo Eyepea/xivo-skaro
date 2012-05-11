@@ -53,7 +53,6 @@ DROP TYPE  IF EXISTS "agentfeatures_ackcall";
 CREATE TYPE agentfeatures_ackcall AS ENUM ('no','yes','always');
 CREATE TABLE "agentfeatures" (
  "id" SERIAL,
- "agentid" INTEGER NOT NULL,
  "numgroup" INTEGER NOT NULL,
  "firstname" VARCHAR(128) NOT NULL DEFAULT '',
  "lastname" VARCHAR(128) NOT NULL DEFAULT '',
@@ -75,7 +74,6 @@ CREATE TABLE "agentfeatures" (
  PRIMARY KEY("id")
 );
 
-CREATE UNIQUE INDEX "agentfeatures__uidx__agentid" ON "agentfeatures"("agentid");
 CREATE UNIQUE INDEX "agentfeatures__uidx__number" ON "agentfeatures"("number");
 
 
@@ -1562,29 +1560,6 @@ CREATE TABLE "servicesgroup_user" (
 );
 
 CREATE UNIQUE INDEX "servicesgroup_user__uidx__servicesgroupid_userfeaturesid" ON "servicesgroup_user"("servicesgroup_id","userfeatures_id");
-
-
-DROP TABLE IF EXISTS "staticagent";
-CREATE TABLE "staticagent" (
- "id" SERIAL,
- "cat_metric" INTEGER NOT NULL DEFAULT 0,
- "var_metric" INTEGER NOT NULL DEFAULT 0,
- "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
- "filename" VARCHAR(128) NOT NULL,
- "category" VARCHAR(128) NOT NULL,
- "var_name" VARCHAR(128) NOT NULL,
- "var_val" VARCHAR(255),
- PRIMARY KEY("id")
-);
-
-CREATE INDEX "staticagent__idx__cat_metric" ON "staticagent"("cat_metric");
-CREATE INDEX "staticagent__idx__var_metric" ON "staticagent"("var_metric");
-CREATE INDEX "staticagent__idx__category" ON "staticagent"("category");
-
-INSERT INTO "staticagent" VALUES (DEFAULT,0,0,0,'agents.conf','general','multiplelogin','yes');
-INSERT INTO "staticagent" VALUES (DEFAULT,1,0,0,'agents.conf','agents','recordagentcalls','no');
-INSERT INTO "staticagent" VALUES (DEFAULT,1,0,0,'agents.conf','agents','recordformat','wav');
-INSERT INTO "staticagent" VALUES (DEFAULT,1,1000000,0,'agents.conf','agents','group',1);
 
 DROP TABLE IF EXISTS "staticiax";
 CREATE TABLE "staticiax" (

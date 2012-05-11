@@ -67,17 +67,6 @@ class xivo_application_service_asterisk_agentglobalparams extends xivo_applicati
 		$this->_set_result('agentglobalparams',$this->_agentglobalparams->save_agent_global_params($rs,"agents"));
 		return true;
 	}
-	function save_agent_general_params($options)
-	{
-		dwho_var_dump($options);
-		if(($rs = $this->chk_values($options)) === false)
-		{
-			$this->_set_result('agentgeneralparams',$this->_agentglobalparams->get_filter_result());
-			$this->_set_error('agentgeneralparams',$this->_agentglobalparams->get_filter_error());
-			return(false);
-		}
-		dwho_var_dump($rs);
-	}
 
 	function get_beep()
 	{
