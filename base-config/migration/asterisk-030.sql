@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 BEGIN;
 
 DELETE FROM "extensions" WHERE "context" = 'hints' AND "appdata" = '';
