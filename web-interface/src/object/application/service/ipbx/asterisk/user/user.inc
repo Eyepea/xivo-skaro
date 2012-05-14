@@ -768,7 +768,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->set_rightcall($arr['rightcall']);
 
 		if(dwho_issa('phonefunckey',$arr) === true)
-			$this->set_phonefunckey($arr['phonefunckey']);
+			$this->set_phonefunckey($arr['phonefunckey'],$iduserfeatures);
 /*
 		// QUEUESKILLS
 		if(dwho_issa('queueskills',$arr) === true)
@@ -1050,7 +1050,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($r);
 	}
 
-	function set_phonefunckey($list)
+	function set_phonefunckey($list,$iduserfeatures)
 	{
 		if(($list = dwho_group_array('fknum',$list)) === false)
 			return(false);
@@ -1062,11 +1062,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		for($i = $j = 0;$i < $nb;$i++)
 		{
 			$ref = &$list[$i];
-			if(isset($this->_info['userfeatures']) === false
-				|| isset($this->_info['userfeatures']['id']) === false) {
-				return(false);
-			}
-			$ref['iduserfeatures'] = (int) $this->_info['userfeatures']['id'];
+			$ref['iduserfeatures'] = (int) $iduserfeatures;
 
 			if(($val = $this->_phonefunckey->mk_values_array($ref)) === false)
 				continue;

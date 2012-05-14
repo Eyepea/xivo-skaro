@@ -535,6 +535,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 									$w = array();
 									$w['callfilterid'] = $callfiltermember['callfilterid'];
 									$w['bstype'] = ($callfiltermember['bstype'] === 'boss') ? 'secretary' : 'boss';
+									$w['typeval'] = (string) $iduserfeatures;
 									$callfilter = $modcallfiltermember->get_where($w);
 
 									if($w['bstype'] === 'boss')

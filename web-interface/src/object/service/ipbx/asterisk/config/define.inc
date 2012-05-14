@@ -135,8 +135,6 @@ define('XIVO_SRE_IPBX_AST_CONTEXT_FEATURES','xivo-features');
 define('XIVO_SRE_IPBX_AST_CONTEXT_GENERAL','general');
 define('XIVO_SRE_IPBX_AST_CONTEXT_GLOBAL','global');
 define('XIVO_SRE_IPBX_AST_CONTEXT_GLOBALS','globals');
-define('XIVO_SRE_IPBX_AST_CONTEXT_HINT','hint');
-define('XIVO_SRE_IPBX_AST_CONTEXT_HINTS','hints');
 define('XIVO_SRE_IPBX_AST_CONTEXT_PARKEDCALLS','parkedcalls');
 define('XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES','zonemessages');
 
