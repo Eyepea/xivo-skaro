@@ -777,7 +777,6 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 					break;
 			}
 		}
-
 		return(true);
 	}
 }
