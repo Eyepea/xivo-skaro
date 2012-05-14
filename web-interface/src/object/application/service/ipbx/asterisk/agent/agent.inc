@@ -269,7 +269,6 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 		|| dwho_issa('agentfeatures',$arr) === false)
 			return(false);
 
-		$arr['agentfeatures']['agentid'] = 0;
 		$this->set_agentfeatures($arr['agentfeatures']);
 
 		$arr['agent']['numgroup'] = (string) $this->get_result_var('agentfeatures','numgroup');
