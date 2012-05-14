@@ -656,8 +656,6 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 		|| $rs === false)
 			return(false);
 
-		$rs['agentid'] = $this->_info['agentfeatures']['agentid'];
-
 		return(($this->_return['agentfeatures'] = $this->_agentfeatures->edit($this->_info['agentfeatures']['id'],$rs)));
 	}
 
