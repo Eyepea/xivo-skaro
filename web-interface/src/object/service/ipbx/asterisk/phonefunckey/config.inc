@@ -82,11 +82,6 @@ $array['type']['extenfeatures-enablednd']['extension'] = true;
 $array['type']['extenfeatures-enablednd']['supervisable'] = true;
 $array['type']['extenfeatures-enablednd']['progfunckey'] = true;
 
-$array['type']['generalfeatures-pickupexten'] = array();
-$array['type']['generalfeatures-pickupexten']['category'] = 'extension-general';
-$array['type']['generalfeatures-pickupexten']['name'] = 'generalfeatures-pickupexten';
-$array['type']['generalfeatures-pickupexten']['extension'] = true;
-
 $array['type']['extenfeatures-pickup'] = array();
 $array['type']['extenfeatures-pickup']['category'] = 'extension-general';
 $array['type']['extenfeatures-pickup']['name'] = 'extenfeatures-pickup';

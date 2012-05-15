@@ -379,11 +379,8 @@ Customized
 ; fm_phonefunckey_type-optgroup(extension-general)
 General
 
-; fm_phonefunckey_type-opt(generalfeatures-pickupexten)
-Group interception
-
 ; fm_phonefunckey_type-opt(extenfeatures-pickup)
-Call interception
+Group Interception
 
 ; fm_phonefunckey_type-opt(featuremap-automon)
 Online call recording
