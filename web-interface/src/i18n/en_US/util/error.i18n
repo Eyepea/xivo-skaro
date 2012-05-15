@@ -56,6 +56,9 @@ Number outside of context's interval
 ; error(invalid_context)
 Invalid context
 
+; error(linear_ring_strategy)
+Can't change ring strategy to linear (asterisk limitation)
+
 ; invalid_name_context
 Context name invalid (%s)
 
