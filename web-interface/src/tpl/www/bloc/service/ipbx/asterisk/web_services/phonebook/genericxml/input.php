@@ -22,8 +22,8 @@ $xmlphone = &$this->get_module('xmlphone');
 $xmlvendor = $xmlphone->factory($this->get_var('vendor'));
 $taginput = $xmlvendor->tag_input();
 
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
-²?>
+echo '<?xml version="1.0" encoding="UTF-8" ?>';
+?>
 
 <<?=$taginput?>>
 
