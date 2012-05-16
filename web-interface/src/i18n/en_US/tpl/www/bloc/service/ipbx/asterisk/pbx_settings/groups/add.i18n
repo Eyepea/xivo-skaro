@@ -140,7 +140,7 @@ Allow caller to transfer the call :
 Allow called on to record the call :
 
 ; fm_groupfeatures_write-calling
-Allo caller to record the call :
+Allow caller to record the call :
 
 ; smenu_schedule
 Schedules
