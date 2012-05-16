@@ -358,11 +358,8 @@ Activer le filtrage des appels entrants
 ; fm_phonefunckey_type-opt(extenfeatures-enablednd)
 Ne pas déranger
 
-; fm_phonefunckey_type-opt(generalfeatures-pickupexten)
-Interception de groupe
-
 ; fm_phonefunckey_type-opt(extenfeatures-pickup)
-Interception d'appel
+Interception de groupe
 
 ; fm_phonefunckey_type-opt(extenfeatures-calllistening)
 Ecouter les appels en cours
