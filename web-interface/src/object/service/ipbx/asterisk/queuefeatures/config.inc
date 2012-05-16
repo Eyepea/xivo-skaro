@@ -42,7 +42,7 @@ $array['element']['hitting_callee']['default'] = 0;
 
 $array['element']['hitting_caller'] = array();
 $array['element']['hitting_caller']['value'] = array(0,1);
-$array['element']['hitting_caller']['default'] = 0;
+$array['element']['hitting_caller']['default'] = 1;
 
 $array['element']['retries'] = array();
 $array['element']['retries']['value'] = array(0,1);
@@ -54,7 +54,7 @@ $array['element']['ring']['default'] = 0;
 
 $array['element']['transfer_user'] = array();
 $array['element']['transfer_user']['value'] = array(0,1);
-$array['element']['transfer_user']['default'] = 0;
+$array['element']['transfer_user']['default'] = 1;
 
 $array['element']['transfer_call'] = array();
 $array['element']['transfer_call']['value'] = array(0,1);
