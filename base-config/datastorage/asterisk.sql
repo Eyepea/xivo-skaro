@@ -678,10 +678,10 @@ CREATE TABLE "extensions" (
 CREATE INDEX "extensions__idx__context_exten_priority" ON "extensions"("context","exten","priority");
 CREATE INDEX "extensions__idx__name" ON "extensions"("name");
 
-INSERT INTO "extensions" VALUES (DEFAULT,1,'xivo-features','_*33.',1,'GoSub','agentdynamiclogin,s,1(${EXTEN:3})','agentdynamiclogin');
-INSERT INTO "extensions" VALUES (DEFAULT,1,'xivo-features','_*31.',1,'GoSub','agentstaticlogin,s,1(${EXTEN:3})','agentstaticlogin');
-INSERT INTO "extensions" VALUES (DEFAULT,1,'xivo-features','_*32.',1,'GoSub','agentstaticlogoff,s,1(${EXTEN:3})','agentstaticlogoff');
-INSERT INTO "extensions" VALUES (DEFAULT,1,'xivo-features','_*30.',1,'GoSub','agentstaticlogtoggle,s,1(${EXTEN:3})','agentstaticlogtoggle');
+INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*33.',1,'GoSub','agentdynamiclogin,s,1(${EXTEN:3})','agentdynamiclogin');
+INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*31.',1,'GoSub','agentstaticlogin,s,1(${EXTEN:3})','agentstaticlogin');
+INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*32.',1,'GoSub','agentstaticlogoff,s,1(${EXTEN:3})','agentstaticlogoff');
+INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*30.',1,'GoSub','agentstaticlogtoggle,s,1(${EXTEN:3})','agentstaticlogtoggle');
 INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*37.',1,'GoSub','bsfilter,s,1(${EXTEN:3})','bsfilter');
 INSERT INTO "extensions" VALUES (DEFAULT,0,'xivo-features','_*664.',1,'GoSub','group,s,1(${EXTEN:4})','callgroup');
 INSERT INTO "extensions" VALUES (DEFAULT,1,'xivo-features','*34',1,'GoSub','calllistening,s,1','calllistening');
@@ -830,12 +830,10 @@ INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','atxferno
 INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','atxferdropcall','no');
 INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','atxferloopdelay','10');
 INSERT INTO "features" VALUES (DEFAULT,0,0,1,'features.conf','general','atxfercallbackretries','2');
-INSERT INTO "features" VALUES (DEFAULT,1,0,0,'features.conf','featuremap','blindxfer','#1');
+INSERT INTO "features" VALUES (DEFAULT,1,0,0,'features.conf','featuremap','blindxfer','*1');
 INSERT INTO "features" VALUES (DEFAULT,1,0,0,'features.conf','featuremap','disconnect','*0');
-INSERT INTO "features" VALUES (DEFAULT,1,0,0,'features.conf','featuremap','automon','*1');
+INSERT INTO "features" VALUES (DEFAULT,1,0,0,'features.conf','featuremap','automon','*3');
 INSERT INTO "features" VALUES (DEFAULT,1,0,0,'features.conf','featuremap','atxfer','*2');
-INSERT INTO "features" VALUES (DEFAULT,1,0,0,'features.conf','featuremap','parkcall','#72');
-INSERT INTO "features" VALUES (DEFAULT,1,0,0,'features.conf','featuremap','automixmon','*3');
 
 
 DROP TABLE IF EXISTS "paging";
