@@ -161,40 +161,33 @@ class xivo_stats_ressource_abstract
 				break;
 			case 'week':
 				$key_data = dwho_date::get_listday_for_interval($dbeg,$dend);
-
 				while($key_data)
 				{
 					$key_full_data = array_shift($key_data);
 					$dayname = $key_full_data['dayname'];
 
 					$this->init_result($dayname);
-					$listmonth = $data_listmonth;
-					while($listmonth)
-					{
-						$monthprocess = array_shift($listmonth);
-						$key = $monthprocess['key'];
-						$year = substr($key,0,4);
-						$month = substr($key,4,2);
+					$key = $key_full_data['key'];
+					$year = substr($key,0,4);
+					$month = substr($key,4,2);
+					if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
+							|| is_null($month_data) === true)
+						continue;
+					$listdaynum = array_keys($month_data);
 
-						if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
-						|| is_null($month_data) === true)
+					while($listdaynum)
+					{
+						$day = array_shift($listdaynum);
+
+						$index = (int) ($year.$month.$day);
+						if ($index !== $key_full_data['key'])
 							continue;
 
-						$listdaynum = array_keys($month_data);
-						while($listdaynum)
-						{
-							$day = array_shift($listdaynum);
+						if (isset($full_list_day[$year.$month.$day]) === false)
+							continue;
 
-							$index = (int) ($year.$month.$day);
-							if ($index !== $key_full_data['key'])
-								continue;
-
-							if (isset($full_list_day[$year.$month.$day]) === false)
-								continue;
-
-							// update result for day data
-							$this->eval_update_result($month_data[$day],$dayname);
-						}
+						// update result for day data
+						$this->eval_update_result($month_data[$day],$dayname);
 					}
 				}
 				break;
