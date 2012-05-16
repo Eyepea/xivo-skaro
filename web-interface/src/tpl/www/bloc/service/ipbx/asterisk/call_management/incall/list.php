@@ -89,30 +89,14 @@ $page = $url->pager($pager['pages'],
 ?>
 		</th>
 		<th class="th-center">
-			<span class="title <?= $sort[1]=='destination'?'underline':''?>">
+			<span class="title">
 				<?=$this->bbf('col_destination');?>
 			</span>
-<?php
-	echo	$url->href_html(
-					$url->img_html('img/updown.png', $this->bbf('col_sort_destination'), 'border="0"'),
-					'service/ipbx/call_management/incall',
-					array('act'	=> 'list', 'sort' => 'destination'),
-					null,
-					$this->bbf('col_sort_destination'));
-?>
 		</th>
 		<th class="th-center">
-			<span class="title <?= $sort[1]=='identity'?'underline':''?>">
+			<span class="title">
 				<?=$this->bbf('col_identity');?>
 			</span>
-<?php
-	echo	$url->href_html(
-					$url->img_html('img/updown.png', $this->bbf('col_sort_identity'), 'border="0"'),
-					'service/ipbx/call_management/incall',
-					array('act'	=> 'list', 'sort' => 'identity'),
-					null,
-					$this->bbf('col_sort_identity'));
-?>
 		</th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
