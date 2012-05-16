@@ -34,8 +34,8 @@
 #
 # Parameters mandatory:
 #
-# 	username
-# 	secret
+#     username
+#     secret
 #
 # Optional parameters:
 #       codecs
@@ -51,9 +51,11 @@ if (! eval "require Net::Telnet;")
     $ret = "Net::Telnet not found";
 }
 
-#Codecs g723, gsm, ulaw, alaw, g726, adpcm, slin, lpc10, g729, speex, ilbc
+# http://www.voip-info.org/wiki/view/Asterisk+codecs
+#Codecs g723, gsm, ulaw, alaw, g726, adpcm, slin, lpc10, g729, speex, ilbc, g722
 
-my @CODECS = exists $ENV{'codecs'} ? split ' ',$ENV{'codecs'} : qw(gsm ulaw alaw g729);
+my @CODECS = exists $ENV{'codecs'} ? split ' ',$ENV{'codecs'} : qw(gsm ulaw alaw g729 g722);
+my @CODECSX = exists $ENV{'codecsx'} ? split ' ',$ENV{'codecsx'} : qw(0x2 0x4 0x8 0x100 0x1000);
 
 if ($ARGV[0] and $ARGV[0] eq "config")
 {
@@ -62,14 +64,18 @@ if ($ARGV[0] and $ARGV[0] eq "config")
     print "graph_vlabel channels\n";
     print "graph_category asterisk\n";
     foreach my $codec (@CODECS) {
-	if ($codec eq $CODECS[0]) {
-	    print "$codec.draw AREA\n";
-	}
-	else{
-	    print "$codec.draw STACK\n";
-	}
-	print "$codec.label $codec\n";
+    if ($codec eq $CODECS[0]) {
+        print "$codec.draw AREA\n";
     }
+    else{
+        print "$codec.draw STACK\n";
+    }
+    print "$codec.label $codec\n";
+    }
+    print "other.draw STACK\n";
+    print "other.label other\n";
+    print "unknown.draw STACK\n";
+    print "unknown.label not set\n";
     exit 0;
 }
 
@@ -81,7 +87,7 @@ my $secret   = $ENV{'secret'};
 
 my $pop = new Net::Telnet (Telnetmode => 0);
 $pop->open(Host => $host,
-	   Port => $port);
+       Port => $port);
 
 ## Read connection message.
 my $line = $pop->getline;
@@ -100,45 +106,59 @@ $pop->print("Command: sip show channels");
 $pop->print("");
 
 #Response: Follows
-#Peer             User/ANR    Call ID      Seq (Tx/Rx)   Format
-#192.168.1.135    yann        6902112b3e0  00101/00002   g729
-#1 active SIP channel(s)
+#Privilege: Command
+#Peer           User/ANR    Call ID      Seq (Tx/Rx)  Format         Hold   Last Message   
+#0 active SIP channels
+# -- OR --
+#74.218.176.166  (None)    c24a5a230c6  00101/278584006  0x0 (nothing) No    Rx: REGISTER   
+#74.218.176.166  (None)    508c037f936  00101/07310  0x0 (nothing)    No     Rx: REGISTER   
+#2 active SIP channels
 #--END COMMAND--
 
+
 my @results;
-my ($i, $start)=(0,0);
+my ($i, $start, $unknown, $other, $fields)=(0,0,0,0,0);
 foreach my $codec (@CODECS) {
     $results[$i] = 0;
     $i++;
 }
 
-my @fields;
-while (($line = $pop->getline) and ($line !~ /active SIP channel/o))
+while (($line = $pop->getline) and ($line !~ /END COMMAND/o))
 {
     $i = 0;
     if ($start) {
-	@fields = (split ' ', $line);
-	foreach my $codec (@CODECS) {
-	    $results[$i] = $results[$i] + 1 if ($fields[5] eq "($codec)");
-	    $i++;
-	}
+        my @fields = (split ' ', $line);
+        if ($fields[3] eq '0x0') {
+            $unknown += 1;
+            next;
+        }
+        my $found = 0;
+        foreach my $codec (@CODECSX) {
+            if ($fields[3] eq "$codec") {
+                print("in second if inside foreach");
+                $results[$i] = $results[$i] + 1;
+                $found = 1;
+                last;
+            }
+            $i++;
+        }
+        if (! $found) {
+            $other += 1;
+            print STDERR "SIP other format: $fields[3]\n";
+        }
     }
-
     $start = 1 if ($line =~ /Peer/o);
 }
-while (($line = $pop->getline) and ($line !~ /END COMMAND/o))
-{}
 
 $pop->print("Action: logoff");
 $pop->print("");
-while (($line = $pop->getline) and ($line !~ /END COMMAND/o))
-{}
-$pop->close();
 
 $i = 0;
 foreach my $codec (@CODECS) {
     print "$codec.value $results[$i]\n";
     $i++;
 }
+print "other.value $other\n";
+print "unknown.value $unknown\n";
 
 # vim:syntax=perl
