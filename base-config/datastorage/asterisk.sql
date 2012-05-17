@@ -470,7 +470,6 @@ CREATE TABLE "ctiprofiles" (
  "name" VARCHAR(40) unique,
  "presence" VARCHAR(255),
  "phonehints" VARCHAR(255),
- "agents" VARCHAR(255),
  "services" VARCHAR(255),
  "preferences" VARCHAR(2048),
  "deletable" INTEGER, -- BOOLEAN
