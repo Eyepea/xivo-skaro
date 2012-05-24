@@ -19,12 +19,9 @@
 #
 
 $form = &$this->get_module('form');
-$url = &$this->get_module('url');
 
 $element = $this->get_var('element');
 $info = $this->get_var('info');
-
-$presence = $this->get_var('phonehintsgroup');
 
 ?>
 

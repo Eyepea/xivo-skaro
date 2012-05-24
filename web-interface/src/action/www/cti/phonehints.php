@@ -28,11 +28,6 @@ $param['act'] = 'listgroup';
 $param['idphonehints'] = $idphonehints;
 $param['idgroup'] = $idgroup;
 
-$info = $result = array();
-$info['access_status'] = array();
-$info['access_status']['info'] = array();
-$info['access_status']['slt'] = array();
-
 switch($act)
 {
 	case 'addgroup':
@@ -111,6 +106,7 @@ switch($act)
 		break;
 
 	case 'edit':
+		$param['act'] = 'list';
 		$app = &$ipbx->get_application('ctiphonehints');
 
 		if(isset($_QR['idphonehints']) === false
@@ -157,7 +153,7 @@ switch($act)
 		$prevpage = $page - 1;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
-		$app = &$ipbx->get_application('ctiphonehints',null,false);
+		$app = &$ipbx->get_application('ctiphonehints');
 
 		$order = array();
 		$order['name'] = SORT_ASC;
@@ -185,7 +181,7 @@ switch($act)
 		$prevpage = $page - 1;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
-		$app = &$ipbx->get_application('ctiphonehintsgroup',null,false);
+		$app = &$ipbx->get_application('ctiphonehintsgroup');
 
 		$order = array();
 		$order['name'] = SORT_ASC;

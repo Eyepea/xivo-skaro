@@ -852,8 +852,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 			   XIVO_SRE_IPBX_AST_CONTEXT_GENERAL,
 			   XIVO_SRE_IPBX_AST_CONTEXT_GLOBAL,
 			   XIVO_SRE_IPBX_AST_CONTEXT_GLOBALS,
-			   XIVO_SRE_IPBX_AST_CONTEXT_HINT,
-			   XIVO_SRE_IPBX_AST_CONTEXT_HINTS,
 			   XIVO_SRE_IPBX_AST_CONTEXT_PARKEDCALLS);
 
 		if(is_array($arr) === true)

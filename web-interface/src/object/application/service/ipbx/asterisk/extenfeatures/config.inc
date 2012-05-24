@@ -134,30 +134,6 @@ $array['exten']['fwdundoall'] = array();
 $array['exten']['fwdundoall']['app'] = 'GoSub';
 $array['exten']['fwdundoall']['appdata'] = 'fwdundoall';
 
-$array['exten']['groupaddmember'] = array();
-$array['exten']['groupaddmember']['app'] = 'GoSub';
-$array['exten']['groupaddmember']['appdata'] = array();
-$array['exten']['groupaddmember']['appdata'][0] = 'groupmember';
-$array['exten']['groupaddmember']['appdata'][1] = 'group';
-$array['exten']['groupaddmember']['appdata'][2] = 'add';
-$array['exten']['groupaddmember']['appdata'][3] = '${EXTEN:$<EXTNUMLEN>}';
-
-$array['exten']['groupremovemember'] = array();
-$array['exten']['groupremovemember']['app'] = 'GoSub';
-$array['exten']['groupremovemember']['appdata'] = array();
-$array['exten']['groupremovemember']['appdata'][0] = 'groupmember';
-$array['exten']['groupremovemember']['appdata'][1] = 'group';
-$array['exten']['groupremovemember']['appdata'][2] = 'remove';
-$array['exten']['groupremovemember']['appdata'][3] = '${EXTEN:$<EXTNUMLEN>}';
-
-$array['exten']['grouptogglemember'] = array();
-$array['exten']['grouptogglemember']['app'] = 'GoSub';
-$array['exten']['grouptogglemember']['appdata'] = array();
-$array['exten']['grouptogglemember']['appdata'][0] = 'groupmember';
-$array['exten']['grouptogglemember']['appdata'][1] = 'group';
-$array['exten']['grouptogglemember']['appdata'][2] = 'toggle';
-$array['exten']['grouptogglemember']['appdata'][3] = '${EXTEN:$<EXTNUMLEN>}';
-
 $array['exten']['autoprov'] = array();
 $array['exten']['autoprov']['app'] = 'GoSub';
 $array['exten']['autoprov']['appdata'] = 'autoprov';
@@ -180,30 +156,6 @@ $array['exten']['phonestatus']['appdata'] = 'phonestatus';
 $array['exten']['pickup'] = array();
 $array['exten']['pickup']['app'] = 'Pickup';
 $array['exten']['pickup']['appdata'] = '${EXTEN:$<EXTNUMLEN>}%${CONTEXT}@PICKUPMARK';
-
-$array['exten']['queueaddmember'] = array();
-$array['exten']['queueaddmember']['app'] = 'GoSub';
-$array['exten']['queueaddmember']['appdata'] = array();
-$array['exten']['queueaddmember']['appdata'][0] = 'groupmember';
-$array['exten']['queueaddmember']['appdata'][1] = 'queue';
-$array['exten']['queueaddmember']['appdata'][2] = 'add';
-$array['exten']['queueaddmember']['appdata'][3] = '${EXTEN:$<EXTNUMLEN>}';
-
-$array['exten']['queueremovemember'] = array();
-$array['exten']['queueremovemember']['app'] = 'GoSub';
-$array['exten']['queueremovemember']['appdata'] = array();
-$array['exten']['queueremovemember']['appdata'][0] = 'groupmember';
-$array['exten']['queueremovemember']['appdata'][1] = 'queue';
-$array['exten']['queueremovemember']['appdata'][2] = 'remove';
-$array['exten']['queueremovemember']['appdata'][3] = '${EXTEN:$<EXTNUMLEN>}';
-
-$array['exten']['queuetogglemember'] = array();
-$array['exten']['queuetogglemember']['app'] = 'GoSub';
-$array['exten']['queuetogglemember']['appdata'] = array();
-$array['exten']['queuetogglemember']['appdata'][0] = 'groupmember';
-$array['exten']['queuetogglemember']['appdata'][1] = 'queue';
-$array['exten']['queuetogglemember']['appdata'][2] = 'toggle';
-$array['exten']['queuetogglemember']['appdata'][3] = '${EXTEN:$<EXTNUMLEN>}';
 
 $array['exten']['recsnd'] = array();
 $array['exten']['recsnd']['app'] = 'GoSub';
@@ -320,15 +272,6 @@ $array['element']['fwdunc']['default'] = '*21.';
 $array['element']['fwdundoall'] = array();
 $array['element']['fwdundoall']['default'] = '*20';
 
-$array['element']['groupaddmember'] = array();
-$array['element']['groupaddmember']['default'] = '*51.';
-
-$array['element']['groupremovemember'] = array();
-$array['element']['groupremovemember']['default'] = '*52.';
-
-$array['element']['grouptogglemember'] = array();
-$array['element']['grouptogglemember']['default'] = '*50.';
-
 $array['element']['autoprov'] = array();
 $array['element']['autoprov']['default'] = '*48378';
 
@@ -343,15 +286,6 @@ $array['element']['pickup']['default'] = '*8.';
 
 $array['element']['phoneprogfunckey'] = array();
 $array['element']['phoneprogfunckey']['default'] = '*735.';
-
-$array['element']['queueaddmember'] = array();
-$array['element']['queueaddmember']['default'] = '*56.';
-
-$array['element']['queueremovemember'] = array();
-$array['element']['queueremovemember']['default'] = '*57.';
-
-$array['element']['queuetogglemember'] = array();
-$array['element']['queuetogglemember']['default'] = '*55.';
 
 $array['element']['recsnd'] = array();
 $array['element']['recsnd']['default'] = '*9';
@@ -402,17 +336,11 @@ $array['filter']['fwdbusy'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['fwdrna'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['fwdunc'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['fwdundoall'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
-$array['filter']['groupaddmember'] = array('minlen' => 1,'maxlen' => 40);
-$array['filter']['groupremovemember'] = array('minlen' => 1,'maxlen' => 40);
-$array['filter']['grouptogglemember'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['autoprov'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['incallfilter'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['phoneprogfunckey'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['phonestatus'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['pickup'] = array('minlen' => 1,'maxlen' => 40);
-$array['filter']['queueaddmember'] = array('minlen' => 1,'maxlen' => 40);
-$array['filter']['queueremovemember'] = array('minlen' => 1,'maxlen' => 40);
-$array['filter']['queuetogglemember'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['recsnd'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['vmboxmsgslt'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['vmboxpurgeslt'] = array('minlen' => 1,'maxlen' => 40);

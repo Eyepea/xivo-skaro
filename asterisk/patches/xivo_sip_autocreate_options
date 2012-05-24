@@ -1,7 +1,7 @@
-Index: asterisk-1.8.11.0/channels/chan_sip.c
+Index: asterisk-1.8.12.0/channels/chan_sip.c
 ===================================================================
---- asterisk-1.8.11.0.orig/channels/chan_sip.c
-+++ asterisk-1.8.11.0/channels/chan_sip.c
+--- asterisk-1.8.12.0.orig/channels/chan_sip.c
++++ asterisk-1.8.12.0/channels/chan_sip.c
 @@ -13950,11 +13950,19 @@ static enum parse_register_result parse_
  		if (s) {
  			expires = strsep(&s, ";"); /* trim ; and beyond */
@@ -67,7 +67,7 @@ Index: asterisk-1.8.11.0/channels/chan_sip.c
  	ast_cli(a->fd, "  Match Auth Username:    %s\n", AST_CLI_YESNO(global_match_auth_username));
  	ast_cli(a->fd, "  Allow unknown access:   %s\n", AST_CLI_YESNO(sip_cfg.allowguest));
  	ast_cli(a->fd, "  Allow subscriptions:    %s\n", AST_CLI_YESNO(ast_test_flag(&global_flags[1], SIP_PAGE2_ALLOWSUBSCRIBE)));
-@@ -27104,6 +27122,9 @@ static struct sip_peer *temp_peer(const
+@@ -27129,6 +27147,9 @@ static struct sip_peer *temp_peer(const
  
  	ast_copy_string(peer->name, name, sizeof(peer->name));
  
@@ -77,7 +77,7 @@ Index: asterisk-1.8.11.0/channels/chan_sip.c
  	peer->selfdestruct = TRUE;
  	peer->host_dynamic = TRUE;
  	peer->prefs = default_prefs;
-@@ -27884,6 +27905,15 @@ static void cleanup_all_regs(void)
+@@ -27910,6 +27931,15 @@ static void cleanup_all_regs(void)
  		} while(0));
  }
  
@@ -93,7 +93,7 @@ Index: asterisk-1.8.11.0/channels/chan_sip.c
  /*! \brief Re-read SIP.conf config file
  \note	This function reloads all config data, except for
  	active peers (with registrations). They will only
-@@ -27963,7 +27993,11 @@ static int reload_config(enum channelrel
+@@ -27989,7 +28019,11 @@ static int reload_config(enum channelrel
  		/* Then, actually destroy users and registry */
  		ASTOBJ_CONTAINER_DESTROYALL(&regl, sip_registry_destroy);
  		ast_debug(4, "--------------- Done destroying registry list\n");
@@ -106,7 +106,7 @@ Index: asterisk-1.8.11.0/channels/chan_sip.c
  	}
  
  	/* Reset certificate handling for TLS sessions */
-@@ -28052,6 +28086,13 @@ static int reload_config(enum channelrel
+@@ -28078,6 +28112,13 @@ static int reload_config(enum channelrel
  	global_regattempts_max = 0;
  	sip_cfg.pedanticsipchecking = DEFAULT_PEDANTIC;
  	sip_cfg.autocreatepeer = DEFAULT_AUTOCREATEPEER;
@@ -120,7 +120,7 @@ Index: asterisk-1.8.11.0/channels/chan_sip.c
  	global_autoframing = 0;
  	sip_cfg.allowguest = DEFAULT_ALLOWGUEST;
  	global_callcounter = DEFAULT_CALLCOUNTER;
-@@ -28351,6 +28392,35 @@ static int reload_config(enum channelrel
+@@ -28378,6 +28419,35 @@ static int reload_config(enum channelrel
  			proxy_update(&sip_cfg.outboundproxy);
  		} else if (!strcasecmp(v->name, "autocreatepeer")) {
  			sip_cfg.autocreatepeer = ast_true(v->value);
@@ -156,10 +156,10 @@ Index: asterisk-1.8.11.0/channels/chan_sip.c
  		} else if (!strcasecmp(v->name, "match_auth_username")) {
  			global_match_auth_username = ast_true(v->value);
  		} else if (!strcasecmp(v->name, "srvlookup")) {
-Index: asterisk-1.8.11.0/channels/sip/include/sip.h
+Index: asterisk-1.8.12.0/channels/sip/include/sip.h
 ===================================================================
---- asterisk-1.8.11.0.orig/channels/sip/include/sip.h
-+++ asterisk-1.8.11.0/channels/sip/include/sip.h
+--- asterisk-1.8.12.0.orig/channels/sip/include/sip.h
++++ asterisk-1.8.12.0/channels/sip/include/sip.h
 @@ -206,6 +206,12 @@
  #define DEFAULT_NOTIFYCID      DISABLED	/*!< Include CID with ringing notifications */
  #define DEFAULT_PEDANTIC       TRUE     /*!< Follow SIP standards for dialog matching */

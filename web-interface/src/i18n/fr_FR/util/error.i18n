@@ -56,6 +56,9 @@ Le numero est hors interval du contexte
 ; error(invalid_context)
 Contexte invalide
 
+; error(linear_ring_strategy)
+Impossible de changer la stratégie de sonnerie à linéaire (limitation asterisk)
+
 ; invalid_name_context
 Nom du contexte invalide (%s)
 

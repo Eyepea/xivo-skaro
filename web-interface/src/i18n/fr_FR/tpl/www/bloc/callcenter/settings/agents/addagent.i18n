@@ -82,6 +82,12 @@ Pondération
 ; no_disp
 Aucune compétence
 
+; col_add
+Ajouter une compétence
+
+; opt_disp-delete
+Supprimer la compétence
+
 ; error_fm_queueskill_skillid(doubloon)
 La même compétence est affectée plusieur fois
 

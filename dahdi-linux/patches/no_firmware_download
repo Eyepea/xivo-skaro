@@ -8,11 +8,11 @@ DFSG-compliant. Unlike the Digium firmwares, this is a compile-time
 decision and hence cannot be reverted once a dahdi-modules package is
 built.
 
-Index: dahdi-linux-2.6.0/Makefile
+Index: dahdi-linux-2.6.1/Makefile
 ===================================================================
---- dahdi-linux-2.6.0.orig/Makefile	2012-02-13 10:42:33.799137738 -0500
-+++ dahdi-linux-2.6.0/Makefile	2012-02-13 10:42:35.399139644 -0500
-@@ -92,7 +92,7 @@
+--- dahdi-linux-2.6.1.orig/Makefile
++++ dahdi-linux-2.6.1/Makefile
+@@ -92,7 +92,7 @@ include/dahdi/version.h: FORCE
  	fi
  	@rm -f $@.tmp
  

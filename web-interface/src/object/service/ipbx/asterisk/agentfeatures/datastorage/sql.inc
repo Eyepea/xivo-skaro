@@ -22,7 +22,7 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_agentfeatures_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_unique = array('agentid','number');
+	var $_unique = array('number');
 
 	function search($value,$disable=null,$order=null,$limit=null)
 	{

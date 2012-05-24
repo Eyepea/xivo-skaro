@@ -1,5 +1,4 @@
 no_firmware_download
-enable_oslec.diff
 fix_genmodconf.diff
 disable_update_modules.diff
 disable_genudevrules

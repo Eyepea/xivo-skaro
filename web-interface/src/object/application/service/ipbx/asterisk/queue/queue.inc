@@ -352,7 +352,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$number = (string) $arr['queuefeatures']['number'];
 		$context = (string) $arr['queuefeatures']['context'];
 
-		$this->set_queue($arr['queue']);
+		$this->set_queue($action,$arr['queue']);
 
 		if($this->_errnb === 0 && $number !== '')
 		{
@@ -410,13 +410,23 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		return(true);
 	}
 
-	function set_queue($arr)
+	function set_queue($action,$arr)
 	{
 		if(is_array($arr) === false)
 		{
 			$this->_set_result('queue',null);
 			$this->_set_error('queue','invalid data');
 			return(false);
+		}
+
+		if($action === 'edit'
+		&& $arr['strategy'] === 'linear'
+		&& $this->_info['queue']['strategy'] !== 'linear')
+		{
+			$this->_set_result('queue',null);
+			$this->_set_error('queue','can\'t change strategy to linear');
+			dwho_report::push('error',dwho_i18n::babelfish('error(linear_ring_strategy)'));
+			return false;
 		}
 
 		$this->get_musiconhold();

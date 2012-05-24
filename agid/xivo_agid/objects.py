@@ -46,13 +46,6 @@ class ExtenFeatures:
                      ('agentstaticlogoff',),
                      ('agentstaticlogtoggle',)),
 
-        'groups':   (('groupaddmember',),
-                     ('groupremovemember',),
-                     ('grouptogglemember',),
-                     ('queueaddmember',),
-                     ('queueremovemember',),
-                     ('queuetogglemember',)),
-
         'forwards': (('fwdbusy', 'busy'),
                      ('fwdrna', 'rna'),
                      ('fwdunc', 'unc')),
@@ -1577,7 +1570,6 @@ class CallerID:
         res = cursor.fetchone()
 
         self.mode = None
-        self.callerdisplay = ''
         self.calleridname = None
         self.calleridnum = None
 
@@ -1586,8 +1578,8 @@ class CallerID:
 
             if cid_parsed:
                 self.mode = res['mode']
-                self.callerdisplay = res['callerdisplay']
                 self.calleridname, self.calleridnum = cid_parsed
+                self.calleridname = self.calleridname.encode('UTF-8')
 
     def rewrite(self, force_rewrite):
         """
@@ -1636,7 +1628,8 @@ class CallerID:
             else:
                 raise RuntimeError("Unknown callerid mode: %r" % self.mode)
 
-            self.agi.appexec('SetCallerPres', 'allowed')
+            self.agi.set_variable('CALLERID(name-pres)', 'allowed')
+            self.agi.set_variable('CALLERID(num-pres)', 'allowed')
             self.agi.set_variable('CALLERID(all)', '"%s" <%s>' % (name, calleridnum))
 
             if not force_rewrite:

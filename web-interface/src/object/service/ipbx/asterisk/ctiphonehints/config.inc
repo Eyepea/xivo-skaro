@@ -22,8 +22,6 @@ $array = array();
 
 $array['element'] = array();
 
-$array['element']['default'] = '';
-
 $array['element']['idgroup'] = array();
 
 $array['element']['name'] = array();
@@ -36,10 +34,10 @@ $array['element']['number'] = array();
 $array['element']['number']['default'] = 0;
 
 
-
 $array['filter'] = array();
 $array['filter']['idgroup']	= array('cast' => 'ulongint');
-$array['filter']['name']	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
-$array['filter']['color']	= array('set' => false, 'chk' => 2, 'regexp' => '/^\#?[a-z0-9]+$/i');
-$array['filter']['number']	= array('set' => false, 'chk' => 2, 'cast' => 'int');
+$array['filter']['name'] = array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
+$array['filter']['color'] = array('set' => false, 'chk' => 2, 'regexp' => '/^\#?[a-z0-9]+$/i');
+$array['filter']['number'] = array('set' => false, 'chk' => 2, 'cast' => 'int');
+
 ?>

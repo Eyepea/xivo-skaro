@@ -291,7 +291,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$scheme = 'http';
 
 		if(isset($_SERVER['HTTPS']) === true
-		&& (bool) $_SERVER['HTTPS'] === true)
+		&& $_SERVER['HTTPS'] === 'on')
 			$scheme .= 's';
 
 		return($scheme.'://'.$uri);

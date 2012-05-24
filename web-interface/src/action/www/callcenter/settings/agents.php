@@ -316,7 +316,6 @@ switch($act)
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('agentfeatures',$_QR) === true
-		&& dwho_issa('agentoptions',$_QR) === true
 		&& dwho_issa('queueskill-skill',$_QR)  === true
 		&& dwho_issa('queueskill-weight',$_QR) === true)
 		{
@@ -390,8 +389,6 @@ switch($act)
 		$_TPL->set_var('umember',$umember);
 		$_TPL->set_var('queues',$queues);
 		$_TPL->set_var('qmember',$qmember);
-		$_TPL->set_var('beep_list',$appagent->get_beep());
-		$_TPL->set_var('goodbye_list',$appagent->get_goodbye());
 		$_TPL->set_var('moh_list',$appagent->get_musiconhold());
 		$_TPL->set_var('context_list',$appagent->get_context_list(null,null,null,false,'internal'));
 		$_TPL->set_var('agentgroup_list',$agentgroup_list);
@@ -434,10 +431,8 @@ switch($act)
 
 		$result = $fm_save = $error = null;
 		$return = &$info;
-
 		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('agentfeatures',$_QR) === true
-		&& dwho_issa('agentoptions',$_QR) === true)
+		&& dwho_issa('agentfeatures',$_QR) === true)
 		{
 			$return = &$result;
 			$queueskills = array();
@@ -522,8 +517,6 @@ switch($act)
 		$_TPL->set_var('queues',$queues);
 		$_TPL->set_var('qmember',$qmember);
 		$_TPL->set_var('moh_list',$appagent->get_musiconhold());
-		$_TPL->set_var('beep_list',$appagent->get_beep());
-		$_TPL->set_var('goodbye_list',$appagent->get_goodbye());
 		$_TPL->set_var('context_list',$appagent->get_context_list(null,null,null,false,'internal'));
 		$_TPL->set_var('agentgroup_list',$agentgroup_list);
 

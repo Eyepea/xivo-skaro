@@ -31,7 +31,6 @@ switch($act)
 		$appuser = &$ipbx->get_application('user');
 
 		$nocomponents = array('usermacro'		=> true,
-							'hints'				=> true,
 							'extenumbers'		=> true,
 							'contextnummember'	=> true);
 

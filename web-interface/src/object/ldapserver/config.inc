@@ -32,7 +32,8 @@ $array['element']['port'] = array();
 $array['element']['port']['default'] = 389;
 
 $array['element']['securitylayer'] = array();
-$array['element']['securitylayer']['value'] = array('tls','ssl');
+#$array['element']['securitylayer']['value'] = array('tls','ssl');
+$array['element']['securitylayer']['value'] = array('ssl');
 $array['element']['securitylayer']['default'] = '';
 $array['element']['securitylayer']['null'] = true;
 

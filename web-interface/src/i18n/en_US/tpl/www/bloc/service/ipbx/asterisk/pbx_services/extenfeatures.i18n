@@ -25,9 +25,6 @@ Agent
 ; smenu_agents
 Agents
 
-; smenu_groups
-Groups
-
 ; smenu_parking
 Parking
 
@@ -165,24 +162,6 @@ Disconnect a static agent:
 
 ; fm_extenfeatures_enable-agentdynamiclogin
 Connect a dynamic agent:
-
-; fm_extenfeatures_enable-grouptogglemember
-Append/Remove group member :
-
-; fm_extenfeatures_enable-groupaddmember
-Append new group member :
-
-; fm_extenfeatures_enable-groupremovemember
-Remove group member :
-
-; fm_extenfeatures_enable-queuetogglemember
-Append/Remove queue member :
-
-; fm_extenfeatures_enable-queueaddmember
-Append new queue member :
-
-; fm_extenfeatures_enable-queueremovemember
-Remove queue member :
 
 ; fm_extenfeatures_enable-phoneprogfunckey
 function keys programmation :

@@ -20,14 +20,13 @@
 $info = array();
 $element = array();
 
-$appagents = &$ipbx->get_apprealstatic('agents');
-$appgeneralagents = &$appagents->get_module('general');
-$info['generalagents'] = $appgeneralagents->get_all_by_category();
-$element['generalagents'] = $appgeneralagents->get_elements();
+$appagentglobalparams =  &$ipbx->get_application('agentglobalparams');
+$info['agentglobalparams']  = $appagentglobalparams->get_options('agents');
+$element['agentglobalparams']  = $appagentglobalparams->get_elements();
 
-$appoptionsagents = &$appagents->get_module('agentoptions');
-$info['agentoptions']  = $appoptionsagents->get_all_by_category();
-$element['agentoptions']  = $appoptionsagents->get_elements();
+$appagentgeneralparams =  &$ipbx->get_application('agentgeneralparams');
+$info['agentgeneralparams']  = $appagentgeneralparams->get_options('general');
+$element['agentgeneralparams']  = $appagentgeneralparams->get_elements();
 
 $appqueues = &$ipbx->get_apprealstatic('queues');
 $appgeneralqueues = &$appqueues->get_module('general');
@@ -51,22 +50,21 @@ $info['general'] = $general->get(1);
 $element['general'] = array_keys(dwho_i18n::get_timezone_list());
 
 $error = array();
-$error['generalagents'] = array();
-$error['agentoptions']  = array();
+$error['agentgeneralparams'] = array();
 $error['generalqueues'] = array();
 $error['generalmeetme'] = array();
+$error['agentglobalparams'] = array();
 
 $fm_save = null;
-
 if(isset($_QR['fm_send']) === true)
 {
-	if(dwho_issa('generalagents',$_QR) === false)
-		$_QR['generalagents'] = array();
+	if(dwho_issa('agentgeneralparams',$_QR) === false)
+		$_QR['agentgeneralparams'] = array();
 
-	if(($rs = $appgeneralagents->set_save_all($_QR['generalagents'])) !== false)
+	if(($rs = $appagentgeneralparams->save_agent_general_params($_QR['agentgeneralparams'])) !== false)
 	{
-		$info['generalagents'] = $rs['result'];
-		$error['generalagents'] = $rs['error'];
+		$info['agentgeneralparams'] = $appagentgeneralparams->get_result('agentgeneralparams');
+		$error['agentgeneralparams'] = $appagentgeneralparams->get_error();
 
 		if(isset($rs['error'][0]) === true)
 			$fm_save = false;
@@ -74,13 +72,13 @@ if(isset($_QR['fm_send']) === true)
 			$fm_save = true;
 	}
 
-	if(dwho_issa('agentoptions',$_QR) === false)
-		$_QR['agentoptions'] = array();
+	if(dwho_issa('agentglobalparams',$_QR) === false)
+		$_QR['agentglobalparams'] = array();
 
-	if(($rs = $appoptionsagents->set_save_all($_QR['agentoptions'])) !== false)
+	if(($rs = $appagentglobalparams->save_agent_global_params($_QR['agentglobalparams'])) !== false)
 	{
-		$info['agentoptions'] = $rs['result'];
-		$error['agentoptions'] = $rs['error'];
+		$info['agentglobalparams'] = $appagentglobalparams->get_result('agentglobalparams');
+		$error['agentglobalparams'] = $appagentglobalparams->get_error();
 
 		if(isset($rs['error'][0]) === true)
 			$fm_save = false;
@@ -162,9 +160,12 @@ if(isset($_QR['fm_send']) === true)
 	}
 }
 
+$_TPL->set_var('beep_list',$appagentglobalparams->get_beep());
+$_TPL->set_var('goodbye_list',$appagentglobalparams->get_goodbye());
 $_TPL->set_var('fm_save'      , $fm_save);
 $_TPL->set_var('error'        , $error);
-$_TPL->set_var('generalagents', $info['generalagents']);
+$_TPL->set_var('agentgeneralparams', $info['agentgeneralparams']);
+$_TPL->set_var('agentglobalparams', $info['agentglobalparams']);
 $_TPL->set_var('generalqueues', $info['generalqueues']);
 $_TPL->set_var('generalmeetme', $info['generalmeetme']);
 $_TPL->set_var('userinternal' , $info['userinternal']);

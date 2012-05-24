@@ -28,6 +28,10 @@ $array['agentfeatures'] = array();
 $array['agentfeatures']['table'] = 'agentfeatures';
 $array['agentfeatures']['primary'] = array('id' => '');
 
+$array['agentglobalparams'] = array();
+$array['agentglobalparams']['table'] = 'agentglobalparams';
+$array['agentglobalparams']['primary'] = array('id' => '');
+
 $array['agentgroup'] = array();
 $array['agentgroup']['table'] = 'agentgroup';
 $array['agentgroup']['primary'] = array('id' => '');
@@ -271,10 +275,6 @@ $array['schedule']['primary'] = array('id' => '');
 $array['serverfeatures'] = array();
 $array['serverfeatures']['table'] = 'serverfeatures';
 $array['serverfeatures']['primary'] = array('id' => '');
-
-$array['staticagent'] = array();
-$array['staticagent']['table'] = 'staticagent';
-$array['staticagent']['primary'] = array('id' => '');
 
 $array['staticiax'] = array();
 $array['staticiax']['table'] = 'staticiax';

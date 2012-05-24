@@ -22,9 +22,6 @@ $array = array();
 
 $array['element'] = array();
 
-$array['element']['agentid'] = array();
-$array['element']['agentid']['default'] = '';
-
 $array['element']['numgroup'] = array();
 $array['element']['numgroup']['default'] = '';
 
@@ -85,7 +82,6 @@ $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
 $array['filter'] = array();
-$array['filter']['agentid'] = array('cast' => 'ulongint');
 $array['filter']['numgroup'] = array('cast' => 'uint','between' => array(1,63));
 $array['filter']['number'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
 $array['filter']['passwd'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);

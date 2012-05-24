@@ -5,11 +5,11 @@ rename /etc/modprobe.d/dahdi /etc/modprobe.d/dahdi.conf
 to remove :
 
 * WARNING: All config files need .conf: /etc/modprobe.d/
-Index: dahdi-linux-2.6.0/build_tools/genmodconf
+Index: dahdi-linux-2.6.1/build_tools/genmodconf
 ===================================================================
---- dahdi-linux-2.6.0.orig/build_tools/genmodconf	2012-02-13 10:42:20.199141295 -0500
-+++ dahdi-linux-2.6.0/build_tools/genmodconf	2012-02-13 10:42:47.509139037 -0500
-@@ -32,7 +32,7 @@
+--- dahdi-linux-2.6.1.orig/build_tools/genmodconf
++++ dahdi-linux-2.6.1/build_tools/genmodconf
+@@ -32,7 +32,7 @@ if [ ${toolver} -ge 2 ]; then
      cmdopts=\$CMDLINE_OPTS
  fi
  if [ -d ${1}/etc/modprobe.d ]; then

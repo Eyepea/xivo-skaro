@@ -130,9 +130,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if(dwho_ak('usermacro',$nocomponents,true) === false)
 			$this->_get_usermacro();
 
-		if(dwho_ak('hints',$nocomponents,true) === false)
-			$this->_get_hints();
-
 		if(dwho_ak('extenumbers',$nocomponents,true) === false)
 			$this->_get_extenumbers($this->_info['linefeatures']['id']);
 
@@ -162,20 +159,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			$this->_origin['usermacro'] = $this->_extensions->get_origin();
 
 		return($this->_info['usermacro']);
-	}
-
-	function _get_hints()
-	{
-		$this->_info['hints'] = false;
-		$this->_origin['hints'] = false;
-
-		if(isset($this->_info['linefeatures']['context']) === true
-		&& ($this->_info['hints'] = $this->_extensions->get_hints($this->_info['linefeatures']['name'],
-									  $this->_info['linefeatures']['protocol'],
-									  $this->_info['linefeatures']['number'])) !== false)
-			$this->_origin['hints'] = $this->_extensions->get_origin();
-
-		return($this->_info['hints']);
 	}
 
 	function _get_groupmember($userid)
@@ -601,16 +584,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			}
 
 			$this->set_extenumbers($action,$number,$context);
-
-			$enablehint = (bool) $this->get_result_var('userfeatures','enablehint') === false;
-
-			if($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_SCCP)
-			{
-				if(($hints = $this->set_hints($action,$name,$protocolname,$number,$enablehint)) === false)
-					$this->_set_error('hints');
-
-				$this->_set_result('hints',$hints);
-			}
 		}
 
 		if($this->get_errnb() > 0)
@@ -802,16 +775,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function set_hints($action,$name,$protocolname,$number,$disable=null)
-	{
-		if($action !== 'add' && $action !== 'edit')
-			return(false);
-		else if($action === 'edit' && dwho_issa('hints',$this->_info) !== false)
-			return($this->_extensions->chk_hints($name,$protocolname,$number,$disable));
-
-		return($this->_extensions->new_hints($name,$protocolname,$number,$disable));
-	}
-
 	function _mk_usermacro_appdata($iduserfeatures,$timeout='',$idlinefeatures)
 	{
 		$arr = array();
@@ -847,8 +810,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 
 		if(dwho_has_len($this->get_result_var('linefeatures','number')) === true)
 		{
-			if($this->add_hints() === false
-			|| $this->add_extenumbers($linefeaturesid) === false
+			if($this->add_extenumbers($linefeaturesid) === false
 			|| $this->add_contextnummember($linefeaturesid) === false)
 			{
 				$r = false;
@@ -965,14 +927,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return(parent::add_macro('usermacro'));
 	}
 
-	function add_hints()
-	{
-		if(($rs = $this->get_result('hints')) === null || $rs === false)
-			return($rs);
-
-		return(($this->_return['hints'] = $this->_extensions->add_hints($rs)));
-	}
-
 	function add_groupmember($iduserfeatures)
 	{
 		return($this->_add_member_type('group',$iduserfeatures));
@@ -1046,9 +1000,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				case 'usermacro':
 					$this->_extensions->delete_exten($val);
 					break;
-				case 'hints':
-					$this->_extensions->delete_hints($val);
-					break;
 				case 'groupmember':
 				case 'queuemember':
 					if(is_array($val) === false)
@@ -1096,9 +1047,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			if($this->_info['linefeatures']['iduserfeatures'] === 0)
 			{
 				if($this->add_usermacro($iduserfeatures,$linefeaturesid) === false
-				|| $this->add_extenumbers($linefeaturesid) === false
-				|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
-					&& $this->add_hints() === false) === true)
+				|| $this->add_extenumbers($linefeaturesid) === false)
 				{
 					$this->_reverse_edit($protocolret);
 					$this->_status = '';
@@ -1120,7 +1069,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					{
 						$this->delete_macro('usermacro');
 						$this->delete_extenumbers();
-						$this->delete_hints();
 					}
 					else if ($this->edit_usermacro($iduserfeatures,$linefeaturesid) === false
 					|| $this->edit_extenumbers() === false)
@@ -1129,29 +1077,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 						$this->_status = '';
 						return(false);
 					}
-					else if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM
-							|| $this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SCCP)
-						$this->delete_hints();
-					else
-					{
-						if($this->_info['linefeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM
-								|| $this->_info['linefeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP)
-							$hints = $this->add_hints();
-						else
-							$hints = $this->edit_hints();
-
-						if($hints === false)
-						{
-							$this->_reverse_edit($protocolret);
-							$this->_status = '';
-							return(false);
-						}
-					}
 				}
 				else if($this->add_usermacro($iduserfeatures,$linefeaturesid) === false
-				|| $this->add_extenumbers($linefeaturesid) === false
-				|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
-					&& $this->add_hints() === false) === true)
+				|| $this->add_extenumbers($linefeaturesid) === false)
 				{
 					$this->_reverse_edit($protocolret);
 					$this->_status = '';
@@ -1332,18 +1260,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return $ret;
 	}
 
-	function edit_hints()
-	{
-		$rs = false;
-
-		if(dwho_issa('hints',$this->_info) === false
-		|| ($rs = $this->get_result('hints')) === null
-		|| $rs === false)
-			return($rs);
-
-		return(($this->_return['hints'] = $this->_extensions->edit($this->_info['hints']['id'],$rs)));
-	}
-
 	function edit_groupmember()
 	{
 		if(dwho_issa('linefeatures',$this->_info) === false)
@@ -1457,13 +1373,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					else
 						$this->_extensions->edit_origin($this->_origin['usermacro']);
 					break;
-				case 'hints':
-					if(isset($this->_origin['hints']) === false
-					|| $this->_origin['hints'] === false)
-						$this->delete_hints();
-					else
-						$this->_extensions->edit_origin($this->_origin['hints']);
-					break;
 				case 'groupmember':
 				case 'queuemember':
 					if($key === 'groupmember')
@@ -1485,7 +1394,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		}
 
 		$this->_extensions->delete_exten($this->_return['usermacro']);
-		$this->_extensions->delete_hints($this->_return['hints']);
 		$this->_extenumbers->reverse_add();
 		$this->_contextnummember->reverse_add();
 		return(true);
@@ -1502,7 +1410,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		|| $this->delete_linefeatures() === false
 		|| $this->delete_config() === false
 		|| $this->delete_macro('usermacro') === false
-		|| $this->delete_hints() === false
 		|| $this->delete_extenumbers() === false
 		|| $this->delete_groupmember() === false
 		|| $this->delete_queuemember() === false
@@ -1567,11 +1474,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			return(false);
 
 		return(true);
-	}
-
-	function delete_hints()
-	{
-		return($this->delete_macro('hints'));
 	}
 
 	function delete_groupmember()
@@ -1639,7 +1541,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 						$this->_linefeatures->add_origin($this->_origin['linefeatures']);
 					break;
 				case 'usermacro':
-				case 'hints':
 					if(isset($this->_origin[$key]) === true
 					&& $this->_origin[$key] !== false)
 						$this->_extensions->add_origin($this->_origin[$key]);

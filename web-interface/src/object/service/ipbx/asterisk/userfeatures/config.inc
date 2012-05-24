@@ -95,7 +95,7 @@ $array['element']['enablevoicemail']['set'] = true;
 
 $array['element']['enablexfer'] = array();
 $array['element']['enablexfer']['value'] = array(0,1);
-$array['element']['enablexfer']['default'] = 0;
+$array['element']['enablexfer']['default'] = 1;
 $array['element']['enablexfer']['set'] = true;
 
 $array['element']['enableautomon'] = array();

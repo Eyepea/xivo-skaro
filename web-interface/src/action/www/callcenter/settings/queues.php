@@ -467,11 +467,11 @@ switch($act)
 		$appqueue->delete();
 
 		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('xivo[queuelist,update]',
-		                     'sip reload',
-		                     'queue reload all',
-		                     'dialplan reload',
-		                     'xivo[queuemember,update]'));
+		$ipbx->discuss(array('module reload app_queue.so',
+							 'xivo[queuelist,update]',
+							 'sip reload',
+							 'dialplan reload',
+							 'xivo[queuemember,update]'));
 
 		$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
 		break;

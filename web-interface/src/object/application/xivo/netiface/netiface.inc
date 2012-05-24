@@ -142,7 +142,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$scheme = 'http';
 
 		if(isset($_SERVER['HTTPS']) === true
-		&& (bool) $_SERVER['HTTPS'] === true)
+		&& $_SERVER['HTTPS'] === 'on')
 			$scheme .= 's';
 
 		return($scheme.'://'.$uri);

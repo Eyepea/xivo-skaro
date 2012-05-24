@@ -68,7 +68,6 @@ $page = $url->pager($pager['pages'],
 	else:
 		for($i = 0;$i < $nb;$i++):
 			$ref = &$list[$i];
-			$icon = 'enable';
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"
@@ -85,7 +84,7 @@ $page = $url->pager($pager['pages'],
 		    title="<?=dwho_alttitle($ref['ctiphonehintsgroup']['name']);?>"
 		    onclick="location.href = dwho.dom.node.lastchild(this);">
 <?php
-			echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
+			echo	$url->img_html('img/site/flag/enable.gif',null,'class="icons-list"'),
 				$url->href_html(dwho_trunc($ref['ctiphonehintsgroup']['name'],40,'...',false),
 						'cti/phonehints',
 						array('act'	=> 'list',
@@ -100,7 +99,7 @@ $page = $url->pager($pager['pages'],
 						       'border="0"'),
 					'cti/phonehints',
 					array('act'	=> 'editgroup',
-					      'idgroup'	=> $ref['ctiphonehintsgroup']['id']),
+							'idgroup'	=> $ref['ctiphonehintsgroup']['id']),
 					null,
 					$this->bbf('opt_modify')),"\n";
 

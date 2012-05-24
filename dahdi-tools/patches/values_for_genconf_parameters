@@ -1,8 +1,8 @@
 remplace base-config diverted config file with a patch
-Index: dahdi-tools-2.5.0.2/xpp/genconf_parameters
+Index: dahdi-tools-2.6.1/xpp/genconf_parameters
 ===================================================================
---- dahdi-tools-2.5.0.2.orig/xpp/genconf_parameters
-+++ dahdi-tools-2.5.0.2/xpp/genconf_parameters
+--- dahdi-tools-2.6.1.orig/xpp/genconf_parameters
++++ dahdi-tools-2.6.1/xpp/genconf_parameters
 @@ -39,15 +39,15 @@
  # Set tone zone values. This is used for playing tones (busy, dial-tone
  # and such). The default is 'us'. This sets the value for both loadzone

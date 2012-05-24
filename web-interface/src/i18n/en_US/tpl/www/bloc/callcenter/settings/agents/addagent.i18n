@@ -82,6 +82,12 @@ Weight
 ; no_disp
 No skills
 
+; col_add
+Add a skill
+
+; opt_disp-delete
+Remove skill
+
 ; error_fm_queueskill_skillid(doubloon)
 Same skill can't be affected twice
 

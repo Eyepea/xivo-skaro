@@ -105,94 +105,6 @@ class xivo_application_service_asterisk_ctistatus extends xivo_application_aster
 		return(true);
 	}
 
-	function enable()
-	{
-		$r = true;
-
-		$this->_status = 'enable';
-		$this->_return = array();
-
-		if($this->enable_status() === false)
-		{
-			$r = false;
-			$this->_reverse_enable_disable();
-		}
-
-		$this->_status = '';
-
-		return($r);
-	}
-
-	function disable()
-	{
-		$r = true;
-
-		$this->_status = 'disable';
-		$this->_return = array();
-
-		if($this->disable_status() === false)
-		{
-			$r = false;
-			$this->_reverse_enable_disable();
-		}
-
-		$this->_status = '';
-
-		return(true);
-	}
-
-	function enable_status()
-	{
-		return($this->_enable_disable_status(false));
-	}
-
-	function disable_status()
-	{
-		return($this->_enable_disable_status(true));
-	}
-
-	function _enable_disable_status($disable=false)
-	{
-		if(dwho_issa('status',$this->_info) === false)
-			return(false);
-		else if((bool) $disable === false)
-			$r = $this->_ctistatus->enable($this->_info['status']['id']);
-		else
-			$r = $this->_ctistatus->disable($this->_info['status']['id']);
-
-		if($this->_status === 'enable' || $this->_status === 'disable')
-			$this->_return['status'] = $r;
-
-		return($r);
-	}
-
-	function _reverse_enable_disable()
-	{
-		if(($this->_status !== 'enable' && $this->_status !== 'disable') === true
-		|| is_array($this->_return) === false
-		|| empty($this->_return) === true)
-			return(false);
-
-		$disable = $this->_status === 'enable';
-
-		$this->_status = '';
-
-		foreach($this->_return as $key => $val)
-		{
-			if($val === false)
-				continue;
-
-			switch($key)
-			{
-				case 'status':
-					$this->_enable_disable_status($disable);
-					break;
-			}
-		}
-
-		return(true);
-	}
-
 	function get_status_list($presid=null, $order=null,$limit=null,$assoc=false)
 	{
 		$arr = array();
@@ -238,7 +150,7 @@ class xivo_application_service_asterisk_ctistatus extends xivo_application_aster
 		return($r);
 	}
 
-	function getstatus($id,$disable=null)
+	function getstatus($id)
 	{
 		$this->_info = $this->_origin = array();
 
@@ -249,7 +161,7 @@ class xivo_application_service_asterisk_ctistatus extends xivo_application_aster
 
 		return($this->_info);
 	}
-	
+
 	function set_edit($arr)
 	{
 		if(empty($this->_info) === true)
@@ -295,7 +207,7 @@ class xivo_application_service_asterisk_ctistatus extends xivo_application_aster
 		return(true);
 	}
 
-	function get($id, $disable=null)
+	function get($id)
 	{
 		$this->_info = $this->_origin = array();
 		$this->_info['ctistatus'] = $this->_ctistatus->get($id);

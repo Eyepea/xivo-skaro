@@ -2,19 +2,23 @@ server {
     listen 80;
     server_name $domain;
 
-    if ($host !~* "(127\.0\.0\.1|localhost)") {
-        rewrite ^(.*) https://$host$1;
-    }
-
     access_log /var/log/nginx/xivo.access.log;
     error_log /var/log/nginx/xivo.error.log;
     root /usr/share/pf-xivo-web-interface/www;
 
     location / {
+        if ($host !~* "(127\.0\.0\.1|localhost)") {
+            rewrite ^(.*) https://$host$1 last;
+        }
+
         index index.php;
         include /etc/nginx/xivo_params;
     }
 
+    location /service/ipbx/web_services.php/phonebook/ {
+        index index.php;
+        include /etc/nginx/xivo_params;
+    }
 }
 
 server {
@@ -33,7 +37,7 @@ server {
 
     location /dlbackup/ {
         internal;
-        alias   /var/backups/pf-xivo/;
+        alias /var/backups/pf-xivo/;
     }
 
     location ^~ /extra-libs/jquery/        { alias /usr/share/javascript/jquery/; }
@@ -52,7 +56,7 @@ server {
 
     location /server-status {
         stub_status on;
-        access_log   off;
+        access_log off;
         allow 127.0.0.1;
         deny all;
     }
@@ -77,8 +81,9 @@ server {
         add_header Cache-Control "public, must-revalidate, proxy-revalidate";
     }
 
-    gzip  off; # gzipping SSL encripted data is a waste of time
-    ssl  on;
+    gzip off; # gzipping SSL encripted data is a waste of time
+    ssl on;
+    fastcgi_param HTTPS on;
     ssl_certificate /etc/nginx/ssl/server.crt;
     ssl_certificate_key /etc/nginx/ssl/server.key;
     ssl_ciphers DEFAULT;

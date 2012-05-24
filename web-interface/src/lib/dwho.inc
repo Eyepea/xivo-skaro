@@ -107,7 +107,7 @@ class dwho
             {
                 $scheme = 'http';
                 if(isset($_SERVER['HTTPS']) === true
-                && (bool) $_SERVER['HTTPS'] === true)
+                && $_SERVER['HTTPS'] === 'on')
                     $scheme .= 's';
 
                 $url = $scheme.'://'.$url;
@@ -133,6 +133,7 @@ class dwho
         ini_set('magic_quotes_sybase',false);
         ini_set('magic_quotes_runtime',false);
         ini_set('register_argc_argv',true);
+        putenv('http_proxy=');
 
         if(DWHO_PHP_SAFE === false)
             ini_set('max_execution_time',0);

@@ -53,17 +53,6 @@ else
 		$arr['language'] = $ref['agentfeatures']['language'];
 		$arr['silent'] = $ref['agentfeatures']['silent'];
 		$arr['ackcall'] = $ref['agentfeatures']['ackcall'];
-		$arr['endcall'] = $ref['agentoptions']['endcall'];
-		$arr['autologoff'] = $ref['agentoptions']['autologoff'];
-		$arr['autologoffunavail'] = $ref['agentoptions']['autologoffunavail'];
-		$arr['wrapuptime'] = $ref['agentoptions']['wrapuptime'];
-		$arr['maxlogintries'] = $ref['agentoptions']['maxlogintries'];
-		$arr['updatecdr'] = $ref['agentoptions']['updatecdr'];
-		$arr['recordagentcalls'] = $ref['agentoptions']['recordagentcalls'];
-		$arr['recordformat'] = $ref['agentoptions']['recordformat'];
-		$arr['urlprefix'] = $ref['agentoptions']['urlprefix'];
-		$arr['beep'] = $ref['agentoptions']['custom_beep'];
-		$arr['goodbye'] = $ref['agentoptions']['goodbye'];
 		$arr['commented'] = $ref['agent']['commented'];
 
 		$data[] = $arr;

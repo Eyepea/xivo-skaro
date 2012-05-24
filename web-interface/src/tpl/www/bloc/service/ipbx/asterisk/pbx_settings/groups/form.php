@@ -172,7 +172,7 @@ endif;
 		<?=$form->jq_select(array('paragraph'	=> false,
 					 	'label'		=> false,
             			'name'    	=> 'user[]',
-						'id' 		=> 'user',
+						'id' 		=> 'it-user',
 						'key'		=> 'identity',
 				       	'altkey'	=> 'id',
             			'selected'  => $user['slt']),

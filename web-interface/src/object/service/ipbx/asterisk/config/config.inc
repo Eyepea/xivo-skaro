@@ -32,9 +32,6 @@ $array['realstatic'] = array();
 $array['realstatic']['features'] = array();
 $array['realstatic']['features']['datastorage'] = true;
 
-$array['realstatic']['staticagent'] = array();
-$array['realstatic']['staticagent']['datastorage'] = true;
-
 $array['realstatic']['staticiax'] = array();
 $array['realstatic']['staticiax']['datastorage'] = true;
 
@@ -60,6 +57,9 @@ $array['module']['agentfeatures']['datastorage'] = true;
 
 $array['module']['agentgroup'] = array();
 $array['module']['agentgroup']['datastorage'] = true;
+
+$array['module']['agentglobalparams'] = array();
+$array['module']['agentglobalparams']['datastorage'] = true;
 
 $array['module']['attachment'] = array();
 $array['module']['attachment']['datastorage'] = true;

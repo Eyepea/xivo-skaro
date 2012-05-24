@@ -25,9 +25,6 @@ Agent
 ; smenu_agents
 Agents
 
-; smenu_groups
-Groupes
-
 ; smenu_parking
 Parking
 
@@ -165,24 +162,6 @@ Déconnecte un agent statique :
 
 ; fm_extenfeatures_enable-agentdynamiclogin
 Connecte un agent dynamique :
-
-; fm_extenfeatures_enable-grouptogglemember
-Ajoute/enlève un membre d'un groupe :
-
-; fm_extenfeatures_enable-groupaddmember
-Ajoute un membre dans un groupe :
-
-; fm_extenfeatures_enable-groupremovemember
-Enlève un membre d'un groupe :
-
-; fm_extenfeatures_enable-queuetogglemember
-Ajoute/enlève un membre d'une file d'attente :
-
-; fm_extenfeatures_enable-queueaddmember
-Ajoute un membre dans une file d'attente :
-
-; fm_extenfeatures_enable-queueremovemember
-Enlève un membre d'une file d'attente :
 
 ; fm_extenfeatures_enable-phoneprogfunckey
 Programmation des touches de fonction :

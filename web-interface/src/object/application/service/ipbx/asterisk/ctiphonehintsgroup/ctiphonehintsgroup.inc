@@ -24,16 +24,13 @@ class xivo_application_service_asterisk_ctiphonehintsgroup extends xivo_applicat
 {
 	var $_ctiphonehintsgroup = false;
 	var $_ctiphonehints = false;
-	var $_ctistatus = false;
 
-	function xivo_application_service_asterisk_ctiphonehintsgroup(&$service,$param=null,$components=true)
+	function xivo_application_service_asterisk_ctiphonehintsgroup(&$service,$param=null)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 		if(($this->_ctiphonehintsgroup = &$this->_service->get_module('ctiphonehintsgroup')) === false
 		|| ($this->_ctiphonehints = &$this->_service->get_module('ctiphonehints')) === false)
 			return(false);
-		else if((bool) $components === true)
-			$this->load_components();
 
 		return(true);
 	}
@@ -60,11 +57,6 @@ class xivo_application_service_asterisk_ctiphonehintsgroup extends xivo_applicat
 			return(array_values($r));
 
 		return($r);
-	}
-
-	function get_phonehintsgroup_edit()
-	{
-		return(false);
 	}
 
 	function get($id,$disable=null)
@@ -312,146 +304,46 @@ class xivo_application_service_asterisk_ctiphonehintsgroup extends xivo_applicat
 	{
 		$r = true;
 
-		$this->_status = 'delete';
 		$this->_return = array();
 
-		if($this->get_errnb() > 0
-		|| $this->delete_phonehintsgroup() === false)
+		if($this->delete_phonehintsgroup() === false
+		|| $this->delete_phonehints() === false)
 		{
 			$r = false;
-			$this->_reverse_delete();
 		}
 
-		$this->_status = '';
-
-		return($r);
+		return $r;
 	}
 
 	function delete_phonehintsgroup()
 	{
-		if(dwho_issa('phonehintsgroup',$this->_info) === false
-		|| (string) $this->_info['phonehintsgroup']['id'] === '1')
-			return(false);
+		if(dwho_issa('phonehintsgroup',$this->_info) === false)
+			return false;
 
-		$r = $this->_ctiphonehintsgroup->delete($this->_info['phonehintsgroup']['id']);
+		$phonehintsgroup_id = (int) $this->_info['phonehintsgroup']['id'];
+		if($phonehintsgroup_id === 1)
+			return false;
+
+		$r = $this->_ctiphonehintsgroup->delete($phonehintsgroup_id);
 
 		if($this->_status === 'delete')
 			$this->_return['phonehintsgroup'] = $r;
 
-		return($r);
+		return $r;
 	}
 
-	function _reverse_delete()
-	{
-		if($this->_status !== 'delete'
-		|| is_array($this->_return) === false
-		|| empty($this->_return) === true)
-			return(false);
-
-		foreach($this->_return as $key => $val)
-		{
-			if($val === false)
-				continue;
-
-			switch($key)
-			{
-				case 'phonehintsgroup':
-                    if(isset($this->_origin['phonehintsgroup']) === true
-                    && $this->_origin['phonehintsgroup'] !== false)
-                        $this->_ctiphonehintsgroup->add_origin($this->_origin['phonehintsgroup']);
-					break;
-			}
-		}
-
-		return(true);
-	}
-
-	function enable()
-	{
-		$r = true;
-
-		$this->_status = 'enable';
-		$this->_return = array();
-
-		if($this->enable_phonehintsgroup() === false)
-		{
-			$r = false;
-			$this->_reverse_enable_disable();
-		}
-
-		$this->_status = '';
-
-		return($r);
-	}
-
-	function disable()
-	{
-		$r = true;
-
-		$this->_status = 'disable';
-		$this->_return = array();
-
-		if($this->disable_phonehintsgroup() === false)
-		{
-			$r = false;
-			$this->_reverse_enable_disable();
-		}
-
-		$this->_status = '';
-
-		return(true);
-	}
-
-	function enable_phonehintsgroup()
-	{
-		return($this->_enable_disable_phonehintsgroup(false));
-	}
-
-	function disable_phonehintsgroup()
-	{
-		return($this->_enable_disable_phonehintsgroup(true));
-	}
-
-	function _enable_disable_phonehintsgroup($disable=false)
+	function delete_phonehints()
 	{
 		if(dwho_issa('phonehintsgroup',$this->_info) === false)
-			return(false);
-		else if((bool) $disable === false)
-			$r = $this->_ctiphonehintsgroup->enable($this->_info['phonehintsgroup']['id']);
-		else
-			$r = $this->_ctiphonehintsgroup->disable($this->_info['phonehintsgroup']['id']);
+			return false;
 
-		if($this->_status === 'enable' || $this->_status === 'disable')
-			$this->_return['phonehintsgroup'] = $r;
+		$phonehintsgroup_id = (int) $this->_info['phonehintsgroup']['id'];
+		if($phonehintsgroup_id === 1)
+			return false;
 
-		return($r);
-	}
+		$r = $this->_ctiphonehints->delete_where(array('idgroup' => $phonehintsgroup_id));
 
-	function _reverse_enable_disable()
-	{
-		if(($this->_status !== 'enable' && $this->_status !== 'disable') === true
-		|| is_array($this->_return) === false
-		|| empty($this->_return) === true)
-			return(false);
-
-		$disable = $this->_status === 'enable';
-
-		$this->_status = '';
-
-		foreach($this->_return as $key => $val)
-		{
-			if($val === false)
-				continue;
-
-			switch($key)
-			{
-				case 'phonehintsgroup':
-					$this->_enable_disable_phonehintsgroup($disable);
-					break;
-			}
-		}
-
-		return(true);
+		return $r;
 	}
 }
 

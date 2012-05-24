@@ -21,18 +21,15 @@ rm -rf tmp
 mkdir tmp
 tar xz -C tmp -f ${DEST_PATH}/${FILENAME}
 
-if [ -e patches ]; then
-  if [ -e patches/classic ]; then
-    PATCH_DIR="../../patches/classic"
-  else
-    PATCH_DIR="../../patches"
-  fi
-  
-  cd tmp/${PKG_NAME}-${VER}
-  ln -s ${PATCH_DIR} patches
-  if [ -e patches/series ]; then
-    quilt push -a
-  fi
+cd tmp/${PKG_NAME}-${VER}
+ln -s ../../patches patches
+quilt push -a
+if [ $? -eq 0 ]; then
+    pwd
+    quilt pop -a
+    for patches in $(quilt unapplied); do
+        quilt push && quilt refresh
+    done
 fi
 
 echo "Done !"

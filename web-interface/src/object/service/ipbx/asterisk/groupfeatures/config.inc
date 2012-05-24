@@ -32,7 +32,7 @@ $array['element']['context']['default'] = '';
 
 $array['element']['transfer_user'] = array();
 $array['element']['transfer_user']['value'] = array(0,1);
-$array['element']['transfer_user']['default'] = 0;
+$array['element']['transfer_user']['default'] = 1;
 
 $array['element']['transfer_call'] = array();
 $array['element']['transfer_call']['value'] = array(0,1);

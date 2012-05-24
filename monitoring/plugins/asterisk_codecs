@@ -109,13 +109,13 @@ foreach my $codec (@CODECS) {
 }
 
 my @fields;
-while (($line = $pop->getline) and ($line !~ /active SIP channel/o))
+while (($line = $pop->getline) and ($line !~ /active SIP dialogs/o))
 {
     $i = 0;
     if ($start) {
 	@fields = (split ' ', $line);
 	foreach my $codec (@CODECS) {
-	    $results[$i] = $results[$i] + 1 if ($fields[4] eq "$codec");
+	    $results[$i] = $results[$i] + 1 if ($fields[4] eq "($codec)");
 	    $i++;
 	}
     }
