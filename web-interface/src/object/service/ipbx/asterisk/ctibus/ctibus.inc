@@ -81,20 +81,8 @@ class xivo_service_asterisk_ctibus extends xivo_service_asterisk_abstract
 		return(true);
 	}
 
-	function eval_cmd($cmd)
-	{
-		if (is_scalar($cmd) === true)
-			return(trim($cmd));
-		elseif(is_array($cmd) === true)
-			return(implode('\n', array_values($cmd)));
-		else
-			return(null);
-	}
-
 	function cmd($cmd,$read=false)
 	{
-		$cmd = $this->eval_cmd($cmd);
-
 		if(dwho_is_sgraph($cmd) === false
 		|| $this->_load_socket() === false
 		|| $this->_set_options() === false)
