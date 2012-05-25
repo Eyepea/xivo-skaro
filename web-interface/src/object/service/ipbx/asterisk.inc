@@ -69,6 +69,15 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($this->_discuss->cmd($cmd,$recv));
 	}
 
+	function reload_agents_and_queue_members()
+	{
+		$this->discuss(array('module reload app_queue.so',
+				'module reload chan_agent.so',
+				'xivo[agentlist,update]',
+				'xivo[userlist,update]',
+				'xivo[queuemember,update]'));
+	}
+
 	function _load_identity_class($module)
 	{
 		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
