@@ -49,7 +49,6 @@ switch($act)
         $ctiphonehints = &$ipbx->get_module('ctiphonehints');
         $ctiphonehintsgroup = &$ipbx->get_module('ctiphonehintsgroup');
         $ctirdid = &$ipbx->get_module('ctireversedirectories');
-        $ctiaccounts = &$ipbx->get_module('ctiaccounts');
 
         $modresolvconf = &$_XOBJ->get_module('resolvconf');
         $infolocalserver = $modresolvconf->get(1);
@@ -84,7 +83,6 @@ switch($act)
         $load_presences = $ctipresences->get_all();
         $load_phonehintsgroups = $ctiphonehintsgroup->get_all();
         $load_rdid = $ctirdid->get_all();
-        $load_accounts = $ctiaccounts->get_all();
         $list = $app->get_server_list();
 
         $out = array(
@@ -255,21 +253,21 @@ switch($act)
         }
 
         # MAIN
-				$tcpdefs = array();
-				foreach(array('fagi','cti','ctis','webi','info') as $k)
-					$tcpdefs[strtoupper($k)] = array(
-						$load_ctimain[$k.'_ip'],
-						$load_ctimain[$k.'_port'],
-						$load_ctimain[$k.'_active'] != 0
-					);
+		$tcpdefs = array();
+		foreach(array('fagi','cti','ctis','webi','info') as $k)
+			$tcpdefs[strtoupper($k)] = array(
+				$load_ctimain[$k.'_ip'],
+				$load_ctimain[$k.'_port'],
+				$load_ctimain[$k.'_active'] != 0
+			);
 
-				$udpdefs = array(
-					'ANNOUNCE' => array(
-						$load_ctimain['announce_ip'],
-						$load_ctimain['announce_port'],
-						$load_ctimain['announce_active'] != 0
-					)
-				);
+		$udpdefs = array(
+			'ANNOUNCE' => array(
+				$load_ctimain['announce_ip'],
+				$load_ctimain['announce_port'],
+				$load_ctimain['announce_active'] != 0
+			)
+		);
 
         $out['certfile'] = $load_ctimain['tlscertfile'];
         $out['keyfile']  = $load_ctimain['tlsprivkeyfile'];
@@ -462,31 +460,6 @@ switch($act)
         $outlocalserver['cdr_db_uri'] = $db_ast;
         $outlocalserver['userfeatures_db_uri'] = $db_ast;
 		$outlocalserver['timezone'] = $info_general['timezone'];
-
-        # XiVO SERVERS
-        if(isset($load_ctimain['asterisklist'])
-        && dwho_has_len($load_ctimain['asterisklist']))
-        {
-            $ipbxlist = explode(',', $load_ctimain['asterisklist']);
-            while($ipbxlist)
-            {
-                $ipbx = array_shift($ipbxlist);
-                if (isset($list[$ipbx]) === false)
-                    continue;
-
-                $ref = &$list[$ipbx];
-
-                $hostname = $ref['name'];
-                $cti_connection = array();
-                $cti_connection['username'] = $ref['cti_login'];
-                $cti_connection['password'] = $ref['cti_pass'];
-                $cti_connection['ipaddress'] = $ref['host'];
-                $cti_connection['ipport'] = $ref['cti_port'];
-                $cti_connection['encrypt'] = (bool) $ref['cti_ssl'];
-                $out['ipbxes'][$hostname] = array();
-                $out['ipbxes'][$hostname]['cti_connection'] = $cti_connection;
-            }
-        }
 
         $out['bench'] = (microtime(true) - $starttime);
 
