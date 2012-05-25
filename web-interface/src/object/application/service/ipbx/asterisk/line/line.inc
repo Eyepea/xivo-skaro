@@ -517,6 +517,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		switch ($protocolname)
 		{
 			case XIVO_SRE_IPBX_AST_PROTO_SIP:
+			case XIVO_SRE_IPBX_AST_PROTO_SCCP:
 				if(dwho_issa('group',$arr) === true
 				&& dwho_issa('group-select',$arr) === true
 				&& $this->set_groupmember($arr['group'],

@@ -33,6 +33,7 @@ CREATE TABLE "sccpline" (
     "cid_name"  varchar(80) NOT NULL,
     "cid_num"   varchar(80) NOT NULL,
     "protocol" "trunk_protocol" NOT NULL DEFAULT 'sccp',
+    "callgroup" VARCHAR(64) DEFAULT '';
     "commented" INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY("id")
 );
