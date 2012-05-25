@@ -85,6 +85,9 @@ class xivo_service_asterisk extends xivo_service_abstract
 			array_push($ret, $this->_discuss->cmd($prefixed_cmd, $ask_cti_answer));
 		}
 
+		if (count($ret === 1))
+			return $ret[0];
+
 		return($ret);
 	}
 

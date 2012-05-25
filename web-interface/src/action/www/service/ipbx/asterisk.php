@@ -37,10 +37,10 @@ if(($recvactivecalls = $ipbx->discuss('core show channels',true)) !== false
         $ref = &$recvactivecalls[$i];
         if(preg_match('/^([0-9]+) ([a-z ]+)$/i',$ref,$out) === 0)
             continue;
-        
+
         $count = (int) $out[1];
         $text = str_replace(' ','',$out[2]);
-        
+
         switch ($text)
         {
             case 'activechannel':
@@ -67,7 +67,7 @@ if(($enablesip = $appsip->get_nb(true,false)) !== false)
 
 if(($disablesip = $appsip->get_nb(true,true)) !== false)
 	$sipstat['disable'] = $disablesip;
-	
+
 $sipstat['total'] = $sipstat['enable'] + $sipstat['disable'];
 
 $appiax = &$ipbx->get_application('trunk',array('protocol' => XIVO_SRE_IPBX_AST_PROTO_IAX));
@@ -77,7 +77,7 @@ if(($enableiax = $appiax->get_nb(true,null)) !== false)
 
 if(($disableiax = $appiax->get_nb(true,true)) !== false)
 	$iaxstat['disable'] = $disableiax;
-	
+
 $iaxstat['total'] = $iaxstat['enable'] + $iaxstat['disable'];
 
 $appagent = &$ipbx->get_application('agent',null,false);
