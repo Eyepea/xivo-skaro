@@ -462,10 +462,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		if ($this->_protocol !== false
 		&& ($protocol = $this->_protocol->get($arr['linefeatures']['protocolid'])) !== false) {
 			$arr['protocol'] = array_merge($protocol, $arr['protocol']);
-			if (dwho_issa('callgroup', $arr['protocol']) === true)
-				$arr['protocol']['callgroup'] = implode(',', $arr['protocol']['callgroup']);
-			if (dwho_issa('pickupgroup', $arr['protocol']) === true)
-				$arr['protocol']['pickupgroup'] = implode(',', $arr['protocol']['pickupgroup']);
 		}
 		if (dwho_issa('userfeatures',$arr) === true
 		&& $this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP)
@@ -514,28 +510,13 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		$numhaslen = dwho_has_len($number);
 		$musiconhold = (string) $userfeatures['musiconhold'];
 
-		switch ($protocolname)
-		{
-			case XIVO_SRE_IPBX_AST_PROTO_SIP:
-			case XIVO_SRE_IPBX_AST_PROTO_SCCP:
-				if(dwho_issa('group',$arr) === true
-				&& dwho_issa('group-select',$arr) === true
-				&& $this->set_groupmember($arr['group'],
-										$arr['group-select'],
-										$name,
-										$context,
-										$number,
-										$protocolname) === true)
-				{
-					$callgroup = $this->get_result('callgroup');
-
-					if(is_array($callgroup) === true && isset($callgroup[0]) === true)
-						$callgroup = implode(',',$callgroup);
-					else
-						$callgroup = '';
-					$this->_set_result_var('protocol','callgroup',$callgroup);
-				}
-				break;
+		if(dwho_issa('group',$arr) === true && dwho_issa('group-select',$arr) === true) {
+			$this->set_groupmember($arr['group'],
+					$arr['group-select'],
+					$name,
+					$context,
+					$number,
+					$protocolname);
 		}
 
 		if(dwho_issa('queue',$arr) === true && dwho_issa('queue-select',$arr) === true) {
@@ -694,11 +675,8 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		$tmp = $reslist = array();
 
 		if($type === 'group')
-		{
-			$callgroup = array();
 			$info['penalty'] = 0;
-		}
-		if($type == 'queue')
+		else if($type == 'queue')
 			$info['skills'] = '';
 
 		for($i = 0;$i < $nb;$i++)
@@ -728,10 +706,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			else if($type === 'queue')
 				$rs['queuefeaturesid'] = $typeid;
 			else
-			{
 				$rs['groupfeaturesid'] = $typeid;
-				$callgroup[] = $typeid;
-			}
 
 			$tmp[$qname] = 1;
 			$reslist[] = $rs;
@@ -742,16 +717,10 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			$this->_set_result($key,false);
 			$this->_set_error($key,'empty');
 
-			if($type === 'group')
-				$this->_set_result('callgroup','');
-
 			return(false);
 		}
 
 		$this->_set_result($key,$reslist);
-
-		if($type === 'group')
-			$this->_set_result('callgroup',$callgroup);
 
 		return(true);
 	}

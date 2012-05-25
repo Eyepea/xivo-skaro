@@ -425,7 +425,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			$where['queue_name'] = $this->_info['groupfeatures']['name'];
 		}
 
-		$tmp = $reslist = $callgroup = array();
+		$tmp = $reslist = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -471,14 +471,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			if(($rs = $this->_queuemember->chk_values($info)) === false
 			|| isset($tmp[$uinfo['id']]) === true)
 				continue;
-			else if($masterline['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_SIP
-			&& $masterline['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_SCCP)
-				$callgroup[$uinfo['id']] = false;
-			else
-			{
-				$callgroup[$uinfo['id']] = array('protocol' => $masterline['protocol'],
-								 'protocolid' => $masterline['protocolid']);
-			}
 
 			$tmp[$uinfo['id']] = 1;
 			$reslist[] = $rs;
@@ -489,11 +481,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			$this->_set_result('user',false);
 			return(false);
 		}
-
-		if(empty($callgroup) === false)
-			$this->_set_result('user_callgroup',$callgroup);
-		else
-			$this->_set_result('user_callgroup',null);
 
 		$this->_set_result('user',$reslist);
 
@@ -524,8 +511,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			$this->_status = '';
 			return(false);
 		}
-
-		$this->add_user_callgroup($groupfeaturesid);
 
 		$this->_status = '';
 
@@ -585,42 +570,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 		if(isset($this->_return['user'][0]) === false)
 			$this->_return['user'] = false;
-
-		return(true);
-	}
-
-	function add_user_callgroup($groupfeaturesid)
-	{
-		$rs = false;
-
-		if(($groupfeaturesid = dwho_ulongint($groupfeaturesid)) === 0
-		|| ($rs = $this->get_result('user_callgroup')) === null)
-			return($rs);
-		else if(is_array($rs) === false || empty($rs) === true)
-			return(false);
-
-		$callgroup = array('callgroup' => '');
-
-		foreach($rs as $val)
-		{
-			if($val === false
-			|| ($protocol = &$this->_service->get_protocol_module($val['protocol'])) === false
-			|| ($info = $protocol->get($val['protocolid'])) === false
-			|| array_key_exists('callgroup',$info) === false)
-				continue;
-			else if(is_array($info['callgroup']) === false)
-				$callgroup['callgroup'] = $groupfeaturesid;
-			else if(in_array($groupfeaturesid,$info['callgroup']) === true)
-				continue;
-			else
-			{
-				$callgroup['callgroup'] = $info['callgroup'];
-				$callgroup['callgroup'][] = $groupfeaturesid;
-				$callgroup['callgroup'] = implode(',',$callgroup['callgroup']);
-			}
-
-			$protocol->edit($info['id'],$callgroup);
-		}
 
 		return(true);
 	}
@@ -740,8 +689,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			return(false);
 		}
 
-		$this->edit_user_callgroup($this->_info['groupfeatures']['id']);
-
 		$this->_status = '';
 
 		return(true);
@@ -845,75 +792,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			return(false);
 
 		return(parent::edit_callerid($this->_info['groupfeatures']['id']));
-	}
-
-	function edit_user_callgroup($groupfeaturesid)
-	{
-		if(($groupfeaturesid = dwho_ulongint($groupfeaturesid)) === 0
-		|| isset($this->_origin['user']) === false)
-			return(false);
-		else if(is_array($this->_origin['user']) === false
-		|| ($nb = count($this->_origin['user'])) === 0)
-			return($this->add_user_callgroup($groupfeaturesid));
-
-		$userfeatures = &$this->_service->get_module('userfeatures');
-
-		$rs = $this->get_result('user_callgroup');
-
-		$callgroup = array('callgroup' => '');
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$ref = &$this->_origin['user'][$i];
-
-			if(is_array($rs) === false || isset($rs[$ref['userid']]) === false)
-			{
-				if(($uinfo = $userfeatures->get($ref['userid'])) === false
-				|| $uinfo['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_SIP
-				|| ($protocol = &$this->_service->get_protocol_module($uinfo['protocol'])) === false
-				|| ($pinfo = $protocol->get($uinfo['protocolid'])) === false
-				|| array_key_exists('callgroup',$pinfo) === false
-				|| is_array($pinfo['callgroup']) === false
-				|| ($key = array_search($groupfeaturesid,$pinfo['callgroup'])) === false)
-					continue;
-
-				$callgroup['callgroup'] = $pinfo['callgroup'];
-				unset($callgroup['callgroup'][$key]);
-				$callgroup['callgroup'] = implode(',',$callgroup['callgroup']);
-
-				$protocol->edit($pinfo['id'],$callgroup);
-			}
-			else if($rs[$ref['userid']] !== false)
-			{
-				$res = $rs[$ref['userid']];
-				unset($rs[$ref['userid']]);
-
-				if(($protocol = &$this->_service->get_protocol_module($res['protocol'])) === false
-				|| ($pinfo = $protocol->get($res['protocolid'])) === false
-				|| array_key_exists('callgroup',$pinfo) === false)
-					continue;
-				else if(is_array($pinfo['callgroup']) === false)
-					$callgroup['callgroup'] = $groupfeaturesid;
-				else if(in_array($groupfeaturesid,$pinfo['callgroup']) === true)
-					continue;
-				else
-				{
-					$callgroup['callgroup'] = $pinfo['callgroup'];
-					$callgroup['callgroup'][] = $groupfeaturesid;
-					$callgroup['callgroup'] = implode(',',$callgroup['callgroup']);
-				}
-
-				$protocol->edit($pinfo['id'],$callgroup);
-			}
-		}
-
-		if(empty($rs) === false)
-		{
-			$this->_set_result('user_callgroup',$rs);
-			$this->add_user_callgroup($groupfeaturesid);
-		}
-
-		return(true);
 	}
 
 	function edit_schedule_path()
@@ -1070,13 +948,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		return($r);
 	}
 
-	function delete_user_callgroup($groupfeaturesid)
-	{
-		$this->_set_result('user_callgroup',null);
-
-		return($this->edit_user_callgroup($groupfeaturesid));
-	}
-
 	function delete_schedule_path()
 	{
 		return $this->_schedule_path->delete_where(array('path' => 'group', 'pathid' =>	$this->_info['groupfeatures']['id']));
@@ -1144,7 +1015,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(dwho_issa('groupfeatures',$this->_info) === false)
 			return(false);
 
-		$this->delete_user_callgroup($this->_info['groupfeatures']['id']);
 		$this->_dialaction->unlinked('group',$this->_info['groupfeatures']['id']);
 
 		return(true);

@@ -18,6 +18,7 @@
 
 BEGIN;
 
-ALTER TABLE "sccpline" ADD "callgroup" VARCHAR(64) DEFAULT '';
+ALTER TABLE "usersip" DROP "callgroup";
+ALTER TABLE "usersip" DROP "pickupgroup";
 
 COMMIT;

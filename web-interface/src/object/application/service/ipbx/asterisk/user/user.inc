@@ -1495,8 +1495,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$arr['protocol']['cid_num'] = $line['number'];
 			}
 
-			$arr['callgroup'] = $this->get_result('callgroup');
-
 			if(($queue = $this->get_result('queue')) !== null
 			&& ($queue_select = $this->get_result('queue-select')) !== null)
 			{

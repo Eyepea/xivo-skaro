@@ -68,8 +68,6 @@ class xivo_service_asterisk_trunksip extends xivo_service_asterisk_abstract
 		$arr['mohinterpret'] = null;
 		$arr['mohsuggest'] = null;
 		$arr['defaultip'] = null;
-		$arr['callgroup'] = null;
-		$arr['pickupgroup'] = null;
 		$arr['setvar'] = '';
 		$arr['regexten'] = null;
 		$arr['subscribecontext'] = null;
@@ -101,8 +99,6 @@ class xivo_service_asterisk_trunksip extends xivo_service_asterisk_abstract
 		      $arr['mohinterpret'],
 		      $arr['mohsuggest'],
 		      $arr['defaultip'],
-		      $arr['callgroup'],
-		      $arr['pickupgroup'],
 		      $arr['setvar'],
 		      $arr['regexten'],
 		      $arr['subscribecontext'],
