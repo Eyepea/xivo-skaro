@@ -471,7 +471,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			if(($rs = $this->_queuemember->chk_values($info)) === false
 			|| isset($tmp[$uinfo['id']]) === true)
 				continue;
-			else if($masterline['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_SIP)
+			else if($masterline['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_SIP
+			&& $masterline['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_SCCP)
 				$callgroup[$uinfo['id']] = false;
 			else
 			{

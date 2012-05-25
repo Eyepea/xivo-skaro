@@ -380,6 +380,7 @@ $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_CUSTOM] = array('module' => 'usercust
 
 $array['channel'] = array();
 $array['channel']['sip'] = XIVO_SRE_IPBX_AST_CHAN_SIP;
+$array['channel']['sccp'] = XIVO_SRE_IPBX_AST_CHAN_SCCP;
 $array['channel']['iax'] = XIVO_SRE_IPBX_AST_CHAN_IAX;
 $array['channel']['local'] = XIVO_SRE_IPBX_AST_CHAN_LOCAL;
 $array['channel']['agent'] = XIVO_SRE_IPBX_AST_CHAN_AGENT;
