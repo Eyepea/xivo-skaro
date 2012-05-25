@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-services="monit asterisk"
+services="monit asterisk xivo-ctid"
 
 usage() {
     cat << EOF
@@ -16,13 +16,13 @@ enable_asterisk() {
         sed -i 's/RUNASTERISK=no/RUNASTERISK=yes/' /etc/default/asterisk
     fi
     if [ ! -f /var/run/asterisk/asterisk.pid ]; then
-        /etc/init.d/asterisk start
+        invoke-rc.d asterisk start
     fi
 }
 
 disable_asterisk() {
     if [ -f /var/run/asterisk/asterisk.pid ]; then
-        /etc/init.d/asterisk stop
+        invoke-rc.d asterisk stop
     fi
     grep -q RUNASTERISK=yes /etc/default/asterisk
     if [ $? -eq 0 ]; then
@@ -36,13 +36,13 @@ enable_monit() {
         sed -i 's/startup=0/startup=1/' /etc/default/monit
     fi
     if [ ! -f /var/run/monit.pid ]; then
-        /etc/init.d/monit start
+        invoke-rc.d monit start
     fi
 }
 
 disable_monit() {
     if [ -f /var/run/monit.pid ]; then
-        /etc/init.d/monit stop
+        invoke-rc.d monit stop
     fi
     grep -q "startup=1" /etc/default/monit
     if [ $? -eq 0 ]; then
@@ -60,6 +60,7 @@ set_berofos_to_master_state() {
 
 enable_service() {
     enable_asterisk
+    invoke-rc.d xivo-ctid start
     enable_monit
     set_berofos_to_slave_state
 }
@@ -67,6 +68,7 @@ enable_service() {
 disable_service() {
     set_berofos_to_master_state
     disable_monit
+    invoke-rc.d xivo-ctid stop
     disable_asterisk
 }
 
