@@ -15,7 +15,6 @@ DROP TABLE IF EXISTS "sccpgeneral";
 CREATE TABLE "sccpgeneral" (
     "id"          SERIAL,
     "name"        varchar(80) NOT NULL,
-    "option_name" varchar(80) NOT NULL,
     "value"       varchar(80) NOT NULL,
     PRIMARY KEY("id")
 );
