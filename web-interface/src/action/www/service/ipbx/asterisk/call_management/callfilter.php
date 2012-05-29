@@ -52,7 +52,7 @@ switch($act)
 			else
 				$_QRY->go($_TPL->url('service/ipbx/call_management/callfilter'),$param);
 		}
-		
+
 		if($secretary['list'] !== false && dwho_issa('secretary',$callfiltermember) === true
 		&& ($secretary['slt'] = dwho_array_intersect_key($callfiltermember['secretary'],$secretary['list'],'typeval')) !== false)
 			$secretary['slt'] = array_keys($secretary['slt']);
@@ -113,7 +113,7 @@ switch($act)
 
 		if(dwho_issa('callfiltermember',$return) === true)
 			$callfiltermember = &$return['callfiltermember'];
-		
+
 		if($secretary['list'] !== false && dwho_issa('secretary',$callfiltermember) === true
 		&& ($secretary['slt'] = dwho_array_intersect_key($callfiltermember['secretary'],$secretary['list'],'typeval')) !== false)
 			$secretary['slt'] = array_keys($secretary['slt']);
@@ -198,6 +198,7 @@ switch($act)
 
 		$_QRY->go($_TPL->url('service/ipbx/call_management/callfilter'),$param);
 		break;
+	case 'list':
 	default:
 		$act = 'list';
 		$prevpage = $page - 1;
@@ -225,12 +226,13 @@ switch($act)
 		$_TPL->set_var('list',$list);
 }
 
+$_TPL->set_var('act',$act);
+
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/callfilter');
 
-$_TPL->set_var('act',$act);
 $_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/callfilter/'.$act);
 $_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
 $_TPL->display('index');
