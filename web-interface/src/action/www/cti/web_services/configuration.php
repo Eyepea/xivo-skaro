@@ -155,7 +155,7 @@ switch($act)
                         $server['host'],
                         $server['port'],
                         $filter['basedn'],
-                        $filter['filter']);
+                        rawurlencode($filter['filter']));
                 }
 
                 $dirid = $dir['name'];
