@@ -56,7 +56,7 @@ $array['element']['preprocess_subroutine']['null'] = true;
 
 $array['filter'] = array();
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
-$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
+$array['filter']['name'] = array('regexp' => '/^(?!general$)[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['transfer_user'] = array('bool' => true);
 $array['filter']['transfer_call'] = array('bool' => true);
