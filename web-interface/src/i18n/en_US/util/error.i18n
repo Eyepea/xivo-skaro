@@ -81,4 +81,7 @@ You must enter a number to a Local channel
 VOiP Interface can't disabled
 
 ; user_need_lines_to_have_voicemail
+A line must be associated to user in order to create a voicemail
+
+; user_no_remove_lines_when_voicemail
 Cannot remove a line when user has a voicemail

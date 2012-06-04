@@ -81,4 +81,7 @@ Vous devez renseigner un numero pour un canal Local
 Vous ne pouvez pas désactiver l'interface voix.
 
 ; user_need_lines_to_have_voicemail
+Une ligne doit être associée à l'utilisateur afin de créer une boite vocale
+
+; user_no_remove_lines_when_voicemail
 Impossible de supprimer une ligne pour un utilisateur ayant une boite vocale
