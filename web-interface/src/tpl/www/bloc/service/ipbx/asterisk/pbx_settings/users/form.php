@@ -499,38 +499,6 @@ endif;
 				$this->get_var('error', 'userfeatures', 'alarmclock'))));
 */
 ?>
-	<div class="fm-paragraph fm-description">
-		<p>
-			<label id="lb-userfeatures-pitch" for="it-userfeatures-pitch"><?=$this->bbf('fm_userfeatures_pitch');?></label>
-<?php
-	echo $form->select(array('paragraph'	=> false,
-				  'name'	=> 'userfeatures[pitchdirection]',
-				  'labelid'	=> 'userfeatures-pitchdirection',
-				    'empty'	=> true,
-				    'key'	=> false,
-		           'bbf'       => 'fm_userfeatures_pitchdirection-opt',
-							 'bbfopt'	   => array('argmode' => 'paramvalue'),
-				    'default'	=> $element['userfeatures']['pitchdirection']['default'],
-				    'selected'	=> $this->get_var('info','userfeatures','pitchdirection'),
-				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'pitchdirection'))),
-			      $element['userfeatures']['pitchdirection']['value']),
-
-		$form->select(array('paragraph'	=> false,
-				  'name'	=> 'userfeatures[pitch]',
-				  'labelid'	=> 'userfeatures-pitch',
-				    'empty'	=> true,
-				    'key'	=> false,
-		           'bbf'       => 'fm_userfeatures_pitch-opt',
-							 'bbfopt'	   => array('argmode' => 'paramvalue'),
-				    'default'	=> $element['userfeatures']['pitch']['default'],
-				    'selected'	=> $this->get_var('info','userfeatures','pitch'),
-				  'error'	=> $this->bbf_args('error',
-				$this->get_var('error', 'userfeatures', 'pitch'))),
-			      $element['userfeatures']['pitch']['value']);
-?>
-		</p>
-	</div>
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablehint'),
 				      'name'	=> 'userfeatures[enablehint]',
