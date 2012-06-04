@@ -428,18 +428,15 @@ switch($act)
             && $_SERVER['REMOTE_ADDR'] !== '::1'))
         {
             $ipbxuri = 'https://'.$_SERVER['SERVER_ADDR'].'/service/ipbx/json.php/restricted/';
-            $ctiuri = 'https://'.$_SERVER['SERVER_ADDR'].'/cti/json.php/restricted/';
             $callcenteruri = 'https://'.$_SERVER['SERVER_ADDR'].'/callcenter/json.php/restricted/';
         }
         else
         {
             $ipbxuri = 'http://127.0.0.1/service/ipbx/json.php/private/';
-            $ctiuri = 'http://127.0.0.1/cti/json.php/private/';
             $callcenteruri = 'http://127.0.0.1/callcenter/json.php/private/';
         }
 
         $urllists = array(
-            'urllist_users' => array($ipbxuri.'pbx_settings/users',$ctiuri.'accounts'),
             'urllist_lines' => array($ipbxuri.'pbx_settings/lines'),
             'urllist_devices' => array($ipbxuri.'pbx_settings/devices'),
             'urllist_groups' => array($ipbxuri.'pbx_settings/groups'),
