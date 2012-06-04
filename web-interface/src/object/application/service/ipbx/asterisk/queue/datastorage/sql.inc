@@ -237,7 +237,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 	{
 		$this->_dso->new_select('queueskillrule', array('count' => (object) 'COUNT(*)'));
 		if(!is_null($search) && strlen($search) > 0)
-			$this->_dso->wherecontain("displayname", $search);
+			$this->_dso->wherecontain("name", $search);
 
 		$res = $this->_dso->select_all(null, true);
 
