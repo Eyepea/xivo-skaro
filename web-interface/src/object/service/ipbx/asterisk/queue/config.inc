@@ -117,7 +117,7 @@ $array['element']['leavewhenempty']['default'] = '';
 
 $array['element']['ringinuse'] = array();
 $array['element']['ringinuse']['value'] = array(0,1);
-$array['element']['ringinuse']['default'] = 1;
+$array['element']['ringinuse']['default'] = 0;
 $array['element']['ringinuse']['set'] = true;
 
 $array['element']['eventwhencalled'] = array();
@@ -188,7 +188,7 @@ $array['element']['category']['value'] = array('queue','group');
 
 $array['element']['timeoutpriority'] = array();
 $array['element']['timeoutpriority']['value'] = array('app','conf');
-$array['element']['timeoutpriority']['default'] = 'app';
+$array['element']['timeoutpriority']['default'] = 'conf';
 
 $array['element']['autofill'] = array();
 $array['element']['autofill']['value'] = array(0,1);
@@ -197,7 +197,7 @@ $array['element']['autofill']['set'] = true;
 
 $array['element']['autopause'] = array();
 $array['element']['autopause']['value'] = array(0,1);
-$array['element']['autopause']['default'] = 1;
+$array['element']['autopause']['default'] = 0;
 $array['element']['autopause']['set'] = true;
 
 $array['element']['setinterfacevar'] = array();
