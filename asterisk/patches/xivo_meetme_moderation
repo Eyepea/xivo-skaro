@@ -1,7 +1,7 @@
-Index: asterisk-1.8.12.2/apps/app_meetme.c
+Index: asterisk-1.8.13.0/apps/app_meetme.c
 ===================================================================
---- asterisk-1.8.12.2.orig/apps/app_meetme.c
-+++ asterisk-1.8.12.2/apps/app_meetme.c
+--- asterisk-1.8.13.0.orig/apps/app_meetme.c
++++ asterisk-1.8.13.0/apps/app_meetme.c
 @@ -116,15 +116,27 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revisi
  						</argument>
  						<para>Play an intro announcement in conference.</para>
@@ -1314,7 +1314,7 @@ Index: asterisk-1.8.12.2/apps/app_meetme.c
  									if (!ast_strlen_zero(cnf->adminopts)) {
  										char *opts = ast_strdupa(cnf->adminopts);
  										ast_app_parse_options64(meetme_opts, &confflags, optargs, opts);
-@@ -4589,7 +5184,7 @@ static int admin_exec(struct ast_channel
+@@ -4595,7 +5190,7 @@ static int admin_exec(struct ast_channel
  		ao2_callback(cnf->usercontainer, OBJ_NODATA, user_max_cmp, &max_no);
  		user = ao2_find(cnf->usercontainer, &max_no, 0);
  		if (!ast_test_flag64(&user->userflags, CONFFLAG_ADMIN))
@@ -1323,7 +1323,7 @@ Index: asterisk-1.8.12.2/apps/app_meetme.c
  		else {
  			res = -1;
  			ast_log(LOG_NOTICE, "Not kicking last user, is an Admin!\n");
-@@ -4598,19 +5193,19 @@ static int admin_exec(struct ast_channel
+@@ -4604,19 +5199,19 @@ static int admin_exec(struct ast_channel
  		break;
  	}
  	case 77: /* M: Mute */ 
@@ -1346,7 +1346,7 @@ Index: asterisk-1.8.12.2/apps/app_meetme.c
  		break;
  	case 118: /* v: Lower all users listen volume */
  		ao2_callback(cnf->usercontainer, OBJ_NODATA, user_listen_voldown_cb, NULL);
-@@ -4707,13 +5302,13 @@ static int channel_admin_exec(struct ast
+@@ -4713,13 +5308,13 @@ static int channel_admin_exec(struct ast
  	/* perform the specified action */
  	switch (*args.command) {
  		case 77: /* M: Mute */ 
@@ -1363,7 +1363,7 @@ Index: asterisk-1.8.12.2/apps/app_meetme.c
  			break;
  		default: /* unknown command */
  			ast_log(LOG_WARNING, "Unknown MeetMeChannelAdmin command '%s'\n", args.command);
-@@ -4725,6 +5320,168 @@ static int channel_admin_exec(struct ast
+@@ -4731,6 +5326,168 @@ static int channel_admin_exec(struct ast
  	return 0;
  }
  
@@ -1532,7 +1532,7 @@ Index: asterisk-1.8.12.2/apps/app_meetme.c
  static int meetmemute(struct mansession *s, const struct message *m, int mute)
  {
  	struct ast_conference *conf;
-@@ -4772,9 +5529,9 @@ static int meetmemute(struct mansession
+@@ -4778,9 +5535,9 @@ static int meetmemute(struct mansession
  	}
  
  	if (mute)
@@ -1544,7 +1544,7 @@ Index: asterisk-1.8.12.2/apps/app_meetme.c
  
  	AST_LIST_UNLOCK(&confs);
  
-@@ -4853,7 +5610,7 @@ static int action_meetmelist(struct mans
+@@ -4859,7 +5616,7 @@ static int action_meetmelist(struct mans
  				ast_test_flag64(&user->userflags, CONFFLAG_ADMIN) ? "Yes" : "No",
  				ast_test_flag64(&user->userflags, CONFFLAG_MONITOR) ? "Listen only" : ast_test_flag64(&user->userflags, CONFFLAG_TALKER) ? "Talk only" : "Talk and listen",
  				ast_test_flag64(&user->userflags, CONFFLAG_MARKEDUSER) ? "Yes" : "No",
@@ -1553,7 +1553,7 @@ Index: asterisk-1.8.12.2/apps/app_meetme.c
  				user->talking > 0 ? "Yes" : user->talking == 0 ? "No" : "Not monitored");
  			ao2_ref(user, -1);
  		}
-@@ -7166,6 +7923,14 @@ static int load_module(void)
+@@ -7201,6 +7958,14 @@ static int load_module(void)
  	res |= load_config(0);
  
  	ast_cli_register_multiple(cli_meetme, ARRAY_LEN(cli_meetme));
