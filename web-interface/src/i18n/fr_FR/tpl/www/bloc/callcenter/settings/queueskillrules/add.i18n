@@ -27,3 +27,9 @@ La syntaxe de la règle est incorrecte
 
 ; queueskillrule-allrules(norule)
 Vous devez spécifier au moins une règle
+
+; col_add
+ajouter
+
+; opt_disp-delete
+supprimer
