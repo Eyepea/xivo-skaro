@@ -34,17 +34,18 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 	protected $_linefeatures	= false;
 	protected $_phonefunckey 	= false;
 	protected $_appsip			= false;
+	protected $_service			= false;
 
 	public function __construct(&$xobj,$param=array())
 	{
 		if(($_SRE = &dwho_gct::get('xivo_service')) === false
-		|| ($ipbx = &$_SRE->get('ipbx')) === false
-		|| ($this->_extenumbers = &$ipbx->get_module('extenumbers')) === false
-		|| ($this->_devicefeatures = &$ipbx->get_module('devicefeatures')) === false
-		|| ($this->_sccpdevice = &$ipbx->get_module('sccpdevice')) === false
-		|| ($this->_linefeatures = &$ipbx->get_module('linefeatures')) === false
-		|| ($this->_phonefunckey = &$ipbx->get_module('phonefunckey')) === false
-		|| ($this->_appsip = &$ipbx->get_apprealstatic('sip')) === false)
+		|| ($this->_service = &$_SRE->get('ipbx')) === false
+		|| ($this->_extenumbers = &$this->_service->get_module('extenumbers')) === false
+		|| ($this->_devicefeatures = &$this->_service->get_module('devicefeatures')) === false
+		|| ($this->_sccpdevice = &$this->_service->get_module('sccpdevice')) === false
+		|| ($this->_linefeatures = &$this->_service->get_module('linefeatures')) === false
+		|| ($this->_phonefunckey = &$this->_service->get_module('phonefunckey')) === false
+		|| ($this->_appsip = &$this->_service->get_apprealstatic('sip')) === false)
 			return(false);
 
 		$this->_load_config(true);
@@ -514,14 +515,8 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		return(true);
 	}
 
-	public function build_raw_config($configid,$lines=null,$raw=null,$protocolname='sip')
+	public function init_device_config($configid)
 	{
-		if ($this->_confdefault === false
-		&& $this->get_default() === false)
-			return(false);
-
-		$confdefault = $this->_confdefault;
-
 		if (($globalconfig = $this->get($configid)) === false)
 		{
 			$globalconfig = array();
@@ -532,226 +527,25 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 			$this->add($globalconfig);
 		}
-
-		if (in_array('base',$globalconfig['parent_ids']) === false)
-			array_push($globalconfig['parent_ids'],'base');
-
-		$raw_config = &$globalconfig['raw_config'];
-
-		$raw_config = array_merge($raw_config,$this->_build_exten_config());
-
-		if (isset($lines[1])
-		&& isset($lines[1]['linefeatures']))
-		{
-			if(isset($lines[1]['linefeatures']['protocol']))
-				$protocolname = $lines[1]['linefeatures']['protocol'];
-
-			if(isset($lines[1]['linefeatures']['iduserfeatures']))
-			{
-				$iduserfeatures = $lines[1]['linefeatures']['iduserfeatures'];
-				$funckeys =  $this->_phonefunckey->build_provd_conf_funckey($iduserfeatures);
-
-				if (empty($funckeys))
-					unset($raw_config['funckeys']);
-				else
-					$raw_config['funckeys'] = $funckeys;
-			}
-		}
-		else if (isset($raw_config['protocol'])
-		&& is_string($raw_config['protocol']))
-			$protocolname = strtolower($raw_config['protocol']);
-
-		switch ($protocolname)
-		{
-			case 'sccp':
-				if (is_null($raw) === false) {
-					$build_raw_config = $this->build_raw_config_device($raw);
-					$raw_config = array_merge($raw_config,$build_raw_config);
-
-					foreach ($raw_config as $key => $val)
-					{
-						if (substr($key, 0, 5) === 'exten'
-						|| isset($build_raw_config[$key]))
-							continue;
-
-						unset($raw_config[$key]);
-					}
-				}
-
-				$confregistrar = $this->get('default');
-				$raw_config['protocol'] = 'SCCP';
-				$raw_config['sccp_call_managers'] = array();
- 				$raw_config['sccp_call_managers'][1] = array();
-				$raw_config['sccp_call_managers'][1]['ip'] = $confregistrar['proxy_main'];
-				if (empty($confregistrar['proxy_backup']) === false)
-				{
-	 				$raw_config['sccp_call_managers'][2] = array();
-					$raw_config['sccp_call_managers'][2]['ip'] = $confregistrar['proxy_backup'];
-				}
-				break;
-			case 'sip':
-				$raw_config['sip_dtmf_mode'] = 'SIP-INFO';
-
-				if (isset($raw_config['sip_lines']) === false)
-					$raw_config['sip_lines'] = array();
-
-				if (is_null($raw) === false) {
-					$build_raw_config = $this->build_raw_config_device($raw);
-					$raw_config = array_merge($raw_config,$build_raw_config);
-
-					foreach ($raw_config as $key => $val)
-					{
-						if (substr($key, 0, 5) === 'exten'
-						|| $key === 'sip_lines'
-						|| isset($build_raw_config[$key]))
-							continue;
-
-						unset($raw_config[$key]);
-					}
-				}
-				else
-					$raw = array();
-
-				$raw_config['protocol'] = 'SIP';
-				$appgeneralsip = &$this->_appsip->get_module('general');
-
-				$tlsenable = $appgeneralsip->get('tlsenable');
-				if (isset($raw['sip_transport']) === true
-				&& $raw['sip_transport'] === 'tls'
-				&& $tlsenable['general']['var_val'] === 'yes')
-				{
-					$tlscafile = $appgeneralsip->get('tlscafile');
-					$crt = $tlscafile['general']['var_val'];
-					$raw['sip_servers_root_and_intermediate_certificates'] =
-						file_get_contents($crt);
-				}
-				else
-				{
-					unset($raw['sip_srtp_mode'],
-					$raw['sip_servers_root_and_intermediate_certificates'],
-					$raw_config['sip_transport'],
-					$raw_config['sip_servers_root_and_intermediate_certificates'],
-					$raw_config['sip_srtp_mode']);
-				}
-
-				if (is_array($lines) === true)
-				{
-					$rslines = $this->_build_lines($lines);
-					if (isset($raw_config['sip_lines']) === true)
-						$raw_config['sip_lines'] = array_replace($raw_config['sip_lines'],$rslines);
-					else
-						$raw_config['sip_lines'] = $rslines;
-					if (empty($raw_config['sip_lines']) === true)
-						unset($raw_config['sip_lines']);
-				}
-		}
-
 		return($globalconfig);
 	}
 
-	public function rebuild_lines_user($iduserfeatures)
+	private function _build_exten_config(&$config)
 	{
-		$w = array('iduserfeatures' => (int) $iduserfeatures);
-		if (($list = $this->_linefeatures->get_all_where($w)) === false)
-			return(null);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$ref = &$rs[$i];
-			if (dwho_has_len($line['device']) === true
-			&& $this->rebuild_device_config($ref['device']) === false)
-				return(false);
-		}
-
-		return(true);
+		$config['exten_dnd'] = $this->get_exten('enablednd');
+		$config['exten_fwd_unconditional'] = $this->get_exten('fwdunc');
+		$config['exten_fwd_no_answer'] = $this->get_exten('fwdrna');
+		$config['exten_fwd_busy'] = $this->get_exten('fwdbusy');
+		$config['exten_fwd_disable_all'] = $this->get_exten('fwdundoall');
+		$config['exten_park'] = $this->get_exten('parkext');
+		$config['exten_pickup_group'] = $this->get_exten('pickupexten');
+		$config['exten_pickup_call'] = $this->get_exten('pickup');
+		$config['exten_voicemail'] = $this->get_exten('vmusermsg');
 	}
 
-	public function rebuild_master_line_user($iduserfeatures)
+	private function _build_sipline($arr,$confregistrar)
 	{
-		if (($line = $this->_linefeatures->get_user_masterline($iduserfeatures)) === false)
-			return(null);
-
-		if (dwho_has_len($line['device']) === true
-		&& $this->rebuild_device_config($line['device']) === false)
-			return(false);
-
-		return(true);
-	}
-
-	public function rebuild_device_config($deviceid)
-	{
-		if(($_SRE = &dwho_gct::get('xivo_service')) === false
-		|| ($ipbx = &$_SRE->get('ipbx')) === false)
-			return(false);
-
-		$rslines = array();
-		if (($listline = $this->_linefeatures->get_all_where(array('device' => (string) $deviceid))) !== false
-		&& ($device = $this->_devicefeatures->get($deviceid)) !== false)
-		{
-			$rs = array();
-			while($listline)
-			{
-				$line = array_shift($listline);
-				$rs['linefeatures'] = $line;
-				$modprotocol = $ipbx->get_protocol_module($line['protocol']);
-				$rs['protocol'] = $modprotocol->get($line['protocolid']);
-				$rslines[$line['num']] = $rs;
-			}
-		}
-
-		$conf = $this->build_raw_config($device['deviceid'],$rslines);
-
-		if ($this->edit($device['deviceid'],$conf) === false)
-		{
-			dwho_report::push('error', 'fail to edit config for this device: '.$device['deviceid']);
-			return(false);
-		}
-		return(true);
-	}
-
-	private function _build_lines($lines)
-	{
-		$rslines = array();
-		foreach ($lines as $num => $val) {
-			if (dwho_issa('protocol',$val) === false
-			|| dwho_issa('linefeatures',$val) === false)
-				return(false);
-
-			$protocol = $val['protocol'];
-			$linefeatures = $val['linefeatures'];
-
-			$protolines = array_merge($protocol,$linefeatures);
-			if (($confregistrar = $this->get($linefeatures['configregistrar'])) === false)
-				$confregistrar = $this->get_default();
-
-			if(($siplines = $this->build_raw_config_siplines($protolines,$confregistrar)) === false)
-				return(false);
-
-			$rslines[$linefeatures['num']] = $siplines;
-		}
-		return($rslines);
-	}
-
-	private function _build_exten_config()
-	{
-		$conf = array();
-		$conf['exten_dnd'] = $this->get_exten('enablednd');
-		$conf['exten_fwd_unconditional'] = $this->get_exten('fwdunc');
-		$conf['exten_fwd_no_answer'] = $this->get_exten('fwdrna');
-		$conf['exten_fwd_busy'] = $this->get_exten('fwdbusy');
-		$conf['exten_fwd_disable_all'] = $this->get_exten('fwdundoall');
-		$conf['exten_park'] = $this->get_exten('parkext');
-		$conf['exten_pickup_group'] = $this->get_exten('pickupexten');
-		$conf['exten_pickup_call'] = $this->get_exten('pickup');
-		$conf['exten_voicemail'] = $this->get_exten('vmusermsg');
-
-		return($conf);
-	}
-
-	public function build_raw_config_siplines($arr,$confregistrar)
-	{
-		if (is_array($arr) === false
-		|| $this->chk_confregistrar($confregistrar) === false)
+		if ($this->chk_confregistrar($confregistrar) === false)
 			return(false);
 
 		$conf = array();
@@ -782,6 +576,143 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$this->_set_config_var($conf,$arr,'voicemail');
 
 		return($conf);
+	}
+
+	private function _build_sip_config(&$raw_config, $linefeatures)
+	{
+		$raw_config['sip_dtmf_mode'] = 'SIP-INFO';
+		$raw_config['protocol'] = 'SIP';
+
+		if (isset($raw_config['sip_lines']) === false)
+			$raw_config['sip_lines'] = array();
+
+		$confregistrar = $this->get($linefeatures['configregistrar']);
+		$line_number = $linefeatures['num'];
+
+		if(($modprotocol = &$this->_service->get_protocol_module('sip')) === false
+		|| ($protocol = $modprotocol->get($linefeatures['protocolid'])) === false)
+			return(false);
+
+		$protoline = array_merge($protocol, $linefeatures);
+
+		$raw_config['sip_lines'][$line_number] = $this->_build_sipline($protoline, $confregistrar);
+	}
+
+	private function _build_sccp_config(&$raw_config)
+	{
+		$confregistrar = $this->get($linefeatures['configregistrar']);
+
+		$raw_config['protocol'] = 'SCCP';
+		$raw_config['sccp_call_managers'] = array();
+		$raw_config['sccp_call_managers'][1] = array();
+		$raw_config['sccp_call_managers'][1]['ip'] = $confregistrar['proxy_main'];
+		if (empty($confregistrar['proxy_backup']) === false)
+		{
+			$raw_config['sccp_call_managers'][2] = array();
+			$raw_config['sccp_call_managers'][2]['ip'] = $confregistrar['proxy_backup'];
+		}
+	}
+
+	public function build_device_config($configid, $iduserfeatures)
+	{
+		$globalconfig = $this->init_device_config($configid);
+
+		$raw_config = &$globalconfig['raw_config'];
+
+		$this->_build_exten_config(&$raw_config);
+
+		$funckeys =  $this->_phonefunckey->build_provd_conf_funckey($iduserfeatures);
+
+		if (empty($funckeys))
+			unset($raw_config['funckeys']);
+		else
+			$raw_config['funckeys'] = $funckeys;
+
+		$linefeatures = $this->_linefeatures->get_from_userid($iduserfeatures);
+		$protocolname = $linefeatures['protocol'];
+
+		switch($protocolname)
+		{
+			case 'sip':
+				$this->_build_sip_config(&$raw_config, $linefeatures);
+				break;
+			case 'sccp':
+				$this->_build_sccp_config(&$raw_config);
+				break;
+		}
+
+		return($globalconfig);
+	}
+
+	public function update_raw_config($configid, $new_raw_config)
+	{
+		$globalconfig = $this->init_device_config($configid);
+
+		$raw_config = &$globalconfig['raw_config'];
+
+		$raw_config_device = $this->build_raw_config_device($new_raw_config);
+		$config = array_merge($raw_config,$raw_config_device);
+
+		foreach ($config as $key => $val)
+		{
+			if (substr($key, 0, 5) === 'exten'
+			|| $key === 'sip_lines'
+			|| $key === 'funckeys'
+			|| isset($raw_config_device[$key]))
+				continue;
+
+			unset($config[$key]);
+		}
+
+		if (strtolower($config['protocol']) == 'sip')
+		{
+			$appgeneralsip = &$this->_appsip->get_module('general');
+
+			$tlsenable = $appgeneralsip->get('tlsenable');
+			if (isset($config['sip_transport']) === true
+			&& $config['sip_transport'] === 'tls'
+			&& $tlsenable['general']['var_val'] === 'yes')
+			{
+				$tlscafile = $appgeneralsip->get('tlscafile');
+				$crt = $tlscafile['general']['var_val'];
+				$config['sip_servers_root_and_intermediate_certificates'] =
+					file_get_contents($crt);
+			}
+			else
+			{
+				unset($config['sip_srtp_mode'],
+				$config['sip_servers_root_and_intermediate_certificates'],
+				$config['sip_transport']);
+			}
+		}
+
+		$globalconfig['raw_config'] = $config;
+
+		if ($this->edit($configid,$globalconfig) === false)
+		{
+			dwho_report::push('error', 'update_raw_config -> fail to edit config: '.$configid);
+			return(false);
+		}
+		return(true);
+	}
+
+	public function rebuild_device_config($deviceid)
+	{
+		if (($listline = $this->_linefeatures->get_all_where(array('device' => (string) $deviceid))) === false
+		|| ($devicefeatures = $this->_devicefeatures->get($deviceid)) === false)
+			return(false);
+
+		foreach ($listline as $line)
+		{
+			$globalconfig = $this->build_device_config($devicefeatures['deviceid'], $line['iduserfeatures']);
+
+			if ($this->edit($devicefeatures['deviceid'],$globalconfig) === false)
+			{
+				dwho_report::push('error', 'fail to edit config for this device: '.$device['deviceid']);
+				return(false);
+			}
+		}
+		return(true);
 	}
 
 	public function build_raw_config_device($raw)

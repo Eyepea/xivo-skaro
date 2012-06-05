@@ -764,13 +764,13 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		$this->_status = 'add';
 		$this->_return = array();
 		$linefeaturesid = null;
-		$iduserfeatures = null;
+		$iduserfeatures = (int) $this->get_result_var('linefeatures','iduserfeatures');
 
 		if($this->get_errnb() > 0
 		|| $this->_protocolname === false
 		|| ($protocolid = $this->add_protocol()) === false
 		|| ($linefeaturesid = $this->add_linefeatures($protocolid)) === false
-		|| $this->add_config($linefeaturesid,$protocolid) === false)
+		|| $this->add_config($iduserfeatures,$linefeaturesid) === false)
 		{
 			$r = false;
 			if($protocolid !== null) {
@@ -790,7 +790,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			}
 		}
 
-		if(((int) $iduserfeatures = $this->get_result_var('linefeatures','iduserfeatures')) !== 0)
+		if($iduserfeatures !== 0)
 		{
 			if($this->add_groupmember($iduserfeatures) === false
 			|| $this->add_queuemember($iduserfeatures) === false) {
@@ -831,10 +831,9 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		return($this->_return['linefeatures']);
 	}
 
-	function add_config($linefeaturesid,$protocolid)
+	function add_config($iduserfeatures,$linefeaturesid)
 	{
-		if(($linefeaturesid = dwho_ulongint($linefeaturesid)) === 0
-		|| $this->_provddevice === false
+		if($this->_provddevice === false
 		|| ($rs = $this->get_result('linefeatures')) === null
 		|| $rs === false)
 			return(false);
@@ -847,11 +846,6 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			if (dwho_has_len(($mailbox = $this->get_result('mailbox'))))
 				$vm_number = strstr($mailbox, '@', true);
 
-			$arr = array();
-			$arr['linefeatures'] = $this->get_result('linefeatures');
-			$arr['userfeatures'] = $this->get_result('userfeatures');
-			$arr['protocol'] = $this->get_result('protocol');
-
 			// new device associated
 			if (empty($rs['device']) === false)
 			{
@@ -860,7 +854,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 					dwho_report::push('error', 'device doesn\'t exist');
 					return(false);
 				}
-				elseif($this->_provddevice->update_config_from_line($arr,$device['deviceid']) === false)
+				elseif($this->_provddevice->update_config_from_line($device['deviceid'], $iduserfeatures) === false)
 				{
 					dwho_report::push('error', 'Can\'t edit device');
 					return(false);
@@ -1179,22 +1173,12 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 				$linefeaturesid = $this->_info['linefeatures']['id'];
 				$this->_set_result_var('linefeatures', 'id',$linefeaturesid);
 
-				$arr = array();
-				$arr['linefeatures'] = $this->get_result('linefeatures');
-				$arr['userfeatures'] = $this->get_result('userfeatures');
-
-				if(($this->_protocol = &$this->_service->get_protocol_module($arr['linefeatures']['protocol'])) === false
-				|| ($protocol = $this->_protocol->get($arr['linefeatures']['protocolid'])) === false)
-					return(false);
-
-				$arr['protocol'] = $protocol;
-
 				if (($device = $this->_devicefeatures->get($rs['device'])) === false)
 				{
 					dwho_report::push('error', 'device doesn\'t exist: '.$rs['device']);
 					return(false);
 				}
-				elseif($this->_provddevice->update_config_from_line($arr,$device['deviceid']) === false)
+				elseif($this->_provddevice->update_config_from_line($device['deviceid'],$this->_info['linefeatures']['iduserfeatures']) === false)
 					return(false);
 				elseif ($rs['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP
 				&& $this->_sccpdevice->init_device($device['mac'],$rs['number'],$vm_number) === false)
@@ -1437,7 +1421,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		// remove device if associated
 		if(($device = $this->_device->get($this->_info['linefeatures']['device'],null,true)) === false)
 			return(true);
-		elseif($this->_device->remove_line($device,$this->_info['linefeatures']['num']) === false)
+		elseif($this->_device->remove_line($this->_info['linefeatures']['num']) === false)
 			return(false);
 		elseif ($this->_info['linefeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP
 		&& $this->_sccpdevice->init_device($device['mac'],'') === false)

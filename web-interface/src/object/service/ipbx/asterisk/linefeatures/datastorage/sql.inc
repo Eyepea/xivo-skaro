@@ -74,7 +74,7 @@ class xivo_service_asterisk_linefeatures_sql extends xivo_service_asterisk_abstr
 
 		return($r);
 	}
-	
+
 	function user_masterline($userid=null,$deviceid=null)
 	{
 		$this->_dso->new_select($this->_table);
@@ -91,6 +91,13 @@ class xivo_service_asterisk_linefeatures_sql extends xivo_service_asterisk_abstr
 		}
 		$r = $this->_dso->select_single();
 		return($r);
+	}
+
+	function from_userid($userid)
+	{
+		$this->_dso->new_select($this->_table);
+		$this->_dso->where(array('iduserfeatures' => $userid));
+		return($this->_dso->select_single());
 	}
 
 	function search($value,$disable=null,$order=null,$limit=null,$number=false)
@@ -281,7 +288,7 @@ class xivo_service_asterisk_linefeatures_sql extends xivo_service_asterisk_abstr
 
 		if(empty($arr) === false)
 			$this->_dso->andwhere($arr,$this->_table);
-			
+
 		$this->_dso->leftjoin('usersip',
 				       $this->_table.'.protocolid = usersip.id',
 				       null,

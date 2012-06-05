@@ -51,7 +51,7 @@ switch($act)
 				$http_response->set_status_line(200);
 		}
 		elseif(($line = $linefeatures->get_line_provisioniable($data['code'])) === false
-		|| $appdevice->associate_line($line['id'],true) === false)
+		|| $appdevice->associate_line($line['id'],$line['iduserfeatures'],true) === false)
 			$http_response->set_status_line(400);
 		else
 			$http_response->set_status_line(200);
