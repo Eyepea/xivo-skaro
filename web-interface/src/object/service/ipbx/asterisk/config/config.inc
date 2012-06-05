@@ -100,9 +100,6 @@ $array['module']['contextnumbers']['datastorage'] = true;
 $array['module']['contextnummember'] = array();
 $array['module']['contextnummember']['datastorage'] = true;
 
-$array['module']['ctiaccounts'] = array();
-$array['module']['ctiaccounts']['datastorage'] = true;
-
 $array['module']['ctibus'] = array();
 $array['module']['ctibus']['datastorage'] = false;
 

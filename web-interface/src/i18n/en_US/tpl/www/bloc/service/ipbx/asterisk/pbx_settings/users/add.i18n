@@ -106,36 +106,6 @@ Ring forward:
 ; fm_userfeatures_alarmclock
 Alarm Clock: 
 
-; fm_userfeatures_pitch 
-Voice pitch:
-
-; fm_userfeatures_pitchdirection-opt(rx)
-Reception
-
-; fm_userfeatures_pitchdirection-opt(tx)
-Transmission
-
-; fm_userfeatures_pitchdirection-opt(both)
-Both
-
-; fm_userfeatures_pitch-opt(highest)
-Very very high-pitched
-
-; fm_userfeatures_pitch-opt(higher)
-Very high-pitched
-
-; fm_userfeatures_pitch-opt(high)
-High-pitched
-
-; fm_userfeatures_pitch-opt(low)
-Low-pitched
-
-; fm_userfeatures_pitch-opt(lower)
-Very low-pitched
-
-; fm_userfeatures_pitch-opt(lowest)
-Very very low-pitched
-
 ; fld-rightcalls
 Rightcall
 

@@ -85,36 +85,6 @@ Code droits d'appel :
 ; fm_userfeatures_alarmclock
 Heure de réveil :
 
-; fm_userfeatures_pitch 
-Déformation de la voix :
-
-; fm_userfeatures_pitchdirection-opt(rx)
-Réception
-
-; fm_userfeatures_pitchdirection-opt(tx)
-Transmission
-
-; fm_userfeatures_pitchdirection-opt(both)
-Dans les 2 sens
-
-; fm_userfeatures_pitch-opt(highest)
-Très très aigu
-
-; fm_userfeatures_pitch-opt(higher)
-Très aigu
-
-; fm_userfeatures_pitch-opt(high)
-Aigu
-
-; fm_userfeatures_pitch-opt(low)
-Grave
-
-; fm_userfeatures_pitch-opt(lower)
-Très grave
-
-; fm_userfeatures_pitch-opt(lowest)
-Très très grave
-
 ; create_context
 Créer un contexte
 

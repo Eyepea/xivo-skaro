@@ -78,15 +78,9 @@ $array['callcenter/web_services/private/registrationcampaign/campaigns'] = array
 $array['cti/web_services/restricted/configuration'] = array(
 	'path'		=> 'cti/web_services/configuration',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['cti/web_services/restricted/accounts'] = array(
-	'path'		=> 'cti/web_services/accounts',
-	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 
 $array['cti/web_services/private/configuration'] = array(
 	'path'		=> 'cti/web_services/configuration',
-	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-$array['cti/web_services/private/accounts'] = array(
-	'path'		=> 'cti/web_services/accounts',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
 # special

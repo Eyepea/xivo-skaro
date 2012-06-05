@@ -305,10 +305,8 @@ $array['service/ipbx/json/restricted/ctiserver/configuration'] = 'service/ipbx/j
 $array['service/ipbx/json/private/ctiserver/configuration']    = 'service/ipbx/json.php/private/ctiserver/configuration/';
 
 $array['cti/json/restricted/configuration'] = 'cti/json.php/restricted/configuration';
-$array['cti/json/restricted/accounts'] = 'cti/json.php/restricted/accounts';
 
 $array['cti/json/private/configuration'] = 'cti/json.php/private/configuration';
-$array['cti/json/private/accounts'] = 'cti/json.php/private/accounts';
 
 
 /*

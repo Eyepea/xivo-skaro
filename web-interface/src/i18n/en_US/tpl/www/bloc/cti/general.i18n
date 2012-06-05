@@ -142,18 +142,6 @@ Add
 ; bt_outxivoserver
 Remove
 
-; cti-accounts
-External CTI servers' accounts
-
-; col_ctiaccounts_label
-Label
-
-; col_ctiaccounts_login
-Login
-
-; col_ctiaccounts_password
-Password
-
 ; fm_tlsprivkeyfile
 Private Key:
 
