@@ -1360,7 +1360,7 @@ Index: asterisk-1.8.13.0/apps/app_queue.c
 -		res = snprintf(value + value_len, sizeof(value) - value_len, "%s%s;%d;%d;%s;%s",
 -			value_len ? "|" : "", cur_member->interface, cur_member->penalty, cur_member->paused, cur_member->membername, cur_member->state_interface);
 +		res = snprintf(value + value_len, sizeof(value) - value_len, "%s%s;%d;%d;%s;%s;%s",
-+			value_len ? "|" : "", cur_member->interface, cur_member->penalty, cur_member->paused, cur_member->membername, 
++			value_len ? "|" : "", cur_member->interface, cur_member->penalty, cur_member->paused, cur_member->membername,
 +			cur_member->state_interface, cur_member->skills);
  
  		ao2_ref(cur_member, -1);
@@ -1846,7 +1846,7 @@ Index: asterisk-1.8.13.0/apps/app_queue.c
  	return CLI_SUCCESS; 
  }
  
-+static char *complete_queue_skills_groups(const char *line, const char *word, int pos, int state) 
++static char *complete_queue_skills_groups(const char *line, const char *word, int pos, int state)
 +{
 +	int which = 0;
 +	struct skills_group *skills;
@@ -1914,10 +1914,10 @@ Index: asterisk-1.8.13.0/apps/app_queue.c
 +		}
 +	}
 +	AST_LIST_UNLOCK(&skills_groups);
-+	return CLI_SUCCESS; 
++	return CLI_SUCCESS;
 +}
 +
-+static char *complete_queue_skills_rules(const char *line, const char *word, int pos, int state) 
++static char *complete_queue_skills_rules(const char *line, const char *word, int pos, int state)
 +{
 +	int which = 0;
 +	struct skill_ruleset *rs;
@@ -1984,7 +1984,7 @@ Index: asterisk-1.8.13.0/apps/app_queue.c
 +		}
 +	}
 +	AST_LIST_UNLOCK(&skill_rulesets);
-+	return CLI_SUCCESS; 
++	return CLI_SUCCESS;
 +}
 +
  static char *handle_queue_reset(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
