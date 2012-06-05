@@ -437,6 +437,7 @@ switch($act)
         }
 
         $urllists = array(
+            'urllist_users' => array($ipbxuri.'pbx_settings/users'),
             'urllist_lines' => array($ipbxuri.'pbx_settings/lines'),
             'urllist_devices' => array($ipbxuri.'pbx_settings/devices'),
             'urllist_groups' => array($ipbxuri.'pbx_settings/groups'),
