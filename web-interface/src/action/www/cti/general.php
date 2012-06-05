@@ -20,7 +20,6 @@
 
 $ctimain = &$ipbx->get_module('ctimain');
 $ctipresences = &$ipbx->get_module('ctipresences');
-$ctiaccounts = &$ipbx->get_module('ctiaccounts');
 
 $appxivoserver = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'xivo'));
 
@@ -79,7 +78,6 @@ $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('error',$error);
 $_TPL->set_var('element',$element);
 $_TPL->set_var('info', $info);
-$_TPL->set_var('listaccount', $ctiaccounts->get_all());
 
 function certfilter($cert)
 { return count($cert['types']) == 1 && $cert['types'][0] == 'certificate'; }

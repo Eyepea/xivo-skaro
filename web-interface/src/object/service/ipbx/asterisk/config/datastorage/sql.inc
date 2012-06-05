@@ -80,10 +80,6 @@ $array['contextnummember'] = array();
 $array['contextnummember']['table'] = 'contextnummember';
 $array['contextnummember']['primary'] = array('context' => '','type' => '','typeval' => '');
 
-$array['ctiaccounts'] = array();
-$array['ctiaccounts']['table'] = 'ctiaccounts';
-$array['ctiaccounts']['primary'] = array('label' => '');
-
 $array['cticontexts'] = array();
 $array['cticontexts']['table'] = 'cticontexts';
 $array['cticontexts']['primary'] = array('id' => '');
