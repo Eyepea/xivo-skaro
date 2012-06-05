@@ -540,17 +540,23 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		$raw_config = array_merge($raw_config,$this->_build_exten_config());
 
-		$funckeys = $this->_init_device_master_line($configid);
-
-		if (empty($funckeys))
-			unset($raw_config['funckeys']);
-		else
-			$raw_config = array_merge($raw_config,$funckeys);
-
 		if (isset($lines[1])
-		&& isset($lines[1]['linefeatures'])
-		&& isset($lines[1]['linefeatures']['protocol']))
-			$protocolname = $lines[1]['linefeatures']['protocol'];
+		&& isset($lines[1]['linefeatures']))
+		{
+			if(isset($lines[1]['linefeatures']['protocol']))
+				$protocolname = $lines[1]['linefeatures']['protocol'];
+
+			if(isset($lines[1]['linefeatures']['iduserfeatures']))
+			{
+				$iduserfeatures = $lines[1]['linefeatures']['iduserfeatures'];
+				$funckeys =  $this->_phonefunckey->build_provd_conf_funckey($iduserfeatures);
+
+				if (empty($funckeys))
+					unset($raw_config['funckeys']);
+				else
+					$raw_config['funckeys'] = $funckeys;
+			}
+		}
 		else if (isset($raw_config['protocol'])
 		&& is_string($raw_config['protocol']))
 			$protocolname = strtolower($raw_config['protocol']);
@@ -701,27 +707,6 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			return(false);
 		}
 		return(true);
-	}
-
-	private function _init_device_master_line($deviceid)
-	{
-		$raw_config = array();
-
-		if (($device = $this->_devicefeatures->get_where(array('deviceid' => $deviceid))) === false
-		|| ($masterline = $this->_linefeatures->get_user_masterline(null,$device['id'])) === false
-		|| (int) $masterline['iduserfeatures'] === 0)
-			return($raw_config);
-
-		$iduserfeatures = $masterline['iduserfeatures'];
-
-		// build funckey from user masterline
-		if ($iduserfeatures !== false
-		&& ($rs = $this->_phonefunckey->build_provd_conf_funckey($iduserfeatures)) === false)
-			unset($raw_config['funckeys']);
-		else
-			$raw_config['funckeys'] = $rs;
-
-		return($raw_config);
 	}
 
 	private function _build_lines($lines)
