@@ -38,14 +38,6 @@ $_XS->global_init($_QR);
 
 $conf = $_XS->get_conf();
 
-if ($conf !== false
-&& $_SESSION['_USR']->meta === 'admin'
-&& $conf['client'] !== STATS_CLIENT)
-{
-	$_SESSION['statsdb'] = $conf['statsdb'];
-	$_QRY->go($_TPL->url('statistics/call_center'.$_SERVER['PATH_INFO']));
-}
-
 $axetype = $_XS->get_axetype();
 
 $userid = false;
