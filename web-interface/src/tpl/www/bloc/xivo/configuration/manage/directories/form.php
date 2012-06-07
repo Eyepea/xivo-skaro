@@ -48,6 +48,7 @@ $element = $this->get_var('element');
 		$form->text(array('desc'	=> $this->bbf('fm_uri'),
 				  'name'	=> 'uri',
 				  'labelid'	=> 'uri',
+				  'size'	=> 30,
 				  'default'	=> $element['uri']['default'],
 				  'value'	=> $info['uri'],
 		          'error'	=> $this->bbf_args('error',
