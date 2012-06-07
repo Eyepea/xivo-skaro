@@ -1641,6 +1641,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->delete_phonefunckey() === false
 		|| $this->delete_callfiltermember() === false
 		|| $this->delete_queueskill() === false
+        || $this->delete_groupmember() === false
 		|| $this->delete_schedule_path() === false)
 		{
 			$r = false;
