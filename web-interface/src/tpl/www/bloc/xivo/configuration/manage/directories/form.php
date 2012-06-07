@@ -53,57 +53,6 @@ $element = $this->get_var('element');
 		          'error'	=> $this->bbf_args('error',
 					   $this->get_var('error', 'uri')) ));
 ?>
-<div id="sgbdr" class="b-nodisplay">
-<?php
-		echo $form->text(array('desc'	=> $this->bbf('fm_host'),
-				  'name'	=> 'host',
-				  'labelid'	=> 'host',
-				  'default'	=> $element['host']['default'],
-				  'value'	=> $info['host'],
-		          'error'	=> $this->bbf_args('error',
-					   $this->get_var('error', 'host')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_port'),
-				  'name'	=> 'port',
-				  'labelid'	=> 'port',
-				  'default'	=> $element['port']['default'],
-				  'value'	=> $info['port'],
-		          'error'	=> $this->bbf_args('error',
-					   $this->get_var('error', 'port')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_dbname'),
-				  'name'	=> 'dbname',
-				  'labelid'	=> 'dbname',
-				  'default'	=> $element['dbname']['default'],
-				  'value'	=> $info['dbname'],
-		          'error'	=> $this->bbf_args('error',
-					   $this->get_var('error', 'dbname')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_tablename'),
-				  'name'	=> 'tablename',
-				  'labelid'	=> 'tablename',
-				  'default'	=> $element['tablename']['default'],
-				  'value'	=> $info['tablename'],
-		          'error'	=> $this->bbf_args('error',
-					   $this->get_var('error', 'tablename')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_user'),
-				  'name'	=> 'user',
-				  'labelid'	=> 'user',
-				  'default'	=> $element['user']['default'],
-				  'value'	=> $info['user'],
-		          'error'	=> $this->bbf_args('error',
-					   $this->get_var('error', 'user')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_password'),
-				  'name'	=> 'password',
-				  'labelid'	=> 'password',
-				  'default'	=> $element['password']['default'],
-				  'value'	=> $info['password'],
-		          'error'	=> $this->bbf_args('error',
-					   $this->get_var('error', 'password')) ));
-	?>
-	</div>
 	<div class="fm-paragraph fm-description">
 		<p>
 			<label id="lb-description" for="it-description"><?=$this->bbf('fm_description');?></label>
