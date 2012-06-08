@@ -1673,12 +1673,16 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(dwho_issa('linefeatures',$this->_info) === false)
 			return(null);
 
-		$r = array();
+		$r = true;
 		foreach($this->_info['linefeatures'] as $line)
 		{
 			if($this->_line->get($line['id']) === false
 			|| $this->_line->delete() === false)
-				dwho_report::push('error','Can\'t remove line: '.$line['id'],'linefeatures');
+			{
+				$r = false;
+				$identity = $this->_info['userfeatures']['identity'];
+				dwho_report::push('error','Can\'t remove line (id #'.$line['id'].') for user "'.$identity.'"', 'lines');
+			}
 		}
 
 		if($this->_status === 'delete')

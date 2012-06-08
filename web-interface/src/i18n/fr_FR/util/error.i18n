@@ -84,4 +84,4 @@ Vous ne pouvez pas désactiver l'interface voix.
 Une ligne doit être associée à l'utilisateur afin de créer une boite vocale
 
 ; user_no_remove_lines_when_voicemail
-Impossible de supprimer une ligne pour un utilisateur ayant une boite vocale
+Impossible de supprimer une ligne pour un utilisateur ayant une boite vocale, vous devez dabord la disassocier ou l'effacer avant d'effacer l'utilisateur.

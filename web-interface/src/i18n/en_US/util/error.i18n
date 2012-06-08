@@ -84,4 +84,4 @@ VOiP Interface can't disabled
 A line must be associated to user in order to create a voicemail
 
 ; user_no_remove_lines_when_voicemail
-Cannot remove a line when user has a voicemail
+Cannot remove a line when user has a voicemail, you must disassociate voicemail, or remove voicemail, before deleting user.
