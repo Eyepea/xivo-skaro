@@ -747,6 +747,10 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$this->_set_config_var($conf,$raw,'sip_dtmf_mode');
 		$this->_set_config_var($conf,$raw,'sip_srtp_mode');
 		$this->_set_config_var($conf,$raw,'sip_transport');
+		$this->_set_config_var($conf,$raw,'admin_username');
+		$this->_set_config_var($conf,$raw,'admin_password');
+		$this->_set_config_var($conf,$raw,'user_username');
+		$this->_set_config_var($conf,$raw,'user_password');
 		$this->_set_config_var($conf,$raw,'sip_servers_root_and_intermediate_certificates');
 		$this->_set_config_var($conf,$raw,'sip_local_root_and_intermediate_certificates');
 		$this->_set_config_var($conf,$raw,'sip_local_certificate');
