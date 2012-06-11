@@ -2,10 +2,13 @@
 # -*- coding: UTF-8 -*-
 
 import argparse
+import ConfigParser
 import errno
 import logging
 import os.path
 import subprocess
+
+BNFOS_CFG_FILE = '/etc/bnfos.conf'
 
 logger = logging.getLogger('xivo-berofos')
 
@@ -65,16 +68,24 @@ def _init_logging(parsed_args):
 
 
 def is_berofos_configured():
-    return os.path.exists('/etc/bnfos.conf')
+    return os.path.exists(BNFOS_CFG_FILE)
 
 
 _RELAY_MODE = {0: 'A--D', 1: 'A--B'}
 
 def set_berofos_relay_mode(mode):
-    logger.info('setting berofos relay mode to %r (%s)',
-                mode, _RELAY_MODE.get(mode, 'unknown'))
-    bnfos_command = ['--set', 'mode=%s' % mode, '-f', 'fos1']
-    _exec_bnfos_command(bnfos_command)
+    for berofos_name in _get_berofos_name():
+        logger.info('setting berofos relay mode to %r (%s) for %s',
+                    mode, _RELAY_MODE.get(mode, 'unknown'), berofos_name)
+        bnfos_command = ['--set', 'mode=%s' % mode, '-f', berofos_name]
+        _exec_bnfos_command(bnfos_command)
+
+
+def _get_berofos_name():
+    config = ConfigParser.RawConfigParser()
+    with open(BNFOS_CFG_FILE) as fobj:
+        config.readfp(fobj)
+    return config.sections()
 
 
 def _exec_bnfos_command(bnfos_command):
@@ -91,7 +102,6 @@ def _exec_bnfos_command(bnfos_command):
         if process.returncode:
             logger.error('error while executing bnfos command: return code %r', process.returncode)
             logger.info('%s', output)
-            raise Exception('bnfos command returned %r' % process.returncode)
 
 
 if __name__ == '__main__':
