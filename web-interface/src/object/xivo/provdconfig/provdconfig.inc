@@ -600,26 +600,23 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 	private function _build_sip_secure_config(&$config)
 	{
-		if (strtolower($config['protocol']) == 'sip')
-		{
-			$appgeneralsip = &$this->_appsip->get_module('general');
+		$appgeneralsip = &$this->_appsip->get_module('general');
 
-			$tlsenable = $appgeneralsip->get('tlsenable');
-			if (isset($config['sip_transport']) === true
-			&& $config['sip_transport'] === 'tls'
-			&& $tlsenable['general']['var_val'] === 'yes')
-			{
-				$tlscafile = $appgeneralsip->get('tlscafile');
-				$crt = $tlscafile['general']['var_val'];
-				$config['sip_servers_root_and_intermediate_certificates'] =
-					file_get_contents($crt);
-			}
-			else
-			{
-				unset($config['sip_srtp_mode'],
-				$config['sip_servers_root_and_intermediate_certificates'],
-				$config['sip_transport']);
-			}
+		$tlsenable = $appgeneralsip->get('tlsenable');
+		if (isset($config['sip_transport']) === true
+		&& $config['sip_transport'] === 'tls'
+		&& $tlsenable['general']['var_val'] === 'yes')
+		{
+			$tlscafile = $appgeneralsip->get('tlscafile');
+			$crt = $tlscafile['general']['var_val'];
+			$config['sip_servers_root_and_intermediate_certificates'] =
+				file_get_contents($crt);
+		}
+		else
+		{
+			unset($config['sip_srtp_mode'],
+			$config['sip_servers_root_and_intermediate_certificates'],
+			$config['sip_transport']);
 		}
 	}
 

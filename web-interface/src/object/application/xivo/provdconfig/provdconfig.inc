@@ -236,6 +236,7 @@ class xivo_application_xivo_object_provdconfig extends xivo_application_xivo_obj
 			return(false);
 
 		$this->_return['config'] = $this->_provdconfig->edit($this->_info['config']['id'],$rs);
+		$this->_provdconfig->update_raw_config($this->_info['config']['id'],$rs['raw_config']);
 
 		if ($this->_return['config'] !== false
 		&& $rs['X_type'] === 'registrar')
