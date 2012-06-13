@@ -598,7 +598,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$raw_config['sip_lines'][$line_number] = $this->_build_sipline($protoline, $confregistrar);
 	}
 
-	private function _build_sccp_config(&$raw_config)
+	private function _build_sccp_config(&$raw_config, $linefeatures)
 	{
 		$confregistrar = $this->get($linefeatures['configregistrar']);
 
@@ -637,7 +637,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 				$this->_build_sip_config(&$raw_config, $linefeatures);
 				break;
 			case 'sccp':
-				$this->_build_sccp_config(&$raw_config);
+				$this->_build_sccp_config(&$raw_config, $linefeatures);
 				break;
 		}
 
