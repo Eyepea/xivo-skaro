@@ -53,13 +53,13 @@ DTMF:
 Connection type:
 
 ; fm_protocol_type-opt(user)
-Incoming
+User
 
 ; fm_protocol_type-opt(peer)
-Outgoing
+Peer
 
 ; fm_protocol_type-opt(friend)
-Incoming/Outgoing
+Friend
 
 ; fm_protocol_nat
 NAT:

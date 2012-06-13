@@ -34,7 +34,6 @@ var xivo_ast_trunk_type_elt = {};
 xivo_ast_trunk_type_elt['peer'] = {};
 xivo_ast_trunk_type_elt['friend'] = {};
 xivo_ast_trunk_type_elt['user'] = {
-    'protocol-username': {it: false, fd: false},
     'protocol-qualify': {it: false, fd: false},
     'protocol-rtptimeout': {it: false, fd: false},
     'protocol-rtpholdtimeout': {it: false, fd: false},
