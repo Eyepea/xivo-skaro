@@ -543,18 +543,18 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$config['exten_voicemail'] = $this->get_exten('vmusermsg');
 	}
 
-	private function _build_sipline($arr,$confregistrar)
+	private function _build_sipline($protoline, $confregistrar)
 	{
 		if ($this->chk_confregistrar($confregistrar) === false)
 			return(false);
 
 		$conf = array();
 		$conf['proxy_ip'] = $confregistrar['proxy_main'];
-		$conf['username'] = $arr['name'];
-		$conf['auth_username'] = $arr['name'];
-		$conf['password'] = $arr['secret'];
+		$conf['username'] = $protoline['name'];
+		$conf['auth_username'] = $protoline['name'];
+		$conf['password'] = $protoline['secret'];
 
-		$calleridname = trim(preg_replace('/<[^<]*>$/','',trim(strval($arr['callerid']))));
+		$calleridname = trim(preg_replace('/<[^<]*>$/','',trim(strval($protoline['callerid']))));
 		$calleridname = str_replace('"','',str_replace('\"','"',$calleridname));
 		$conf['display_name'] = $calleridname;
 
@@ -570,10 +570,10 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$this->_set_config_var($conf,$confregistrar,'proxy_ip');
 		$this->_set_config_var($conf,$confregistrar,'backup_proxy_ip');
 		$this->_set_config_var($conf,$confregistrar,'backup_registrar_ip');
-		$this->_set_config_var($conf,$arr,'number');
-		$this->_set_config_var($conf,$arr,'dtmf_mode');
-		$this->_set_config_var($conf,$arr,'srtp_mode');
-		$this->_set_config_var($conf,$arr,'voicemail');
+		$this->_set_config_var($conf,$protoline,'number');
+		$this->_set_config_var($conf,$protoline,'dtmf_mode');
+		$this->_set_config_var($conf,$protoline,'srtp_mode');
+		$this->_set_config_var($conf,$protoline,'voicemail');
 
 		return($conf);
 	}
@@ -596,6 +596,31 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		$protoline = array_merge($protocol, $linefeatures);
 
 		$raw_config['sip_lines'][$line_number] = $this->_build_sipline($protoline, $confregistrar);
+	}
+
+	private function _build_sip_secure_config(&$config)
+	{
+		if (strtolower($config['protocol']) == 'sip')
+		{
+			$appgeneralsip = &$this->_appsip->get_module('general');
+
+			$tlsenable = $appgeneralsip->get('tlsenable');
+			if (isset($config['sip_transport']) === true
+			&& $config['sip_transport'] === 'tls'
+			&& $tlsenable['general']['var_val'] === 'yes')
+			{
+				$tlscafile = $appgeneralsip->get('tlscafile');
+				$crt = $tlscafile['general']['var_val'];
+				$config['sip_servers_root_and_intermediate_certificates'] =
+					file_get_contents($crt);
+			}
+			else
+			{
+				unset($config['sip_srtp_mode'],
+				$config['sip_servers_root_and_intermediate_certificates'],
+				$config['sip_transport']);
+			}
+		}
 	}
 
 	private function _build_sccp_config(&$raw_config, $linefeatures)
@@ -621,7 +646,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		$this->_build_exten_config(&$raw_config);
 
-		$funckeys =  $this->_phonefunckey->build_provd_conf_funckey($iduserfeatures);
+		$funckeys = $this->_phonefunckey->build_provd_conf_funckey($iduserfeatures);
 
 		if (empty($funckeys))
 			unset($raw_config['funckeys']);
@@ -634,6 +659,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 		switch($protocolname)
 		{
 			case 'sip':
+				$this->_build_sip_secure_config(&$globalconfig);
 				$this->_build_sip_config(&$raw_config, $linefeatures);
 				break;
 			case 'sccp':
@@ -664,27 +690,7 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 			unset($config[$key]);
 		}
 
-		if (strtolower($config['protocol']) == 'sip')
-		{
-			$appgeneralsip = &$this->_appsip->get_module('general');
-
-			$tlsenable = $appgeneralsip->get('tlsenable');
-			if (isset($config['sip_transport']) === true
-			&& $config['sip_transport'] === 'tls'
-			&& $tlsenable['general']['var_val'] === 'yes')
-			{
-				$tlscafile = $appgeneralsip->get('tlscafile');
-				$crt = $tlscafile['general']['var_val'];
-				$config['sip_servers_root_and_intermediate_certificates'] =
-					file_get_contents($crt);
-			}
-			else
-			{
-				unset($config['sip_srtp_mode'],
-				$config['sip_servers_root_and_intermediate_certificates'],
-				$config['sip_transport']);
-			}
-		}
+		$this->_build_sip_secure_config(&$config);
 
 		$globalconfig['raw_config'] = $config;
 
