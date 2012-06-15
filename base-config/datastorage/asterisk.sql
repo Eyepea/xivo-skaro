@@ -290,15 +290,6 @@ INSERT INTO "contexttype" VALUES(DEFAULT, 'services', 0, 0, '');
 INSERT INTO "contexttype" VALUES(DEFAULT, 'others', 0, 0, '');
 
 
-DROP TABLE IF EXISTS "ctiaccounts";
-CREATE TABLE "ctiaccounts" (
- "login" VARCHAR(64) NOT NULL,
- "password" VARCHAR(64) NOT NULL,
- "label" VARCHAR(128) NOT NULL,
- PRIMARY KEY("login")
-);
-
-
 DROP TABLE IF EXISTS "ctilog";
 CREATE TABLE "ctilog" (
  "id" SERIAL,
