@@ -1,6 +1,7 @@
 #!/bin/bash
 action=$1
 services="dahdi xivo-confgend pf-xivo-provd pf-xivo-agid asterisk xivo-ctid nginx"
+reversed_services=$(echo $services | tac -s' ')
 
 usage() {
     cat << EOF
@@ -21,7 +22,7 @@ xivo_start() {
     done
     status=$(asterisk -rx 'core waitfullybooted')
     while [ "$status" != "Asterisk has fully booted." ]; do
-        sleep 1 
+        sleep 1
         status=$(asterisk -rx 'core waitfullybooted')
     done
     /sbin/iptables -D INPUT -p udp --dport 5060 -j DROP
@@ -29,7 +30,7 @@ xivo_start() {
 
 xivo_stop() {
     /sbin/iptables -I INPUT 1 -p udp --dport 5060 -j DROP
-    for service in $services; do
+    for service in $reversed_services; do
         /usr/sbin/invoke-rc.d $service stop
     done
     /sbin/iptables -D INPUT -p udp --dport 5060 -j DROP
