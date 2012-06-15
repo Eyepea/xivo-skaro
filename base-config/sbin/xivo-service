@@ -37,8 +37,8 @@ xivo_stop() {
 }
 
 xivo_restart() {
-    xivo_stop;;
-    xivo_start;;
+    xivo_stop
+    xivo_start
 }
 case $action in
     restart) xivo_restart;;
