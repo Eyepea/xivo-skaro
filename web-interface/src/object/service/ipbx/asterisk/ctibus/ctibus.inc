@@ -81,20 +81,8 @@ class xivo_service_asterisk_ctibus extends xivo_service_asterisk_abstract
 		return(true);
 	}
 
-	function eval_cmd($cmd)
-	{
-		if (is_scalar($cmd) === true)
-			return(trim($cmd));
-		elseif(is_array($cmd) === true)
-			return(implode('\n', array_values($cmd)));
-		else
-			return(null);
-	}
-
 	function cmd($cmd,$read=false)
 	{
-		$cmd = $this->eval_cmd($cmd);
-
 		if(dwho_is_sgraph($cmd) === false
 		|| $this->_load_socket() === false
 		|| $this->_set_options() === false)
@@ -117,31 +105,16 @@ class xivo_service_asterisk_ctibus extends xivo_service_asterisk_abstract
 		if(($nb = count($recv)) === 0)
 			return(false);
 
-		$r = array();
+		$header = array_shift($recv);
+		$empty_line = array_pop($recv);
+		$footer = array_pop($recv);
 
-		for($i = 0;$i < $nb;$i++)
-		{
-			$msg = explode(':',$recv[$i],2);
+		$header_exp = explode(':',$header,2);
+		if($header_exp[0] === 'XIVO-CLI-WEBI'
+		&& substr($header_exp[1],0,2) === 'KO')
+			return(false);
 
-			if(isset($msg[1]) === false)
-				$msg[1] = '';
-
-			if($msg[0] === 'XIVO-CLI-WEBI')
-			{
-				if(substr($msg[1],0,2) === 'KO')
-					return(false);
-				continue;
-			}
-			else if($msg[0] === 'Privilege')
-				continue;
-
-			$r[] = $recv[$i];
-		}
-
-		if(end($r) === '')
-			array_pop($r);
-
-		return($r);
+		return($recv);
 	}
 }
 

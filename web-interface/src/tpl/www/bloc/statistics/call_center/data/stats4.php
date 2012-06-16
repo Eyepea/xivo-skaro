@@ -41,8 +41,7 @@ if (($type = $table1->get_data_custom('listtype')) !== null
 	</h3>
 	<div class="sb-content">
 <?php
-
-    if ($periods !== false):
+    if ($periods != false):
         foreach ($periods as $k => $v):
             echo $this->bbf('col_t'.$k);
             if (empty($v['end']) === true):

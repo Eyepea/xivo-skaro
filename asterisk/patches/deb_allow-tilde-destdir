@@ -12,11 +12,11 @@ to $HOMEDIR nor shouldn't be.
 This patch relaxes this test just for cases where the ~ is followed by a '/',
 which should catch most cases.
 
-Index: asterisk-1.8.12.0/Makefile
+Index: asterisk-1.8.13.0/Makefile
 ===================================================================
---- asterisk-1.8.12.0.orig/Makefile
-+++ asterisk-1.8.12.0/Makefile
-@@ -599,7 +599,7 @@ oldmodcheck:
+--- asterisk-1.8.13.0.orig/Makefile
++++ asterisk-1.8.13.0/Makefile
+@@ -552,7 +552,7 @@ oldmodcheck:
  	fi
  
  badshell:

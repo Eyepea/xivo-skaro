@@ -7,23 +7,5 @@ Type :
 ; fm_uri
 URI :
 
-; fm_host
-Serveur :
-
-; fm_port
-Port :
-
-; fm_dbname
-Nom de la base de données :
-
-; fm_tablename
-Nom de la table :
-
-; fm_user
-Nom utilisateur :
-
-; fm_password
-Mot de passe utilisateur :
-
 ; fm_description
 Description

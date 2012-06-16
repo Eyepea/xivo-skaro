@@ -234,14 +234,6 @@ $array['element']['permit']['null'] = true;
 $array['element']['defaultip'] = array();
 $array['element']['defaultip']['unset'] = true;
 
-$array['element']['callgroup'] = array();
-$array['element']['callgroup']['default'] = '';
-$array['element']['callgroup']['null'] = true;
-
-$array['element']['pickupgroup'] = array();
-$array['element']['pickupgroup']['default'] = '';
-$array['element']['pickupgroup']['null'] = true;
-
 $array['element']['setvar'] = array();
 $array['element']['setvar']['default'] = '';
 
@@ -489,8 +481,6 @@ $array['filter']['permit'] = array('set'		=> false,
 				   'chk'		=> 2,
 				 'callback'	=> 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['defaultip'] = array('set' => false,'chk' => 0);
-$array['filter']['callgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^(?:[0-9]+[,]?)*$/','maxlen' => 180);
-$array['filter']['pickupgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^(?:[0-9]+[,]?)*$/','maxlen' => 180);
 $array['filter']['setvar'] = array('set'	=> false,
 				   'chk'	=> 2,
 				   'minlen'	=> 2,

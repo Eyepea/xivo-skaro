@@ -54,14 +54,14 @@ abstract class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstra
 
 		return($this->_identity->mk_identity($arr));
 	}
-	
+
 	function rebuild_device_config($deviceid)
 	{
 		if (($_XOBJ = &dwho_gct::get('xivo_object')) === false
-		|| ($mmodprovdconfig = &$_XOBJ->get_module('provdconfig')) === false)
+		|| ($modprovdconfig = &$_XOBJ->get_module('provdconfig')) === false)
 			return(false);
-			
-		return($mmodprovdconfig->rebuild_device_config($deviceid));
+
+		return($modprovdconfig->rebuild_device_config($deviceid));
 	}
 
 	function chk_dest_endcall($action,$actionarg1=null)

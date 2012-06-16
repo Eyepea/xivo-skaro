@@ -20,19 +20,14 @@
 
 $ctimain = &$ipbx->get_module('ctimain');
 $ctipresences = &$ipbx->get_module('ctipresences');
-$ctiaccounts = &$ipbx->get_module('ctiaccounts');
 
 $appxivoserver = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'xivo'));
 
 $info = array();
 $load_inf = $ctimain->get_all();
 $info['ctimain'] = $load_inf[0];
-$info['xivoserver'] = array();
-$info['xivoserver']['info'] = $appxivoserver->get();
-$info['xivoserver']['slt'] = array();
 $element = array();
 $element['ctimain'] = $ctimain->get_element();
-$element['ctiaccounts'] = $ctiaccounts->get_element();
 
 $error = array();
 $error['ctimain'] = array();
@@ -59,9 +54,9 @@ if(isset($_QR['fm_send']) === true)
 
 	if(($rs = $ctimain->chk_values($_QR['cti'])) === false)
 	{
-	    $err = $ctimain->get_filter_error();
-	    foreach ($err as $k => $v)
-	        dwho_report::push('error', $k.'=> '.$v);
+		$err = $ctimain->get_filter_error();
+		foreach ($err as $k => $v)
+			dwho_report::push('error', $k.'=> '.$v);
 		$ret = 0;
 	} else {
 		if($ctimain->exists(null,null,1) === true)
@@ -70,8 +65,7 @@ if(isset($_QR['fm_send']) === true)
 			$ret = $ctimain->add($rs);
 	}
 
-	if($ret == 1
-	&& $ctiaccounts->set($_QR['ctiaccounts']) === true)
+	if($ret == 1)
 	{
 		$fm_save = true;
 		$ipbx->discuss('xivo[cticonfig,update]');
@@ -80,26 +74,10 @@ if(isset($_QR['fm_send']) === true)
 	$info['ctimain'] = $load_inf[0];
 }
 
-if(($info['xivoserver']['list'] = $appxivoserver->get_server_list()) !== false)
-{
-	if(dwho_has_len($info['xivoserver']['list']))
-		uasort($info['xivoserver']['list'],array(&$serversort,'str_usort'));
-	if(isset($info['ctimain']['asterisklist']) && dwho_has_len($info['ctimain']['asterisklist']))
-	{
-		$sel = explode(',', $info['ctimain']['asterisklist']);
-		$selected = array();
-		foreach($sel as $s => $k)
-			$selected[$k]['id'] = $k;
-		if(($info['xivoserver']['slt'] = dwho_array_intersect_key($selected,$info['xivoserver']['list'],'id')) !== false)
-			$info['xivoserver']['slt'] = array_keys($info['xivoserver']['slt']);
-	}
-}
-
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('error',$error);
 $_TPL->set_var('element',$element);
 $_TPL->set_var('info', $info);
-$_TPL->set_var('listaccount', $ctiaccounts->get_all());
 
 function certfilter($cert)
 { return count($cert['types']) == 1 && $cert['types'][0] == 'certificate'; }

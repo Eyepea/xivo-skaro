@@ -67,8 +67,6 @@ switch($act)
 		}
 
 		$element = $apptrunk->get_elements();
-		// remove 'user' type
-		unset($element['protocol']['type']['value'][0]);
 
 		if(dwho_issa('allow',$element['protocol']) === true
 		&& dwho_issa('value',$element['protocol']['allow']) === true
@@ -141,8 +139,6 @@ switch($act)
 		}
 
 		$element = $apptrunk->get_elements();
-		// remove 'user' type
-		unset($element['protocol']['type']['value'][0]);
 
 		if(dwho_issa('allow',$element['protocol']) === true
 		&& dwho_issa('value',$element['protocol']['allow']) === true

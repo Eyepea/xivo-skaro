@@ -230,7 +230,7 @@ class xivo_service_asterisk_dialaction extends xivo_service_asterisk_abstract
 				return($this->chk_dest_voicemenu($actionarg1,null,$disable));
 			case 'outcall':
 				if(dwho_has_len($actionarg2) === true
-				&& dwho_is_unumber($actionarg2) === false)
+				&& is_numeric($actionarg2) === false)
 					return(false);
 
 				return($this->chk_dest_outcall($actionarg1,$actionarg2,$id,$disable));

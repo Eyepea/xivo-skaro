@@ -55,6 +55,7 @@ $array['element']['userid']['default'] = 0;
 $array['element']['channel'] = array();
 $array['element']['channel']['value'] = array(
 						XIVO_SRE_IPBX_AST_CHAN_SIP,
+						XIVO_SRE_IPBX_AST_CHAN_SCCP,
 						XIVO_SRE_IPBX_AST_CHAN_IAX,
 						XIVO_SRE_IPBX_AST_CHAN_LOCAL,
 						XIVO_SRE_IPBX_AST_CHAN_AGENT,
@@ -77,6 +78,7 @@ $array['filter']['usertype'] = array('key' => array('user','agent'));
 $array['filter']['userid'] = array('cast' => 'ulongint');
 $array['filter']['channel'] = array('key' => array(
 							XIVO_SRE_IPBX_AST_CHAN_SIP,
+							XIVO_SRE_IPBX_AST_CHAN_SCCP,
 							XIVO_SRE_IPBX_AST_CHAN_IAX,
 							XIVO_SRE_IPBX_AST_CHAN_LOCAL,
 							XIVO_SRE_IPBX_AST_CHAN_AGENT,

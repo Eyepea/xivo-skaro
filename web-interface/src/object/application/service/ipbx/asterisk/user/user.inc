@@ -1162,11 +1162,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($this->get_errnb() > 0
 		|| ($userfeaturesid = $this->add_userfeatures()) === false
 		|| $this->add_picture($userfeaturesid) === false
-		|| $this->edit_linefeatures($userfeaturesid) === false
+		|| $this->add_phonefunckey($userfeaturesid) === false
 		|| $this->add_rightcall($userfeaturesid) === false
 		|| $this->add_dialaction($userfeaturesid) === false
+		|| $this->edit_linefeatures($userfeaturesid) === false
 		|| $this->add_voicemail($userfeaturesid) === false
-		|| $this->add_phonefunckey($userfeaturesid) === false
 		|| $this->add_queueskills($userfeaturesid) === false
 		|| $this->add_schedule_path($userfeaturesid) === false)
 		{
@@ -1341,20 +1341,17 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->get_errnb() > 0
 		|| $this->edit_userfeatures() === false
 		|| $this->edit_picture() === false
+		|| $this->edit_phonefunckey() === false
 		|| $this->edit_linefeatures() === false
 		|| $this->edit_rightcall() === false
 		|| $this->edit_dialaction() === false
 		|| $this->edit_voicemail() === false
-		|| $this->edit_schedule_path() === false
-		|| $this->edit_phonefunckey() === false)
+		|| $this->edit_schedule_path() === false)
 		{
 			$this->_reverse_edit();
 			$this->_status = '';
 			return(false);
 		}
-
-		if($this->_provdconfig->rebuild_master_line_user($this->_info['userfeatures']['id']) === false)
-			return(false);
 
 		$this->_status = '';
 		return(true);
@@ -1494,8 +1491,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$arr['protocol']['cid_name'] = str_replace('"','',$line['callerid']);
 				$arr['protocol']['cid_num'] = $line['number'];
 			}
-
-			$arr['callgroup'] = $this->get_result('callgroup');
 
 			if(($queue = $this->get_result('queue')) !== null
 			&& ($queue_select = $this->get_result('queue-select')) !== null)
@@ -1646,6 +1641,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->delete_phonefunckey() === false
 		|| $this->delete_callfiltermember() === false
 		|| $this->delete_queueskill() === false
+        || $this->delete_groupmember() === false
 		|| $this->delete_schedule_path() === false)
 		{
 			$r = false;
@@ -1677,12 +1673,16 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(dwho_issa('linefeatures',$this->_info) === false)
 			return(null);
 
-		$r = array();
+		$r = true;
 		foreach($this->_info['linefeatures'] as $line)
 		{
 			if($this->_line->get($line['id']) === false
 			|| $this->_line->delete() === false)
-				dwho_report::push('error','Can\'t remove line: '.$line['id'],'linefeatures');
+			{
+				$r = false;
+				$identity = $this->_info['userfeatures']['identity'];
+				dwho_report::push('error','Can\'t remove line (id #'.$line['id'].') for user "'.$identity.'"', 'lines');
+			}
 		}
 
 		if($this->_status === 'delete')

@@ -290,15 +290,6 @@ INSERT INTO "contexttype" VALUES(DEFAULT, 'services', 0, 0, '');
 INSERT INTO "contexttype" VALUES(DEFAULT, 'others', 0, 0, '');
 
 
-DROP TABLE IF EXISTS "ctiaccounts";
-CREATE TABLE "ctiaccounts" (
- "login" VARCHAR(64) NOT NULL,
- "password" VARCHAR(64) NOT NULL,
- "label" VARCHAR(128) NOT NULL,
- PRIMARY KEY("login")
-);
-
-
 DROP TABLE IF EXISTS "ctilog";
 CREATE TABLE "ctilog" (
  "id" SERIAL,
@@ -2236,8 +2227,6 @@ CREATE TABLE "usersip" (
  "maxforwards" INTEGER DEFAULT NULL,
  "disallowed_methods" VARCHAR(1024) DEFAULT NULL,
  "textsupport" INTEGER DEFAULT NULL, -- BOOLEAN
- "callgroup" VARCHAR(64) DEFAULT '', -- i.e: 1,4-9
- "pickupgroup" VARCHAR(64) DEFAULT '',   -- i.e: 1,3-9
  "commented" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN -- user / peer --
  PRIMARY KEY("id")
 );

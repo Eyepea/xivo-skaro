@@ -50,13 +50,13 @@ Statique
 Type de connexion :
 
 ; fm_protocol_type-opt(user)
-Entrant
+User
 
 ; fm_protocol_type-opt(peer)
-Sortant
+Peer
 
 ; fm_protocol_type-opt(friend)
-Entrant/Sortant
+Friend
 
 ; fm_protocol_language
 Langue :

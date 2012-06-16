@@ -22,9 +22,6 @@ include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 $_STS->load_ressource('general');
 
-if($_SESSION['_USR']->meta !== 'root')
-	$_QRY->go($_TPL->url('statistics/call_center/data/stats1'));
-
 if (($listconf = $_TPL->get_var('listconf')) === null
 || ($nb = count($listconf)) === 0)
 {

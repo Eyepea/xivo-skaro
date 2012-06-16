@@ -59,14 +59,45 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return(dwho_file::required($arr,$once,$includable));
 	}
 
-	function discuss($cmd,$recv=false)
+	function _append_prefix_cmd($cmd, $ask_cti_answer=false)
+{
+		if ($ask_cti_answer === false)
+			return('async:'.$cmd);
+		else
+			return('sync:'.$cmd);
+
+	}
+
+	function discuss($cmd,$ask_cti_answer=false)
 	{
 		if($this->_discuss === false
 		|| (is_object($this->_discuss) === false
-		   && ($this->_discuss = &$this->get_module('ctibus')) === false) === true)
+			&& ($this->_discuss = &$this->get_module('ctibus')) === false) === true)
 			return(($this->_discuss = false));
 
-		return($this->_discuss->cmd($cmd,$recv));
+		if (is_scalar($cmd) === true)
+			$cmd = array($cmd);
+
+		$ret = array();
+		foreach($cmd as $one_cmd)
+		{
+			$prefixed_cmd = $this->_append_prefix_cmd($one_cmd, $ask_cti_answer);
+			array_push($ret, $this->_discuss->cmd($prefixed_cmd, $ask_cti_answer));
+		}
+
+		if (count($ret) === 1)
+			return $ret[0];
+
+		return($ret);
+	}
+
+	function reload_agents_and_queue_members()
+	{
+		$this->discuss(array('module reload app_queue.so',
+				'module reload chan_agent.so',
+				'xivo[agentlist,update]',
+				'xivo[userlist,update]',
+				'xivo[queuemember,update]'));
 	}
 
 	function _load_identity_class($module)

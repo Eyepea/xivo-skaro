@@ -88,13 +88,11 @@ $page = $url->pager($pager['pages'],
 			$ref 	= &$list[$i];
 			$icon = 'enable';
 			$arr =  split(';', $ref['rule'], 2);
+			$rule = $arr[0];
 			if (count($arr) > 1)
 			{
-				list($rule, $trash) = $arr;
 			    $rule .= ", ...";
 			}
-			else
-				$rule = $arr;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"

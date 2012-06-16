@@ -121,7 +121,7 @@ $page = $url->pager($pager['pages'],
 			</label>
 		</td>
 		<td><?=(dwho_has_len($ref['number']) === true ? $ref['number'] : '-')?></td>
-		<td><?=$ref['nb_qmember']?></td>
+		<td class="nbqmember"><?=$ref['nb_qmember']?></td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',

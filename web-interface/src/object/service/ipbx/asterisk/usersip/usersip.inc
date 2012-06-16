@@ -46,8 +46,6 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 		$data['id'] = (int) $data['id'];
 		$data['initialized'] = dwho_has_len($data['fullcontact']);
 		$data['commented'] = (bool) $data['commented'];
-		$data['callgroup'] = empty($data['callgroup']) === false ? explode(',',$data['callgroup']) : '';
-		$data['pickupgroup'] = empty($data['pickupgroup']) === false ? explode(',',$data['pickupgroup']) : '';
 		$data['identity'] = strtoupper($data['protocol']).'/'.$data['name'];
 
 		if(($pos = strrpos($data['mailbox'],'@')) !== false)
@@ -77,9 +75,6 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
-
-		if(isset($arr['callgroup']) === true)
-			$arr['pickupgroup'] = $arr['callgroup'];
 
 		$arr['type'] = 'friend';
 		$arr['username'] = null;
@@ -112,12 +107,9 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
-		if(isset($arr['callgroup']) === true)
-			$arr['pickupgroup'] = $arr['callgroup'];
-
 		if(isset($arr['setvar'],$arr['setvar']{0}) === false)
-			unset($arr['setvar']);			
-		
+			unset($arr['setvar']);
+
 		if(isset($arr['secret']) === true
 		&& empty($arr['secret']) === false)
 		{

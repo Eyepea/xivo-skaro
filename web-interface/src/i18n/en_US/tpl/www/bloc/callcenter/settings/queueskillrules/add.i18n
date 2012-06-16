@@ -27,3 +27,9 @@ The syntax of the rule is incorrect
 
 ; queueskillrule-allrules(norule)
 You must specify at least one rule
+
+; col_add
+add
+
+; opt_disp-delete
+delete

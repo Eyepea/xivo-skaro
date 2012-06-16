@@ -142,19 +142,6 @@ Ajouter
 ; bt_outxivoserver
 Enlever
 
-; cti-accounts
-Comptes des serveurs CTI externes
-
-; col_ctiaccounts_label
-Label
-
-; col_ctiaccounts_login
-Identifiant
-
-; col_ctiaccounts_password
-Mot de passe
-
-
 ; fm_tlsprivkeyfile
 Clé privée : 
 

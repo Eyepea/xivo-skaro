@@ -19,6 +19,7 @@
 #
 
 define('XIVO_SRE_IPBX_AST_CHAN_SIP','SIP');
+define('XIVO_SRE_IPBX_AST_CHAN_SCCP','SCCP');
 define('XIVO_SRE_IPBX_AST_CHAN_IAX','IAX2');
 define('XIVO_SRE_IPBX_AST_CHAN_LOCAL','Local');
 define('XIVO_SRE_IPBX_AST_CHAN_AGENT','Agent');

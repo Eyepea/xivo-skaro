@@ -71,13 +71,13 @@ $rules = $this->get_var('rules');
 
 				<th class="th-left"><?=$this->bbf('col_1');?></th>
 				<th class="th-right th-rule">
-					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
-									  $this->bbf('col_add'),
-									  'border="0"'),
-							   '#',
-							   null,
-							   'onclick="dwho.dom.make_table_list(\'disp\',this); return(dwho.dom.free_focus());"',
-							   $this->bbf('col_add'));?>
+				<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
+									$this->bbf('col_add'),
+									'border="0"'),
+									'#',
+									null,
+									'id="lnk-add-row" onclick="dwho.dom.make_table_list(\'disp\',this); return(dwho.dom.free_focus());"',
+									$this->bbf('col_add'));?>
 				</th>
 			</tr>
 			</thead>

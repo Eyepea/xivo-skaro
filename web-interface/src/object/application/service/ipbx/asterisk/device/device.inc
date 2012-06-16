@@ -277,6 +277,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 
 		$raw_config = &$globalconfig['raw_config'];
 		unset($raw_config['sip_lines']);
+		unset($raw_config['funckeys']);
 		if($this->_provdconfig->edit($globalconfig['id'],$globalconfig) === false)
 		{
 			dwho_report::push('error', 'Can\'t remove line from config: '.$globalconfig['id']);
@@ -301,6 +302,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 			if (empty($raw_config['sip_lines']) === true)
 			{
 				unset($raw_config['sip_lines']);
+				unset($raw_config['funckeys']);
 				$this->mode_autoprov($synchronize);
 			}
 			if($this->_provdconfig->edit($globalconfig['id'],$globalconfig) === false)
@@ -312,7 +314,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		return(true);
 	}
 
-	public function associate_line($idlinefeatures,$synchronize=false)
+	public function associate_line($idlinefeatures,$iduserfeatures,$synchronize=false)
 	{
 		if(dwho_issa('devicefeatures',$this->_info) === false)
 			return(false);
@@ -323,9 +325,7 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 		$id = $this->_info['devicefeatures']['id'];
 		$deviceid = $this->_info['devicefeatures']['deviceid'];
 
-		if(($rs = $appline->get($idlinefeatures)) === false
-		|| ($rs['userfeatures'] = $userfeatures->get($rs['linefeatures']['iduserfeatures'])) === false
-		|| $this->_provddevice->update_config_from_line($rs,$deviceid,$synchronize) === false)
+		if($this->_provddevice->update_config_from_line($deviceid,$iduserfeatures,$synchronize) === false)
 			return(false);
 
 		$this->_linefeatures->edit($idlinefeatures,array('device' => $id));

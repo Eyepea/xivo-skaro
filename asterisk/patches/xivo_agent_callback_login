@@ -1,7 +1,7 @@
-Index: asterisk-1.8.12.0/channels/chan_agent.c
+Index: asterisk-1.8.13.0/channels/chan_agent.c
 ===================================================================
---- asterisk-1.8.12.0.orig/channels/chan_agent.c
-+++ asterisk-1.8.12.0/channels/chan_agent.c
+--- asterisk-1.8.13.0.orig/channels/chan_agent.c
++++ asterisk-1.8.13.0/channels/chan_agent.c
 @@ -198,13 +198,29 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revisi
  			<para>Sets an agent as no longer logged in.</para>
  		</description>
@@ -608,7 +608,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
  	if (p->start && (ast->_state != AST_STATE_UP)) {
  		p->start = 0;
 -	} else
-+	} else if (ast->_state == AST_STATE_RESERVED) 
++	} else if (ast->_state == AST_STATE_RESERVED)
 +		howlong = 0;
 +	else
  		p->start = 0;
@@ -759,8 +759,8 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
 +			ast_channel_release( tmp );
 +			ast_mutex_unlock(&p->lock);     /* For other thread to read the condition. */
 +			return NULL;
-+		}	
-+	} 
++		}
++	}
 +	if (p->chan)
 +		ast_indicate(p->chan, AST_CONTROL_UNHOLD);
  	return tmp;
@@ -857,7 +857,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
 +	}
 +
 +	snprintf(loginchan, sizeof(loginchan), "%s@%s", chan, S_OR(context, "default"));
-+	
++
 +	AST_LIST_TRAVERSE(&agents, p, list) {
 +		if(!strcasecmp(loginchan, p->loginchan))
 +			return 0;
@@ -1007,7 +1007,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
 +				"Reason: %s\r\n"
 +				"Loginchan: %s\r\n"
 +				"Logintime: %ld\r\n"
-+				"Uniqueid: %s\r\n", 
++				"Uniqueid: %s\r\n",
 +				p->agent, tmp, loginchan, logintime, uniqueid);
 +	} else {
 +		manager_event(EVENT_FLAG_AGENT, "Agentcallbacklogoff",
@@ -1090,9 +1090,9 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
  				}
  				online_agents++;
 +			} else if (!ast_strlen_zero(p->loginchan)) {
-+				if (ast_tvdiff_ms(ast_tvnow(), p->lastdisc) > 0 || !(p->lastdisc.tv_sec)) 
++				if (ast_tvdiff_ms(ast_tvnow(), p->lastdisc) > 0 || !(p->lastdisc.tv_sec))
 +					snprintf(location, sizeof(location) - 20, "available at '%s'", p->loginchan);
-+				else 
++				else
 +					snprintf(location, sizeof(location) - 20, "wrapping up at '%s'", p->loginchan);
 +				talkingto[0] = '\0';
 +				online_agents++;
@@ -1179,7 +1179,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
  	}
  	while (!res && (max_login_tries==0 || tries < max_login_tries)) {
 +
-+		
++
 +
  		tries++;
  		/* Check for password */
@@ -1205,7 +1205,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
 +					else
  						p->ackcall = 0;
 -					}
-+				
++
  					tmpoptions=pbx_builtin_getvar_helper(chan, "AGENTACKCALL");
  					ast_verb(3, "Saw variable AGENTACKCALL=%s, setting ackcall to: %d for Agent '%s'.\n", tmpoptions, p->ackcall, p->agent);
  					ast_set_flag(p, AGENT_FLAG_ACKCALL);
@@ -1215,7 +1215,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
  				if (!p->chan) {
 -					long logintime;
 +
-+	
++
  					snprintf(agent, sizeof(agent), "Agent/%s", p->agent);
  
 -					p->logincallerid[0] = '\0';
@@ -1223,7 +1223,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
 -					
 +					if (callbackmode) {
 +
-+	
++
 +						/* Retrieve login chan */
 +						for (;;) {
 +
@@ -1426,7 +1426,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
 +
 +
  						ast_mutex_lock(&p->lock);
-+						if (res && p->owner) 
++						if (res && p->owner)
 +							ast_log(LOG_WARNING, "Huh?  We broke out when there was still an owner?\n");
  						/* Log us off if appropriate */
  						if (p->chan == chan) {
@@ -1474,7 +1474,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
 +			if (login_state==1) {
 +				pbx_builtin_setvar_helper(chan, "AGENTSTATUS", "on");
 +				pbx_builtin_setvar_helper(chan, "AGENTEXTEN", args.extension);
-+			} else 
++			} else
 +				pbx_builtin_setvar_helper(chan, "AGENTSTATUS", "off");
 +		} else {
 +			pbx_builtin_setvar_helper(chan, "AGENTSTATUS", "fail");
@@ -1502,7 +1502,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
  
  /*!
 + * Called by the AgentLogin application (from the dial plan).
-+ * 
++ *
 + * \param chan
 + * \param data
 + * \returns
@@ -1515,7 +1515,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
 +
 +/*!
 + *  Called by the AgentCallbackLogin application (from the dial plan).
-+ * 
++ *
 + * \param chan
 + * \param data
 + * \returns
@@ -1551,7 +1551,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
 + * It is registered on load_module() and it gets called by the manager backend.
 + * \param s
 + * \param m
-+ * \returns 
++ * \returns
 + * \sa action_agents(), action_agent_logoff(), load_module().
 + */
 +static int action_agent_callback_login(struct mansession *s, const struct message *m)
@@ -1577,7 +1577,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
 +
 +	AST_LIST_LOCK(&agents);
 +	AST_LIST_TRAVERSE(&agents, p, list) {
-+		if (strcmp(p->agent, agent) || p->pending) 
++		if (strcmp(p->agent, agent) || p->pending)
 +			continue;
 +		if (p->chan) {
 +			login_state = 2; /* already logged in (and on the phone)*/
@@ -1585,7 +1585,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
 +		}
 +		ast_mutex_lock(&p->lock);
 +		login_state = 1; /* Successful Login */
-+		
++
 +		if (ast_strlen_zero(context))
 +			ast_copy_string(p->loginchan, exten, sizeof(p->loginchan));
 +		else
@@ -1717,7 +1717,7 @@ Index: asterisk-1.8.12.0/channels/chan_agent.c
 +				cur_agent->logincallerid[0] = '\0';
 +			if (cur_agent->loginstart == 0)
 +				time(&cur_agent->loginstart);
-+			ast_devstate_changed(AST_DEVICE_UNKNOWN, "Agent/%s", cur_agent->agent);	
++			ast_devstate_changed(AST_DEVICE_UNKNOWN, "Agent/%s", cur_agent->agent);
 +		}
 +	}
 +	AST_LIST_UNLOCK(&agents);

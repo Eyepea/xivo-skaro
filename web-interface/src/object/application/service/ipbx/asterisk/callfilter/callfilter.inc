@@ -175,7 +175,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 		$where['bstype'] = 'secretary';
 		$order = array('priority' => SORT_ASC);
-		
+
 		if(($this->_info['callfiltermember']['secretary'] = $this->_callfiltermember->get_all_where($where,null,true,$order)) === false)
 		{
 			$this->_info['callfiltermember']['secretary'] = null;
@@ -266,9 +266,9 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function get_callfilters_list($disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		$this->_cnt = $this->_dso->get_cnt();
-
 		$rs = $this->_dso->get_all($this->_param['type'],$disable,$order,$limit);
+
+		$this->_cnt = $this->_dso->get_cnt();
 
 		if($rs === false || ($nb = count($rs)) === 0)
 			return(false);

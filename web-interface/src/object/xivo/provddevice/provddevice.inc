@@ -185,7 +185,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 
 	public function eval_config_device($deviceid)
 	{
-		if (($conf = $this->_provdconfig->build_raw_config($deviceid)) === false)
+		if (($conf = $this->_provdconfig->init_device_config($deviceid)) === false)
 			return(false);
 
 		if ($this->_provdconfig->get($deviceid) === false)
@@ -202,8 +202,7 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		|| is_array($rawconfig) === false)
 			return(false);
 
-		if (($conf = $this->_provdconfig->build_raw_config($deviceid,null,$rawconfig)) === false
-		|| $this->_provdconfig->edit($conf['id'],$conf) === false)
+		if ($this->_provdconfig->update_raw_config($deviceid,$rawconfig) === false)
 			return(false);
 
 		if ($synchronize === true
@@ -239,25 +238,9 @@ class xivo_object_provddevice extends xivo_object_provd_abstract
 		return(true);
 	}
 
-	public function update_config_from_line($arr,$deviceid,$synchronize=false)
+	public function update_config_from_line($deviceid,$iduserfeatures,$synchronize=false)
 	{
-		if ($this->_provdconfig === false
-		|| dwho_has_len($deviceid) === false
-		|| dwho_issa('protocol',$arr) === false
-		|| dwho_issa('linefeatures',$arr) === false
-		|| dwho_issa('userfeatures',$arr) === false)
-			return(false);
-
-		if (empty($arr['linefeatures']['num']) === true
-		|| $arr['linefeatures']['num'] === 0)
-			$arr['linefeatures']['num'] = 1;
-
-		$lines = array();
-		$lines[$arr['linefeatures']['num']] = array();
-		$lines[$arr['linefeatures']['num']]['protocol'] = $arr['protocol'];
-		$lines[$arr['linefeatures']['num']]['linefeatures'] = $arr['linefeatures'];
-
-		if (($conf = $this->_provdconfig->build_raw_config($deviceid,$lines)) === false)
+		if (($conf = $this->_provdconfig->build_device_config($deviceid,$iduserfeatures)) === false)
 			return(false);
 		elseif ($this->_provdconfig->edit($deviceid,$conf) === false)
 		{

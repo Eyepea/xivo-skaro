@@ -135,16 +135,18 @@ switch($act)
 		else
 			$extens['*'] = $_TPL->bbf('incallavailable-default');
 
-		foreach($incalls[$info['reversedirectories']['context']] as $exten)
+		if ($info['reversedirectories']['context'] !== "*")
 		{
-			if(($idx = array_search($exten[1], $info['reversedirectories']['extensions'])) !== false)
+			foreach($incalls[$info['reversedirectories']['context']] as $exten)
 			{
-				$info['reversedirectories']['extensions'][$idx] = array($exten[1] => $exten[1]);
-				continue;
+				if(($idx = array_search($exten[1], $info['reversedirectories']['extensions'])) !== false)
+				{
+					$info['reversedirectories']['extensions'][$idx] = array($exten[1] => $exten[1]);
+					continue;
+				}
+				$extens[$exten[1]] = $exten[1];
 			}
-			$extens[$exten[1]] = $exten[1];
 		}
-
 		$result = $fm_save = null;
 		$return = &$info;
 
@@ -188,8 +190,7 @@ switch($act)
 			$sel = dwho_json::decode($return['reversedirectories']['directories'], true);
 			$info['directories']['slt'] =
 				array_intersect(
-					$sel,
-					$return['directories']['list']);
+					$return['directories']['list'],$sel);
 			$info['directories']['list'] =
 				array_diff(
 					$return['directories']['list'],
@@ -197,7 +198,6 @@ switch($act)
 		}
 
 		dwho::load_class('dwho_sort');
-
 
 		$_TPL->set_var('idcontexts', $info['reversedirectories']['id']);
 		$_TPL->set_var('info'      , $return);
