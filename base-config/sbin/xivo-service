@@ -1,6 +1,6 @@
 #!/bin/bash
 action=$1
-services="monit dahdi xivo-confgend pf-xivo-provd pf-xivo-agid asterisk xivo-ctid nginx"
+services="dahdi xivo-confgend pf-xivo-provd pf-xivo-agid asterisk xivo-ctid nginx monit"
 reversed_services=$(echo $services | tac -s' ')
 
 usage() {
@@ -8,7 +8,7 @@ usage() {
     usage : $0 action
     availables actions :
         stop  : stop all xivo services
-        start : stop all xivo services
+        start : start all xivo services
 
     impacted services : $services
 EOF
@@ -40,6 +40,7 @@ xivo_restart() {
     xivo_stop
     xivo_start
 }
+
 case $action in
     restart) xivo_restart;;
     start)   xivo_start;;
