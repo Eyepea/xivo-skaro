@@ -339,17 +339,7 @@ if(isset($error_js[0]) === true)
 <fieldset id="cti-intervals">
 	<legend><?=$this->bbf('cti-intervals');?></legend>
 <?php
-
-	echo	$form->text(array('desc'	=> $this->bbf('fm_cti_updates_period'),
-					'name'		=> 'cti[updates_period]',
-					'labelid'	=> 'cti_updates_period',
-					'value'		=> $info['ctimain']['updates_period'],
-					'regexp'	=> '[[:int:]]',
-					'default'	=> $element['ctimain']['updates_period']['default'],
-#					'help'		=> $this->bbf('hlp_fm_cti_updates_period')
-					)),
-
-			$form->text(array('desc'	=> $this->bbf('fm_cti_socket_timeout'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_cti_socket_timeout'),
 					'name'		=> 'cti[socket_timeout]',
 					'labelid'	=> 'cti_socket_timeout',
 					'value'		=> $info['ctimain']['socket_timeout'],
@@ -369,20 +359,10 @@ if(isset($error_js[0]) === true)
 ?>
 </fieldset>
 <?php
-	$parting = array();
-	if(isset($info['ctimain']['parting_astid_context']) && dwho_has_len($info['ctimain']['parting_astid_context']))
-	{
-		$parting = explode(',', $info['ctimain']['parting_astid_context']);
-	}
 	echo	$form->checkbox(array('desc' => $this->bbf('fm_cti_parting_astid_context'),
-							'name' => 'cti[parting_astid_context]',
-							'labelid' => 'cti_parting_astid_context',
-							'checked' => in_array('context', $parting))),
-
-			$form->checkbox(array('desc' => $this->bbf('fm_cti_parting_astid_ipbx'),
-							'name' => 'cti[parting_astid_ipbx]',
-							'labelid' => 'cti_parting_astid_ipbx',
-							'checked' => in_array('astid', $parting)));
+							'name' => 'cti[context_separation]',
+							'labelid' => 'context_separation',
+							'checked' => $info['ctimain']['context_separation']));
 ?>
 </div>
 

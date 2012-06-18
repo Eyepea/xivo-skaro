@@ -31,8 +31,6 @@ if(defined('XIVO_LOC_WEBSERVICES_MODE') === false
 	$http_response->send(true);
 }
 
-$section = 'xivo/configuration';
-
 include(dwho_file::joinpath(dirname(__FILE__),'_'.XIVO_LOC_WEBSERVICES_MODE.'.php'));
 
 ?>

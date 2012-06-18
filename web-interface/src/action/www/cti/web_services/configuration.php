@@ -18,12 +18,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$access_category = 'cti';
-$access_subcategory = 'configuration';
+$access_category = 'configuration';
+$access_subcategory = '';
 
 $_XOBJ = &dwho_gct::get('xivo_object');
 
-include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
+#include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 $starttime = microtime(true);
 
@@ -275,14 +275,10 @@ switch($act)
         $out['main']['incoming_tcp'] = $tcpdefs;
         $out['main']['incoming_udp'] = $udpdefs;
         $out['main']['sockettimeout'] = $load_ctimain['socket_timeout'];
-        $out['main']['updates_period'] = $load_ctimain['updates_period'];
         $out['main']['logintimeout'] = $load_ctimain['login_timeout'];
         $out['main']['asterisk_queuestat_db'] = $db_queuelogger;
         $out['main']['ctilog_db_uri'] = $db_ctilog;
-        $out['main']['parting_astid_context'] = array();
-
-        if($load_ctimain['parting_astid_context'] != "")
-            $out['main']['parting_astid_context'] = explode(",", $load_ctimain['parting_astid_context']);
+        $out['main']['context_separation'] = (bool) $load_ctimain['context_separation'];
 
         # PRESENCES (USER STATUSES)
         if(isset($load_presences) === true

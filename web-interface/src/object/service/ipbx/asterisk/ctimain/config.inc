@@ -21,9 +21,6 @@
 $array = array();
 $array['element'] = array();
 
-$array['element']['host'] = array();
-$array['element']['host']['default'] = '';
-
 $array['element']['commandset'] = array();
 $array['element']['commandset']['value'] = array('xivocti');
 $array['element']['commandset']['default'] = 'xivocti';
@@ -96,18 +93,15 @@ $array['element']['tlscertfile']['default'] = '';
 $array['element']['tlsprivkeyfile'] = array();
 $array['element']['tlsprivkeyfile']['default'] = '';
 
-$array['element']['asterisklist'] = array();
-$array['element']['asterisklist']['default'] = 'xivo';
-$array['element']['asterisklist']['value'] = array('xivo');
-
-$array['element']['updates_period'] = array();
-$array['element']['updates_period']['default'] = 3600;
-
 $array['element']['socket_timeout'] = array();
 $array['element']['socket_timeout']['default'] = 10;
 
 $array['element']['login_timeout'] = array();
 $array['element']['login_timeout']['default'] = 5;
+
+$array['element']['context_separation']['value'] = array(0,1);
+$array['element']['context_separation']['default'] = 1;
+$array['element']['context_separation']['set'] = true;
 
 dwho::load_class('dwho_network');
 
@@ -117,30 +111,27 @@ $array['filter']['ami_ip']          = array('callback' => 'dwho_network::valid_h
 $array['filter']['ami_port']        = array('cast' => 'uint', 'between' => array(1,65535));
 $array['filter']['ami_login']       = array('cast' => 'sgraph','minlen' => 3,'maxlen' => 64);
 $array['filter']['ami_password']    = array('cast' => 'sgraph','minlen' => 3,'maxlen' => 64);
+$array['filter']['fagi_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
 $array['filter']['fagi_ip'] 		= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['fagi_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
+$array['filter']['cti_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
 $array['filter']['cti_ip'] 			= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['cti_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
+$array['filter']['ctis_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
 $array['filter']['ctis_ip'] 		= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['ctis_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
+$array['filter']['webi_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
 $array['filter']['webi_ip'] 		= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['webi_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
+$array['filter']['info_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
 $array['filter']['info_ip'] 		= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['info_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
+$array['filter']['announce_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
 $array['filter']['announce_ip'] 	= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['announce_port'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
 $array['filter']['tlscertfile'] 	= array('set' => false, 'chk' => 2, 'cast' => 'sgraph', 'maxlen' => 128);
 $array['filter']['tlsprivkeyfile'] 		= array('set' => false, 'chk' => 2, 'cast' => 'sgraph', 'maxlen' => 128);
-$array['filter']['asterisklist'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
-$array['filter']['updates_period'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(60,86400));
 $array['filter']['socket_timeout'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,20));
 $array['filter']['login_timeout'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,20));
-$array['filter']['parting_astid_context'] = array('set' => false, 'chk' => 2, 'key' => array('astid', 'context', 'context,astid'));
-
-$array['filter']['fagi_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
-$array['filter']['cti_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
-$array['filter']['ctis_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
-$array['filter']['webi_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
-$array['filter']['info_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
-$array['filter']['announce_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
+$array['filter']['context_separation'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
 ?>
