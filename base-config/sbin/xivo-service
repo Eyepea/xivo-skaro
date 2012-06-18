@@ -7,8 +7,9 @@ usage() {
     cat << EOF
     usage : $0 action
     availables actions :
-        stop  : stop all xivo services
-        start : start all xivo services
+        restart : restart all xivo services
+        stop    : stop all xivo services
+        start   : start all xivo services
 
     impacted services : $services
 EOF
