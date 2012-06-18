@@ -23,7 +23,7 @@ $access_subcategory = '';
 
 $_XOBJ = &dwho_gct::get('xivo_object');
 
-#include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 $starttime = microtime(true);
 
