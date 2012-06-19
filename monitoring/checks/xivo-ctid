@@ -1,9 +1,9 @@
 check process xivo-ctid with pidfile /var/run/xivo-ctid.pid
 	group telephony
 	depend asterisk
-	start program = "/etc/init.d/xivo-ctid start"
-	stop program = "/etc/init.d/xivo-ctid stop"
+	start program = "/usr/bin/xivo-service restart"
+	stop program = "/usr/bin/xivo-service stop"
 	if failed host 127.0.0.1 port 5005 use type tcp
 		timeout 10 seconds
-		then alert #restart
+		then restart
 	if 5 restarts within 5 cycles then timeout

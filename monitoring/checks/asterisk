@@ -1,12 +1,12 @@
 check process asterisk with pidfile /var/run/asterisk/asterisk.pid
 	group telephony
-	start program = "/etc/init.d/asterisk start"
-	stop program = "/etc/init.d/asterisk stop"
+	start program = "/usr/bin/xivo-service restart"
+	stop program = "/usr/bin/xivo-service stop"
 	if failed host 127.0.0.1 port 5038 use type tcp
 		send "Action: login\r\n"
 		send "Username: xivo_monit_user\r\n"
 		send "Secret: gheblyffIb4\r\n\r\n"
 		send "Action: Logoff\r\n\r\n"
 		expect "Response: Success|Response: Goodbye"
-		then alert #restart
+		then restart
 	if 5 restarts within 5 cycles then timeout
