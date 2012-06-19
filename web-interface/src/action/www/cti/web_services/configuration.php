@@ -406,8 +406,8 @@ switch($act)
         $hostname = $infolocalserver['hostname'];
 
         # XiVO LOCAL SERVER
-        $out['ipbxes'][$hostname] = array();
-        $outlocalserver = &$out['ipbxes'][$hostname];
+        $out['ipbx'] = array();
+        $outlocalserver = &$out['ipbx'];
 
         # ASTERISK AMI
         $ami_infos = array(
