@@ -287,6 +287,18 @@ Trust Remote-Party-ID :
 ; fm_protocol_sendrpid
 Send Remote-Party-ID :
 
+; fm_sendrpid-opt(no)
+No
+
+; fm_sendrpid-opt(yes)
+Yes
+
+; fm_sendrpid-opt(rpid)
+RPID
+
+; fm_sendrpid-opt(pai)
+PAI
+
 ; fm_protocol_allowsubscribe
 Allow subscriptions :
 
