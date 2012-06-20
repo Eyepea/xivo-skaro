@@ -103,6 +103,10 @@ $array['element']['context_separation']['value'] = array(0,1);
 $array['element']['context_separation']['default'] = 1;
 $array['element']['context_separation']['set'] = true;
 
+$array['element']['live_reload_conf']['value'] = array(0,1);
+$array['element']['live_reload_conf']['default'] = 0;
+$array['element']['live_reload_conf']['set'] = true;
+
 dwho::load_class('dwho_network');
 
 $array['filter'] = array();
@@ -134,4 +138,6 @@ $array['filter']['tlsprivkeyfile'] 		= array('set' => false, 'chk' => 2, 'cast' 
 $array['filter']['socket_timeout'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,20));
 $array['filter']['login_timeout'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,20));
 $array['filter']['context_separation'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
+$array['filter']['live_reload_conf'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
+
 ?>

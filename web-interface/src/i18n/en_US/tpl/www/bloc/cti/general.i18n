@@ -130,17 +130,11 @@ Login timeout:
 ; hlp_fm_cti_login_timeout
 Login timeout help
 
-; fm_cti_parting_astid_context
+; fm_cti_context_separation
 Contexts Separation:
 
-; fm_cti_parting_astid_ipbx
-IPBXes Separation:
-
-; bt_inxivoserver
-Add
-
-; bt_outxivoserver
-Remove
+; fm_cti_live_reload_conf
+Live reload configuration: 
 
 ; fm_tlsprivkeyfile
 Private Key:

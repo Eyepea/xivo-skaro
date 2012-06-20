@@ -130,17 +130,11 @@ Délai d'expiration à la connexion:
 ; hlp_fm_cti_login_timeout
 aide délai exp login
 
-; fm_cti_parting_astid_context
+; fm_cti_context_separation
 Séparation par contexte:
 
-; fm_cti_parting_astid_ipbx
-Séparation par IPBX:
-
-; bt_inxivoserver
-Ajouter
-
-; bt_outxivoserver
-Enlever
+; fm_cti_live_reload_conf
+Rechargement de la configuration dynamique: 
 
 ; fm_tlsprivkeyfile
 Clé privée : 

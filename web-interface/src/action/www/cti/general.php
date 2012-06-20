@@ -21,30 +21,23 @@
 $ctimain = &$ipbx->get_module('ctimain');
 $ctipresences = &$ipbx->get_module('ctipresences');
 
-$appxivoserver = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'xivo'));
-
-$info = array();
-$info['ctimain'] = $ctimain->get(1);
-$element = array();
-$element['ctimain'] = $ctimain->get_element();
-
-$error = array();
-$error['ctimain'] = array();
 $fm_save = null;
 
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save = false;
+	$ret = 0;
 	foreach(array('fagi','cti','ctis','webi','info','announce') as $k)
 		$_QR['cti'][$k.'_active'] = isset($_QR['cti'][$k.'_active'])?1:0;
 
 	if (!isset($_QR['cti']['context_separation']))
 		$_QR['cti']['context_separation'] = 0;
 
+	if (!isset($_QR['cti']['live_reload_conf']))
+		$_QR['cti']['live_reload_conf'] = 0;
+
 	if(($rs = $ctimain->chk_values($_QR['cti'])) === false)
-	{
-		$ret = 0;
-	}
+		dwho_report::push('error', $ctimain->get_filter_error());
 	else
 		$ret = $ctimain->edit(1, $rs);
 
@@ -53,11 +46,14 @@ if(isset($_QR['fm_send']) === true)
 		$fm_save = true;
 		$ipbx->discuss('xivo[cticonfig,update]');
 	}
-	$info['ctimain'] = $ctimain->get(1);
 }
 
+$info = array();
+$info['ctimain'] = $ctimain->get(1);
+$element = array();
+$element['ctimain'] = $ctimain->get_element();
+
 $_TPL->set_var('fm_save',$fm_save);
-$_TPL->set_var('error',$error);
 $_TPL->set_var('element',$element);
 $_TPL->set_var('info', $info);
 
