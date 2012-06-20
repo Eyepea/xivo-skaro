@@ -18,7 +18,7 @@ DEFAULT_MAX_FILES_PER_SOUND_DIR=100
 
 case "${BACKUP_TYPE}" in
   data)
-    BACKUP_LIST="/etc/asterisk /etc/dahdi /etc/dhcp /etc/pf-xivo /etc/wanpipe /var/lib/asterisk/ /var/lib/pf-xivo/ /var/spool/asterisk/ /var/log/asterisk/ /etc/network/interfaces /etc/resolv.conf /etc/hosts /etc/hostname /var/lib/pf-xivo-provd"
+    BACKUP_LIST="/etc/asterisk /etc/dahdi /etc/dhcp /etc/pf-xivo /etc/wanpipe /var/lib/asterisk/ /var/lib/pf-xivo/ /var/spool/asterisk/ /var/log/asterisk/ /etc/network/interfaces /etc/network/if-up.d/xivo-routes /etc/resolv.conf /etc/hosts /etc/hostname /var/lib/pf-xivo-provd /usr/local/sbin"
     FILTER_DIRS="/var/lib/pf-xivo/sounds /var/lib/asterisk/sounds/custom /var/lib/asterisk/moh /var/spool/asterisk/voicemail /var/spool/asterisk/monitor"
     # and dirs too...
     EXCLUDE_FILES="/var/spool/asterisk/monitor /var/spool/asterisk/meetme"
