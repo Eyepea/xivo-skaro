@@ -289,6 +289,18 @@ Faire confiance au Remote-Party-ID :
 ; fm_protocol_sendrpid
 Envoyer le Remote-Party-ID :
 
+; fm_sendrpid-opt(no)
+Non
+
+; fm_sendrpid-opt(yes)
+Oui
+
+; fm_sendrpid-opt(rpid)
+RPID
+
+; fm_sendrpid-opt(pai)
+PAI
+
 ; fm_protocol_allowsubscribe
 Activer le support des souscriptions :
 

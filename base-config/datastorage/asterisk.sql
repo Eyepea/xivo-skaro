@@ -2158,7 +2158,7 @@ CREATE TABLE "usersip" (
  "usereqphone" INTEGER, -- BOOLEAN -- general / peer --
  "videosupport" usersip_videosupport DEFAULT NULL, -- general / user / peer --
  "trustrpid" INTEGER, -- BOOLEAN -- general / user / peer --
- "sendrpid" INTEGER, -- BOOLEAN -- general / user / peer --
+ "sendrpid" VARCHAR(16),
 
  "allowsubscribe" INTEGER, -- BOOLEAN -- general / user / peer --
  "allowoverlap" INTEGER, -- BOOLEAN -- general / user / peer --
