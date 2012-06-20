@@ -454,7 +454,7 @@ $array['filter']['nat'] = array('set' => false,'chk' => 2,'key' => array('no','y
 $array['filter']['promiscredir'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['usereqphone'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['trustrpid'] = array('set' => false,'chk' => 2,'bool' => true);
-$array['filter']['sendrpid'] = array('key' => $array['element']['sendrpid']['value']);
+$array['filter']['sendrpid'] = array('set' => false,'key' => $array['element']['sendrpid']['value']);
 $array['filter']['allowsubscribe'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['allowoverlap'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['dtmfmode'] = array('set' => false,'chk' => 2,'key' => array('rfc2833','inband','info','auto'));
