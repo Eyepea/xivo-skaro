@@ -85,7 +85,7 @@ class xivo_service_asterisk_realstatic_staticsip extends xivo_service_asterisk_r
 		if(dwho_has_len($arr, 'expiry') === true)
 			$uri['expiry'] = $arr['expiry'];
 
-		if(($r['str'] = $this->_uri->build_uri($uri)) === false
+		if(($r['str'] = $this->_uri->build_uri($uri,false)) === false
 		|| ($r['arr'] = $this->parse_register_uri($r['str'])) === false)
 			return(false);
 
