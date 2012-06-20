@@ -2673,6 +2673,7 @@ CREATE TABLE "callcenter_campaigns_records" (
 	PRIMARY KEY ("id")
 );
 
+
 DROP TABLE IF EXISTS "agentglobalparams";
 CREATE TABLE "agentglobalparams" (
  "id" SERIAL,
@@ -2681,6 +2682,7 @@ CREATE TABLE "agentglobalparams" (
  "option_value" VARCHAR(255),
  PRIMARY KEY("id")
 );
+
 INSERT INTO "agentglobalparams" VALUES (DEFAULT,'general','multiplelogin','yes');
 INSERT INTO "agentglobalparams" VALUES (DEFAULT,'general','persistentagents','yes');
 INSERT INTO "agentglobalparams" VALUES (DEFAULT,'agents','recordagentcalls','no');
@@ -2693,6 +2695,40 @@ INSERT INTO "agentglobalparams" VALUES (DEFAULT,'agents','urlprefix','');
 INSERT INTO "agentglobalparams" VALUES (DEFAULT,'agents','savecallsin','');
 INSERT INTO "agentglobalparams" VALUES (DEFAULT,'agents','custom_beep','beep');
 
+
+DROP TABLE IF EXISTS "sccpgeneral";
+CREATE TABLE "sccpgeneral" (
+    "id"          SERIAL,
+    "name"        varchar(80) NOT NULL,
+    "value"       varchar(80) NOT NULL,
+    PRIMARY KEY("id")
+);
+
+
+DROP TABLE IF EXISTS "sccpline";
+CREATE TABLE "sccpline" (
+    "id"        SERIAL,
+    "name"      varchar(80) NOT NULL,
+    "context"   varchar(80) NOT NULL,
+    "cid_name"  varchar(80) NOT NULL,
+    "cid_num"   varchar(80) NOT NULL,
+    "protocol" "trunk_protocol" NOT NULL DEFAULT 'sccp',
+    "commented" INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY("id")
+);
+
+
+DROP TABLE IF EXISTS "sccpdevice";
+CREATE TABLE "sccpdevice" (
+    "id"        SERIAL,
+    "name"      varchar(80) NOT NULL,
+    "device"    varchar(80) NOT NULL,
+    "line"      varchar(80) NOT NULL DEFAULT '',
+    "voicemail" varchar(80) NOT NULL DEFAULT '',
+    PRIMARY KEY("id")
+);
+
+
 -- grant all rights to asterisk.* for asterisk user
 CREATE OR REPLACE FUNCTION execute(text) 
 RETURNS VOID AS '
@@ -2704,6 +2740,3 @@ SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO asterisk;') FRO
 SELECT execute('GRANT ALL ON SEQUENCE '||relname||' TO asterisk;') FROM pg_class WHERE relkind = 'S';
 
 COMMIT;
-
-\set sccp_filename :dir /sccp.sql
-\i :sccp_filename

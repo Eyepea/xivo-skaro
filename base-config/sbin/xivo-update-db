@@ -102,7 +102,7 @@ class PostgresDB(object):
 
     def execute_sql_file(self, filename, connect=False, on_error_stop=True):
         logger.info('Executing SQL file %r', filename)
-        psql_args = ['-f', filename, '-v', 'dir=%s' % os.path.dirname(filename)]
+        psql_args = ['-f', filename]
         if connect:
             psql_args.extend(['-d', self._db_name])
         if on_error_stop:
