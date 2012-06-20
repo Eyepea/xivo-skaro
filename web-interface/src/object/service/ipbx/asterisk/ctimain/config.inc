@@ -104,7 +104,7 @@ $array['element']['context_separation']['default'] = 1;
 $array['element']['context_separation']['set'] = true;
 
 $array['element']['live_reload_conf']['value'] = array(0,1);
-$array['element']['live_reload_conf']['default'] = 0;
+$array['element']['live_reload_conf']['default'] = 1;
 $array['element']['live_reload_conf']['set'] = true;
 
 dwho::load_class('dwho_network');

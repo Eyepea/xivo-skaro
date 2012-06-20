@@ -19,6 +19,6 @@
 BEGIN;
 
 ALTER TABLE "ctimain" ADD COLUMN "live_reload_conf" INTEGER;
-UPDATE "ctimain" SET "live_reload_conf" = 0; 
+UPDATE "ctimain" SET "live_reload_conf" = 1;
 
 COMMIT;
