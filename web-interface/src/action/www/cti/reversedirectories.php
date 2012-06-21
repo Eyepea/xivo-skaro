@@ -36,9 +36,12 @@ foreach($dirlist as $v)
 if(isset($_QR['fm_send']) === true)
 {
 	$str = '[';
-	foreach($_QR['directories'] as $v)
+	if(isset($_QR['directories']))
 	{
-		$str .= '"'.trim($diravail[$v]).'",';
+		foreach($_QR['directories'] as $v)
+		{
+			$str .= '"'.trim($diravail[$v]).'",';
+		}
 	}
 	$str = trim($str, ',');
 	$str .= ']';
