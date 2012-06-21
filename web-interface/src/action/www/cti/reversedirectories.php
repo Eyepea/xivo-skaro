@@ -53,6 +53,7 @@ if(isset($_QR['fm_send']) === true)
 	{
 		$fm_save = true;
 	    $ipbx->discuss('xivo[cticonfig,update]');
+	    $ipbx->discuss_dird('update-config');
 	}
 
 	$info = $_QR;

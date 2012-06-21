@@ -154,6 +154,9 @@ $array['module']['dialaction']['datastorage'] = true;
 $array['module']['dialpattern'] = array();
 $array['module']['dialpattern']['datastorage'] = true;
 
+$array['module']['dirdbus'] = array();
+$array['module']['dirdbus']['datastorage'] = false;
+
 $array['module']['extensions'] = array();
 $array['module']['extensions']['datastorage'] = true;
 

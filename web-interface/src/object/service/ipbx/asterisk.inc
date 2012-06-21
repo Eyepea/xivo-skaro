@@ -29,6 +29,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	var $_realstatic	= array();
 	var $_apprealstatic	= array();
 	var $_discuss		= null;
+	var $_discuss_dird		= null;
 
 	function xivo_service_asterisk($ini)
 	{
@@ -89,6 +90,22 @@ class xivo_service_asterisk extends xivo_service_abstract
 			return $ret[0];
 
 		return($ret);
+	}
+
+	function discuss_dird($cmd)
+	{
+		if($this->_discuss_dird === false
+		|| (is_object($this->_discuss_dird) === false
+			&& ($this->_discuss_dird = &$this->get_module('dirdbus')) === false) === true)
+			return(($this->_discuss_dird = false));
+
+		if (is_scalar($cmd) === true)
+			$cmd = array($cmd);
+
+		foreach($cmd as $one_cmd)
+		{
+			$this->_discuss_dird->cmd($one_cmd);
+		}
 	}
 
 	function reload_agents_and_queue_members()

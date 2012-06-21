@@ -52,6 +52,7 @@ switch($act)
 			else
 			{
 				$ipbx->discuss(array('xivo[phonebooklist,update]'));
+				$ipbx->discuss_dird(array('update-phonebook'));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 			}
 		}
@@ -97,6 +98,7 @@ switch($act)
 			else
 			{
 				$ipbx->discuss(array('xivo[phonebooklist,update]'));
+				$ipbx->discuss_dird(array('update-phonebook'));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 			}
 		}
@@ -131,6 +133,7 @@ switch($act)
 		$appphonebook->delete();
 
 		$ipbx->discuss(array('xivo[phonebooklist,update]'));
+		$ipbx->discuss_dird(array('update-phonebook'));
 		$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 		break;
 	case 'deletes':
@@ -148,6 +151,7 @@ switch($act)
 		}
 
 		$ipbx->discuss(array('xivo[phonebooklist,update]'));
+		$ipbx->discuss_dird(array('update-phonebook'));
 		$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 		break;
 	case 'import':
@@ -155,6 +159,7 @@ switch($act)
 		{
 			$appphonebook->import_csv();
 			$ipbx->discuss(array('xivo[phonebooklist,update]'));
+			$ipbx->discuss_dird(array('update-phonebook'));
 			$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 		}
 
