@@ -45,7 +45,10 @@ class xivo_application_service_asterisk_webservices_phonebook_sql extends xivo_a
 
 		$this->_dso->andwherenot(array('type' => 'fax'),$this->_table['phonebooknumber']);
 
-		$this->_dso->new_group('id',$this->_table['phonebooknumber']);
+		$this->_dso->new_group('displayname',$this->_table['phonebook']);
+		$this->_dso->add_group('number',$this->_table['phonebooknumber']);
+		$this->_dso->add_group('type',$this->_table['phonebooknumber']);
+
 		$this->_dso->new_order($order,null,$this->_table['phonebook']);
 		$this->_dso->limit($limit);
 
