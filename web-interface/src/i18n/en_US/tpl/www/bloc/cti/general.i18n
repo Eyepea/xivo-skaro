@@ -40,18 +40,6 @@ IP address
 ; fm_cti_list_port
 Port
 
-; fm_cti_fagi_ip
-Fast AGI:
-
-; hlp_fm_cti_fagi_ip
-fast agi help
-
-; fm_cti_fagi_port
--
-
-; hlp_fm_cti_fagi_port
-port fast agi help
-
 ; fm_cti_cti_ip
 CTI:
 

@@ -40,18 +40,6 @@ aide jeu de commandes
 ; cti-servers
 Ports en écoute
 
-; fm_cti_fagi_ip
-Fast AGI:
-
-; hlp_fm_cti_fagi_ip
-aide fast agi
-
-; fm_cti_fagi_port
--
-
-; hlp_fm_cti_fagi_port
-aide port fast agi
-
 ; fm_cti_cti_ip
 CTI:
 

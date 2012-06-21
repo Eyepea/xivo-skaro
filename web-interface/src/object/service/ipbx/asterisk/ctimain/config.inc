@@ -34,15 +34,6 @@ $array['element']['ami_ip']['default'] = '127.0.0.1';
 $array['element']['ami_port'] = array();
 $array['element']['ami_port']['default'] = 5038;
 
-$array['element']['fagi_ip'] = array();
-$array['element']['fagi_ip']['default'] = '127.0.0.1';
-$array['element']['fagi_port'] = array();
-$array['element']['fagi_port']['default'] = 5002;
-$array['element']['fagi_active'] = array();
-$array['element']['fagi_active']['value'] = array(0,1);
-$array['element']['fagi_active']['default'] = 1;
-$array['element']['fagi_active']['set'] = true;
-
 $array['element']['cti_ip'] = array();
 $array['element']['cti_ip']['default'] = '0.0.0.0';
 $array['element']['cti_port'] = array();
@@ -115,9 +106,6 @@ $array['filter']['ami_ip']          = array('callback' => 'dwho_network::valid_h
 $array['filter']['ami_port']        = array('cast' => 'uint', 'between' => array(1,65535));
 $array['filter']['ami_login']       = array('cast' => 'sgraph','minlen' => 3,'maxlen' => 64);
 $array['filter']['ami_password']    = array('cast' => 'sgraph','minlen' => 3,'maxlen' => 64);
-$array['filter']['fagi_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
-$array['filter']['fagi_ip'] 		= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
-$array['filter']['fagi_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
 $array['filter']['cti_active'] = array('set' => true, 'chk' => 2, 'cast' => 'bool');
 $array['filter']['cti_ip'] 			= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['cti_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));

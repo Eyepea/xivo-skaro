@@ -367,7 +367,6 @@ CREATE TABLE "ctidisplays" (
 
 INSERT INTO "ctidisplays" VALUES(DEFAULT,'Display','{"10": [ "Nom","","","{db-firstname} {db-lastname}" ],"20": [ "Numéro","phone","","{db-phone}" ],"30": [ "Entreprise","","Inconnue","{db-company}" ],"40": [ "E-mail","","","{db-mail}" ], "50": [ "Source","","","{xivo-directory}" ]}',1,'Affichage par défaut');
 
-
 DROP TABLE IF EXISTS "ctimain";
 CREATE TABLE "ctimain" (
  "id" SERIAL, 
@@ -376,9 +375,6 @@ CREATE TABLE "ctimain" (
  "ami_port" INTEGER,
  "ami_login" VARCHAR(64),
  "ami_password" VARCHAR(64),
- "fagi_ip" VARCHAR(16),
- "fagi_port" INTEGER,
- "fagi_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
  "cti_ip" VARCHAR(16),
  "cti_port" INTEGER,
  "cti_active" INTEGER NOT NULL DEFAULT 1, -- BOOLEAN
@@ -403,7 +399,7 @@ CREATE TABLE "ctimain" (
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctimain" VALUES(DEFAULT, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '127.0.0.1', 5002, 1, '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 0, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', 10, 5, 0, 1);
+INSERT INTO "ctimain" VALUES(DEFAULT, 'xivocti', '127.0.0.1', 5038, 'xivo_cti_user', 'phaickbebs9', '0.0.0.0', 5003, 1, '0.0.0.0', 5013, 0, '127.0.0.1', 5004, 1, '127.0.0.1', 5005, 1, '127.0.0.1', 5006, 1, '', '', 10, 5, 0, 1);
 
 
 DROP TABLE IF EXISTS "ctiphonehints";

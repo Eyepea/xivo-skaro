@@ -102,7 +102,7 @@ switch($act)
 
 		# MAIN
 		$tcpdefs = array();
-		foreach(array('fagi','cti','ctis','webi','info') as $k)
+		foreach(array('cti','ctis','webi','info') as $k)
 			$tcpdefs[strtoupper($k)] = array(
 				$load_ctimain[$k.'_ip'],
 				$load_ctimain[$k.'_port'],

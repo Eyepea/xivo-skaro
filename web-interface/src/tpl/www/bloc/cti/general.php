@@ -119,36 +119,6 @@ if(isset($error_js[0]) === true)
 		<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 		    onmouseout="this.className = this.tmp;">
 			<td class="td-left">
-			<?=$form->checkbox(array('name'	=> 'cti[fagi_active]',
-				'checked'		=> $info['ctimain']['fagi_active'],
-				'label'		=> false,
-				'id'		=> 'it-fagi_active',
-				'paragraph'	=> false));?>
-			</td>
-			<td>
-			<?=$form->text(array('desc'	=> $this->bbf('fm_cti_fagi_ip'),
-				'name'	    => 'cti[fagi_ip]',
-				'labelid'	=> 'cti_fagi_ip',
-				'required'	=> 1,
-				'regexp'	=> '[[:ipv4:]]',
-				'value'		=> $info['ctimain']['fagi_ip'],
-				/* 'help'		=> $this->bbf('hlp_fm_cti_fagi_ip') */ ))?>
-			</td>
-			<td class="td-right">
-			<?=$form->text(array(#'desc'	=> $this->bbf('fm_cti_fagi_port'),
-					'name'		=> 'cti[fagi_port]',
-					'labelid'	=> 'cti_fagi_port',
-					'value'		=> $info['ctimain']['fagi_port'],
-					'required'	=> 1,
-					'regexp'	=> '[[:port:]]',
-					'default'	=> $element['ctimain']['fagi_port']['default'],
-#					'help'		=> $this->bbf('hlp_fm_cti_fagi_port')
-					))?>
-			</td>
-		</tr>
-		<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
-		    onmouseout="this.className = this.tmp;">
-			<td class="td-left">
 			<?=$form->checkbox(array('name'	=> 'cti[cti_active]',
 				'checked'=> $info['ctimain']['cti_active'],
 				'label'		=> false,

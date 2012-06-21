@@ -27,7 +27,7 @@ if(isset($_QR['fm_send']) === true)
 {
 	$fm_save = false;
 	$ret = 0;
-	foreach(array('fagi','cti','ctis','webi','info','announce') as $k)
+	foreach(array('cti','ctis','webi','info','announce') as $k)
 		$_QR['cti'][$k.'_active'] = isset($_QR['cti'][$k.'_active'])?1:0;
 
 	if (!isset($_QR['cti']['context_separation']))
