@@ -10,7 +10,6 @@ if [ -z "${BACKUP_FILE}" ]; then
     exit 1
 fi
 
-
 [ -e /etc/pf-xivo/common.conf ] && . /etc/pf-xivo/common.conf
 DEFAULT_MAX_SOUND_FILE_SIZE=10M
 DEFAULT_MAX_FILES_PER_SOUND_DIR=100
