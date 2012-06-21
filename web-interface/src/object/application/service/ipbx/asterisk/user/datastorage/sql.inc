@@ -85,14 +85,17 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 		if(dwho_has_len($value) === true)
 		{
 			$this->_dso->aggregate_where();
-			$this->_dso->wherecontain('firstname',$value,true,$this->_table['userfeatures']);
-			$this->_dso->orwherecontain('lastname',$value,true,$this->_table['userfeatures']);
-			$this->_dso->orwhereexact('userfield',$value,true,$this->_table['userfeatures']);
-
 			if(($concat = $this->_dso->concat(array((object) ($this->_table['userfeatures'].'.firstname'),
 								' ',
 								(object) ($this->_table['userfeatures'].'.lastname')))) !== false)
-				$this->_dso->orwherecontain((object) $concat,$value,true);
+				$this->_dso->wherecontain((object) $concat,$value,true);
+			else
+			{
+				$this->_dso->wherecontain('firstname',$value,true,$this->_table['userfeatures']);
+				$this->_dso->orwherecontain('lastname',$value,true,$this->_table['userfeatures']);
+			}
+			$this->_dso->orwhereexact('userfield',$value,true,$this->_table['userfeatures']);
+			$this->_dso->orwherecontain('number',$value,true,$this->_table['linefeatures']);
 		}
 
 		$this->_dso->new_order($order,null,$this->_table['userfeatures']);
