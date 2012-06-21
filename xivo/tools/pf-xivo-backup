@@ -13,14 +13,37 @@ fi
 [ -e /etc/pf-xivo/common.conf ] && . /etc/pf-xivo/common.conf
 DEFAULT_MAX_SOUND_FILE_SIZE=10M
 DEFAULT_MAX_FILES_PER_SOUND_DIR=100
+XIVO_VERSION=$(apt-cache policy pf-xivo | grep Candidate | grep -oE '1\.[2-9]\.[0-9]{1,2}')
+BACKUP_FILE=${BACKUP_FILE}.tgz
 
 
 case "${BACKUP_TYPE}" in
   data)
-    BACKUP_LIST="/etc/asterisk /etc/dahdi /etc/dhcp /etc/pf-xivo /etc/wanpipe /var/lib/asterisk/ /var/lib/pf-xivo/ /var/spool/asterisk/ /var/log/asterisk/ /etc/network/interfaces /etc/network/if-up.d/xivo-routes /etc/resolv.conf /etc/hosts /etc/hostname /var/lib/pf-xivo-provd /usr/local/sbin"
-    FILTER_DIRS="/var/lib/pf-xivo/sounds /var/lib/asterisk/sounds/custom /var/lib/asterisk/moh /var/spool/asterisk/voicemail /var/spool/asterisk/monitor"
-    # and dirs too...
-    EXCLUDE_FILES="/var/spool/asterisk/monitor /var/spool/asterisk/meetme"
+    BACKUP_LIST="/etc/asterisk/
+                 /etc/dahdi/
+                 /etc/dhcp/
+                 /etc/pf-xivo/
+                 /etc/wanpipe/
+                 /etc/ssl/
+                 /etc/ldap/
+                 /var/lib/asterisk/
+                 /var/lib/pf-xivo/
+                 /var/spool/asterisk/
+                 /var/log/asterisk/
+                 /etc/network/interfaces/
+                 /etc/network/if-up.d/xivo-routes
+                 /etc/resolv.conf
+                 /etc/hosts
+                 /etc/hostname
+                 /var/lib/pf-xivo-provd/
+                 /usr/local/sbin/"
+    FILTER_DIRS="/var/lib/pf-xivo/sounds
+                 /var/lib/asterisk/sounds/custom
+                 /var/lib/asterisk/moh
+                 /var/spool/asterisk/voicemail
+                 /var/spool/asterisk/monitor"
+    EXCLUDE_FILES="/var/spool/asterisk/monitor
+                   /var/spool/asterisk/meetme"
 
     # backup existing directories only
     WOULD_BACKUP=
@@ -69,8 +92,8 @@ case "${BACKUP_TYPE}" in
     mkdir ${PG_TMPDIR}
 
     cd /var/lib/postgresql
-    sudo -u postgres pg_dump -Fc asterisk > ${PG_TMPDIR}/asterisk.dump
-    sudo -u postgres pg_dump -Fc xivo > ${PG_TMPDIR}/xivo.dump
+    sudo -u postgres pg_dump -Fc asterisk > ${PG_TMPDIR}/asterisk-${XIVO_VERSION}.dump
+    sudo -u postgres pg_dump -Fc xivo > ${PG_TMPDIR}/xivo-${XIVO_VERSION}.dump
     cd ${OLDPWD}
 
     tar cpzf ${BACKUP_FILE} -C ${TMPDIR} ${PG_DIR}
