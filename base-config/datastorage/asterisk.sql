@@ -473,15 +473,11 @@ INSERT INTO "ctiprofiles" VALUES(DEFAULT,'[[ "search", "dock", "fcms", "N/A" ],[
 DROP TABLE IF EXISTS "ctireversedirectories";
 CREATE TABLE "ctireversedirectories" (
  "id" SERIAL,
- "context" VARCHAR(50),
- "extensions" text,
  "directories" text NOT NULL,
- "description" text NOT NULL,
- "deletable" INTEGER, -- BOOLEAN
  PRIMARY KEY("id")
 );
 
-INSERT INTO "ctireversedirectories" VALUES(DEFAULT,'*', '*', '["xivodir"]','Répertoires XiVO',1);
+INSERT INTO "ctireversedirectories" VALUES(DEFAULT,'["xivodir"]');
 
 
 DROP TABLE IF EXISTS "ctisheetactions";

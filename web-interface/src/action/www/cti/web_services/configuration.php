@@ -80,7 +80,7 @@ switch($act)
 		$load_profiles = $ctiprofiles->get_all();
 		$load_presences = $ctipresences->get_all();
 		$load_phonehintsgroups = $ctiphonehintsgroup->get_all();
-		$load_rdid = $ctirdid->get_all();
+		$load_rdid = $ctirdid->get(1);
 		$list = $app->get_server_list();
 
 		$out = array(
@@ -202,19 +202,11 @@ switch($act)
 		# REVERSEDID
 		if(isset($load_rdid) === true && is_array($load_rdid) === true)
 		{
-			foreach($load_rdid as $rdid)
-			{
-				$curctx  = $rdid['context'];
-				if(! array_key_exists($curctx, $out['contexts']))
-					$out['contexts'][$curctx] = array();
+			if(!array_key_exists('*', $out['contexts']))
+				$out['contexts']['*'] = array();
 
-				$curblok = array();
-				$dirblok = dwho_json::decode($rdid['directories'], true);
-				foreach(explode(',', $rdid['extensions']) as $exten)
-					$curblok[$exten] = $dirblok;
-
-				$out['contexts'][$curctx]['didextens'] = $curblok;
-			}
+			$dirblok = dwho_json::decode($load_rdid['directories'], true);
+			$out['contexts']['*']['didextens'] = array('directories' => $dirblok);
 		}
 
 		# SHEETS

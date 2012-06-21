@@ -24,9 +24,7 @@ class xivo_service_asterisk_ctireversedirectories extends xivo_service_asterisk_
 {
 	var $_dso		= null;
 	var $_name		= 'ctireversedirectories';
-	var $_filter		= false;
-	var $_origin		= false;
-	var $_origin_list	= false;
+	var $_filter	= false;
 
 	function xivo_service_asterisk_ctireversedirectories(&$sre,&$dso)
 	{
