@@ -206,7 +206,7 @@ switch($act)
 				$out['contexts']['*'] = array();
 
 			$dirblok = dwho_json::decode($load_rdid['directories'], true);
-			$out['contexts']['*']['didextens'] = array('directories' => $dirblok);
+			$out['contexts']['*']['didextens'] = array('*' => $dirblok);
 		}
 
 		# SHEETS
