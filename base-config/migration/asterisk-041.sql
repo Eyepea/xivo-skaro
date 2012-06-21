@@ -23,4 +23,26 @@ ALTER TABLE "ctireversedirectories" DROP "extensions";
 ALTER TABLE "ctireversedirectories" DROP "description";
 ALTER TABLE "ctireversedirectories" DROP "deletable";
 
+
+CREATE FUNCTION asterisk_041()
+  RETURNS void AS
+$$
+DECLARE
+    first_directories text;
+BEGIN
+	SELECT "directories" INTO first_directories FROM "ctireversedirectories" ORDER BY "id" LIMIT 1;
+	IF NOT FOUND THEN
+	   first_directories := '[]';
+	END IF;
+	
+	DELETE FROM "ctireversedirectories";
+	INSERT INTO "ctireversedirectories" VALUES(1,first_directories);
+END;
+$$
+LANGUAGE 'plpgsql';
+
+SELECT asterisk_041();
+
+DROP FUNCTION asterisk_041();
+
 COMMIT;
