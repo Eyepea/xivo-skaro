@@ -872,28 +872,6 @@ endif;
 ?>
 </div>
 <div id="sb-part-diversion" class="b-nodisplay">
-	<fieldset id="fld-diversion-ctipresence">
-		<legend><?=$this->bbf('fld-diversion-ctipresence');?></legend>
-<?php
-		$this->file_include('bloc/callcenter/settings/queues/ctipresence',
-			array('type'	=> 'ctipresence'));
-		echo '<br/>';
-
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
-				    array('event'	=> 'qctipresence'));
-?>
-	</fieldset>
-	<fieldset id="fld-diversion-nonctipresence">
-		<legend><?=$this->bbf('fld-diversion-nonctipresence');?></legend>
-<?php
-		$this->file_include('bloc/callcenter/settings/queues/ctipresence',
-			array('type'	=> 'nonctipresence'));
-		echo '<br/>';
-
-		$this->file_include('bloc/service/ipbx/asterisk/dialaction/all',
-				    array('event'	=> 'qnonctipresence'));
-?>
-	</fieldset>
 	<fieldset id="fld-diversion-waittime">
 		<legend><?=$this->bbf('fld-diversion-waittime');?></legend>
 <?php

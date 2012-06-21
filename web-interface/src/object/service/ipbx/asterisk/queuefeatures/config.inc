@@ -88,14 +88,6 @@ $array['element']['announce_holdtime'] = array();
 $array['element']['announce_holdtime']['value'] = array(0,1);
 $array['element']['announce_holdtime']['default'] = 0;
 
-$array['element']['ctipresence'] = array();
-$array['element']['ctipresence']['default'] = '';
-$array['element']['ctipresence']['null'] = true;
-
-$array['element']['nonctipresence'] = array();
-$array['element']['nonctipresence']['default'] = '';
-$array['element']['nonctipresence']['null'] = true;
-
 $array['element']['waittime'] = array();
 $array['element']['waittime']['value'] = array(5,10,15,20,30,40,50,60,120,180,240,300,360,420,
 								480,540,600,900,1200,1500,1800);
@@ -107,15 +99,6 @@ $array['element']['waitratio']['value'] = range(0,100,5);
 $array['element']['waitratio']['default'] = '';
 $array['element']['waitratio']['null'] = true;
 
-
-$array['element']['ctipresence'] = array();
-$array['element']['ctipresence']['default'] = '';
-$array['element']['ctipresence']['null'] = true;
-
-$array['element']['nonctipresence'] = array();
-$array['element']['nonctipresence']['default'] = '';
-$array['element']['nonctipresence']['null'] = true;
-
 $array['element']['waittime'] = array();
 $array['element']['waittime']['value'] = array(5,10,15,20,30,40,50,60,120,180,240,300,360,420,
 								480,540,600,900,1200,1500,1800);
@@ -126,15 +109,6 @@ $array['element']['waitratio'] = array();
 $array['element']['waitratio']['value'] = range(0,100,5);
 $array['element']['waitratio']['default'] = '';
 $array['element']['waitratio']['null'] = true;
-
-
-$array['element']['ctipresence'] = array();
-$array['element']['ctipresence']['default'] = '';
-$array['element']['ctipresence']['null'] = true;
-
-$array['element']['nonctipresence'] = array();
-$array['element']['nonctipresence']['default'] = '';
-$array['element']['nonctipresence']['null'] = true;
 
 $array['element']['waittime'] = array();
 $array['element']['waittime']['value'] = array(5,10,15,20,30,40,50,60,120,180,240,300,360,420,
@@ -167,9 +141,6 @@ $array['filter']['announceoverride'] = array('set' => false,'chk' => 2,'cast' =>
 $array['filter']['timeout'] = array('key' => array(0,30,60,90,120,180,240,300,360,420,480,540,600,900,1200,1500,1800));
 $array['filter']['preprocess_subroutine'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['announce_holdtime'] = array('bool' => true);
-
-$array['filter']['ctipresence'] = array('set' => false,'chk' => 2);
-$array['filter']['nonctipresence'] = array('set' => false,'chk' => 2);
 $array['filter']['waittime'] = array('set' => false,'chk' => 2,'key' => array(5,10,15,20,30,40,50,60,120,180,240,300,360,420,480,540,600,900,1200,1500,1800));
 $array['filter']['waitratio'] = array('set' => false,'chk' => 2,'cast' => 'uint');
 ?>

@@ -599,7 +599,6 @@ Config asterisk: weight
 ; hlp_fm_queue-wrapuptime
 Config asterisk: wrapuptime
 
-
 ; smenu_schedule
 Horaires
 
@@ -611,12 +610,6 @@ Créer un horaire
 
 ; smenu_diversion
 Diversions
-
-; fld-diversion-ctipresence
-Sur présence d'un ou plusieurs status CTI
-
-; fld-diversion-nonctipresence
-Sur absence d'un ou plusieurs status CTI
 
 ; fld-diversion-waittime
 Sur dépassement du temps d'attente estimé
@@ -632,22 +625,3 @@ Ratio appels en attente / agents disponibles :
 
 ; hlp_fm_queuefeatures_waitratio
 Saisissez un pourcentage (par ex. 100 pour 100%)
-
-; ctipresence_col1
-Status
-
-; ctipresence_col2
-Nombre d'agents >= à
-
-
-; nonctipresence_col1
-Status
-
-; nonctipresence_col2
-Nombre d'agents <= à
-
-; no_ctipresence-disp
-Aucune règle
-
-; no_nonctipresence-disp
-Aucune règle

@@ -28,11 +28,6 @@ $context = strval($prefs->get('context', ''));
 $sort    = $prefs->flipflop('sort', 'name');
 
 $appschedule  = &$ipbx->get_application('schedule');
-$appstatus = &$ipbx->get_application('ctistatus');
-$ctistatus = array();
-foreach($appstatus->get_status_list() as $itm)
-{ $ctistatus[$itm['ctistatus']['id']] = $itm['ctistatus']; }
-
 $apppenalty  = &$ipbx->get_application('queuepenalty');
 
 $param = array();
@@ -82,38 +77,6 @@ switch($act)
 		&& dwho_issa('queue',$_QR) === true)
 		{
 			$err = false;
-			$errval = array(
-				'ctipresence' => array(),
-				'nonctipresence' => array()
-			);
-
-			$cti = array();
-			for($i = 0; $i < count($_QR['ctipresence-name'])-1; $i++)
-			{
-				$errval['ctipresence'][$i] = array();
-
-				if(strlen($_QR['ctipresence-name'][$i]) == 0)
-					{ $err = true; $errval['ctipresence'][$i]['name'] = 'empty'; }
-				if(!is_numeric($_QR['ctipresence-weight'][$i]))
-					{ $err = true; $errval['ctipresence'][$i]['weight'] = 'cast'; }
-
-				$cti[] = $_QR['ctipresence-name'][$i].':'.$_QR['ctipresence-weight'][$i];
-			}
-			$_QR['queuefeatures']['ctipresence']    = implode(',',$cti);
-
-			$cti = array();
-			for($i = 0; $i < count($_QR['nonctipresence-name'])-1; $i++)
-			{
-				$errval['nonctipresence'][$i] = array();
-
-				if(strlen($_QR['nonctipresence-name'][$i]) == 0)
-					{ $err = true; $errval['nonctipresence'][$i]['name'] = 'empty'; }
-				if(!is_numeric($_QR['nonctipresence-weight'][$i]))
-					{ $err = true; $errval['nonctipresence'][$i]['weight'] = 'cast'; }
-
-				$cti[] = $_QR['nonctipresence-name'][$i].':'.$_QR['nonctipresence-weight'][$i];
-			}
-			$_QR['queuefeatures']['nonctipresence']    = implode(',',$cti);
 
 			if(isset($_QR['queue']['joinempty'])
 			&& is_array($_QR['queue']['joinempty']))
@@ -184,32 +147,6 @@ switch($act)
 				$result['callerid'] = null;
 		}
 
-		// CTI presences
-		if(array_key_exists('queuefeatures', $_QR))
-		{
-			$pres = array();
-			if(strlen($_QR['queuefeatures']['ctipresence']) > 0)
-			{
-				foreach(split(',',$_QR['queuefeatures']['ctipresence']) as $ctitem)
-				{
-					list($pid, $num) = explode(':',$ctitem);
-					$pres[] = array($ctistatus[$pid], $num);
-				}
-			}
-			$result['queuefeatures']['ctipresence'] = $pres;
-
-			$pres = array();
-			if(strlen($_QR['queuefeatures']['nonctipresence']) > 0)
-			{
-				foreach(split(',',$_QR['queuefeatures']['nonctipresence']) as $ctitem)
-				{
-					list($pid, $num) = explode(':',$ctitem);
-					$pres[] = array($ctistatus[$pid], $num);
-				}
-			}
-			$result['queuefeatures']['nonctipresence'] = $pres;
-		}
-
 		if(array_key_exists('queue',$result))
 		{
 			if(!is_null($result['queue']['joinempty']))
@@ -244,8 +181,6 @@ switch($act)
 		$_TPL->set_var('moh_list',$appqueue->get_musiconhold());
 		$_TPL->set_var('announce_list',$appqueue->get_announce());
 		$_TPL->set_var('context_list',$appqueue->get_context_list(null,null,null,false,'internal'));
-		$_TPL->set_var('ctipresence', $ctistatus);
-		$_TPL->set_var('nonctipresence', $ctistatus);
 		if(array_key_exists('schedule_id', $result))
 			$_TPL->set_var('schedule_id', $result['schedule_id']);
 		break;
@@ -294,38 +229,6 @@ switch($act)
 		{
 			$return = &$result;
 			$err = false;
-			$errval = array(
-				'ctipresence' => array(),
-				'nonctipresence' => array()
-			);
-
-			$cti = array();
-			for($i = 0; $i < count($_QR['ctipresence-name'])-1; $i++)
-			{
-				$errval['ctipresence'][$i] = array();
-
-				if(strlen($_QR['ctipresence-name'][$i]) == 0)
-					{ $err = true; $errval['ctipresence'][$i]['name'] = 'empty'; }
-				if(!is_numeric($_QR['ctipresence-weight'][$i]))
-					{ $err = true; $errval['ctipresence'][$i]['weight'] = 'cast'; }
-
-				$cti[] = $_QR['ctipresence-name'][$i].':'.$_QR['ctipresence-weight'][$i];
-			}
-			$_QR['queuefeatures']['ctipresence']    = implode(',',$cti);
-
-			$cti = array();
-			for($i = 0; $i < count($_QR['nonctipresence-name'])-1; $i++)
-			{
-				$errval['nonctipresence'][$i] = array();
-
-				if(strlen($_QR['nonctipresence-name'][$i]) == 0)
-					{ $err = true; $errval['nonctipresence'][$i]['name'] = 'empty'; }
-				if(!is_numeric($_QR['nonctipresence-weight'][$i]))
-					{ $err = true; $errval['nonctipresence'][$i]['weight'] = 'cast'; }
-
-				$cti[] = $_QR['nonctipresence-name'][$i].':'.$_QR['nonctipresence-weight'][$i];
-			}
-			$_QR['queuefeatures']['nonctipresence']    = implode(',',$cti);
 
 			if(isset($_QR['queue']['joinempty'])
 			&& is_array($_QR['queue']['joinempty']))
@@ -396,29 +299,6 @@ switch($act)
 				$return['callerid'] = null;
 		}
 
-		// CTI presences
-		$pres = array();
-		if(strlen($return['queuefeatures']['ctipresence']) > 0)
-		{
-			foreach(split(',',$return['queuefeatures']['ctipresence']) as $ctitem)
-			{
-				list($pid, $num) = explode(':',$ctitem);
-				$pres[] = array($ctistatus[$pid], $num);
-			}
-		}
-		$return['queuefeatures']['ctipresence'] = $pres;
-
-		$pres = array();
-		if(strlen($return['queuefeatures']['nonctipresence']) > 0)
-		{
-			foreach(split(',',$return['queuefeatures']['nonctipresence']) as $ctitem)
-			{
-				list($pid, $num) = explode(':',$ctitem);
-				$pres[] = array($ctistatus[$pid], $num);
-			}
-		}
-		$return['queuefeatures']['nonctipresence'] = $pres;
-
 		if(!is_null($return['queue']['joinempty']))
 			$return['queue']['joinempty'] = explode(',', $return['queue']['joinempty']);
 
@@ -452,8 +332,6 @@ switch($act)
 		$_TPL->set_var('context_list',$appqueue->get_context_list(null,null,null,false,'internal'));
 		if(array_key_exists('schedule_id',$return))
 			$_TPL->set_var('schedule_id', $return['schedule_id']);
-		$_TPL->set_var('ctipresence', $ctistatus);
-		$_TPL->set_var('nonctipresence', $ctistatus);
 		break;
 
 	case 'delete':

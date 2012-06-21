@@ -671,7 +671,6 @@ Asterisk config: weight
 ; hlp_fm_queue-wrapuptime
 Asterisk config: wrapuptime
 
-
 ; smenu_schedule
 Schedules
 
@@ -683,12 +682,6 @@ Create a schedule
 
 ; smenu_diversion
 Diversions
-
-; fld-diversion-ctipresence
-On CTI status presence
-
-; fld-diversion-nonctipresence
-On CTI status absence
 
 ; fld-diversion-waittime
 On estimated wait time overrun
@@ -704,23 +697,4 @@ Threshold (percent ratio):
 
 ; hlp_fm_queuefeatures_waitratio
 In percent (i.e 100 for 100%)
-
-
-; ctipresence_col1
-Status
-
-; ctipresence_col2
-Agents count >= to
-
-; nonctipresence_col1
-Status
-
-; nonctipresence_col2
-Agents count <= to
-
-; no_ctipresence-disp
-No rules
-
-; no_nonctipresence-disp
-No rules
 

@@ -1345,8 +1345,6 @@ CREATE TABLE "queuefeatures" (
  "preprocess_subroutine" VARCHAR(39),
  "announce_holdtime" INTEGER NOT NULL DEFAULT 0, -- BOOLEAN
  -- DIVERSIONS
- "ctipresence" VARCHAR(1024) DEFAULT NULL,
- "nonctipresence" VARCHAR(1024) DEFAULT NULL,
  "waittime"    INTEGER  DEFAULT NULL,
  "waitratio"   FLOAT DEFAULT NULL,
  PRIMARY KEY("id")
