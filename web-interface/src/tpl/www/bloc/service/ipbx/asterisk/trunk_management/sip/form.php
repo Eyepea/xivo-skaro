@@ -649,6 +649,7 @@ endif;
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_sendrpid'),
 				    'name'	=> 'protocol[sendrpid]',
 				    'labelid'	=> 'protocol-sendrpid',
+				    'empty'	=> true,
 				    'key'	=> false,
 				    'bbf'	=> 'fm_sendrpid-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),

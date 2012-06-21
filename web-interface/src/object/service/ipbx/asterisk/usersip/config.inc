@@ -133,7 +133,8 @@ $array['element']['trustrpid']['null'] = true;
 
 $array['element']['sendrpid'] = array();
 $array['element']['sendrpid']['value'] = array('no', 'yes','rpid','pai');
-$array['element']['sendrpid']['default'] = 'no';
+$array['element']['sendrpid']['default'] = '';
+$array['element']['sendrpid']['null'] = true;
 
 $array['element']['allowsubscribe'] = array();
 $array['element']['allowsubscribe']['value'] = array(1,0);
@@ -454,7 +455,7 @@ $array['filter']['nat'] = array('set' => false,'chk' => 2,'key' => array('no','y
 $array['filter']['promiscredir'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['usereqphone'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['trustrpid'] = array('set' => false,'chk' => 2,'bool' => true);
-$array['filter']['sendrpid'] = array('set' => false,'key' => $array['element']['sendrpid']['value']);
+$array['filter']['sendrpid'] = array('set' => false, 'chk' => 2,'key' => $array['element']['sendrpid']['value']);
 $array['filter']['allowsubscribe'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['allowoverlap'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['dtmfmode'] = array('set' => false,'chk' => 2,'key' => array('rfc2833','inband','info','auto'));
