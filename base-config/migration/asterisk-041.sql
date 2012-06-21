@@ -30,13 +30,13 @@ $$
 DECLARE
     first_directories text;
 BEGIN
-	SELECT "directories" INTO first_directories FROM "ctireversedirectories" ORDER BY "id" LIMIT 1;
-	IF NOT FOUND THEN
-	   first_directories := '[]';
-	END IF;
-	
-	DELETE FROM "ctireversedirectories";
-	INSERT INTO "ctireversedirectories" VALUES(1,first_directories);
+    SELECT "directories" INTO first_directories FROM "ctireversedirectories" ORDER BY "id" LIMIT 1;
+    IF NOT FOUND THEN
+        first_directories := '[]';
+    END IF;
+
+    DELETE FROM "ctireversedirectories";
+    INSERT INTO "ctireversedirectories" VALUES(1,first_directories);
 END;
 $$
 LANGUAGE 'plpgsql';
