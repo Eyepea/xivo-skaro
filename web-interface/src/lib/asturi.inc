@@ -250,7 +250,6 @@ class dwho_asterisk_uri extends dwho_uri
             if($decode === true)
                 $uri['path'] = urldecode($uri['path']);
         }
-
         if(dwho_issa('query',$uri) === true && ($nb = count($uri['query'])) !== 0)
         {
             for($i = 0;$i < $nb;$i++)
@@ -309,7 +308,7 @@ class dwho_asterisk_uri extends dwho_uri
             {
                 if(($pos2 = strrpos($userinfo, ':', $pos-strlen($userinfo)-1)) !== false)
                 {
-                    $r['authuser'] = substr($userinfo, $pos+1); 
+                    $r['authuser'] = substr($userinfo, $pos+1);
                     $userinfo      = substr($userinfo, 0, $pos);
                     $pos           = $pos2;
                 }

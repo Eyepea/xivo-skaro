@@ -60,7 +60,7 @@ $array['filter']['host'] = array('set'		=> false,
 							  DWHO_NETWORK_HOST_HOSTNAME)),
 				 'maxlen'	=> 64);
 $array['filter']['port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['contact'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9]+$/i','maxlen' => 250);
+$array['filter']['contact'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9+]+$/i','maxlen' => 250);
 $array['filter']['expiry'] = array('set' => false, 'chk' => 2, 'cast' => 'uint','between' => array(1,3600,1));
 $array['filter']['transport'] = array('key' => array('udp','tcp','tls'));
 

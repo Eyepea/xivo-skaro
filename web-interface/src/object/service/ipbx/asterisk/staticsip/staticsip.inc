@@ -30,7 +30,7 @@ class xivo_service_asterisk_realstatic_staticsip extends xivo_service_asterisk_r
 		if($data['category'] === 'general'
 		&& $data['var_name'] === 'register'
 		&& is_scalar($data['var_val']) === true
-		&& ($register = $this->parse_register_uri($data['var_val'])) !== false)
+		&& ($register = $this->parse_register_uri($data['var_val'],false)) !== false)
 			$data = array_merge($register,$data);
 
 		return(parent::_prepare($data));
@@ -85,8 +85,11 @@ class xivo_service_asterisk_realstatic_staticsip extends xivo_service_asterisk_r
 		if(dwho_has_len($arr, 'expiry') === true)
 			$uri['expiry'] = $arr['expiry'];
 
+		$ll = $this->_uri->build_uri($uri,false);
+
+
 		if(($r['str'] = $this->_uri->build_uri($uri,false)) === false
-		|| ($r['arr'] = $this->parse_register_uri($r['str'])) === false)
+		|| ($r['arr'] = $this->parse_register_uri($r['str'],false)) === false)
 			return(false);
 
 		return($r);
@@ -97,6 +100,7 @@ class xivo_service_asterisk_realstatic_staticsip extends xivo_service_asterisk_r
 		if($this->_load_uri() === false
 		|| ($parse_uri = $this->_uri->parse_uri($val,$decode)) === false)
 			return(false);
+
 
 		$r = array(
 			'transport' => '',
