@@ -1,0 +1,68 @@
+#3522 asterisk voicemail segfault
+Index: asterisk-1.8.13.0/apps/app_voicemail.c
+===================================================================
+--- asterisk-1.8.13.0.orig/apps/app_voicemail.c
++++ asterisk-1.8.13.0/apps/app_voicemail.c
+@@ -1758,25 +1758,26 @@ static void free_user(struct ast_vm_user
+ static int vm_allocate_dh(struct vm_state *vms, struct ast_vm_user *vmu, int count_msg) {
+ 
+ 	int arraysize = (vmu->maxmsg > count_msg ? vmu->maxmsg : count_msg);
+-	if (!vms->dh_arraysize) {
+-		/* initial allocation */
++
++	/* remove old allocation */
++	if (vms->dh_arraysize) {
++		ast_free(vms->deleted);
++		vms->deleted = NULL;
++		ast_free(vms->heard);
++		vms->heard = NULL;
++	}
++	vms->dh_arraysize = 0;
++
++	if (arraysize > 0) {
+ 		if (!(vms->deleted = ast_calloc(arraysize, sizeof(int)))) {
+ 			return -1;
+ 		}
+ 		if (!(vms->heard = ast_calloc(arraysize, sizeof(int)))) {
++			ast_free(vms->deleted);
++			vms->deleted = NULL;
+ 			return -1;
+ 		}
+ 		vms->dh_arraysize = arraysize;
+-	} else if (vms->dh_arraysize < arraysize) {
+-		if (!(vms->deleted = ast_realloc(vms->deleted, arraysize * sizeof(int)))) {
+-			return -1;
+-		}
+-		if (!(vms->heard = ast_realloc(vms->heard, arraysize * sizeof(int)))) {
+-			return -1;
+-		}
+-		memset(vms->deleted, 0, arraysize * sizeof(int));
+-		memset(vms->heard, 0, arraysize * sizeof(int));
+-		vms->dh_arraysize = arraysize;
+ 	}
+ 
+ 	return 0;
+@@ -8030,11 +8031,12 @@ static int close_mailbox(struct vm_state
+ #endif
+ 
+ done:
+-	if (vms->deleted && last_msg_idx) {
++	if (vms->dh_arraysize) {
+ 		ast_free(vms->deleted);
+-	}
+-	if (vms->heard && last_msg_idx) {
++		vms->deleted = NULL;
+ 		ast_free(vms->heard);
++		vms->heard = NULL;
++		vms->dh_arraysize = 0;
+ 	}
+ 
+ 	return 0;
+@@ -10171,6 +10173,7 @@ static int vm_execmain(struct ast_channe
+ 			}
+ 
+ 			vms.starting = 1;
++			vms.curmsg = 0;
+ 			break;
+ 		case '3': /* Advanced options */
+ 			ast_test_suite_event_notify("ADVOPTIONS", "Message: entering advanced options menu");
