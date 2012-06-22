@@ -179,6 +179,7 @@ switch($act)
 
 		$app->delete();
 		$ipbx->discuss('xivo[cticonfig,update]');
+		$ipbx->discuss_dird('update-config');
 
 		$_QRY->go($_TPL->url('cti/directories'),$param);
 		break;
