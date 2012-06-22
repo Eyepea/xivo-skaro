@@ -139,7 +139,8 @@ switch($act)
 			}
 			else
 			{
-			    $ipbx->discuss('xivo[cticonfig,update]');
+				$ipbx->discuss('xivo[cticonfig,update]');
+				$ipbx->discuss_dird('update-config');
 				$_QRY->go($_TPL->url('cti/directories'),$param);
 			}
 		}
