@@ -60,7 +60,8 @@ $array['element']['config'] = array();
 $array['element']['config']['default'] = '';
 
 $array['element']['configregistrar'] = array();
-$array['element']['configregistrar']['default'] = '';
+$array['element']['configregistrar']['default'] = 'default';
+$array['element']['configregistrar']['set'] = true;
 
 $array['element']['device'] = array();
 $array['element']['device']['default'] = '';
