@@ -1,7 +1,7 @@
 check process asterisk with pidfile /var/run/asterisk/asterisk.pid
 	group telephony
-	start program = "/usr/bin/xivo-service restart"
-	stop program = "/usr/bin/xivo-service stop"
+	start program = "/usr/bin/xivo-service restart no_monit"
+	stop program = "/usr/bin/xivo-service stop no_monit"
 	if failed host 127.0.0.1 port 5038 use type tcp
 		send "Action: login\r\n"
 		send "Username: xivo_monit_user\r\n"
