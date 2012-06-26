@@ -24,8 +24,6 @@ var xivo_elt_dialaction = {
             'chanunavail':    {},
             'inschedule':    {},
             'outschedule':    {},
-            'qctipresence':    {},
-            'qnonctipresence':    {},
             'qwaittime':    {},
             'qwaitratio':    {},
             'schedule_fallback':    {}};

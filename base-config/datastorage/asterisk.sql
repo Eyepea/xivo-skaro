@@ -585,8 +585,6 @@ CREATE TYPE "dialaction_event" AS ENUM ('answer',
  'chanunavail',
  'inschedule',
  'outschedule',
- 'qctipresence',
- 'qnonctipresence',
  'qwaittime',
  'qwaitratio');
 CREATE TYPE "dialaction_category" AS ENUM ('callfilter','group','incall','queue','schedule','user','outcall');
