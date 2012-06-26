@@ -689,6 +689,9 @@ class xivo_object_provdconfig extends xivo_object_provd_abstract
 
 		$this->_build_sip_secure_config(&$config);
 
+		if (empty($config) === true)
+			$config = array('X_Key' => '');
+
 		$globalconfig['raw_config'] = $config;
 
 		if ($this->edit($configid,$globalconfig) === false)

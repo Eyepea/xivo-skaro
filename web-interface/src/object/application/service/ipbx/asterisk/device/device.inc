@@ -537,14 +537,37 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 				if($this->get_errnb() > 0)
 					return false;
 
-				$this->_return['devicefeatures'] = $this->_provddevice->add($rs);
+				$deviceid = $this->_provddevice->add($rs);
+
+				if ($this->_add_config($deviceid) === false
+				|| $this->_add_configdevice($deviceid) === false)
+					return(false);
+
+				return(true);
+
 				break;
 			default:
 			case 'local':
 				$this->_return['devicefeatures'] = $this->_devicefeatures->add($rs);
+				return($this->_return['devicefeatures']);
 		}
 
-		return($this->_return['devicefeatures']);
+	}
+
+	function _add_config($deviceid)
+	{
+		if(($rs = $this->get_result('config')) === null)
+			return($rs);
+
+		return($this->_provddevice->update_rawconfig($deviceid,$rs));
+	}
+
+	function _add_configdevice($deviceid)
+	{
+		if(($rs = $this->get_result('configdevice')) === null)
+			return($rs);
+
+		return($this->_provdconfig->update_parents_ids($deviceid,'add',$rs));
 	}
 
 	function _reverse_add()
