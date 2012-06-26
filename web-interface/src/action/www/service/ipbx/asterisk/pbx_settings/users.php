@@ -191,6 +191,9 @@ switch($act)
 		if(isset($_QR['fm_send']) === true)
 		{
 			$appuser->import_csv();
+			$ipbx->discuss(array('dialplan reload',
+                                 'xivo[userlist,update]',
+                                 'sip reload'));
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		}
 
