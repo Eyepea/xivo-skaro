@@ -636,7 +636,9 @@ class xivo_application_service_asterisk_device extends xivo_application_asterisk
 						$arr[$k] = $rs[$k];
 				}
 
-				$this->_return['devicefeatures'] = $this->_provddevice->edit($this->_info['devicefeatures']['deviceid'],$arr);
+				$this->_provddevice->edit($this->_info['devicefeatures']['deviceid'],$arr);
+				$rs['deviceid'] = $this->_info['devicefeatures']['deviceid'];
+				$this->_return['devicefeatures'] = $this->_devicefeatures->edit($this->_info['devicefeatures']['id'],$rs);
 				break;
 			default:
 			case 'local':
