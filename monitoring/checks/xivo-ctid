@@ -1,7 +1,7 @@
 check process xivo-ctid with pidfile /var/run/xivo-ctid.pid
 	group telephony
-	start program = "/usr/bin/xivo-service restart no_monit"
-	stop program = "/usr/bin/xivo-service stop no_monit"
+	start program = "/etc/init.d/xivo-ctid start"
+	stop program = "/etc/init.d/xivo-ctid stop"
 	if failed host 127.0.0.1 port 5005 use type tcp
 		timeout 10 seconds
 		then restart
