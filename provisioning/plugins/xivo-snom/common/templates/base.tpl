@@ -27,7 +27,9 @@
     <user_pname idx="{{ line_no }}" perm="R">{{ line['auth_username']|e }}</user_pname>
     <user_pass idx="{{ line_no }}" perm="R">{{ line['password']|e }}</user_pass>
     <user_realname idx="{{ line_no }}" perm="R">{{ line['display_name']|e }}</user_realname>
+    {% if line['voicemail'] -%}
     <user_mailbox idx="{{ line_no }}" perm="R">{{ line['voicemail'] or exten_voicemail }}</user_mailbox>
+    {% endif -%}
     <user_dtmf_info idx="{{ line_no }}" perm="R">{{ line['XX_user_dtmf_info'] }}</user_dtmf_info>
     {% endfor -%}
 
