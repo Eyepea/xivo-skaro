@@ -30,6 +30,8 @@
     <user_mailbox idx="{{ line_no }}" perm="R">{{ line['voicemail'] or exten_voicemail }}</user_mailbox>
     <user_dtmf_info idx="{{ line_no }}" perm="R">{{ line['XX_user_dtmf_info'] }}</user_dtmf_info>
     {% endfor -%}
+
+    <goto_monitor_state_on_line_activity perm="R">on</goto_monitor_state_on_line_activity> 
     
     {% if X_xivo_phonebook_ip -%}
     <dkey_directory perm="R">url http://{{ X_xivo_phonebook_ip }}/service/ipbx/web_services.php/phonebook/search/</dkey_directory>

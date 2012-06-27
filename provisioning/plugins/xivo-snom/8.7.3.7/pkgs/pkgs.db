@@ -1,0 +1,142 @@
+[pkg_300-fw]
+description: Firmware for Snom 300
+description_fr: Micrologiciel pour Snom 300
+version: 8.7.3.7
+files: 300-fw
+install: snom-fw
+
+[pkg_320-fw]
+description: Firmware for Snom 320
+description_fr: Micrologiciel pour Snom 320
+version: 8.7.3.7
+files: 320-fw
+install: snom-fw
+
+[pkg_360-fw]
+description: Firmware for Snom 360
+description_fr: Micrologiciel pour Snom 360
+version: 8.7.3.7
+files: 360-fw
+install: snom-fw
+
+[pkg_370-fw]
+description: Firmware for Snom 370
+description_fr: Micrologiciel pour Snom 370
+version: 8.7.3.7
+files: 370-fw
+install: snom-fw
+
+[pkg_720-fw]
+description: Firmware for Snom 720
+description_fr: Micrologiciel pour Snom 720
+version: 8.7.3.7
+files: 720-fw
+install: snom-fw
+
+[pkg_760-fw]
+description: Firmware for Snom 760
+description_fr: Micrologiciel pour Snom 770
+version: 8.7.3.7
+files: 760-fw
+install: snom-fw
+
+[pkg_820-fw]
+description: Firmware for Snom 820
+description_fr: Micrologiciel pour Snom 820
+version: 8.7.3.7
+files: 820-fw
+install: snom-fw
+
+[pkg_821-fw]
+description: Firmware for Snom 821
+description_fr: Micrologiciel pour Snom 821
+version: 8.7.3.7
+files: 821-fw
+install: snom-fw
+
+[pkg_870-fw]
+description: Firmware for Snom 870
+description_fr: Micrologiciel pour Snom 870
+version: 8.7.3.7
+files: 870-fw
+install: snom-fw
+
+[pkg_PA1-fw]
+description: Firmware for Snom PA1
+description_fr: Micrologiciel pour Snom PA1
+version: 8.7.3.7
+files: PA1-fw
+install: snom-fw
+
+[pkg_lang]
+description: Language files for Snom 3x0
+description_fr: Fichiers de langue pour Snom 3x0
+version: 8.7.3
+files: lang
+install: snom-lang
+
+
+
+[install_snom-fw]
+a-b: cp $FILE1 firmware/
+
+[install_snom-lang]
+a-b: unzip $FILE1
+b-c: cp * i18n/
+
+
+
+[file_300-fw]
+url: http://provisioning.snom.com/download/fw/snom300-8.7.3.7-SIP-f.bin
+size: 3264216
+sha1sum: 26942c452a0e98e6044099ddbeeede5e1ce77f6a
+
+[file_320-fw]
+url: http://provisioning.snom.com/download/fw/snom320-8.7.3.7-SIP-f.bin
+size: 3265024
+sha1sum: 1d0feb684f7a3fc7d8466ce734feec4ace77fba1
+
+[file_360-fw]
+url: http://provisioning.snom.com/download/fw/snom360-8.7.3.7-SIP-f.bin
+size: 3281148
+sha1sum: 1ee38802a324923197d1a571e1860b3c518b8b14
+
+[file_370-fw]
+url: http://provisioning.snom.com/download/fw/snom370-8.7.3.7-SIP-f.bin
+size: 6671088
+sha1sum: 6c5bd5bb112d8ad25d0db290fb1cb7e71f247604
+
+[file_720-fw]
+url: http://provisioning.snom.com/download/fw/snom720-8.7.3.7-SIP-r.bin
+size: 24564960
+sha1sum: 2ed2ea9e5027106bcb9a8bb219edbcb3155c415f
+
+[file_760-fw]
+url: http://provisioning.snom.com/download/fw/snom760-8.7.3.7-SIP-r.bin
+size: 28002272
+sha1sum: 2fb84546cb25b2cb0740db7873cfa26cf55f3075
+
+[file_820-fw]
+url: http://provisioning.snom.com/download/fw/snom820-8.7.3.7-SIP-r.bin
+size: 35099424
+sha1sum: db0b402019337819b93e9e00c60b7bf8e21fbabf
+
+[file_821-fw]
+url: http://provisioning.snom.com/download/fw/snom821-8.7.3.7-SIP-r.bin
+size: 25457360
+sha1sum: b6b1ab090b34b52eadd306ea997d4cdd36263bf8
+
+[file_870-fw]
+url: http://provisioning.snom.com/download/fw/snom870-8.7.3.7-SIP-r.bin
+size: 26486704
+sha1sum: 86efd11245f04f319518d16100b6e708a585a483
+
+[file_PA1-fw]
+url: http://provisioning.snom.com/download/fw/snomPA1-8.7.3.7-SIP-f.bin
+size: 3360672
+sha1sum: 41f3102fa0dd092fafa931dfd78e77d9b36c9a9b
+
+[file_lang]
+url: http://fox.snom.com/config/snomlang-8.7.3.zip
+size: 722386
+sha1sum: 9d8a38fb34aef9c03f5ef1b0f474058e42141df3
