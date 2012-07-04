@@ -35,7 +35,9 @@ class dwho_i18n
                                                      'en_US',
                                                      'es_ES',
                                                      'fr_FR',
-                                                     'fr_CA');
+                                                     'fr_CA',
+                                                     'it_IT',
+                                                     'nl_NL');
 
     function dwho_i18n()
     {
