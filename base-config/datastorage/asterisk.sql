@@ -2419,6 +2419,46 @@ CREATE INDEX queue_log__idx_event ON queue_log USING btree ("event");
 CREATE INDEX queue_log__idx_data1 ON queue_log USING btree ("data1");
 CREATE INDEX queue_log__idx_data2 ON queue_log USING btree ("data2");
 
+DROP TYPE IF EXISTS "call_exit_type";
+CREATE TYPE "call_exit_type" AS ENUM (
+  'full',
+  'closed',
+  'joinempty',
+  'leaveempty',
+  'reroutedguide',
+  'reroutednumber',
+  'answered',
+  'abandoned',
+  'timeout'
+);
+
+DROP TABLE IF EXISTS "call_on_queue";
+CREATE TABLE "call_on_queue" (
+ "callid" VARCHAR(32) NOT NULL,
+ "time" timestamp NOT NULL,
+ "ringtime" INTEGER,
+ "talktime" INTEGER,
+ "status" call_exit_type NOT NULL,
+ "queue_id" INTEGER REFERENCES queuefeatures (id),
+ PRIMARY KEY("callid")
+);
+
+DROP TABLE IF EXISTS "queue_hourly_stat";
+CREATE TABLE "queue_hourly_stat" (
+ "id" INTEGER NOT NULL PRIMARY KEY,
+ "hour" timestamp NOT NULL,
+ "answered" INTEGER NOT NULL DEFAULT 0,
+ "abandoned" INTEGER NOT NULL DEFAULT 0,
+ "total" INTEGER NOT NULL DEFAULT 0,
+ "full" INTEGER NOT NULL DEFAULT 0,
+ "closed" INTEGER NOT NULL DEFAULT 0,
+ "joinempty" INTEGER NOT NULL DEFAULT 0,
+ "leaveempty" INTEGER NOT NULL DEFAULT 0,
+ "reroutedguide" INTEGER NOT NULL DEFAULT 0,
+ "reroutednumber" INTEGER NOT NULL DEFAULT 0,
+ "timeout" INTEGER NOT NULL DEFAULT 0,
+ "queue_id" INTEGER REFERENCES queuefeatures (id)
+);
 
 DROP TABLE IF EXISTS "pickup";
 CREATE TABLE "pickup" (
@@ -2606,7 +2646,7 @@ CREATE TABLE "callcenter_campaigns_campaign" (
 DROP TABLE IF EXISTS "callcenter_campaigns_campaign_filter";
 DROP TYPE  IF EXISTS "callcenter_campaigns_campaign_filter_type";
 
-CREATE TYPE "callcenter_campaigns_campaign_filter_type" AS ENUM ('agent','queue','skill','way');
+ CREATE TYPE "callcenter_campaigns_campaign_filter_type" AS ENUM ('agent','queue','skill','way');
 CREATE TABLE "callcenter_campaigns_campaign_filter" (
 	"campaign_id"      SERIAL,
 	"type"             callcenter_campaigns_campaign_filter_type NOT NULL,
