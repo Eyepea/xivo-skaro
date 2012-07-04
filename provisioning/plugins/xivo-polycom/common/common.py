@@ -132,6 +132,8 @@ class BasePolycomPlugin(StandardPlugin):
         u'es_ES': u'Spanish_Spain',
         u'fr_FR': u'French_France',
         u'fr_CA': u'French_France',
+        u'it_IT': u'Italian_Italy',
+        u'nl_NL': u'Dutch_Netherlands',
     }
     _SYSLOG_LEVEL = {
         u'critical': u'5',
