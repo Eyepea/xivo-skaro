@@ -354,7 +354,7 @@ class BaseAastraPlugin(StandardPlugin):
         return xx_dict
 
     def _device_cert_or_key_filename(self, device, suffix):
-        # Return the cert or key file filename for a device 
+        # Return the cert or key file filename for a device
         fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
         return fmted_mac + suffix
 
