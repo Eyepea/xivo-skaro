@@ -31,6 +31,11 @@ class dwho_i18n
     var $_loop        = array();
     var $_path_i18n        = '';
     var $_path_i18n_len    = 0;
+    private static $_supported_language_list = array('de_DE',
+                                                     'en_US',
+                                                     'es_ES',
+                                                     'fr_FR',
+                                                     'fr_CA');
 
     function dwho_i18n()
     {
@@ -72,6 +77,11 @@ class dwho_i18n
     function get_language_list()
     {
         return(dwho_i18n::mediator('list','language'));
+    }
+
+    function get_supported_language_list()
+    {
+        return(self::$_supported_language_list);
     }
 
     function get_language_translated_list()

@@ -180,7 +180,7 @@ $array['element']['preprocess_subroutine']['default'] = '';
 $array['element']['preprocess_subroutine']['null'] = true;
 
 $array['element']['language'] = array();
-$array['element']['language']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA');
+$array['element']['language']['value'] = dwho_i18n::get_supported_language_list();
 $array['element']['language']['default'] = '';
 $array['element']['language']['null'] = true;
 
@@ -268,7 +268,7 @@ $array['filter']['preprocess_subroutine'] = array('set' => false,
 $array['filter']['userfield'] = array('set'	=> false,
 					      'chk'	=> 2,
 					      'maxlen'	=> 128);
-$array['filter']['language'] = array('set' => false,'chk' => 2,'minlen' =>5,'maxlen' => 5,'key' => array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA'));
+$array['filter']['language'] = array('set' => false,'chk' => 2,'minlen' =>5,'maxlen' => 5,'key' => dwho_i18n::get_supported_language_list());
 $array['filter']['timezone'] = array('set' => false,'chk' => 2);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 $array['filter']['ringintern'] = array('set' => false,'chk' => 2,'maxlen' => 64);
