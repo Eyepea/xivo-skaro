@@ -2443,10 +2443,10 @@ CREATE TABLE "call_on_queue" (
  PRIMARY KEY("callid")
 );
 
-DROP TABLE IF EXISTS "queue_hourly_stat";
-CREATE TABLE "queue_hourly_stat" (
+DROP TABLE IF EXISTS "queue_periodic_stat";
+CREATE TABLE "queue_periodic_stat" (
  "id" INTEGER NOT NULL PRIMARY KEY,
- "hour" timestamp NOT NULL,
+ "time" timestamp NOT NULL,
  "answered" INTEGER NOT NULL DEFAULT 0,
  "abandoned" INTEGER NOT NULL DEFAULT 0,
  "total" INTEGER NOT NULL DEFAULT 0,
