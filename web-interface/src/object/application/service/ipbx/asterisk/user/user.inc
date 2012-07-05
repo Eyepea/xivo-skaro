@@ -963,7 +963,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				if($ref['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP) {
 					$ref['name'] = $ref['number'];
 				} else {
-					$ref['name'] = $this->gen_password(6,true);
+					if(isset($ref['name']) === false) {
+						$ref['name'] = $this->gen_password(6,true);
+					}
 				}
 			}
 			if (isset($ref['rules_order']) === false)
@@ -994,10 +996,22 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$ref['num'] = isset($ref['num']) ? (int) $ref['num'] : 1;
 			$ref['callerid'] = $this->_service->mk_callerid($userfeatures['callerid'],$number,$protocolname);
 
+			$secret = null;
+			if(isset($ref['linesecret']))
+			{
+				$secret = $ref['linesecret'];
+				unset($ref['linesecret']);
+			}
+
 			if($this->_linefeatures->chk_values($ref) === false)
 			{
 				$errnb++;
 				$error[$i] = $this->_linefeatures->get_filter_error();
+			}
+
+			if($secret !== null)
+			{
+				$ref['linesecret'] = $secret;
 			}
 		}
 
@@ -1484,6 +1498,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$arr['protocol'] = $line;
 			$arr['protocol']['language'] = $arr['userfeatures']['language'];
 			$arr['protocol']['mailbox'] = $this->get_result_var('protocol','mailbox');
+
+			if(isset($line['linesecret']) === true) {
+				if ($protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP) {
+					$arr['protocol']['secret'] = $line['linesecret'];
+				}
+				unset($line['linesecret']);
+			}
 
 			if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 				$arr['protocol']['interface'] = $line['name'];

@@ -47,6 +47,8 @@ $array['import']['field']['phonenumber'] = array('linefeatures','number',0);
 $array['import']['field']['context'] = array('linefeatures','context',0);
 $array['import']['field']['callerid'] = array('linefeatures','callerid',0);
 $array['import']['field']['protocol'] = array('linefeatures','protocol',0);
+$array['import']['field']['linename'] = array('linefeatures','name',0);
+$array['import']['field']['linesecret'] = array('linefeatures','secret',0);
 
 $array['import']['field']['voicemailname'] = array('voicemail','fullname');
 $array['import']['field']['voicemailmailbox'] = array('voicemail','mailbox');
