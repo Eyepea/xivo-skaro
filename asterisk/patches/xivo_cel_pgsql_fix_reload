@@ -1,7 +1,7 @@
-Index: asterisk-1.8.13.0/cel/cel_pgsql.c
+Index: asterisk-1.8.13.1/cel/cel_pgsql.c
 ===================================================================
---- asterisk-1.8.13.0.orig/cel/cel_pgsql.c
-+++ asterisk-1.8.13.0/cel/cel_pgsql.c
+--- asterisk-1.8.13.1.orig/cel/cel_pgsql.c
++++ asterisk-1.8.13.1/cel/cel_pgsql.c
 @@ -322,6 +322,8 @@ static void pgsql_log(const struct ast_e
  			goto ast_log_cleanup;
  		}
