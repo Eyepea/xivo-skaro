@@ -68,11 +68,11 @@ disable_monit() {
 }
 
 set_berofos_to_slave_state() {
-    /usr/sbin/xivo-berofos --syslog slave
+    /usr/sbin/xivo-berofos -q --syslog slave
 }
 
 set_berofos_to_master_state() {
-    /usr/sbin/xivo-berofos --syslog master
+    /usr/sbin/xivo-berofos -q --syslog master
 }
 
 enable_service() {
