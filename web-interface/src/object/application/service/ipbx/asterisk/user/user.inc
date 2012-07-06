@@ -963,7 +963,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				if($ref['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP) {
 					$ref['name'] = $ref['number'];
 				} else {
-					if(isset($ref['name']) === false) {
+					if(dwho_has_len($ref, 'name') === false) {
 						$ref['name'] = $this->gen_password(6,true);
 					}
 				}
