@@ -34,6 +34,15 @@
     {% if X_xivo_phonebook_ip -%}
     <dkey_directory perm="R">url http://{{ X_xivo_phonebook_ip }}/service/ipbx/web_services.php/phonebook/search/</dkey_directory>
     {% endif -%}
+
+    <redirect_always_on_codalways_on_code perm="R">*21</redirect_always_on_code>
+    <redirect_always_off_code perm="R">*21</redirect_always_on_code>
+    <redirect_busy_on_code perm="R">*23</redirect_busy_on_code>
+    <redirect_busy_off_code perm="R">*23</redirect_busy_on_code>
+    <redirect_time_on_code perm="R">*22</redirect_time_on_code>
+    <redirect_time_off_code perm="R">*22</redirect_time_on_code>
+    <dnd_on_code perm="R">*25</dnd_on_code>
+    <dnd_off_code perm="R">*25</dnd_on_code>
     
     {% if XX_lang -%}
     <language perm="R">{{ XX_lang[0] }}</language>
