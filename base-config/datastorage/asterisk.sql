@@ -2467,6 +2467,7 @@ CREATE TABLE "stat_queue_periodic" (
 );
 
 
+
 DROP TABLE IF EXISTS "pickup";
 CREATE TABLE "pickup" (
  -- id is not an autoincrement number, because pickups are between 0 and 63 only
