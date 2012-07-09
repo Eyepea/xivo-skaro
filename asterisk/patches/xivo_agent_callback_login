@@ -1,7 +1,7 @@
-Index: asterisk-1.8.13.0/channels/chan_agent.c
+Index: asterisk-1.8.13.1/channels/chan_agent.c
 ===================================================================
---- asterisk-1.8.13.0.orig/channels/chan_agent.c
-+++ asterisk-1.8.13.0/channels/chan_agent.c
+--- asterisk-1.8.13.1.orig/channels/chan_agent.c
++++ asterisk-1.8.13.1/channels/chan_agent.c
 @@ -198,13 +198,29 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revisi
  			<para>Sets an agent as no longer logged in.</para>
  		</description>

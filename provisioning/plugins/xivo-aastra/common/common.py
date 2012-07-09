@@ -122,7 +122,9 @@ class BaseAastraPlugin(StandardPlugin):
         u'de_DE': (u'lang_de.txt', u'Germany', u'German'),
         u'es_ES': (u'lang_es.txt', u'Europe', u'Spanish'),
         u'fr_FR': (u'lang_fr.txt', u'France', u'French'),
-        u'fr_CA': (u'lang_fr_ca.txt', u'US', u'French')
+        u'fr_CA': (u'lang_fr_ca.txt', u'US', u'French'),
+        u'it_IT': (u'lang_it.txt', u'Italy', u'Italian'),
+        u'nl_NL': (u'lang_nl_nl.txt', u'Germany', u'Dutch'),
     }
     _SIP_DTMF_MODE = {
         # <dtmf mode>: (<out-of-band dtmf>, <dtmf method>)
@@ -352,7 +354,7 @@ class BaseAastraPlugin(StandardPlugin):
         return xx_dict
 
     def _device_cert_or_key_filename(self, device, suffix):
-        # Return the cert or key file filename for a device 
+        # Return the cert or key file filename for a device
         fmted_mac = format_mac(device[u'mac'], separator='', uppercase=True)
         return fmted_mac + suffix
 

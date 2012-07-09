@@ -62,7 +62,7 @@ $array['element']['tz']['default'] = '';
 $array['element']['tz']['null'] = true;
 
 $array['element']['language'] = array();
-$array['element']['language']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA');
+$array['element']['language']['value'] = dwho_i18n::get_supported_language_list();
 $array['element']['language']['default'] = '';
 $array['element']['language']['null'] = true;
 
@@ -187,7 +187,7 @@ $array['element']['serveremail']['default'] = '';
 $array['element']['serveremail']['null'] = true;
 
 $array['element']['locale'] = array();
-$array['element']['locale']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA');
+$array['element']['locale']['value'] = dwho_i18n::get_supported_language_list();
 $array['element']['locale']['default'] = '';
 $array['element']['locale']['null'] = true;
 
@@ -260,7 +260,7 @@ $array['filter']['exitcontext'] = array('set' => false,
 				     'callback' => 'xivo_service_asterisk::chk_context',
 				     'callbackarg' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['tz'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 80,'regexp' => '/^[a-z0-9_-]+$/i');
-$array['filter']['language'] = array('set' => false,'chk' => 2,'minlen' => 5,'maxlen' => 5,'key' => array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA'));
+$array['filter']['language'] = array('set' => false,'chk' => 2,'minlen' => 5,'maxlen' => 5,'key' => dwho_i18n::get_supported_language_list());
 $array['filter']['attach'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['saycid'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['review'] = array('set' => false,'chk' => 2,'bool' => true);
@@ -287,7 +287,7 @@ $array['filter']['imapvmsharedid'] = array('set' => false,'chk' => 2,'maxlen' =>
 $array['filter']['attachfmt'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['serveremail'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['locale'] = array('chk' => 2,
-  'key' => array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA'));
+  'key' => dwho_i18n::get_supported_language_list());
 $array['filter']['tempgreetwarn'] = array('set' => false, 'chk' => 2, 'bool' => true);
 
 $array['filter']['messagewrap'] = array('set' => false, 'chk' => 2, 'bool' => true);

@@ -2646,7 +2646,7 @@ CREATE TABLE "callcenter_campaigns_campaign" (
 DROP TABLE IF EXISTS "callcenter_campaigns_campaign_filter";
 DROP TYPE  IF EXISTS "callcenter_campaigns_campaign_filter_type";
 
- CREATE TYPE "callcenter_campaigns_campaign_filter_type" AS ENUM ('agent','queue','skill','way');
+CREATE TYPE "callcenter_campaigns_campaign_filter_type" AS ENUM ('agent','queue','skill','way');
 CREATE TABLE "callcenter_campaigns_campaign_filter" (
 	"campaign_id"      SERIAL,
 	"type"             callcenter_campaigns_campaign_filter_type NOT NULL,

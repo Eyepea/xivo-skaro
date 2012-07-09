@@ -1,7 +1,7 @@
-Index: asterisk-1.8.13.0/apps/app_meetme.c
+Index: asterisk-1.8.13.1/apps/app_meetme.c
 ===================================================================
---- asterisk-1.8.13.0.orig/apps/app_meetme.c
-+++ asterisk-1.8.13.0/apps/app_meetme.c
+--- asterisk-1.8.13.1.orig/apps/app_meetme.c
++++ asterisk-1.8.13.1/apps/app_meetme.c
 @@ -116,15 +116,27 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revisi
  						</argument>
  						<para>Play an intro announcement in conference.</para>

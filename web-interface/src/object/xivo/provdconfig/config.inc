@@ -114,7 +114,7 @@ $array['element']['timezone'] = array();
 $array['element']['timezone']['default'] = '';
 
 $array['element']['locale'] = array();
-$array['element']['locale']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA');
+$array['element']['locale']['value'] = dwho_i18n::get_supported_language_list();
 $array['element']['locale']['default'] = '';
 $array['element']['locale']['null'] = true;
 
@@ -247,7 +247,7 @@ $array['filter']['user_username'] = array('set' => false,'chk' => 2);
 $array['filter']['user_password'] = array('set' => false,'chk' => 2);
 $array['filter']['timezone'] = array('set' => false,'chk' => 2);
 $array['filter']['sip_subscribe_mwi'] = array('set' => false, 'key' => $array['element']['sip_subscribe_mwi']['value']);
-$array['filter']['locale'] = array('set' => false,'chk' => 2,'minlen' =>5,'maxlen' => 5,'key' => $array['element']['locale']['value']);
+$array['filter']['locale'] = array('set' => false,'chk' => 2,'minlen' =>5,'maxlen' => 5,'key' => dwho_i18n::get_supported_language_list());
 $array['filter']['config_encryption_enabled'] = array('set' => false,'key' => $array['element']['config_encryption_enabled']['value']);
 $array['filter']['protocol'] = array('set' => false,'chk' => 2,'key' => $array['element']['protocol']['value']);
 $array['filter']['sip_dtmf_mode'] = array('set' => false,'chk' => 2,'key' => $array['element']['sip_dtmf_mode']['value']);
