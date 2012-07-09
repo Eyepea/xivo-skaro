@@ -18,7 +18,17 @@
 
 BEGIN;
 
+DROP TABLE IF EXISTS "stat_queue_periodic";
+DROP TABLE IF EXISTS "stat_call_on_queue";
 DROP TYPE IF EXISTS "call_exit_type";
+DROP TABLE IF EXISTS "stat_queue";
+
+
+CREATE TABLE "stat_queue" (
+ "id" SERIAL PRIMARY KEY,
+ "name" VARCHAR(128) NOT NULL
+);
+
 CREATE TYPE "call_exit_type" AS ENUM (
   'full',
   'closed',
@@ -31,24 +41,6 @@ CREATE TYPE "call_exit_type" AS ENUM (
   'timeout'
 );
 
-DROP TABLE IF EXISTS "stat_queue";
-CREATE TABLE "stat_queue" (
- "id" SERIAL PRIMARY KEY,
- "name" VARCHAR(128) NOT NULL
-);
-
-DROP TABLE IF EXISTS "stat_call_on_queue";
-CREATE TABLE "stat_call_on_queue" (
- "callid" VARCHAR(32) NOT NULL,
- "time" timestamp NOT NULL,
- "ringtime" INTEGER,
- "talktime" INTEGER,
- "status" call_exit_type NOT NULL,
- "queue_id" INTEGER REFERENCES stat_queue (id),
- PRIMARY KEY("callid")
-);
-
-DROP TABLE IF EXISTS "stat_queue_periodic";
 CREATE TABLE "stat_queue_periodic" (
  "id" SERIAL PRIMARY KEY,
  "time" timestamp NOT NULL,
@@ -64,5 +56,18 @@ CREATE TABLE "stat_queue_periodic" (
  "timeout" INTEGER NOT NULL DEFAULT 0,
  "queue_id" INTEGER REFERENCES stat_queue (id)
 );
+
+CREATE TABLE "stat_call_on_queue" (
+ "callid" VARCHAR(32) NOT NULL,
+ "time" timestamp NOT NULL,
+ "ringtime" INTEGER,
+ "talktime" INTEGER,
+ "status" call_exit_type NOT NULL,
+ "queue_id" INTEGER REFERENCES stat_queue (id),
+ PRIMARY KEY("callid")
+);
+
+SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO asterisk;') FROM pg_tables WHERE schemaname = 'public';
+SELECT execute('GRANT ALL ON SEQUENCE '||relname||' TO asterisk;') FROM pg_class WHERE relkind = 'S';
 
 COMMIT;
