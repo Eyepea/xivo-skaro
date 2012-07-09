@@ -2466,49 +2466,6 @@ CREATE TABLE "stat_queue_periodic" (
  "queue_id" INTEGER REFERENCES stat_queue (id)
 );
 
-
-
-DROP TYPE IF EXISTS "call_exit_type";
-CREATE TYPE "call_exit_type" AS ENUM (
-  'full',
-  'closed',
-  'joinempty',
-  'leaveempty',
-  'reroutedguide',
-  'reroutednumber',
-  'answered',
-  'abandoned',
-  'timeout'
-);
-
-DROP TABLE IF EXISTS "call_on_queue";
-CREATE TABLE "call_on_queue" (
- "callid" VARCHAR(32) NOT NULL,
- "time" timestamp NOT NULL,
- "ringtime" INTEGER,
- "talktime" INTEGER,
- "status" call_exit_type NOT NULL,
- "queue_id" INTEGER REFERENCES queuefeatures (id),
- PRIMARY KEY("callid")
-);
-
-DROP TABLE IF EXISTS "queue_periodic_stat";
-CREATE TABLE "queue_periodic_stat" (
- "id" INTEGER NOT NULL PRIMARY KEY,
- "time" timestamp NOT NULL,
- "answered" INTEGER NOT NULL DEFAULT 0,
- "abandoned" INTEGER NOT NULL DEFAULT 0,
- "total" INTEGER NOT NULL DEFAULT 0,
- "full" INTEGER NOT NULL DEFAULT 0,
- "closed" INTEGER NOT NULL DEFAULT 0,
- "joinempty" INTEGER NOT NULL DEFAULT 0,
- "leaveempty" INTEGER NOT NULL DEFAULT 0,
- "reroutedguide" INTEGER NOT NULL DEFAULT 0,
- "reroutednumber" INTEGER NOT NULL DEFAULT 0,
- "timeout" INTEGER NOT NULL DEFAULT 0,
- "queue_id" INTEGER REFERENCES queuefeatures (id)
-);
-
 DROP TABLE IF EXISTS "pickup";
 CREATE TABLE "pickup" (
  -- id is not an autoincrement number, because pickups are between 0 and 63 only
