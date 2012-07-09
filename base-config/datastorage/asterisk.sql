@@ -2451,7 +2451,7 @@ CREATE TABLE "stat_call_on_queue" (
 
 DROP TABLE IF EXISTS "stat_queue_periodic";
 CREATE TABLE "stat_queue_periodic" (
- "id" INTEGER NOT NULL PRIMARY KEY,
+ "id" SERIAL PRIMARY KEY,
  "time" timestamp NOT NULL,
  "answered" INTEGER NOT NULL DEFAULT 0,
  "abandoned" INTEGER NOT NULL DEFAULT 0,
