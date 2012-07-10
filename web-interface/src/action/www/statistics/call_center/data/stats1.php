@@ -57,17 +57,15 @@ switch ($axetype)
 $tpl_statistics->set_data_custom('queue',$stats_queue->_result);
 
 $tpl_statistics->set_col_struct(null);
-
 $tpl_statistics->add_col('presented',
 					'direct',
 					'custom:queue,[key],presented');
-
 $tpl_statistics->set_col_struct('traitment');
 /*
 $tpl_statistics->add_col('enterqueue',
 					'direct',
 					'custom:queue,[key],enterqueue');
-					*/
+*/
 $tpl_statistics->add_col('connect',
 					'direct',
 					'custom:queue,[key],connect');
@@ -76,21 +74,17 @@ $tpl_statistics->add_col('abandon',
 					'custom:queue,[key],abandon');
 
 $tpl_statistics->set_col_struct('deterred');
-
 $tpl_statistics->add_col('on_close',
 					'direct',
 					'custom:queue,[key],deterred_on_close');
-
 $tpl_statistics->add_col('on_saturation',
 					'direct',
 					'custom:queue,[key],deterred_on_saturation');
 
 $tpl_statistics->set_col_struct('rerouted');
-/*
 $tpl_statistics->add_col('on_hungup',
 					'direct',
 					'custom:queue,[key],rerouted_on_hungup');
-*/
 $tpl_statistics->add_col('on_guide',
 					'direct',
 					'custom:queue,[key],rerouted_on_guide');
