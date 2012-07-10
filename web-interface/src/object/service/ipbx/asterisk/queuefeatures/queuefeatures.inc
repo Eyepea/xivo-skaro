@@ -56,6 +56,11 @@ class xivo_service_asterisk_queuefeatures extends xivo_service_asterisk_abstract
 		return($this->_dso->get_by_name($name));
 	}
 
+	function name_from_id($queue_id)
+	{
+		return($this->_dso->get_name_from_queue_id($queue_id));
+	}
+
 	function add($arr,$id=0)
 	{
 		if(is_array($arr) === false)
@@ -75,7 +80,7 @@ class xivo_service_asterisk_queuefeatures extends xivo_service_asterisk_abstract
 
 		return(parent::edit($id,$arr));
 	}
-	
+
 	function get_all_wherein($id,$where,$order=null,$limit=null)
 	{
 		if(($list = $this->_dso->get_all_wherein($id,$where,$order,$limit)) === false)

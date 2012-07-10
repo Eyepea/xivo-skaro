@@ -20,13 +20,11 @@
 
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
-class xivo_service_asterisk_stat_queue_periodic extends xivo_service_asterisk_abstract
+class xivo_service_asterisk_stat_queue extends xivo_service_asterisk_abstract
 {
-	protected	$_dso			= null;
-	protected	$_name			= 'stat_queue_periodic';
-	protected	$_filter		= false;
-	protected	$_queuefeatures	= null;
-	protected	$_stat_queue	= null;
+	protected	$_dso		= null;
+	protected	$_name		= 'stat_queue';
+	protected	$_filter	= false;
 
 	public function __construct(&$sre,&$dso)
 	{
@@ -38,29 +36,11 @@ class xivo_service_asterisk_stat_queue_periodic extends xivo_service_asterisk_ab
 
 		$this->_sre = &$sre;
 		$this->_dso = &$dso;
-
-		$this->_queuefeatures = $this->_sre->get_module('queuefeatures');
-		$this->_stat_queue = $this->_sre->get_module('stat_queue');
 	}
 
-	function get_min_and_max_time()
+	function id_from_name($name)
 	{
-		if(($min = $this->_dso->get_min_time()) === false
-		|| ($max = $this->_dso->get_max_time()) === false)
-			return(false);
-
-		$rs = array();
-		$rs['min'] = $min;
-		$rs['max'] = $max;
-
-		return($rs);
-	}
-
-	function get_event_full($interval, $queuefeatures_id)
-	{
-		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
-		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
-		return($this->_dso->queue_sum_by_event('full', $interval, $queue_id));
+		return($this->_dso->get_id_from_name($name));
 	}
 }
 
