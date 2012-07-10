@@ -23,7 +23,7 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'date.inc'));
 class xivo_stats_lib
 {
 	private	$_sts 				= false;
-	private	$_xobj 				= false;
+	public	$_xobj 				= false;
 	private	$_cache_path 		= '';
 	private	$_regex		 		= array('datetime'	=> '/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',
 										'unixtime'	=> '/^(\d{10})$/',

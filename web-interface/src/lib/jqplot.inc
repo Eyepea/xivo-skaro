@@ -114,7 +114,7 @@ class xivo_jqplot
         $this->load_plugin('pieRenderer');
 
         #$listfield = array('connected','connect','abandon','on_close','on_saturation','on_hungup','on_guide','on_number');
-        $listfield = array('connect','abandon','on_guide','on_number');
+        $listfield = array('connect','abandon','on_saturation','on_guide','on_number');
 
         $data = $this->_data_foot;
         unset($data['presented']);

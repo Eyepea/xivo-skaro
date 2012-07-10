@@ -444,4 +444,8 @@ $array['campaign_campaign_filter'] = array();
 $array['campaign_campaign_filter']['table'] = 'callcenter_campaigns_campaign_filter';
 $array['campaign_campaign_filter']['primary'] = array('campaign_id' => '', 'type' => '', 'value' => '');
 
+$array['stat_queue_periodic'] = array();
+$array['stat_queue_periodic']['table'] = 'stat_queue_periodic';
+$array['stat_queue_periodic']['primary'] = array('id' => '');
+
 ?>

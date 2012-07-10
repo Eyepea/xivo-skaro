@@ -28,11 +28,15 @@ class xivo_stats_ressource_abstract
 	public 		$_data_custom 		= array();
 	public 		$_counter	 		= array();
 	public		$_result 			= array();
+	protected $_stat_queue_periodic = null;
 
 	public function __construct(&$_XS)
 	{
 		$this->_xs = &$_XS;
 		$this->_sts = &dwho_gct::get('xivo_stats');
+			$_SRE = dwho_gct::get('xivo_service');
+			$ipbx = &$_SRE->get('ipbx');
+			$this->_stat_queue_periodic = $ipbx->get_module('stat_queue_periodic');
 	}
 
 	public function set_data_custom($key,$data)
@@ -139,6 +143,10 @@ class xivo_stats_ressource_abstract
 		$key_data_arr = $data['keydata'];
 		$keyfile = $data['keyfile'];
 
+		$queue_id = 0;
+		if (preg_match('/queue-([0-9]+)/', $this->_xs->_objectkey, $out) === 1)
+			$queue_id = (int) $out[1];
+
 		switch ($axetype)
 		{
 			case 'day':
@@ -154,7 +162,8 @@ class xivo_stats_ressource_abstract
 					$key = $key_full_data['key'];
 					$dip = array();
 					$dip['beg'] = mktime($key,0,0,$month,$day,$year);
-					$dip['end'] = mktime($key+1,0,0,$month,$day,$year);
+					$dip['end'] = mktime($key+1,0,-1,$month,$day,$year);
+
 					$this->_xs->_interval_process = $dip;
 					$this->parse_log($key_data_arr,$key);
 				}
@@ -168,10 +177,17 @@ class xivo_stats_ressource_abstract
 
 					$this->init_result($dayname);
 					$key = $key_full_data['key'];
-					$year = substr($key,0,4);
-					$month = substr($key,4,2);
+
+					$year = date('Y',$key_full_data['time']);
+					$month = date('m',$key_full_data['time']);
+					$day = date('d',$key_full_data['time']);
+
+					$dip = array();
+					$dip['beg'] = mktime(0,0,1,$month,$day,$year);
+					$dip['end'] = mktime(23,59,59,$month,$day,$year);
+
 					if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
-							|| is_null($month_data) === true)
+					|| is_null($month_data) === true)
 						continue;
 					$listdaynum = array_keys($month_data);
 
@@ -189,18 +205,34 @@ class xivo_stats_ressource_abstract
 						// update result for day data
 						$this->eval_update_result($month_data[$day],$dayname);
 					}
+					if ($this->_type === 'queue')
+					{
+						$full = $this->_stat_queue_periodic->get_event_full($dip, $queue_id);
+						$this->_result[$dayname]['deterred_on_saturation']['result'] = $full;
+					}
 				}
 				break;
 			case 'month':
 				$date = dwho_date::all_to_unixtime($itl['dmonth']);
 				$year = date('Y',$date);
 				$month = date('m',$date);
+				$day = date('d',$date);
+
+				$dip = array();
+				$dip['beg'] = mktime(0,0,1,$month,$day,$year);
+				$dip['end'] = mktime(23,59,59,$month,$day,$year);
 
 				if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
 				|| is_null($month_data) === true)
 					break;
 
-				$this->_result = ($month_data);
+				$this->_result = $month_data;
+
+				if ($this->_type === 'queue')
+				{
+					$full = $this->_stat_queue_periodic->get_event_full($dip, $queue_id);
+					$this->_result[$month]['deterred_on_saturation']['result'] = $full;
+				}
 				break;
 			case 'year':
 				$key_data = dwho_date::get_listmonth();
@@ -222,6 +254,10 @@ class xivo_stats_ressource_abstract
 						if (((int) $month) != ((int) $monthnum))
 							continue;
 
+						$dip = array();
+						$dip['beg'] = mktime(0,0,1,$monthnum,1,$year);
+						$dip['end'] = mktime(23,59,59,$monthnum,31,$year);
+
 						if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
 						|| is_null($month_data) === true)
 							continue;
@@ -236,6 +272,12 @@ class xivo_stats_ressource_abstract
 							// update result for day data
 							$this->eval_update_result($month_data[$day],$monthnum);
 						}
+					}
+
+					if ($this->_type === 'queue')
+					{
+						$full = $this->_stat_queue_periodic->get_event_full($dip, $queue_id);
+						$this->_result[$monthnum]['deterred_on_saturation']['result'] = $full;
 					}
 				}
 				break;
@@ -271,6 +313,15 @@ class xivo_stats_ressource_abstract
 							// update result for day data
 							$this->eval_update_result($month_data[$day],$keyfile);
 						}
+					}
+
+					if ($this->_type === 'queue')
+					{
+						$interval = array();
+						$interval['beg'] = $dbeg;
+						$interval['end'] = $dend;
+						$full = $this->_stat_queue_periodic->get_event_full($interval, $key_full_data['id']);
+						$this->_result[$keyfile]['deterred_on_saturation']['result'] = $full;
 					}
 				}
 		}

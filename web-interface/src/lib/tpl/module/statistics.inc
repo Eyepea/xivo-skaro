@@ -771,8 +771,10 @@ class dwho_tpl_statistics extends dwho_tpl_module
 
         $c=0;
         $week_process = '';
+
         foreach ($this->_data_table as $row => $cols)
         {
+
             $coldata = $cols['rowdata'];
             $identity = $type = 'unknown';
 

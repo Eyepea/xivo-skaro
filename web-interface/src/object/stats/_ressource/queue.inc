@@ -45,6 +45,10 @@ class stats_ressource_queue extends xivo_stats_ressource_abstract
 
 	public function parse_log($key_data,$key)
 	{
+		$queue_id = 0;
+		if (preg_match('/queue-([0-9]+)/', $this->_xs->_objectkey, $out) === 1)
+			$queue_id = (int) $out[1];
+
 		$this->init_result($key);
 
 		$enterqueue = $this->eval_count_data($key_data,'ENTERQUEUE');
@@ -71,9 +75,9 @@ class stats_ressource_queue extends xivo_stats_ressource_abstract
 		$this->update_result(array($key,'deterred_on_close'),$closed);
 		$this->update_result(array($key,'presented'),$closed);
 
-		$full = $this->eval_count_data($key_data,'FULL');
-		$this->update_result(array($key,'deterred_on_saturation'),$full);
-		$this->update_result(array($key,'presented'),$full);
+		#$full = $this->eval_count_data($key_data,'FULL');
+		$full = $this->_stat_queue_periodic->get_event_full($this->_xs->_interval_process, $queue_id);
+		$this->update_result(array($key,'deterred_on_saturation'), $full);
 
 		$abandon = $this->eval_count_data($key_data,'ABANDON');
 		$this->update_result(array($key,'abandon'),$abandon);

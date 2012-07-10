@@ -370,6 +370,10 @@ $array['module']['campaign_campaign']['datastorage'] = true;
 $array['module']['campaign_campaign_filter'] = array();
 $array['module']['campaign_campaign_filter']['datastorage'] = true;
 
+$array['module']['stat_queue_periodic'] = array();
+$array['module']['stat_queue_periodic']['datastorage'] = true;
+
+
 
 
 $array['protocol'] = array();
