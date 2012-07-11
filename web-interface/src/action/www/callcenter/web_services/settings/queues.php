@@ -56,7 +56,11 @@ switch($act)
 		if($appqueue->add_from_json() === true)
 		{
 			$status = 200;
-			$ipbx->discuss('xivo[queuelist,update]');
+				$ipbx->discuss(array('module reload app_queue.so',  // must reload app_queue (propagate skills)
+				                     'xivo[queuelist,update]',
+				                     'sip reload',
+				                     'dialplan reload',
+				                     'xivo[queuemember,update]'));
 		}
 		else
 			$status = 400;
@@ -72,7 +76,11 @@ switch($act)
 		else if($appqueue->delete() === true)
 		{
 			$status = 200;
-			$ipbx->discuss('xivo[queuelist,update]');
+			$ipbx->discuss(array('module reload app_queue.so',  // must reload app_queue (propagate skills)
+			                     'xivo[queuelist,update]',
+			                     'sip reload',
+			                     'dialplan reload',
+			                     'xivo[queuemember,update]'));
 		}
 		else
 			$status = 500;
