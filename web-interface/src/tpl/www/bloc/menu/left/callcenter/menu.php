@@ -39,7 +39,7 @@ $dhtml = &$this->get_module('dhtml');
     		echo	'<dt>',$this->bbf('mn_left_ti_callcenter-settings'),'</dt>';
 
         	if(xivo_user::chk_acl('settings','agents','service/callcenter') === true):
-        		echo	'<dd id="mn-call-center--agents">',
+        		echo	'<dd id="mn-settings--agents">',
         			$url->href_html($this->bbf('mn_left_callcenter-agents'),
         					'callcenter/settings/agents',
         					'act=list'),
@@ -47,7 +47,7 @@ $dhtml = &$this->get_module('dhtml');
         	endif;
 
         	if(xivo_user::chk_acl('settings','queues','service/callcenter') === true):
-        		echo	'<dd id="mn-call-center--queues">',
+        		echo	'<dd id="mn-settings--queues">',
         			$url->href_html($this->bbf('mn_left_callcenter-queues'),
         					'callcenter/settings/queues',
         					'act=list'),
@@ -55,7 +55,7 @@ $dhtml = &$this->get_module('dhtml');
         	endif;
 
         	if(xivo_user::chk_acl('settings','queuepenalty','service/callcenter') === true):
-        		echo	'<dd id="mn-call-center--queues-penalties">',
+        		echo	'<dd id="mn-settings--queuepenalty">',
         			$url->href_html($this->bbf('mn_left_callcenter-queues-penalties'),
         					'callcenter/settings/queuepenalty',
         					'act=list'),
@@ -63,7 +63,7 @@ $dhtml = &$this->get_module('dhtml');
         	endif;
 
         	if(xivo_user::chk_acl('settings','queueskills','service/callcenter') === true):
-        		echo	'<dd id="mn-call-center--queueskills">',
+        		echo	'<dd id="mn-settings--queueskills">',
         			$url->href_html($this->bbf('mn_left_callcenter-queueskills'),
         					'callcenter/settings/queueskills',
         					'act=list'),
@@ -71,7 +71,7 @@ $dhtml = &$this->get_module('dhtml');
         	endif;
 
         	if(xivo_user::chk_acl('settings','queueskillrules','service/callcenter') === true):
-        		echo	'<dd id="mn-call-center--queueskillrules">',
+        		echo	'<dd id="mn-settings--queueskillrules">',
         			$url->href_html($this->bbf('mn_left_callcenter-queueskillrules'),
         					'callcenter/settings/queueskillrules',
         					'act=list'),
