@@ -68,11 +68,15 @@ $element = $this->get_var('element');
 if(xivo_user::chk_acl_section('statistics/call_center') === true):
 ?>
 			<dt><?=$this->bbf('mn_left_ti_call_center')?></dt>
+			<dd id="mn-1">
+				<?=$url->href_html($this->bbf('mn_left_home_call_center'),
+						'statistics/call_center');?>
+			</dd>
 <?php
 	if(xivo_user::chk_acl('settings') === true):
 		if(xivo_user::chk_acl('settings','configuration') === true):
 ?>
-			<dd id="mn-settings--configuration">
+			<dd id="mn-2">
 				<?=$url->href_html($this->bbf('mn_left_configuration_call_center'),
 						'statistics/call_center/settings/configuration','act=list');?>
 			</dd>
@@ -100,21 +104,21 @@ if(xivo_user::chk_acl_section('statistics/call_center') === true):
 				$params['dyear'] = $infocal['dyear'];
 		endif;
 ?>
-			<dd id="mn-data--stats1">
+			<dd id="mn-3">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-1'),
 						'statistics/call_center/data/stats1',(($pi == '/stats1') ? null : $params));?>
 			</dd>
-			<dd id="mn-data--stats2">
+			<dd id="mn-4">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-2'),
 						'statistics/call_center/data/stats2',(($pi == '/stats2') ? null : $params));?>
 			</dd>
 			<?php /*
-			<dd id="mn-data--stats3">
+			<dd id="mn-5">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-3'),
 						'statistics/call_center/data/stats3',(($pi == '/stats3') ? null : $params));?>
 			</dd>
 			*/  ?>
-			<dd id="mn-data--stats4">
+			<dd id="mn-6">
 				<?=$url->href_html($this->bbf('mn_left_statistics_call_center-4'),
 						'statistics/call_center/data/stats4',(($pi == '/stats4') ? null : $params));?>
 			</dd>
