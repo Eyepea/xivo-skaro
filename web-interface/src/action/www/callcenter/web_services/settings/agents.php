@@ -92,7 +92,7 @@ switch($act)
 		for ($i=0; $i<$nb; $i++)
 		{
 			$ref = &$list[$i];
-			$appagent->get($ref['id']);
+			$appagent->get($ref['agentfeatures']['id']);
 			$appagent->delete();
 		}
 		$status = 200;
