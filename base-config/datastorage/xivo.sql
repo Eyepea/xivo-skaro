@@ -401,14 +401,8 @@ CREATE TABLE "stats_conf_group" (
 );
 CREATE UNIQUE INDEX "stats_conf_group_index" ON "stats_conf_group" USING btree ("stats_conf_id","groupfeatures_id");
 
--- grant all rights to xivo.* for xivo user
-CREATE OR REPLACE FUNCTION execute(text) 
-RETURNS VOID AS '
-BEGIN
-	execute $1;
-END;
-' LANGUAGE plpgsql;
-SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO xivo;') FROM pg_tables WHERE schemaname = 'public';
-SELECT execute('GRANT ALL ON SEQUENCE '||relname||' TO xivo;') FROM pg_class WHERE relkind = 'S';
+-- grant all rights to xivo
+GRANT ALL ON ALL TABLES IN SCHEMA public TO xivo;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public to xivo;
 
 COMMIT;

@@ -33,7 +33,7 @@ INSERT INTO "agentglobalparams" VALUES (DEFAULT,'agents','savecallsin','');
 INSERT INTO "agentglobalparams" ("option_name","option_value","category")
 SELECT DISTINCT(var_name),var_val,category FROM staticagent  WHERE category = 'agents' AND var_name NOT IN ('deleted','agent','group') AND var_val != '';
 
-SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO asterisk;') FROM pg_tables WHERE schemaname = 'public';
-SELECT execute('GRANT ALL ON SEQUENCE '||relname||' TO asterisk;') FROM pg_class WHERE relkind = 'S';
+GRANT ALL ON ALL TABLES IN SCHEMA public TO asterisk;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public to asterisk;
 
 COMMIT;
