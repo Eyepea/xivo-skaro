@@ -21,63 +21,99 @@
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'file.inc');
 
 
-function dwho_munin_graphstree($urldir, $domain)
+function _get_all_graphs($urldir)
 {
-    $classifier = array(
-        'nginx_.*'        => 'nginx',
-        'asterisk_.*'     => 'asterisk',
-        'df.*'            => 'disk',
-        'iostat'          => 'disk',
-        'smart_.*'        => 'disk',
-        'hddtemp_.*'      => 'disk',
-        'if_.*'           => 'network',
-        'netstat'         => 'network',
-        'ip_.*'           => 'network',
-        'vlan_.*'         => 'network',
-        'postfix_.*'      => 'postfix',
-        'forks'           => 'processes',
-        'processes'       => 'processes',
-        'vmstat'          => 'processes',
-        'cpu'             => 'system',
-        'entropy'         => 'system',
-        'interrupts'      => 'system',
-        'irqstats'        => 'system',
-        'load'            => 'system',
-        'memory'          => 'system',
-        'open_.*'         => 'system',
-        'swap'            => 'system',
-        'ntp_.*'          => 'time',
-        'mysql_.*'        => 'mysql',
-	'pg_.*'           => 'postgresql'
-    );
+    $basedir = dwho_file::joinpath(XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.
+                                   'www'.
+                                   DIRECTORY_SEPARATOR.
+                                   $urldir);
+    $graphs = dwho_file::read_d($basedir,'file',FILE_R_OK,'/day.png$/');
+    sort($graphs);
 
+    return($graphs);
+}
 
-    $basedir = dwho_file::joinpath(XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'www'.DIRECTORY_SEPARATOR.$urldir);
-    $r = dwho_file::read_d($basedir,'file',FILE_R_OK,'/day.png$/');
-    sort($r);
-    
-    $tree = array();
-    foreach($r as $graph)
-    {
-        list($type, $freq, $fmt)= split("[\.-]", $graph);
-        
-        $cat = null;
-        foreach($classifier as $key => $value)
-        {
-            if(preg_match("/^$key$/", $type) > 0)
-            { $cat = $value; break; }
+function _get_category($graph_id)
+{
+
+    $classifier = array('nginx_.*'        => 'nginx',
+                        'asterisk_.*'     => 'asterisk',
+                        'df.*'            => 'disk',
+                        'iostat'          => 'disk',
+                        'smart_.*'        => 'disk',
+                        'hddtemp_.*'      => 'disk',
+                        'if_.*'           => 'network',
+                        'netstat'         => 'network',
+                        'ip_.*'           => 'network',
+                        'vlan_.*'         => 'network',
+                        'postfix_.*'      => 'postfix',
+                        'forks'           => 'processes',
+                        'processes'       => 'processes',
+                        'vmstat'          => 'processes',
+                        'cpu'             => 'system',
+                        'entropy'         => 'system',
+                        'interrupts'      => 'system',
+                        'irqstats'        => 'system',
+                        'load'            => 'system',
+                        'memory'          => 'system',
+                        'open_.*'         => 'system',
+                        'swap'            => 'system',
+                        'ntp_.*'          => 'time',
+                        'mysql_.*'        => 'mysql',
+                        'pg_.*'           => 'postgresql');
+
+    $category = 'other';
+    foreach($classifier as $key => $value) {
+        if(preg_match("/^$key$/", $graph_id) > 0) {
+            $category = $value;
+            break;
         }
-
-        if(is_null($cat))
-            $cat = 'other';
-            
-        if(!array_key_exists($cat, $tree))
-            $tree[$cat] = array();
-
-        $tree[$cat][] = $type;
     }
 
-    return($tree);
+    return($category);
+}
+
+function _get_caption($graph_id)
+{
+    $caption_id_overrides = array('if_err_(.*)' => array('caption_id' => 'interface_err'),
+                                  'if_(.*)' => array('caption_id' => 'interface'),
+                                  'ip_(.*)' => array('caption_id' => 'ip_address'),
+                                  'vlan_(.*)' => array('caption_id' => 'vlan'),
+                                  'smart_(.*)' => array('caption_id' => 'smart'));
+    $caption['caption_id'] = $graph_id;
+    $caption['caption_argument'] = '';
+    foreach($caption_id_overrides as $regexp => $override) {
+        $matches = array();
+        if(preg_match("/^$regexp$/", $graph_id, &$matches) > 0) {
+            $caption['caption_id'] = $override['caption_id'];
+            $caption['caption_argument'] = $matches[1];
+            break;
+        }
+    }
+
+    return($caption);
+}
+
+function dwho_munin_graphs($urldir, $domain)
+{
+    $graphs = _get_all_graphs($urldir);
+
+    $captions = array();
+    foreach($graphs as $graph)
+    {
+        list($graph_id, $freq, $fmt) = split("[\.-]", $graph);
+
+        $category = _get_category($graph_id);
+        $caption = _get_caption($graph_id);
+
+        if(!array_key_exists($category, $captions)) {
+            $captions[$category] = array();
+        }
+
+        $captions[$category][$graph_id] = $caption;
+    }
+
+    return($captions);
 }
 
 ?>

@@ -13,11 +13,5 @@ IO statistics
 ; hddtemp_smartctl
 Disks temporature
 
-; smart_twe0_0
-SMART statistics (Disk #0)
-
-; smart_twe0_1
-SMART statistics (Disk #1)
-
-; smart_sda
-SMART statistics (Disk sda)
+; smart
+SMART statistics (Disk %s)

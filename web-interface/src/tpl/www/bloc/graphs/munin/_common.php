@@ -22,8 +22,8 @@ $basedir  = $this->get_var('basedir');
 $basename = $this->get_var('basename');
 $domain   = $this->get_var('domain');
 $graphs   = $this->get_var('graphs');
+$graph_captions = $this->get_var('graph_captions');
 $freqs    = $this->get_var('freqs');
-
 ?>
 <div id="sr-users" class="b-infos b-form">
 	<h3 class="sb-top xspan">
@@ -36,25 +36,31 @@ $freqs    = $this->get_var('freqs');
     foreach($graphs as $graph)
     {
 ?>
-    	<fieldset>
-		<legend><?=$this->bbf($graph);?></legend>
-		<div class="sb-list">
+        <fieldset>
+        <legend>
+            <?=$this->bbf($graph_captions[$graph]['caption_id'],
+                          $graph_captions[$graph]['caption_argument']);?>
+        </legend>
+        <div class="sb-list">
 <?php
         foreach($freqs as $freq)
         {
-            echo $url->href_html(
-                $url->img_html("$basedir/$basename$graph-$freq.png", 
-                    "$graph $freq graph", "class=\"mini\""),
-                null, array("zoom" => "$domain-$graph-$freq"), null, $this->bbf("zoom")
-            );
+            $image = $url->img_html("$basedir/$basename$graph-$freq.png",
+                                    "$graph $freq graph",
+                                    "class=\"mini\"");
+            echo $url->href_html($image,
+                                 null,
+                                 array("zoom" => "$domain-$graph-$freq"),
+                                 null,
+                                 $this->bbf("zoom"));
         }
 ?>
         </div>
         </fieldset>
-<?php 
+<?php
     }
 ?>
-        
+
     </div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>
@@ -62,4 +68,3 @@ $freqs    = $this->get_var('freqs');
 		<span class="span-right">&nbsp;</span>
 	</div>
 </div>
-

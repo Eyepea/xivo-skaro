@@ -5,7 +5,7 @@ NTP
 Décalage temporel
 
 ; ntp_states
-&Eacute;tat des serveurs
+État des serveurs
 
 ; ntp_kernel_err
 Erreurs NTP PLL
