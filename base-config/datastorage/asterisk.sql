@@ -2442,8 +2442,9 @@ DROP TABLE IF EXISTS "stat_call_on_queue";
 CREATE TABLE "stat_call_on_queue" (
  "callid" VARCHAR(32) NOT NULL,
  "time" timestamp NOT NULL,
- "ringtime" INTEGER,
- "talktime" INTEGER,
+ "ringtime" INTEGER NOT NULL DEFAULT 0,
+ "talktime" INTEGER NOT NULL DEFAULT 0,
+ "waittime" INTEGER NOT NULL DEFAULT 0,
  "status" call_exit_type NOT NULL,
  "queue_id" INTEGER REFERENCES stat_queue (id),
  PRIMARY KEY("callid")
