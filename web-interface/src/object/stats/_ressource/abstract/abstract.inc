@@ -119,6 +119,27 @@ class xivo_stats_ressource_abstract
 		}
 	}
 
+        public function set_queue_result($axetype, $dip, $queue_id)
+        {
+            $abandon = $this->_stat_queue_periodic->get_event_abandon($dip, $queue_id);
+            $answered = $this->_stat_queue_periodic->get_event_answered($dip, $queue_id);
+            $closed = $this->_stat_queue_periodic->get_event_closed($dip, $queue_id);
+            $full = $this->_stat_queue_periodic->get_event_full($dip, $queue_id);
+            $joinempty = $this->_stat_queue_periodic->get_event_joinempty($dip, $queue_id);
+            $leaveempty = $this->_stat_queue_periodic->get_event_leaveempty($dip, $queue_id);
+            $timeout = $this->_stat_queue_periodic->get_event_timeout($dip, $queue_id);
+            $total = $this->_stat_queue_periodic->get_event_total($dip, $queue_id);
+
+            $this->_result[$axetype]['abandon']['result'] = $abandon;
+            $this->_result[$axetype]['connect']['result'] = $answered;
+            $this->_result[$axetype]['deterred_on_close']['result'] = $closed;
+            $this->_result[$axetype]['deterred_on_saturation']['result'] = $full;
+            $this->_result[$axetype]['joinempty']['result'] = $joinempty;
+            $this->_result[$axetype]['leaveempty']['result'] = $leaveempty;
+            $this->_result[$axetype]['timeout']['result'] = $timeout;
+            $this->_result[$axetype]['presented']['result'] = $total;
+        }
+
 	public function get_data()
 	{
 		$axetype = $this->_xs->get_axetype();
@@ -203,12 +224,11 @@ class xivo_stats_ressource_abstract
 							continue;
 
 						// update result for day data
-						$this->eval_update_result($month_data[$day],$dayname);
+                                                  $this->eval_update_result($month_data[$day],$dayname);
 					}
 					if ($this->_type === 'queue')
 					{
-						$full = $this->_stat_queue_periodic->get_event_full($dip, $queue_id);
-						$this->_result[$dayname]['deterred_on_saturation']['result'] = $full;
+						$this->set_queue_result($axetype, $dip, $queue_id);
 					}
 				}
 				break;
@@ -230,8 +250,7 @@ class xivo_stats_ressource_abstract
 
 				if ($this->_type === 'queue')
 				{
-					$full = $this->_stat_queue_periodic->get_event_full($dip, $queue_id);
-					$this->_result[$month]['deterred_on_saturation']['result'] = $full;
+                                    $this->set_queue_result($axetype, $dip, $queue_id);
 				}
 				break;
 			case 'year':
@@ -276,8 +295,7 @@ class xivo_stats_ressource_abstract
 
 					if ($this->_type === 'queue')
 					{
-						$full = $this->_stat_queue_periodic->get_event_full($dip, $queue_id);
-						$this->_result[$monthnum]['deterred_on_saturation']['result'] = $full;
+                                            $this->set_queue_result($axetype, $dip, $queue_id);
 					}
 				}
 				break;
@@ -320,8 +338,7 @@ class xivo_stats_ressource_abstract
 						$interval = array();
 						$interval['beg'] = $dbeg;
 						$interval['end'] = $dend;
-						$full = $this->_stat_queue_periodic->get_event_full($interval, $key_full_data['id']);
-						$this->_result[$keyfile]['deterred_on_saturation']['result'] = $full;
+                                                $this->set_queue_result($axetype, $interval, $queue_id);
 					}
 				}
 		}

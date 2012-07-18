@@ -85,17 +85,17 @@ Dissuaded
 ; col_on_saturation
 <acronym title="Dissuaded on saturation">Satur.</acronym>
 
-; colstruct_rerouted
-Dissuaded
+; colstruct_lost
+Lost
 
-; col_on_hungup
-<acronym title="Rerouted after on hook">ROH</acronym>
+; col_on_joinempty
+Joined empty
 
-; col_on_guide
-<acronym title="Rerouted after guide">ROG</acronym>
+; col_on_leaveempty
+Left empty
 
-; col_on_number
-<acronym title="Rerouted on number">RN</acronym>
+; col_on_timeout
+Timedout
 
 ; col_average_time_waiting
 <acronym title="Average waiting time">AWT</acronym>

@@ -61,11 +61,7 @@ $tpl_statistics->add_col('presented',
 					'direct',
 					'custom:queue,[key],presented');
 $tpl_statistics->set_col_struct('traitment');
-/*
-$tpl_statistics->add_col('enterqueue',
-					'direct',
-					'custom:queue,[key],enterqueue');
-*/
+
 $tpl_statistics->add_col('connect',
 					'direct',
 					'custom:queue,[key],connect');
@@ -81,16 +77,16 @@ $tpl_statistics->add_col('on_saturation',
 					'direct',
 					'custom:queue,[key],deterred_on_saturation');
 
-$tpl_statistics->set_col_struct('rerouted');
-$tpl_statistics->add_col('on_hungup',
+$tpl_statistics->set_col_struct('lost');
+$tpl_statistics->add_col('on_joinempty',
 					'direct',
-					'custom:queue,[key],rerouted_on_hungup');
-$tpl_statistics->add_col('on_guide',
+					'custom:queue,[key],joinempty');
+$tpl_statistics->add_col('on_leaveempty',
 					'direct',
-					'custom:queue,[key],rerouted_on_guide');
-$tpl_statistics->add_col('on_number',
+					'custom:queue,[key],leaveempty');
+$tpl_statistics->add_col('on_timeout',
 					'direct',
-					'custom:queue,[key],rerouted_on_number');
+					'custom:queue,[key],timeout');
 
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('average_time_waiting',

@@ -85,17 +85,17 @@ Dissuadés
 ; col_on_saturation
 <acronym title="Dissuadés sur saturation">saturation</acronym>
 
-; colstruct_rerouted
-Reroutés
+; colstruct_lost
+Perdus
 
-; col_on_hungup
-<acronym title="Reroutés sur un raccrocheś">Raccrocheś</acronym>
+; col_on_joinempty
+Vide
 
-; col_on_guide
-<acronym title="Reroutés sur guide">Sur guide</acronym>
+; col_on_leaveempty
+Fin sur file vide
 
-; col_on_number
-<acronym title="Reroutés sur numéro">Sur numéro</acronym>
+; col_on_timeout
+Attente max
 
 ; col_average_time_waiting
 <acronym title="Temps moyen d'attente">Temps moyen d'attente</acronym>
