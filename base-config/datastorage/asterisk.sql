@@ -2447,7 +2447,7 @@ CREATE TABLE "stat_call_on_queue" (
  "waittime" INTEGER NOT NULL DEFAULT 0,
  "status" call_exit_type NOT NULL,
  "queue_id" INTEGER REFERENCES stat_queue (id),
- PRIMARY KEY("callid")
+ PRIMARY KEY("callid", "time")
 );
 
 DROP TABLE IF EXISTS "stat_queue_periodic";
