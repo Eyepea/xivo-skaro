@@ -952,7 +952,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 			return(false);
 		}
 
-		return(true);
+		return((int) $this->_return['trunkfeatures']);
 	}
 }
 
