@@ -29,14 +29,16 @@ class xivo_stats_ressource_abstract
 	public 		$_counter	 		= array();
 	public		$_result 			= array();
 	protected $_stat_queue_periodic = null;
+        protected $_stat_call_on_queue = null;
 
 	public function __construct(&$_XS)
 	{
 		$this->_xs = &$_XS;
 		$this->_sts = &dwho_gct::get('xivo_stats');
-			$_SRE = dwho_gct::get('xivo_service');
-			$ipbx = &$_SRE->get('ipbx');
-			$this->_stat_queue_periodic = $ipbx->get_module('stat_queue_periodic');
+		$_SRE = dwho_gct::get('xivo_service');
+		$ipbx = &$_SRE->get('ipbx');
+		$this->_stat_queue_periodic = $ipbx->get_module('stat_queue_periodic');
+		$this->_stat_call_on_queue = $ipbx->get_module('stat_call_on_queue');
 	}
 
 	public function set_data_custom($key,$data)
@@ -119,26 +121,34 @@ class xivo_stats_ressource_abstract
 		}
 	}
 
-        public function set_queue_result($axetype, $dip, $queue_id)
-        {
-            $abandon = $this->_stat_queue_periodic->get_event_abandon($dip, $queue_id);
-            $answered = $this->_stat_queue_periodic->get_event_answered($dip, $queue_id);
-            $closed = $this->_stat_queue_periodic->get_event_closed($dip, $queue_id);
-            $full = $this->_stat_queue_periodic->get_event_full($dip, $queue_id);
-            $joinempty = $this->_stat_queue_periodic->get_event_joinempty($dip, $queue_id);
-            $leaveempty = $this->_stat_queue_periodic->get_event_leaveempty($dip, $queue_id);
-            $timeout = $this->_stat_queue_periodic->get_event_timeout($dip, $queue_id);
-            $total = $this->_stat_queue_periodic->get_event_total($dip, $queue_id);
+	public function set_queue_result($axetype, $dip, $queue_id)
+	{
+		$queue = $this->_xs->get_list_by_type('queue');
+		$stats_qos = array_shift($queue);
+		$stats_qos = $stats_qos['qos'];
 
-            $this->_result[$axetype]['abandon']['result'] = $abandon;
-            $this->_result[$axetype]['connect']['result'] = $answered;
-            $this->_result[$axetype]['deterred_on_close']['result'] = $closed;
-            $this->_result[$axetype]['deterred_on_saturation']['result'] = $full;
-            $this->_result[$axetype]['joinempty']['result'] = $joinempty;
-            $this->_result[$axetype]['leaveempty']['result'] = $leaveempty;
-            $this->_result[$axetype]['timeout']['result'] = $timeout;
-            $this->_result[$axetype]['presented']['result'] = $total;
-        }
+		$abandon = $this->_stat_queue_periodic->get_event_abandon($dip, $queue_id);
+		$answered = $this->_stat_queue_periodic->get_event_answered($dip, $queue_id);
+		$closed = $this->_stat_queue_periodic->get_event_closed($dip, $queue_id);
+		$full = $this->_stat_queue_periodic->get_event_full($dip, $queue_id);
+		$joinempty = $this->_stat_queue_periodic->get_event_joinempty($dip, $queue_id);
+		$leaveempty = $this->_stat_queue_periodic->get_event_leaveempty($dip, $queue_id);
+		$timeout = $this->_stat_queue_periodic->get_event_timeout($dip, $queue_id);
+		$total = $this->_stat_queue_periodic->get_event_total($dip, $queue_id);
+		$answered_in_qos = $this->_stat_call_on_queue->get_count_under_qos($dip, $queue_id, $stats_qos);
+		$qos = $answered > 0 ? $answered_in_qos / (float) $answered : null;
+
+		$this->_result[$axetype]['abandon']['result'] = $abandon;
+		$this->_result[$axetype]['connect']['result'] = $answered;
+		$this->_result[$axetype]['deterred_on_close']['result'] = $closed;
+		$this->_result[$axetype]['deterred_on_saturation']['result'] = $full;
+		$this->_result[$axetype]['joinempty']['result'] = $joinempty;
+		$this->_result[$axetype]['leaveempty']['result'] = $leaveempty;
+		$this->_result[$axetype]['timeout']['result'] = $timeout;
+		$this->_result[$axetype]['presented']['result'] = $total;
+		$this->_result[$axetype]['qos']['result'] = $qos;
+		$this->_result[$axetype]['average_wait_time']['result'] = 23;
+	}
 
 	public function get_data()
 	{

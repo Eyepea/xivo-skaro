@@ -21,19 +21,18 @@
 class stats_ressource_queue extends xivo_stats_ressource_abstract
 {
 
-	protected	$_field	= array('presented'				=> array('type' => 'int'),
-                                                // 'enterqueue'			=> array('type' => 'int'),
-								'connect'				=> array('type' => 'int'),
-								'abandon'				=> array('type' => 'int'),
-								'deterred_on_close'		=> array('type' => 'int'),
-								'deterred_on_saturation'=> array('type' => 'int'),
-								'joinempty'	=> array('type' => 'int'),
-								'leaveempty'		=> array('type' => 'int'),
-								'timeout'	=> array('type' => 'int'),
-								'total_time_waiting'	=> array('type' => 'int'),
-								'home_rated'			=> array('type' => 'percent'),
-								'qos'					=> array('type' => 'int')
-							);
+	protected $_field = array('presented'			=> array('type' => 'int'),
+				  'connect'			=> array('type' => 'int'),
+				  'abandon'			=> array('type' => 'int'),
+				  'deterred_on_close'		=> array('type' => 'int'),
+				  'deterred_on_saturation'	=> array('type' => 'int'),
+				  'joinempty'			=> array('type' => 'int'),
+				  'leaveempty'		=> array('type' => 'int'),
+				  'timeout'			=> array('type' => 'int'),
+				  'average_wait_time'		=> array('type' => 'int'),
+				  'home_rated'		=> array('type' => 'percent'),
+				  'qos'			=> array('type' => 'percent')
+		);
 
 	public function __construct(&$_XS)
 	{
@@ -50,45 +49,37 @@ class stats_ressource_queue extends xivo_stats_ressource_abstract
 			$queue_id = (int) $out[1];
 
 		$this->init_result($key);
-
-		$total = $this->_stat_queue_periodic->get_event_total($this->_xs->_interval_process, $queue_id);
-		$this->update_result(array($key, 'presented'), $total);
-
-		#$enterqueue = $this->eval_count_data($key_data,'ENTERQUEUE');
-		#$this->update_result(array($key,'enterqueue'),$enterqueue);
-
-		$answered = $this->_stat_queue_periodic->get_event_answered($this->_xs->_interval_process, $queue_id);
-		$this->update_result(array($key,'connect'), $answered);
-
-		$field = $this->eval_field_queue_log('CONNECT','holdtime');
-		$sum = $this->eval_sum_data($key_data,'CONNECT',$field);
-		$this->update_result(array($key,'total_time_waiting'),$sum);
-
+		$interval = $this->_xs->_interval_process;
 		$queue = $this->_xs->get_list_by_type('queue');
 		$stats_qos = array_shift($queue);
 		$stats_qos = $stats_qos['qos'];
-		$field = $this->eval_field_queue_log('CONNECT','holdtime');
-		$qos = $this->eval_count_data($key_data,'CONNECT',array('<', array($field, $stats_qos)));
-		$this->update_result(array($key,'qos'), $qos);
 
-		$closed = $this->_stat_queue_periodic->get_event_closed($this->_xs->_interval_process, $queue_id);
-		$this->update_result(array($key,'deterred_on_close'), $closed);
+		// Retrieing numbers
+		$total = $this->_stat_queue_periodic->get_event_total($interval, $queue_id);
+		$answered = $this->_stat_queue_periodic->get_event_answered($interval, $queue_id);
+		$answered_in_qos = $this->_stat_call_on_queue->get_count_under_qos($interval, $queue_id, $stats_qos);
+		$closed = $this->_stat_queue_periodic->get_event_closed($interval, $queue_id);
+		$full = $this->_stat_queue_periodic->get_event_full($interval, $queue_id);
+		$abandon = $this->_stat_queue_periodic->get_event_abandon($interval, $queue_id);
+		$joinempty = $this->_stat_queue_periodic->get_event_joinempty($interval, $queue_id);
+		$leaveempty = $this->_stat_queue_periodic->get_event_leaveempty($interval, $queue_id);
+		$timeout = $this->_stat_queue_periodic->get_event_timeout($interval, $queue_id);
 
-		$full = $this->_stat_queue_periodic->get_event_full($this->_xs->_interval_process, $queue_id);
-		$this->update_result(array($key,'deterred_on_saturation'), $full);
+		// Computed fields
+		$qos = $answered > 0 ? $answered_in_qos / (float) $answered : null;
+		$awt = 42;
 
-		$abandon = $this->_stat_queue_periodic->get_event_abandon($this->_xs->_interval_process, $queue_id);
-		$this->update_result(array($key,'abandon'), $abandon);
-
-		$joinempty = $this->_stat_queue_periodic->get_event_joinempty($this->_xs->_interval_process, $queue_id);
-		$this->update_result(array($key,'joinempty'), $joinempty);
-
-
-		$leaveempty = $this->_stat_queue_periodic->get_event_leaveempty($this->_xs->_interval_process, $queue_id);
-		$this->update_result(array($key,'leaveempty'), $leaveempty);
-
-		$timeout = $this->_stat_queue_periodic->get_event_timeout($this->_xs->_interval_process, $queue_id);
-		$this->update_result(array($key,'timeout'), $timeout);
+		// Update statistic array
+		$this->update_result(array($key, 'presented'), $total);
+		$this->update_result(array($key, 'connect'), $answered);
+		$this->update_result(array($key, 'average_wait_time'), $awt);
+		$this->update_result(array($key, 'qos'), $qos);
+		$this->update_result(array($key, 'deterred_on_close'), $closed);
+		$this->update_result(array($key, 'deterred_on_saturation'), $full);
+		$this->update_result(array($key, 'abandon'), $abandon);
+		$this->update_result(array($key, 'joinempty'), $joinempty);
+		$this->update_result(array($key, 'leaveempty'), $leaveempty);
+		$this->update_result(array($key, 'timeout'), $timeout);
 
 		return($this->_result);
 	}

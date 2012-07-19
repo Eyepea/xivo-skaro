@@ -448,6 +448,10 @@ $array['stat_queue_periodic'] = array();
 $array['stat_queue_periodic']['table'] = 'stat_queue_periodic';
 $array['stat_queue_periodic']['primary'] = array('id' => '');
 
+$array['stat_call_on_queue'] = array();
+$array['stat_call_on_queue']['table'] = 'stat_call_on_queue';
+$array['stat_call_on_queue']['primary'] = array('callid' => '', 'time' => '');
+
 $array['stat_queue'] = array();
 $array['stat_queue']['table'] = 'stat_queue';
 $array['stat_queue']['primary'] = array('id' => '');

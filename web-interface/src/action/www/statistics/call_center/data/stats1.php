@@ -90,21 +90,19 @@ $tpl_statistics->add_col('on_timeout',
 
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('average_time_waiting',
-					'expression',
-					'{custom:queue,[key],total_time_waiting}/{custom:queue,[key],connect}',
-					'time',
-					'average');
+                         'direct',
+                         'custom:queue,[key],average_wait_time',
+                         'time',
+                         'average');
 $tpl_statistics->add_col('home_rated',
 					'expression',
 					'{custom:queue,[key],connect}/{custom:queue,[key],enterqueue}',
 					'percent',
 					'average');
 $tpl_statistics->add_col('qos',
-					'expression',
-					'{custom:queue,[key],qos}/{custom:queue,[key],connect}',
-					'percent',
-					'average');
-
+                         'direct',
+                         'custom:queue,[key],qos',
+                         'percent');
 $tpl_statistics->gener_table();
 
 $_TPL->set_var('table1',$tpl_statistics);

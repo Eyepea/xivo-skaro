@@ -373,6 +373,9 @@ $array['module']['campaign_campaign_filter']['datastorage'] = true;
 $array['module']['stat_queue_periodic'] = array();
 $array['module']['stat_queue_periodic']['datastorage'] = true;
 
+$array['module']['stat_call_on_queue'] = array();
+$array['module']['stat_call_on_queue']['datastorage'] = true;
+
 $array['module']['stat_queue'] = array();
 $array['module']['stat_queue']['datastorage'] = true;
 
