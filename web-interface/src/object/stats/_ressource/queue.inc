@@ -42,19 +42,14 @@ class stats_ressource_queue extends xivo_stats_ressource_abstract
 		$this->_xs->set_type($this->_type);
 	}
 
-	public function parse_log($key_data,$key)
+	public function build_stat($queue_id, $key, $interval)
 	{
-		$queue_id = 0;
-		if (preg_match('/queue-([0-9]+)/', $this->_xs->_objectkey, $out) === 1)
-			$queue_id = (int) $out[1];
-
 		$this->init_result($key);
-		$interval = $this->_xs->_interval_process;
+
 		$queue = $this->_xs->get_list_by_type('queue');
 		$stats_qos = array_shift($queue);
 		$stats_qos = $stats_qos['qos'];
 
-		// Retrieing numbers
 		$total = $this->_stat_queue_periodic->get_event_total($interval, $queue_id);
 		$answered = $this->_stat_queue_periodic->get_event_answered($interval, $queue_id);
 		$answered_in_qos = $this->_stat_call_on_queue->get_count_under_qos($interval, $queue_id, $stats_qos);
@@ -64,26 +59,30 @@ class stats_ressource_queue extends xivo_stats_ressource_abstract
 		$joinempty = $this->_stat_queue_periodic->get_event_joinempty($interval, $queue_id);
 		$leaveempty = $this->_stat_queue_periodic->get_event_leaveempty($interval, $queue_id);
 		$timeout = $this->_stat_queue_periodic->get_event_timeout($interval, $queue_id);
+		$total_wait_time = $this->_stat_call_on_queue->get_queue_wait_time($interval, $queue_id);
 
-		// Computed fields
-		$qos = $answered > 0 ? $answered_in_qos / (float) $answered : null;
-		$awt = 42;
+		$qos = $answered > 0 ? $answered_in_qos / $answered : null;
 
-		// Update statistic array
-		$this->update_result(array($key, 'presented'), $total);
-		$this->update_result(array($key, 'connect'), $answered);
-		$this->update_result(array($key, 'average_wait_time'), $awt);
-		$this->update_result(array($key, 'qos'), $qos);
-		$this->update_result(array($key, 'deterred_on_close'), $closed);
-		$this->update_result(array($key, 'deterred_on_saturation'), $full);
-		$this->update_result(array($key, 'abandon'), $abandon);
-		$this->update_result(array($key, 'joinempty'), $joinempty);
-		$this->update_result(array($key, 'leaveempty'), $leaveempty);
-		$this->update_result(array($key, 'timeout'), $timeout);
+		$hr_total = $answered + $abandon + $closed + $full + $leaveempty + $joinempty;
+		$hr = $hr_total > 0 ? $answered / $hr_total : null;
+
+		$waited_call = $answered + $abandon + $leaveempty + $timeout;
+		$awt = $waited_call > 0 ? $total_wait_time / $waited_call : null;
+
+		$this->update_result(array($key, 'presented'), $total, '=');
+		$this->update_result(array($key, 'connect'), $answered, '=');
+		$this->update_result(array($key, 'average_wait_time'), $awt, '=');
+		$this->update_result(array($key, 'qos'), $qos, '=');
+		$this->update_result(array($key, 'deterred_on_close'), $closed, '=');
+		$this->update_result(array($key, 'deterred_on_saturation'), $full, '=');
+		$this->update_result(array($key, 'abandon'), $abandon, '=');
+		$this->update_result(array($key, 'joinempty'), $joinempty, '=');
+		$this->update_result(array($key, 'leaveempty'), $leaveempty, '=');
+		$this->update_result(array($key, 'timeout'), $timeout, '=');
+		$this->update_result(array($key, 'home_rated'), $hr, '=');
 
 		return($this->_result);
 	}
-
 }
 
 ?>

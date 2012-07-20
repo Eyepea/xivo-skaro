@@ -121,35 +121,6 @@ class xivo_stats_ressource_abstract
 		}
 	}
 
-	public function set_queue_result($axetype, $dip, $queue_id)
-	{
-		$queue = $this->_xs->get_list_by_type('queue');
-		$stats_qos = array_shift($queue);
-		$stats_qos = $stats_qos['qos'];
-
-		$abandon = $this->_stat_queue_periodic->get_event_abandon($dip, $queue_id);
-		$answered = $this->_stat_queue_periodic->get_event_answered($dip, $queue_id);
-		$closed = $this->_stat_queue_periodic->get_event_closed($dip, $queue_id);
-		$full = $this->_stat_queue_periodic->get_event_full($dip, $queue_id);
-		$joinempty = $this->_stat_queue_periodic->get_event_joinempty($dip, $queue_id);
-		$leaveempty = $this->_stat_queue_periodic->get_event_leaveempty($dip, $queue_id);
-		$timeout = $this->_stat_queue_periodic->get_event_timeout($dip, $queue_id);
-		$total = $this->_stat_queue_periodic->get_event_total($dip, $queue_id);
-		$answered_in_qos = $this->_stat_call_on_queue->get_count_under_qos($dip, $queue_id, $stats_qos);
-		$qos = $answered > 0 ? $answered_in_qos / (float) $answered : null;
-
-		$this->_result[$axetype]['abandon']['result'] = $abandon;
-		$this->_result[$axetype]['connect']['result'] = $answered;
-		$this->_result[$axetype]['deterred_on_close']['result'] = $closed;
-		$this->_result[$axetype]['deterred_on_saturation']['result'] = $full;
-		$this->_result[$axetype]['joinempty']['result'] = $joinempty;
-		$this->_result[$axetype]['leaveempty']['result'] = $leaveempty;
-		$this->_result[$axetype]['timeout']['result'] = $timeout;
-		$this->_result[$axetype]['presented']['result'] = $total;
-		$this->_result[$axetype]['qos']['result'] = $qos;
-		$this->_result[$axetype]['average_wait_time']['result'] = 23;
-	}
-
 	public function get_data()
 	{
 		$axetype = $this->_xs->get_axetype();
@@ -195,8 +166,7 @@ class xivo_stats_ressource_abstract
 					$dip['beg'] = mktime($key,0,0,$month,$day,$year);
 					$dip['end'] = mktime($key+1,0,-1,$month,$day,$year);
 
-					$this->_xs->_interval_process = $dip;
-					$this->parse_log($key_data_arr,$key);
+					$this->build_stat($queue_id, $key, $dip);
 				}
 				break;
 			case 'week':
@@ -206,7 +176,6 @@ class xivo_stats_ressource_abstract
 					$key_full_data = array_shift($key_data);
 					$dayname = $key_full_data['dayname'];
 
-					$this->init_result($dayname);
 					$key = $key_full_data['key'];
 
 					$year = date('Y',$key_full_data['time']);
@@ -217,11 +186,7 @@ class xivo_stats_ressource_abstract
 					$dip['beg'] = mktime(0,0,1,$month,$day,$year);
 					$dip['end'] = mktime(23,59,59,$month,$day,$year);
 
-					if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
-					|| is_null($month_data) === true)
-						continue;
-					$listdaynum = array_keys($month_data);
-
+					$listdaynum = array_keys($this->_xs->get_listday_for_month($year, $month));
 					while($listdaynum)
 					{
 						$day = array_shift($listdaynum);
@@ -233,12 +198,7 @@ class xivo_stats_ressource_abstract
 						if (isset($full_list_day[$year.$month.$day]) === false)
 							continue;
 
-						// update result for day data
-                                                  $this->eval_update_result($month_data[$day],$dayname);
-					}
-					if ($this->_type === 'queue')
-					{
-						$this->set_queue_result($axetype, $dip, $queue_id);
+						$this->build_stat($queue_id, $dayname, $dip);
 					}
 				}
 				break;
@@ -252,16 +212,14 @@ class xivo_stats_ressource_abstract
 				$dip['beg'] = mktime(0,0,1,$month,$day,$year);
 				$dip['end'] = mktime(23,59,59,$month,$day,$year);
 
-				if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
-				|| is_null($month_data) === true)
-					break;
-
-				$this->_result = $month_data;
-
-				if ($this->_type === 'queue')
-				{
-                                    $this->set_queue_result($axetype, $dip, $queue_id);
-				}
+                                $day_list = $this->_xs->get_listday_for_month($year, $month);
+                                while ($day_list) {
+                                        $day = array_shift($day_list);
+                                        $dip = array();
+                                        $dip['beg'] = mktime(0,0,1,$month,$day["day"],$year);
+                                        $dip['end'] = mktime(23,59,59,$month,$day["day"],$year);
+                                        $this->build_stat($queue_id, $day['key'], $dip);
+                                }
 				break;
 			case 'year':
 				$key_data = dwho_date::get_listmonth();
@@ -287,25 +245,7 @@ class xivo_stats_ressource_abstract
 						$dip['beg'] = mktime(0,0,1,$monthnum,1,$year);
 						$dip['end'] = mktime(23,59,59,$monthnum,31,$year);
 
-						if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
-						|| is_null($month_data) === true)
-							continue;
-
-						$listdaynum = array_keys($month_data);
-						while($listdaynum)
-						{
-							$day = array_shift($listdaynum);
-							if (isset($full_list_day[$year.$month.$day]) === false)
-								continue;
-
-							// update result for day data
-							$this->eval_update_result($month_data[$day],$monthnum);
-						}
-					}
-
-					if ($this->_type === 'queue')
-					{
-                                            $this->set_queue_result($axetype, $dip, $queue_id);
+                                                $this->build_stat($queue_id, $monthnum, $dip);
 					}
 				}
 				break;
@@ -348,7 +288,7 @@ class xivo_stats_ressource_abstract
 						$interval = array();
 						$interval['beg'] = $dbeg;
 						$interval['end'] = $dend;
-                                                $this->set_queue_result($axetype, $interval, $queue_id);
+                                                // $this->set_queue_result($axetype, $interval, $queue_id);
 					}
 				}
 		}
