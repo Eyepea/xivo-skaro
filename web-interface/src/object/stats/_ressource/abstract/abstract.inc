@@ -115,7 +115,8 @@ class xivo_stats_ressource_abstract
 			foreach ($this->_field as $k => $field)
 			{
 				$data_process[$k] = array();
-				$data_process[$k]['type'] = $field['type'];
+				if (isset($field['type']))
+					$data_process[$k]['type'] = $field['type'];
 				$data_process[$k]['result'] = 0;
 			}
 		}

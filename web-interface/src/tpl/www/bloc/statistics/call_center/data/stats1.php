@@ -45,7 +45,7 @@ if (($type = $table1->get_data_custom('listtype')) !== null
 		<div class="sb-list">
 <?php
 		echo $table1->infos_html();
-		echo $table1->render_html(false);
+		echo $table1->render_html(false,true,false);
 ?>
 		</div>
 <?php

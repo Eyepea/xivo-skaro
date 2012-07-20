@@ -31,7 +31,6 @@ $tpl_statistics->set_data_custom('axetype',$axetype);
 $tpl_statistics->set_data_custom('listtype',$stats_queue->get_list_by_type());
 $itl = $_XS->get_datecal();
 
-
 switch ($axetype)
 {
 	case 'day':
@@ -102,6 +101,7 @@ $tpl_statistics->add_col('qos',
 			 'direct',
 			 'custom:queue,[key],qos',
 			 'percent');
+
 $tpl_statistics->gener_table();
 
 $_TPL->set_var('table1',$tpl_statistics);

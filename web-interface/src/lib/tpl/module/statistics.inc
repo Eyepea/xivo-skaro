@@ -248,6 +248,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 
                 $rs = 0;
                 $op = null;
+                $format = null;
                 switch($type)
                 {
                     case 'direct':
@@ -260,7 +261,8 @@ class dwho_tpl_statistics extends dwho_tpl_module
                             if (is_array($val) === false)
                                 break;
 
-                            $format = $val['type'];
+                            if (isset($val['type']))
+                            	$format = $val['type'];
                             $rs = $val['result'];
                             $op = $rs;
                         }
