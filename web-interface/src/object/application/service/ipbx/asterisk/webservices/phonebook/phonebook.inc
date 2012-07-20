@@ -137,7 +137,10 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 	function get_phonebook_search($search)
 	{
-		if(($rs = $this->_dso->search($search)) === false || ($nb = count($rs)) === 0)
+		$order = array();
+		$order['displayname'] = SORT_ASC;
+
+		if(($rs = $this->_dso->search($search, $order)) === false || ($nb = count($rs)) === 0)
 			return(false);
 
 		for($i = 0;$i < $nb;$i++)
