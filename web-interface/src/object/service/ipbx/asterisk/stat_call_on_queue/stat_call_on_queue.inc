@@ -52,6 +52,14 @@ class xivo_service_asterisk_stat_call_on_queue extends xivo_service_asterisk_abs
 
 		return $result;
 	}
+
+        function get_queue_wait_time($interval, $queuefeatures_id)
+        {
+		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
+		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
+
+		return $this->_dso->queue_wait_time($interval, $queue_id);
+        }
 }
 
 ?>
