@@ -388,12 +388,15 @@ class xivo_stats_ressource_abstract
 
 		switch($operator)
 		{
-			case '+':
-				$result += $str;
-				break;
-			case '-':
-				$result -= $str;
-				break;
+                case '+':
+                        $result += $str;
+                        break;
+                case '-':
+                        $result -= $str;
+                        break;
+                case '=':
+                        $result = $str;
+                        break;
 			default:
 		}
 
