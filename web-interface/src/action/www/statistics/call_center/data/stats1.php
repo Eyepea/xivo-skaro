@@ -96,7 +96,7 @@ $tpl_statistics->add_col('average_time_waiting',
 			 'average');
 $tpl_statistics->add_col('home_rated',
 			 'direct',
-			 'custom:queue,[key],hr',
+			 'custom:queue,[key],home_rated',
 			 'percent');
 $tpl_statistics->add_col('qos',
 			 'direct',
