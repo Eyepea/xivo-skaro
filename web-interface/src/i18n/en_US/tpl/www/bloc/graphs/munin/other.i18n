@@ -39,3 +39,6 @@ Logged in users
 
 ; acpi
 ACPI
+
+; lpstat
+Print queues
