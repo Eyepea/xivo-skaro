@@ -33,6 +33,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 	var $_stats_conf_agent	= false;
 	var $_stats_conf_user	= false;
 	var $_stats_conf_incall	= false;
+	var $_stats_conf_xivouser	= false;
 
 	public function __construct(&$xobj,&$dso,$param=null,$components=true)
 	{
@@ -70,7 +71,8 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		|| ($this->_stats_conf_group = &$this->_xobj->get_module('stats_conf_group')) === false
 		|| ($this->_stats_conf_agent = &$this->_xobj->get_module('stats_conf_agent')) === false
 		|| ($this->_stats_conf_user = &$this->_xobj->get_module('stats_conf_user')) === false
-		|| ($this->_stats_conf_incall = &$this->_xobj->get_module('stats_conf_incall')) === false)
+		|| ($this->_stats_conf_incall = &$this->_xobj->get_module('stats_conf_incall')) === false
+		|| ($this->_stats_conf_xivouser = &$this->_xobj->get_module('stats_conf_xivouser')) === false)
 			return(false);
 
 		return(true);
@@ -91,6 +93,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		$this->_get_group();
 		$this->_get_agent();
 		$this->_get_user();
+		$this->_get_xivouser();
 
 		return($this->_info);
 	}
@@ -244,6 +247,32 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		return($this->_info['user']);
 	}
 
+	private function _get_xivouser()
+	{
+		$this->_info['xivouser'] = false;
+		$this->_origin['xivouser'] = false;
+
+		$where = array();
+		$where['stats_conf_id'] = (int) $this->_info['stats_conf']['id'];
+
+		if($this->_stats_conf_xivouser === false
+		|| ($rs = $this->_stats_conf_xivouser->get_all_where($where)) === false)
+			return(false);
+
+		$tmp = array();
+		foreach($rs as $qid)
+			array_push($tmp,$qid['user_id']);
+
+		$_USR = &dwho_gct::get('_USR');
+
+		if($_USR === false
+		|| ($this->_info['xivouser'] = $_USR->get_all_wherein('id',$tmp)) === false
+		|| empty($this->_info['xivouser']) === true)
+			return(false);
+
+		return($this->_info['xivouser']);
+	}
+
 	public function get_elements()
 	{
 		$r = array();
@@ -254,15 +283,15 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 
 	public function get_stats_conf_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		return($this->_get_entities('search',$search,$disable,$order,$limit,$assoc));
+		return($this->_get_stats_conf('search',$search,$disable,$order,$limit,$assoc));
 	}
 
-	public function get_stats_conf_list($disable=null,$order=null,$limit=null,$assoc=false)
+	public function get_stats_conf_list($disable=null,$order=null,$limit=null,$assoc=false,$xivouser=false)
 	{
-		return($this->_get_stats_conf('list',null,$disable,$order,$limit,$assoc));
+		return($this->_get_stats_conf('list',null,$disable,$order,$limit,$assoc,$xivouser));
 	}
 
-	private function _get_stats_conf($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
+	private function _get_stats_conf($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false,$xivouser=false)
 	{
 		$search = strval($search);
 
@@ -270,13 +299,10 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		{
 			case 'search':
 				$rs = $this->_dso->search($search,$disable,$order,$limit);
-				$this->_cnt = $this->_dso->get_cnt();
 				break;
 			case 'list':
 			default:
-				$action = 'list';
-				$rs = $this->_dso->get_all($disable,$order,$limit);
-				$this->_cnt = $this->_dso->get_cnt();
+				$rs = $this->_dso->get_all($disable,$order,$limit,null,$xivouser);
 		}
 
 		if($rs === false
@@ -343,6 +369,9 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 
 		if (dwho_issa('user',$arr) === true)
 			$this->set_user($arr['user']);
+
+		if (dwho_issa('xivouser',$arr) === true)
+			$this->set_xivouser($arr['xivouser']);
 
 		return(($this->get_errnb() < 1));
 	}
@@ -581,6 +610,45 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		return(true);
 	}
 
+	private function set_xivouser($arr)
+	{
+		if(is_array($arr) === false)
+		{
+			$this->_set_result('xivouser',null);
+			$this->_set_error('xivouser','invalid data');
+			return(false);
+		}
+
+		$_USR = &dwho_gct::get('_USR');
+
+		$error = $reslist = array();
+		$errnb = 0;
+
+		for($i = 0;$i < count($arr);$i++)
+		{
+			$ref = &$arr[$i];
+			if($_USR->get($ref) === false)
+			{
+				$errnb++;
+				$error[$i] = 'bad_xivouser';
+			}
+			else
+			{
+				$rs['id'] = (int) $ref;
+				array_push($reslist,$rs);
+			}
+		}
+		$this->_set_result('xivouser',$reslist);
+
+		if ($errnb >> 0)
+		{
+			$this->_set_error('xivouser',$error);
+			return(false);
+		}
+
+		return(true);
+	}
+
 	public function add()
 	{
 		$r = true;
@@ -600,7 +668,8 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		|| $this->add_queue($stats_confid) === false
 		|| $this->add_group($stats_confid) === false
 		|| $this->add_agent($stats_confid) === false
-		|| $this->add_user($stats_confid) === false)
+		|| $this->add_user($stats_confid) === false
+		|| $this->add_xivouser($stats_confid) === false)
 		{
 			$r = false;
 			if($stats_confid !== null)
@@ -626,7 +695,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 	{
 		if(($rs = $this->get_result('incall')) === null)
 			return($rs);
-			
+
 		if($rs === false
 		|| $this->_return['stats_conf'] === false)
 			return(false);
@@ -654,7 +723,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		if(($rs = $this->get_result('queue')) === null
 		|| ($rsqos = $this->get_result('queue_qos')) === null)
 			return($rs);
-			
+
 		if($rs === false
 		|| $rsqos === false
 		|| $this->_return['stats_conf'] === false)
@@ -684,7 +753,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		if(($rs = $this->get_result('group')) === null
 		|| ($rsqos = $this->get_result('group_qos')) === null)
 			return($rs);
-			
+
 		if($rs === false
 		|| $rsqos === false
 		|| $this->_return['stats_conf'] === false)
@@ -713,7 +782,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 	{
 		if(($rs = $this->get_result('agent')) === null)
 			return($rs);
-			
+
 		if($rs === false
 		|| $this->_return['stats_conf'] === false)
 			return(false);
@@ -740,7 +809,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 	{
 		if(($rs = $this->get_result('user')) === null)
 			return($rs);
-			
+
 		if($rs === false
 		|| $this->_return['stats_conf'] === false)
 			return(false);
@@ -763,6 +832,33 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		return($this->_return['user']);
 	}
 
+	private function add_xivouser($stats_confid)
+	{
+		if(($rs = $this->get_result('xivouser')) === null)
+			return($rs);
+
+		if($rs === false
+		|| $this->_return['stats_conf'] === false)
+			return(false);
+
+		$this->_return['xivouser'] = array();
+
+		$arr = array();
+		$arr['stats_conf_id'] = (int) $this->_return['stats_conf'];
+
+		foreach ($rs as $qid)
+		{
+			$arr['user_id'] = (int) $qid['id'];
+			if (($this->_return['xivouser'][$qid['id']] = $this->_stats_conf_xivouser->add($arr)) === false)
+			{
+				dwho_report::push('error','error during create stats xivouser');
+				return(false);
+			}
+		}
+
+		return($this->_return['xivouser']);
+	}
+
 	function _reverse_add()
 	{
 		if($this->get_errnb() > 0
@@ -775,7 +871,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		{
 			if($val === false)
 				continue;
-				
+
 			switch($key)
 			{
 				case 'stats_conf':
@@ -816,6 +912,13 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 					foreach($val as $v)
 						$this->_stats_conf_user->delete($v);
 					break;
+				case 'xivouser':
+					if(is_array($val) === false)
+						continue;
+
+					foreach($val as $v)
+						$this->_stats_conf_xivouser->delete($v);
+					break;
 			}
 		}
 
@@ -835,7 +938,8 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		|| $this->edit_queue() === false
 		|| $this->edit_group() === false
 		|| $this->_edit_agent() === false
-		|| $this->edit_user() === false)
+		|| $this->edit_user() === false
+		|| $this->edit_xivouser() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -941,6 +1045,22 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		return($this->add_user());
 	}
 
+	private function edit_xivouser()
+	{
+		if ($this->_status === 'edit'
+		&& $this->_info['xivouser'] === false
+		&& $this->get_result('xivouser') === null)
+			return(true);
+		elseif($this->_info['xivouser'] === false)
+			return($this->add_xivouser());
+
+		$arr = array();
+		$arr['stats_conf_id'] = (int) $this->_return['stats_conf'];
+		$this->_stats_conf_xivouser->delete_where($arr);
+
+		return($this->add_xivouser());
+	}
+
 	private function _reverse_edit()
 	{
 		if($this->get_errnb() > 0
@@ -1006,6 +1126,7 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		$this->_stats_conf_group->delete_where($arr);
 		$this->_stats_conf_agent->delete_where($arr);
 		$this->_stats_conf_user->delete_where($arr);
+		$this->_stats_conf_xivouser->delete_where($arr);
 
 		if($this->_status === 'delete')
 			$this->_return['stats_conf'] = $r;

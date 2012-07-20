@@ -401,6 +401,14 @@ CREATE TABLE "stats_conf_group" (
 );
 CREATE UNIQUE INDEX "stats_conf_group_index" ON "stats_conf_group" USING btree ("stats_conf_id","groupfeatures_id");
 
+
+DROP TABLE IF EXISTS "stats_conf_xivouser";
+CREATE TABLE "stats_conf_xivouser" (
+    "stats_conf_id" integer NOT NULL,
+    "user_id" integer NOT NULL
+);
+CREATE UNIQUE INDEX "stats_conf_xivouser_index" ON "stats_conf_xivouser" USING btree ("stats_conf_id","user_id");
+
 -- grant all rights to xivo
 GRANT ALL ON ALL TABLES IN SCHEMA public TO xivo;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public to xivo;

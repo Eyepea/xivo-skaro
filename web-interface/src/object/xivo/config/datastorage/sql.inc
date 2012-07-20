@@ -88,5 +88,9 @@ $array['stats_conf_incall'] = array();
 $array['stats_conf_incall']['table'] = 'stats_conf_incall';
 $array['stats_conf_incall']['primary'] = array('stats_conf_id' => '');
 
+$array['stats_conf_xivouser'] = array();
+$array['stats_conf_xivouser']['table'] = 'stats_conf_xivouser';
+$array['stats_conf_xivouser']['primary'] = array('stats_conf_id' => '');
+
 
 ?>

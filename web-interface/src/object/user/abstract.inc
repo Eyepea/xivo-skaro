@@ -260,6 +260,23 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		return($this->get_where($arr));
 	}
 
+	function get_all_wherein($id,$where)
+	{
+		if(($list = $this->_dso->get_all_wherein($id,$where)) === false)
+			return(false);
+
+		$nb = count($list);
+		$list = array_values($list);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$data = &$list[$i];
+			$this->_prepare(&$data);
+		}
+
+		return($list);
+	}
+
 	function _load_dso()
 	{
 		if(dwho_gct::is_valid('XIVO_USER_DSO') === true)

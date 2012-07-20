@@ -33,18 +33,33 @@ class xivo_application_xivo_object_stats_conf_sql extends xivo_application_abstr
 		$this->_dso->new_select($this->_table['stats_conf']);
 
 		$this->_dso->where(array('id' => $id), $this->_table['stats_conf']);
-		
+
 		$r = $this->_dso->select_single();
-		
+
 		if(($this->_cnt = $this->_dso->select_count()) === 0)
 			$r = false;
 
 		return($r);
 	}
 
-	function get_all($disable=null,$order=null,$limit=null,$value=null)
+	function get_all($disable=null,$order=null,$limit=null,$value=null,$xivouser=false)
 	{
 		$this->_dso->new_select($this->_table['stats_conf']);
+
+		if($disable !== null)
+			$this->_dso->andwhere(array('disable' => intval((bool) $disable)));
+
+		if($xivouser !== false)
+		{
+			$this->_dso->innerjoin($this->_table['stats_conf_xivouser'],
+					       $this->_table['stats_conf_xivouser'].'.stats_conf_id = '. $this->_table['stats_conf'].'.id',
+					       null,
+					       '');
+			if (is_array($xivouser) === true)
+				$this->_dso->joinwherein($this->_table['stats_conf_xivouser'],'stats_conf_id',$xivouser);
+			elseif(is_numeric($xivouser) === true)
+				$this->_dso->joinwhere($this->_table['stats_conf_xivouser'],array('user_id' => (int) $xivouser));
+		}
 
 		$this->_dso->new_order($order,null,$this->_table['stats_conf']);
 		$this->_dso->limit($limit);
@@ -62,7 +77,7 @@ class xivo_application_xivo_object_stats_conf_sql extends xivo_application_abstr
 		|| isset($r[0]) === false)
 			$r = false;
 
-		return($r);	
+		return($r);
 	}
 
 	function search($value,$disable=null,$order=null,$limit=null)
