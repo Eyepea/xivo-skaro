@@ -95,16 +95,16 @@ Vide
 Fin sur file vide
 
 ; col_on_timeout
-Attente max
+Redistribué
 
 ; col_average_time_waiting
-<acronym title="Temps moyen d'attente">Temps moyen d'attente</acronym>
+<acronym title="Temps moyen d'attente">TMA</acronym>
 
 ; col_home_rated
-<acronym title="Taux d'accueil">Taux d'accueil</acronym>
+<acronym title="Taux d'accueil">TA</acronym>
 
 ; col_qos
-<acronym title="Qualité de service">QOS</acronym>
+<acronym title="Qualité de service">QoS</acronym>
 
 ; colstruct_calls
 Appels

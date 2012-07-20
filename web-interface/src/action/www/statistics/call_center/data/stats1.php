@@ -58,51 +58,50 @@ $tpl_statistics->set_data_custom('queue',$stats_queue->_result);
 
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('presented',
-					'direct',
-					'custom:queue,[key],presented');
+			 'direct',
+			 'custom:queue,[key],presented');
 $tpl_statistics->set_col_struct('traitment');
 
 $tpl_statistics->add_col('connect',
-					'direct',
-					'custom:queue,[key],connect');
+			 'direct',
+			 'custom:queue,[key],connect');
 $tpl_statistics->add_col('abandon',
-					'direct',
-					'custom:queue,[key],abandon');
+			 'direct',
+			 'custom:queue,[key],abandon');
 
 $tpl_statistics->set_col_struct('deterred');
 $tpl_statistics->add_col('on_close',
-					'direct',
-					'custom:queue,[key],deterred_on_close');
+			 'direct',
+			 'custom:queue,[key],deterred_on_close');
 $tpl_statistics->add_col('on_saturation',
-					'direct',
-					'custom:queue,[key],deterred_on_saturation');
-
-$tpl_statistics->set_col_struct('lost');
+			 'direct',
+			 'custom:queue,[key],deterred_on_saturation');
 $tpl_statistics->add_col('on_joinempty',
-					'direct',
-					'custom:queue,[key],joinempty');
+			 'direct',
+			 'custom:queue,[key],joinempty');
 $tpl_statistics->add_col('on_leaveempty',
-					'direct',
-					'custom:queue,[key],leaveempty');
+			 'direct',
+			 'custom:queue,[key],leaveempty');
+
+$tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('on_timeout',
-					'direct',
-					'custom:queue,[key],timeout');
+			 'direct',
+			 'custom:queue,[key],timeout');
 
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('average_time_waiting',
-                         'direct',
-                         'custom:queue,[key],average_wait_time',
-                         'time',
-                         'average');
+			 'direct',
+			 'custom:queue,[key],average_wait_time',
+			 'time',
+			 'average');
 $tpl_statistics->add_col('home_rated',
-					'expression',
-					'{custom:queue,[key],connect}/{custom:queue,[key],enterqueue}',
-					'percent',
-					'average');
+			 'direct',
+			 'custom:queue,[key],hr',
+			 'percent');
 $tpl_statistics->add_col('qos',
-                         'direct',
-                         'custom:queue,[key],qos',
-                         'percent');
+			 'direct',
+			 'custom:queue,[key],qos',
+			 'percent');
 $tpl_statistics->gener_table();
 
 $_TPL->set_var('table1',$tpl_statistics);
