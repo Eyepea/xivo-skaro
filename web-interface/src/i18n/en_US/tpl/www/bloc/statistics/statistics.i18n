@@ -83,36 +83,43 @@ Dissuaded
 <acronym title="Dissuaded on close">Close</acronym>
 
 ; col_on_saturation
-<acronym title="Dissuaded on saturation">Satur.</acronym>
+<acronym title="Busy">Busy</acronym>
 
-; colstruct_lost
-Lost
+; colstruct_redistributed
+Redistributed
+
+; colstruct_ratio
+Ratios
 
 ; col_on_joinempty
-Joined empty
+<acronym title="Blocked incoming">BI</acronym>
 
 ; col_on_leaveempty
-Left empty
+<acronym title="Blocked ongoing">BO</acronym>
 
 ; col_on_timeout
-Redistributed
+<acronym title="No answer">NA</acronym>
 
 ; col_average_time_waiting
 <acronym title="Average waiting time">AWT</acronym>
 
 ; col_home_rated
-<acronym title="Arrival Rate"> RH </acronym>
+<acronym title="Home rated">HR</acronym>
 
 ; col_qos
-<acronym title="Quality of service"> QOS </acronym>
+<acronym title="Quality of service"> QoS </acronym>
 
 ; colstruct_calls
 Calls
+
+; colstruct_schedule
+Schedule
 
 ; colstruct_call_counter
 Nb. of calls
 
 ; colstruct_total_time
+
 Total time
 
 ; colstruct_average_time

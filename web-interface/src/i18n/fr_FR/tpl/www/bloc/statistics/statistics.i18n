@@ -37,6 +37,15 @@ Choisissez la configuration à appliquer:
 ; colstruct_traitment
 Traités
 
+; colstruct_schedule
+Horaire
+
+; colstruct_ratio
+Ratio
+
+; colstruct_redistributed
+Redistribués
+
 ; colstruct_abandon
 Appels abandonnés
 
@@ -80,22 +89,22 @@ Appels traités
 Dissuadés
 
 ; col_on_close
-<acronym title="Dissuadés sur fermeture">fermeture</acronym>
+<acronym title="Dissuadés sur fermeture">Fermés</acronym>
 
 ; col_on_saturation
-<acronym title="Dissuadés sur saturation">saturation</acronym>
+<acronym title="Redistribution sur occupation">Occupation</acronym>
 
 ; colstruct_lost
 Perdus
 
 ; col_on_joinempty
-Vide
+<acronym title="Blocage entrant">BE</acronym>
 
 ; col_on_leaveempty
-Fin sur file vide
+<acronym title="Blocage passant">BP</acronym>
 
 ; col_on_timeout
-Redistribué
+<acronym title="Non réponse">Non réponse</acronym>
 
 ; col_average_time_waiting
 <acronym title="Temps moyen d'attente">TMA</acronym>
