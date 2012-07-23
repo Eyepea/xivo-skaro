@@ -41,8 +41,8 @@ usefulness/applicability.
 <RTP-Start-Loopback_Codec>G711a</RTP-Start-Loopback_Codec>
 
 <Reorder_Delay>255</Reorder_Delay>
-<Interdigit_Long_Timer>15</Interdigit_Long_Timer>
-<Interdigit_Short_Timer>15</Interdigit_Short_Timer>
+<Interdigit_Long_Timer>10</Interdigit_Long_Timer>
+<Interdigit_Short_Timer>6</Interdigit_Short_Timer>
 
 <Call_Return_Code></Call_Return_Code>
 <Blind_Transfer_Code></Blind_Transfer_Code>
