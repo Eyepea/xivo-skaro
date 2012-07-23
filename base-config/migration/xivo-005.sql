@@ -25,4 +25,6 @@ CREATE TABLE "stats_conf_xivouser" (
 );
 CREATE UNIQUE INDEX "stats_conf_xivouser_index" ON "stats_conf_xivouser" USING btree ("stats_conf_id","user_id");
 
+GRANT ALL ON "stats_conf_xivouser" TO xivo;
+
 COMMIT;
