@@ -28,6 +28,8 @@ $listaxetype = $this->get_var('listaxetype');
 $axetype = $this->get_var('axetype');
 $infocal = $this->get_var('infocal');
 $element = $this->get_var('element');
+$objectkey = $this->get_var('objectkey');
+
 
 ?>
 <script type="text/javascript">
@@ -87,6 +89,8 @@ if(xivo_user::chk_acl_section('statistics/call_center') === true):
 			$params['axetype'] = $axetype;
 		if (is_null($conf) === false)
 			$params['confid'] = $conf['id'];
+		if(isset($objectkey))
+			$params['key'] = $objectkey;
 		if (is_null($infocal) === false):
 			$params['dbeg'] = $infocal['dbeg'];
 			$params['dend'] = $infocal['dend'];
