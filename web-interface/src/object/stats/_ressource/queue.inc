@@ -57,10 +57,10 @@ class stats_ressource_queue extends xivo_stats_ressource_abstract
 		$timeout = $this->_stat_queue_periodic->get_event_timeout($interval, $queue_id);
 		$total_wait_time = $this->_stat_call_on_queue->get_queue_wait_time($interval, $queue_id);
 
-		$qos = $answered > 0 ? $answered_in_qos / $answered : null;
+		$qos = $answered > 0 ? 100 * $answered_in_qos / $answered : null;
 
 		$hr_total = $answered + $abandon + $closed + $full + $leaveempty + $joinempty;
-		$hr = $hr_total > 0 ? $answered / $hr_total : null;
+		$hr = $hr_total > 0 ? 100 * $answered / $hr_total : null;
 
 		$waited_call = $answered + $abandon + $leaveempty + $timeout;
 		$awt = $waited_call > 0 ? $total_wait_time / $waited_call : null;
