@@ -23,7 +23,7 @@ include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 $_STS->load_ressource('queue');
 
 $stats_queue = new stats_ressource_queue(&$_XS);
-$stats_queue->get_data();
+$stats_queue->get_data_queue();
 
 $tpl_statistics->set_name('queue');
 $tpl_statistics->set_baseurl('statistics/call_center/data/stats1');
@@ -37,13 +37,10 @@ switch ($axetype)
 		$tpl_statistics->set_rows('hour', $_XS->get_listhour(),'key');
 		break;
 	case 'week':
-		$tpl_statistics->set_rows('day',$_XS->get_listday_for_week(),'key');
+		$tpl_statistics->set_rows('day',$stats_queue->get_rows(),'key');
 		break;
 	case 'month':
-		$date = dwho_date::all_to_unixtime($itl['dmonth']);
-		$year = date('Y',$date);
-		$month = date('m',$date);
-		$tpl_statistics->set_rows('day', $_XS->get_listday_for_month($year,$month),'key');
+		$tpl_statistics->set_rows('day', $stats_queue->get_rows(),'key');
 		break;
 	case 'year':
 		$tpl_statistics->set_rows('month',dwho_date::get_listmonth(),'key');

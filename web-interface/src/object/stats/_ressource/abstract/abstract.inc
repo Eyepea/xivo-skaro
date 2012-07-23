@@ -29,7 +29,7 @@ class xivo_stats_ressource_abstract
 	public 		$_counter	 		= array();
 	public		$_result 			= array();
 	protected $_stat_queue_periodic = null;
-        protected $_stat_call_on_queue = null;
+	protected $_stat_call_on_queue = null;
 
 	public function __construct(&$_XS)
 	{
@@ -104,7 +104,7 @@ class xivo_stats_ressource_abstract
 		$res = &$this->_result;
 
 		if (is_array($key) === true
-		&& isset($key['value']) === true)
+				&& isset($key['value']) === true)
 			$key = $key['value'];
 
 		if (isset($res[$key]) === false)
@@ -119,6 +119,106 @@ class xivo_stats_ressource_abstract
 					$data_process[$k]['type'] = $field['type'];
 				$data_process[$k]['result'] = 0;
 			}
+		}
+	}
+
+	private function _build_hour_for_day($key, $time)
+	{
+		$dip = array();
+		$year = date('Y', $time);
+		$month = date('m', $time);
+		$day = date('d' ,$time);
+		$dip['beg'] = mktime($key, 0, 0, $month, $day, $year);
+		$dip['end'] = mktime($key+1, 0, -1, $month, $day, $year);
+		return $dip;
+	}
+
+	public function get_rows()
+	{
+		$days = $this->full_itl;
+		$rs = array();
+		foreach ($days as $day => $data)
+		{
+			$tmp = array();
+			$dayname = strtolower( date('l', strtotime($day)) );
+			$tmp['identity'] = dwho_i18n::babelfish($dayname);
+			$tmp['name'] = $dayname;
+			$tmp['key'] = (int) $day;
+			$tmp['day'] = date('d', strtotime($day));
+			$tmp['month'] = date('m', strtotime($day));
+			$tmp['year'] = date('Y', strtotime($day));
+			$rs[$day] = $tmp;
+		}
+		return($rs);
+	}
+
+	public function get_data_queue()
+	{
+		$axetype = $this->_xs->get_axetype();
+
+		if (($itl = $this->_xs->get_datecal()) === false
+		|| is_null($itl['dbeg']) === true)
+			return(false);
+
+		$dbeg = strtotime($itl['dbeg']);
+		$dend = strtotime($itl['dend']);
+
+		$this->_stat_queue_periodic->set_dso_param('hour_itl',$this->_xs->get_dip_hour());
+		$this->_stat_queue_periodic->set_dso_param('days',$this->_xs->get_valid_list_day());
+
+		$queue_id = 0;
+		if (preg_match('/queue-([0-9]+)/', $this->_xs->_objectkey, $out) === 1)
+			$queue_id = (int) $out[1];
+
+		switch ($axetype)
+		{
+			case 'day':
+				$key_data = $this->_xs->get_listhour();
+				while($key_data)
+				{
+					$key_full_data = array_shift($key_data);
+					$key = $key_full_data['key'];
+					$this->build_stat($queue_id, $key, $this->_build_hour_for_day($key, $dbeg));
+				}
+				break;
+			case 'week':
+				$this->full_itl = $this->_xs->build_full_date_interval($dbeg, $dend);
+				foreach ($this->full_itl as $date => $date_itl)
+					$this->build_stat($queue_id, $date, $date_itl);
+				break;
+			case 'month':
+				$this->full_itl = $this->_xs->build_full_date_interval($dbeg, $dend);
+				foreach ($this->full_itl as $date => $date_itl)
+					$this->build_stat($queue_id, $date, $date_itl);
+				break;
+			case 'year':
+				$key_data = dwho_date::get_listmonth();
+				while ($key_data) {
+					$key_full_data = array_shift($key_data);
+					$key = $key_full_data['key'];
+					$dip = array();
+					$dip['beg'] = mktime(0,0,1,$key,1,date('Y', $dbeg));
+					$dip['end'] = mktime(23,59,59,$key,31,$year);
+					$this->build_stat($queue_id, $key, $dip);
+				}
+				break;
+			case 'type':
+				$key_data = $this->get_list_by_type();
+				while($key_data)
+				{
+					$key_full_data = array_shift($key_data);
+					$keyfile = $key_full_data['keyfile'];
+
+					preg_match('/queue-([0-9]+)/', $keyfile, $out);
+					$queue_id = (int) $out[1];
+
+					$dip = array();
+					$dip['beg'] = $dbeg;
+					$dip['end'] = $dend;
+					$this->build_stat($queue_id, $keyfile, $dip);
+				}
+				break;
+			default:
 		}
 	}
 
@@ -146,10 +246,6 @@ class xivo_stats_ressource_abstract
 		$key_data_arr = $data['keydata'];
 		$keyfile = $data['keyfile'];
 
-		$queue_id = 0;
-		if (preg_match('/queue-([0-9]+)/', $this->_xs->_objectkey, $out) === 1)
-			$queue_id = (int) $out[1];
-
 		switch ($axetype)
 		{
 			case 'day':
@@ -158,7 +254,6 @@ class xivo_stats_ressource_abstract
 				$year = date('Y',$date);
 				$month = date('m',$date);
 				$day = date('d',$date);
-
 				while($key_data)
 				{
 					$key_full_data = array_shift($key_data);
@@ -166,8 +261,8 @@ class xivo_stats_ressource_abstract
 					$dip = array();
 					$dip['beg'] = mktime($key,0,0,$month,$day,$year);
 					$dip['end'] = mktime($key+1,0,-1,$month,$day,$year);
-
-					$this->build_stat($queue_id, $key, $dip);
+					$this->_xs->_interval_process = $dip;
+					$this->parse_log($key_data_arr,$key);
 				}
 				break;
 			case 'week':
@@ -177,6 +272,7 @@ class xivo_stats_ressource_abstract
 					$key_full_data = array_shift($key_data);
 					$dayname = $key_full_data['dayname'];
 
+					$this->init_result($dayname);
 					$key = $key_full_data['key'];
 
 					$year = date('Y',$key_full_data['time']);
@@ -187,7 +283,10 @@ class xivo_stats_ressource_abstract
 					$dip['beg'] = mktime(0,0,1,$month,$day,$year);
 					$dip['end'] = mktime(23,59,59,$month,$day,$year);
 
-					$listdaynum = array_keys($this->_xs->get_listday_for_month($year, $month));
+					if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
+					|| is_null($month_data) === true)
+						continue;
+					$listdaynum = array_keys($month_data);
 					while($listdaynum)
 					{
 						$day = array_shift($listdaynum);
@@ -199,7 +298,7 @@ class xivo_stats_ressource_abstract
 						if (isset($full_list_day[$year.$month.$day]) === false)
 							continue;
 
-						$this->build_stat($queue_id, $dayname, $dip);
+						$this->eval_update_result($month_data[$day],$dayname);
 					}
 				}
 				break;
@@ -208,19 +307,11 @@ class xivo_stats_ressource_abstract
 				$year = date('Y',$date);
 				$month = date('m',$date);
 				$day = date('d',$date);
+				if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
+				|| is_null($month_data) === true)
+					break;
 
-				$dip = array();
-				$dip['beg'] = mktime(0,0,1,$month,$day,$year);
-				$dip['end'] = mktime(23,59,59,$month,$day,$year);
-
-                                $day_list = $this->_xs->get_listday_for_month($year, $month);
-                                while ($day_list) {
-                                        $day = array_shift($day_list);
-                                        $dip = array();
-                                        $dip['beg'] = mktime(0,0,1,$month,$day["day"],$year);
-                                        $dip['end'] = mktime(23,59,59,$month,$day["day"],$year);
-                                        $this->build_stat($queue_id, $day['key'], $dip);
-                                }
+				$this->_result = $month_data;
 				break;
 			case 'year':
 				$key_data = dwho_date::get_listmonth();
@@ -246,7 +337,20 @@ class xivo_stats_ressource_abstract
 						$dip['beg'] = mktime(0,0,1,$monthnum,1,$year);
 						$dip['end'] = mktime(23,59,59,$monthnum,31,$year);
 
-                                                $this->build_stat($queue_id, $monthnum, $dip);
+					if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
+						|| is_null($month_data) === true)
+							continue;
+
+						$listdaynum = array_keys($month_data);
+						while($listdaynum)
+						{
+							$day = array_shift($listdaynum);
+							if (isset($full_list_day[$year.$month.$day]) === false)
+								continue;
+
+							// update result for day data
+							$this->eval_update_result($month_data[$day],$monthnum);
+						}
 					}
 				}
 				break;
@@ -269,7 +373,7 @@ class xivo_stats_ressource_abstract
 						$month = substr($key,4,2);
 
 						if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
-						|| is_null($month_data) === true)
+								|| is_null($month_data) === true)
 							continue;
 						$listdaynum = array_keys($month_data);
 						while($listdaynum)
@@ -283,14 +387,6 @@ class xivo_stats_ressource_abstract
 							$this->eval_update_result($month_data[$day],$keyfile);
 						}
 					}
-
-					if ($this->_type === 'queue')
-					{
-						$interval = array();
-						$interval['beg'] = $dbeg;
-						$interval['end'] = $dend;
-                                                // $this->set_queue_result($axetype, $interval, $queue_id);
-					}
 				}
 		}
 		return($this->_result);
@@ -303,10 +399,10 @@ class xivo_stats_ressource_abstract
 		{
 			$field = array_shift($listfield);
 			if(isset($data_to_eval[$field]['result']) === true
-			&& $data_to_eval[$field]['result'] !== 0)
+					&& $data_to_eval[$field]['result'] !== 0)
 				$this->update_result(array($key,$field),$data_to_eval[$field]['result']);
 			elseif(isset($data_to_eval[$field]['result']) === false
-			&& count($data_to_eval[$field]) >> 2)
+					&& count($data_to_eval[$field]) >> 2)
 			{
 				$listssfield = array_keys($data_to_eval[$field]);
 				while($listssfield)
@@ -322,22 +418,22 @@ class xivo_stats_ressource_abstract
 	protected function update_result($var,$str,$operator='+')
 	{
 		if (($res = call_user_func_array(array($this,'eval_result_var'), $var)) === null
-		|| isset($res['result']) === false)
+				|| isset($res['result']) === false)
 			return(false);
 
 		$result = $res['result'];
 
 		switch($operator)
 		{
-                case '+':
-                        $result += $str;
-                        break;
-                case '-':
-                        $result -= $str;
-                        break;
-                case '=':
-                        $result = $str;
-                        break;
+			case '+':
+				$result += $str;
+				break;
+			case '-':
+				$result -= $str;
+				break;
+			case '=':
+				$result = $str;
+				break;
 			default:
 		}
 
@@ -384,7 +480,7 @@ class xivo_stats_ressource_abstract
 			$key = func_get_arg($i);
 
 			if(dwho_ak($key,$ref) === false)
-			        return(null);
+				return(null);
 
 			$ref = $ref[$key];
 		}

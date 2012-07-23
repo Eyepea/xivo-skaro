@@ -138,9 +138,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
             return(false);
 
         $this->_row_key = $field;
-
         $this->_prepare_rows[$key] = array();
-        $full_rows = $arr;
         foreach($arr as $k => &$ref)
         {
             if(isset($ref[$field]) === false)

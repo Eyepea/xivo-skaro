@@ -25,7 +25,7 @@ $_I18N->load_file('tpl/www/bloc/statistics/statistics');
 
 require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'date.inc'));
 require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'stats','stats.inc'));
-include(dwho_file::joinpath(DWHO_PATH_ROOT,'jqplot.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'jqplot.inc'));
 
 $xivo_jqplot = new xivo_jqplot;
 
@@ -35,8 +35,6 @@ $appstats_conf = &$_XOBJ->get_application('stats_conf');
 
 $_XS = new xivo_stats_lib();
 $_XS->global_init($_QR);
-
-$conf = $_XS->get_conf();
 
 $axetype = $_XS->get_axetype();
 
@@ -50,7 +48,8 @@ $_TPL->set_var('listaxetype',$_XS->get_list_axetype());
 $_TPL->set_var('axetype',$axetype);
 $_TPL->set_var('infocal',$_XS->get_datecal());
 $_TPL->set_var('confid',$_XS->get_idconf());
-$_TPL->set_var('conf',$conf);
+$_TPL->set_var('conf',$_XS->get_conf());
+$_TPL->set_var('objectkey',$_XS->get_objectkey());
 
 $tpl_statistics = &$_TPL->get_module('statistics');
 $tpl_statistics->set_xs(&$_XS);

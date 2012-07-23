@@ -234,6 +234,43 @@ class xivo_stats_lib
 		return($conf);
 	}
 
+	public function get_dip_hour()
+	{
+		if(($conf = $this->get_conf()) === false)
+			return(false);
+
+		$hour_start = explode(':',$conf['hour_start']);
+		$hour_end = explode(':',$conf['hour_end']);
+		$dip_hour = array();
+		$dip_hour['beg'] = (int) $hour_start[0];
+		$dip_hour['end'] = (int) $hour_end[0];
+		return($dip_hour);
+	}
+
+	public function get_valid_list_day()
+	{
+		if(($conf = $this->get_conf()) === false)
+			return(false);
+
+		$workweek = $conf['workweek'];
+		$rs = array();
+		if ($workweek['sunday'])
+			$rs[] = 0;
+		if ($workweek['monday'])
+			$rs[] = 1;
+		if ($workweek['tuesday'])
+			$rs[] = 2;
+		if ($workweek['wednesday'])
+			$rs[] = 3;
+		if ($workweek['thursday'])
+			$rs[] = 4;
+		if ($workweek['friday'])
+			$rs[] = 5;
+		if ($workweek['saturday'])
+			$rs[] = 6;
+		return($rs);
+	}
+
 	public function get_conf()
 	{
 		if (empty($this->_conf['stats_conf']) === true)
@@ -341,7 +378,7 @@ class xivo_stats_lib
 			$hour_end = $conf['hour_end'];
 		}
 
-		return(dwho_date::build_full_date_interval($dbeg,$dend,$hour_start,$hour_end));
+		return(dwho_date::build_full_date_interval($dbeg,$dend,$hour_start,$hour_end,$conf['workweek']));
 	}
 
 	public function get_datecal()

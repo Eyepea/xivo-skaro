@@ -63,6 +63,14 @@ class xivo_service_asterisk_stat_queue_periodic_sql extends xivo_service_asteris
 										strftime('%Y-%m-%d %H:%M:%S', $interval['end']),
 										$this->_table);
 
+		$hour_itl = $this->get_param('hour_itl');
+		if (is_null($hour_itl) === false)
+			$this->_dso->andwhere('EXTRACT(HOUR FROM "'.$this->_table.'".time) BETWEEN '.$hour_itl['beg'].' AND '.($hour_itl['end']-1));
+
+		$days = $this->get_param('days');
+		if (is_null($days) === false)
+			$this->_dso->andwhere('EXTRACT(DOW FROM "'.$this->_table.'".time) IN ('.implode(',', array_values($days)).')');
+
 		$r = $this->_dso->select_singlecolumn();
 
 		if(isset($r[0]) === false)

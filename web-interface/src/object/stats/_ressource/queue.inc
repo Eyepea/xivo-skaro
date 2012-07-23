@@ -21,17 +21,17 @@
 class stats_ressource_queue extends xivo_stats_ressource_abstract
 {
 
-	protected $_field = array('presented'	=> array(),
-				  'connect'					=> array(),
-				  'abandon'					=> array(),
-				  'deterred_on_close'		=> array(),
-				  'deterred_on_saturation'	=> array(),
-				  'joinempty'				=> array(),
-				  'leaveempty'				=> array(),
-				  'timeout'					=> array(),
-				  'average_wait_time'		=> array(),
-				  'home_rated'				=> array(),
-				  'qos'						=> array()
+	protected $_field = array('presented'                 => array(),
+								'connect'                 => array(),
+								'abandon'                 => array(),
+								'deterred_on_close'       => array(),
+								'deterred_on_saturation'  => array(),
+								'joinempty'               => array(),
+								'leaveempty'              => array(),
+								'timeout'                 => array(),
+								'average_wait_time'       => array(),
+								'home_rated'              => array(),
+								'qos'                     => array()
 		);
 
 	public function __construct(&$_XS)

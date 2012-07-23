@@ -69,7 +69,7 @@ abstract class dwho_date
 		return(false);
 	}
 
-	public static function build_full_date_interval($dbeg,$dend,$hbeg=null,$hend=null)
+	public static function build_full_date_interval($dbeg,$dend,$hbeg=null,$hend=null,$exept=array())
 	{
 		$rs = array();
 
@@ -90,6 +90,10 @@ abstract class dwho_date
 			$index = array_shift($listidx);
 			$key = $listday[$index]['key'];
 			$day_process = $listday[$index]['time'];
+			$dayname = strtolower(date('l',$day_process));
+			if (isset($exept[$dayname]) === true
+			&& !$exept[$dayname])
+				continue;
 			$dip = array();
 			$dip['beg'] = strtotime(date('Y-m-d',$day_process).' '.$hbeg);
 			$dip['end'] = strtotime(date('Y-m-d',$day_process).' '.$hend);
