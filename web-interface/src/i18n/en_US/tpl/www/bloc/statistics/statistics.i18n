@@ -92,10 +92,10 @@ Redistributed
 Ratios
 
 ; col_on_joinempty
-<acronym title="Blocked incoming">BI</acronym>
+<acronym title="Join empty">JE</acronym>
 
 ; col_on_leaveempty
-<acronym title="Blocked ongoing">BO</acronym>
+<acronym title="Leave empty">LE</acronym>
 
 ; col_on_timeout
 <acronym title="No answer">NA</acronym>
