@@ -67,64 +67,53 @@ d-e: cp usr/local/cm/tftp/* i18n/
 url: http://download-sj.cisco.com/swc/esd/04/280136569/contract/cmterm-7911_7906-sccp.9-0-3.zip
 size: 5066707
 sha1sum: 02f37cd69aab190d018d13f86ccdc61cc2bb4235
-downloader: x-cisco
 
 [file_7931-fw]
 url: http://download-sj.cisco.com/swc/esd/04/280799963/contract/cmterm-7931-sccp.9-0-3.zip
 size: 5056948
 sha1sum: 9e85007387de085ebb0e8becf16197bacc01caa9
-downloader: x-cisco
 
 [file_7941-7961-fw]
 url: http://download-sj.cisco.com/swc/esd/04/279251499/contract/cmterm-7941_7961-sccp.9-0-3.zip
 size: 5170819
 sha1sum: 3ff5b72ced1a8df06ad43727439fe0b497809c57
-downloader: x-cisco
 
 [file_7942-7962-fw]
 url: http://download-sj.cisco.com/swc/esd/04/281346593/contract/cmterm-7942_7962-sccp.9-0-3.zip
 size: 5763153
 sha1sum: 752deea2d776790be5f6b43e93687193e00bec35
-downloader: x-cisco
 
 [file_7945-7965-fw]
 url: http://download-sj.cisco.com/swc/esd/04/281346594/contract/cmterm-7945_7965-sccp.9-0-3.zip
 size: 5891955
 sha1sum: 98eb810de064cf777eb4660426aaa1e202413e78
-downloader: x-cisco
 
 [file_7970-7971-fw]
 url: http://download-sj.cisco.com/swc/esd/04/278436620/contract/cmterm-7970_7971-sccp.9-0-3.zip
 size: 5279034
 sha1sum: 04e8620c3b84d761f9654cdcc20c837c35944cc7
-downloader: x-cisco
 
 [file_7975-fw]
 url: http://download-sj.cisco.com/swc/esd/04/281346597/contract/cmterm-7975-sccp.9-0-3.zip
 size: 5891350
 sha1sum: f9d72ce5953cfd1364d33e218d941d5c1015ff28
-downloader: x-cisco
 
 [file_networklocale]
 url: http://download.cisco.com/swc/esd/05/268437897/contract/po-locale-combined_network-9.2.1.1000-1.cop.sgn
 size: 9394204
 sha1sum: 262887a4a113d6230017c80c32d8c19d16092f7c
-downloader: x-cisco
 
 [file_userlocale_de_DE]
 url: http://download.cisco.com/swc/esd/05/268437897/contract/po-locale-de_DE-9.2.1.1000-1.cop.sgn
 size: 3669869
 sha1sum: 4daf91cb00a1b0b03f9ed65825d651a2028022bb
-downloader: x-cisco
 
 [file_userlocale_es_ES]
 url: http://download.cisco.com/swc/esd/05/268437897/contract/po-locale-es_ES-9.2.1.1000-1.cop.sgn
 size: 4413805
 sha1sum: 01273a3b6eab08105fa9770b78c160dbd33affa1
-downloader: x-cisco
 
 [file_userlocale_fr_FR]
 url: http://download.cisco.com/swc/esd/05/268437897/contract/po-locale-fr_FR-9.2.1.1000-1.cop.sgn
 size: 4506604
 sha1sum: 38b21e0e531b37463bdbb35332792d18c0aab540
-downloader: x-cisco
