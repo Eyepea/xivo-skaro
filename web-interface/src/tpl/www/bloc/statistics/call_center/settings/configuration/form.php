@@ -117,7 +117,7 @@ if (is_null($listqos) === false
 					  'name'		=> 'stats_conf[hour_start]',
 					  'labelid'		=> 'stats_conf-hour_start',
 					  'size'		=> 5,
-					  'readonly'	=> true,
+					  'readonly'	=> false,
 					  'value'		=> $this->get_var('info','stats_conf','hour_start'),
 					  'error'		=> $this->bbf_args('error',
 					$this->get_var('error', 'stats_conf', 'hour_start'))));
@@ -126,7 +126,7 @@ if (is_null($listqos) === false
 					  'name'		=> 'stats_conf[hour_end]',
 					  'labelid'		=> 'stats_conf-hour_end',
 					  'size'		=> 5,
-					  'readonly'	=> true,
+					  'readonly'	=> false,
 					  'value'		=> $this->get_var('info','stats_conf','hour_end'),
 					  'error'		=> $this->bbf_args('error',
 					$this->get_var('error', 'stats_conf', 'hour_end'))));
