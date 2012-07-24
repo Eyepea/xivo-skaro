@@ -52,14 +52,14 @@ class xivo_service_asterisk_stat_call_on_queue_sql extends xivo_service_asterisk
 
 		$this->_dso->new_select($this->_table, $field);
 		$this->_dso->where(array('queue_id' => $queue_id));
-                $this->_dso->aggregate_where();
+		$this->_dso->aggregate_where(false, 'AND');
 		$this->_dso->orwhere(array('status' => 'answered'));
 		$this->_dso->orwhere(array('status' => 'abandoned'));
 		$this->_dso->orwhere(array('status' => 'leaveempty'));
 		$this->_dso->orwhere(array('status' => 'timeout'));
-                $this->_dso->aggregate_where();
+		$this->_dso->aggregate_where(false, 'AND');
 		if (is_null($interval) === false) {
-			$this->_dso->wherebetween('time',
+			$this->_dso->andwherebetween('time',
 						  strftime('%Y-%m-%d %H:%M:%S', $interval['beg']),
 						  strftime('%Y-%m-%d %H:%M:%S', $interval['end']),
 						  $this->_table);
