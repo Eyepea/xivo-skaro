@@ -46,8 +46,5 @@ def build_8_4_35(path):
             check_call(['sed', sed_script, 'common/templates/common/snom-model.xml.tpl.btpl'],
                        stdout=f)
 
-        # copy <model>.tpl from model.tpl.btpl
-        copy('common/templates/model.tpl.btpl', os.path.join(path, 'templates/%s.tpl' % model))
-
     check_call(['rsync', '-rlp', '--exclude', '.*',
                 '8.4.35/', path])
