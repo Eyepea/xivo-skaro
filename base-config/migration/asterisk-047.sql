@@ -29,7 +29,7 @@ CREATE TABLE "stat_call_on_queue" (
  "talktime" INTEGER NOT NULL DEFAULT 0,
  "waittime" INTEGER NOT NULL DEFAULT 0,
  "status" call_exit_type NOT NULL,
- "queue_id" INTEGER REFERENCES stat_queue (id),
+ "queue_id" INTEGER REFERENCES stat_queue (id)
 );
 
 GRANT ALL ON "stat_call_on_queue" TO asterisk;
