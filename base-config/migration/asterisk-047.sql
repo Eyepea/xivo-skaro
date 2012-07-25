@@ -33,5 +33,6 @@ CREATE TABLE "stat_call_on_queue" (
 );
 
 GRANT ALL ON "stat_call_on_queue" TO asterisk;
+GRANT ALL ON stat_call_on_queue_id_seq TO asterisk;
 
 COMMIT;
