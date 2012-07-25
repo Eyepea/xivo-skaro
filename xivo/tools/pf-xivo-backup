@@ -14,7 +14,7 @@ fi
 [ -e /etc/pf-xivo/common.conf ] && . /etc/pf-xivo/common.conf
 DEFAULT_MAX_SOUND_FILE_SIZE=10M
 DEFAULT_MAX_FILES_PER_SOUND_DIR=100
-XIVO_VERSION=$(apt-cache policy pf-xivo | grep Candidate | grep -oE '1\.[2-9]\.[0-9]{1,2}')
+XIVO_VERSION=$(cat /usr/share/pf-xivo/XIVO-VERSION)
 BACKUP_FILE=${BACKUP_FILE}.tgz
 
 
