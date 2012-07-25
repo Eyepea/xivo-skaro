@@ -180,6 +180,13 @@ class xivo_stats_ressource_abstract
 					$key = $key_full_data['key'];
 					$this->build_stat($queue_id, $key, $this->_build_hour_for_day($key, $dbeg));
 				}
+                                $year = date('Y', $dbeg);
+                                $month = date('m', $dbeg);
+                                $day = date('d' ,$dbeg);
+                                $interval = array();
+                                $interval['beg'] = $dbeg;
+                                $interval['end'] = mktime(23, 59, 59, $month, $day, $year);
+                                $this->build_stat($queue_id, "total", $interval);
 				break;
 			case 'week':
 				$this->full_itl = $this->_xs->build_full_date_interval($dbeg, $dend);

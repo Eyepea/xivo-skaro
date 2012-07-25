@@ -879,7 +879,10 @@ class dwho_tpl_statistics extends dwho_tpl_module
                         break;
                     case 'day':
                     default:
-                        $return .= $coldata['key'].'h-'.($coldata['key']+1).'h';
+                            if ($coldata['key'] === "total")
+                                    $return .= "total";
+                            else
+                                    $return .= $coldata['key'].'h-'.($coldata['key']+1).'h';
                 }
 
                 $return .= '</td>';
@@ -974,7 +977,10 @@ class dwho_tpl_statistics extends dwho_tpl_module
         $coltitle = array_keys($coltitle);
 
         if ($rowname === true)
-            $return .= '"'.str_replace('"','""','').'";';
+                if ($rowname === "total")
+                        $return .= "total;";
+                else
+                        $return .= '"'.str_replace('"','""','').'";';
 
         while ($coltitle)
         {
@@ -999,7 +1005,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
             $listcolskey = array_keys($listcols);
 
             if ($rowname === true)
-                $return .= '"'.str_replace('"','""',$listcols['rowdata']['identity']).'";';
+                    $return .= '"'.str_replace('"','""',$listcols['rowdata']['identity']).'";';
 
             while ($listcols)
             {

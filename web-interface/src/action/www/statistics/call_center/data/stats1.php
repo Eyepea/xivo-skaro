@@ -34,7 +34,14 @@ $itl = $_XS->get_datecal();
 switch ($axetype)
 {
 	case 'day':
-		$tpl_statistics->set_rows('hour', $_XS->get_listhour(),'key');
+          $total = array();
+          $total['key'] = "total";
+          $total['name'] = "total";
+          $total['identity'] = "total";
+          $keys = $_XS->get_listhour();
+          $keys[] = $total;
+          $tpl_statistics->set_rows('hour', $keys, 'key');
+          //          $tpl_statistics->set_rows('hour', $_XS->get_listhour(), 'key');
 		break;
 	case 'week':
 		$tpl_statistics->set_rows('day',$stats_queue->get_rows(),'key');
