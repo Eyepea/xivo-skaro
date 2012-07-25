@@ -152,6 +152,17 @@ class xivo_stats_ressource_abstract
 		return($rs);
 	}
 
+	private function _build_total($queue_id, $dbeg, $dend)
+	{
+		$year = date('Y', $dend);
+		$month = date('m', $dend);
+		$day = date('d' ,$dend);
+		$interval = array();
+		$interval['beg'] = $dbeg;
+		$interval['end'] = mktime(23, 59, 59, $month, $day, $year);
+		$this->build_stat($queue_id, "total", $interval);
+	}
+
 	public function get_data_queue()
 	{
 		$axetype = $this->_xs->get_axetype();
@@ -163,12 +174,16 @@ class xivo_stats_ressource_abstract
 		$dbeg = strtotime($itl['dbeg']);
 		$dend = strtotime($itl['dend']);
 
-		$this->_stat_queue_periodic->set_dso_param('hour_itl',$this->_xs->get_dip_hour());
-		$this->_stat_queue_periodic->set_dso_param('days',$this->_xs->get_valid_list_day());
-
 		$queue_id = 0;
 		if (preg_match('/queue-([0-9]+)/', $this->_xs->_objectkey, $out) === 1)
 			$queue_id = (int) $out[1];
+
+		$this->_stat_queue_periodic->set_dso_param('hour_itl',$this->_xs->get_dip_hour());
+		$this->_stat_queue_periodic->set_dso_param('days',$this->_xs->get_valid_list_day());
+		$this->_stat_call_on_queue->set_dso_param('hour_itl',$this->_xs->get_dip_hour());
+		$this->_stat_call_on_queue->set_dso_param('days',$this->_xs->get_valid_list_day());
+
+		$this->_build_total($queue_id, $dbeg, $dend);
 
 		switch ($axetype)
 		{
@@ -180,13 +195,6 @@ class xivo_stats_ressource_abstract
 					$key = $key_full_data['key'];
 					$this->build_stat($queue_id, $key, $this->_build_hour_for_day($key, $dbeg));
 				}
-                                $year = date('Y', $dbeg);
-                                $month = date('m', $dbeg);
-                                $day = date('d' ,$dbeg);
-                                $interval = array();
-                                $interval['beg'] = $dbeg;
-                                $interval['end'] = mktime(23, 59, 59, $month, $day, $year);
-                                $this->build_stat($queue_id, "total", $interval);
 				break;
 			case 'week':
 				$this->full_itl = $this->_xs->build_full_date_interval($dbeg, $dend);
@@ -200,12 +208,13 @@ class xivo_stats_ressource_abstract
 				break;
 			case 'year':
 				$key_data = dwho_date::get_listmonth();
-				while ($key_data) {
+				while ($key_data)
+				{
 					$key_full_data = array_shift($key_data);
 					$key = $key_full_data['key'];
 					$dip = array();
 					$dip['beg'] = mktime(0,0,1,$key,1,date('Y', $dbeg));
-					$dip['end'] = mktime(23,59,59,$key,31,$year);
+					$dip['end'] = mktime(23,59,59,$key,31,date('Y', $dbeg));
 					$this->build_stat($queue_id, $key, $dip);
 				}
 				break;
@@ -291,7 +300,7 @@ class xivo_stats_ressource_abstract
 					$dip['end'] = mktime(23,59,59,$month,$day,$year);
 
 					if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
-					|| is_null($month_data) === true)
+							|| is_null($month_data) === true)
 						continue;
 					$listdaynum = array_keys($month_data);
 					while($listdaynum)
@@ -315,7 +324,7 @@ class xivo_stats_ressource_abstract
 				$month = date('m',$date);
 				$day = date('d',$date);
 				if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
-				|| is_null($month_data) === true)
+						|| is_null($month_data) === true)
 					break;
 
 				$this->_result = $month_data;
@@ -344,8 +353,8 @@ class xivo_stats_ressource_abstract
 						$dip['beg'] = mktime(0,0,1,$monthnum,1,$year);
 						$dip['end'] = mktime(23,59,59,$monthnum,31,$year);
 
-					if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
-						|| is_null($month_data) === true)
+						if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
+								|| is_null($month_data) === true)
 							continue;
 
 						$listdaynum = array_keys($month_data);

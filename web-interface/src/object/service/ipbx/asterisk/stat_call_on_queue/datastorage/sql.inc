@@ -30,12 +30,12 @@ class xivo_service_asterisk_stat_call_on_queue_sql extends xivo_service_asterisk
 		$this->_dso->new_select($this->_table, $field);
 		$this->_dso->where(array('queue_id' => $queue_id));
 		$this->_dso->andwhere(array('status' => 'answered'));
-                $this->_dso->andwhere($this->_table.'.waittime <= '.$qos);
+		$this->_dso->andwhere($this->_table.'.waittime <= '.$qos);
 		if (is_null($interval) === false) {
 			$this->_dso->wherebetween('time',
-						  strftime('%Y-%m-%d %H:%M:%S', $interval['beg']),
-						  strftime('%Y-%m-%d %H:%M:%S', $interval['end']),
-						  $this->_table);
+					strftime('%Y-%m-%d %H:%M:%S', $interval['beg']),
+					strftime('%Y-%m-%d %H:%M:%S.999999', $interval['end']),
+					$this->_table);
 		}
 
 		$r = $this->_dso->select_singlecolumn();
@@ -52,18 +52,19 @@ class xivo_service_asterisk_stat_call_on_queue_sql extends xivo_service_asterisk
 
 		$this->_dso->new_select($this->_table, $field);
 		$this->_dso->where(array('queue_id' => $queue_id));
-		$this->_dso->aggregate_where(false, 'AND');
-		$this->_dso->orwhere(array('status' => 'answered'));
-		$this->_dso->orwhere(array('status' => 'abandoned'));
-		$this->_dso->orwhere(array('status' => 'leaveempty'));
-		$this->_dso->orwhere(array('status' => 'timeout'));
-		$this->_dso->aggregate_where(false, 'AND');
 		if (is_null($interval) === false) {
 			$this->_dso->andwherebetween('time',
-						  strftime('%Y-%m-%d %H:%M:%S', $interval['beg']),
-						  strftime('%Y-%m-%d %H:%M:%S', $interval['end']),
-						  $this->_table);
+					strftime('%Y-%m-%d %H:%M:%S', $interval['beg']),
+					strftime('%Y-%m-%d %H:%M:%S.999999', $interval['end']),
+					$this->_table);
 		}
+		$hour_itl = $this->get_param('hour_itl');
+		if (is_null($hour_itl) === false)
+			$this->_dso->andwhere('EXTRACT(HOUR FROM "'.$this->_table.'".time) BETWEEN '.$hour_itl['beg'].' AND '.($hour_itl['end']-1));
+
+		$days = $this->get_param('days');
+		if (is_null($days) === false)
+			$this->_dso->andwhere('EXTRACT(DOW FROM "'.$this->_table.'".time) IN ('.implode(',', array_values($days)).')');
 
 		$r = $this->_dso->select_singlecolumn();
 

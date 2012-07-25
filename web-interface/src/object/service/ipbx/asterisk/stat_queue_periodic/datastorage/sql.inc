@@ -60,7 +60,7 @@ class xivo_service_asterisk_stat_queue_periodic_sql extends xivo_service_asteris
 		if (is_null($interval) === false)
 			$this->_dso->wherebetween('time',
 										strftime('%Y-%m-%d %H:%M:%S', $interval['beg']),
-										strftime('%Y-%m-%d %H:%M:%S', $interval['end']),
+										strftime('%Y-%m-%d %H:%M:%S.999999', $interval['end']),
 										$this->_table);
 
 		$hour_itl = $this->get_param('hour_itl');
