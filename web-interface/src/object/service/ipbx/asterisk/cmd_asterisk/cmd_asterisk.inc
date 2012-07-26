@@ -41,8 +41,23 @@ class xivo_service_asterisk_cmd_asterisk extends xivo_service_asterisk_abstract
 	{
 		$ret = $this->_sysconfd->request_post('/exec_cmd_asterisk', $cmd);
 		if ($ask_cmd_answer)
-			return($ret);
+			return($this->_parse_cmd_recv($ret));
 		return(true);
+	}
+
+	function _parse_cmd_recv($recv)
+	{
+		$recv = (string) $recv;
+		$recv = str_replace("\r",'',$recv);
+		$recv = explode("\n",$recv);
+
+		if(($nb = count($recv)) === 0)
+			return(false);
+
+		$header = array_shift($recv);
+		$footer = array_pop($recv);
+
+		return($recv);
 	}
 }
 

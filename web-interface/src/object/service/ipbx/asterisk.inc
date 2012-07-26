@@ -73,9 +73,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$ret = array();
 		foreach($cmd as $one_cmd)
-		{
 			array_push($ret, $this->_cmd_asterisk->exec_cmd($one_cmd,$ask_cmd_answer));
-		}
 
 		if (count($ret) === 1)
 			return $ret[0];
