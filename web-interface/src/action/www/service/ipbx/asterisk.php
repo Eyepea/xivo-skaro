@@ -29,35 +29,35 @@ $sipstat['enable'] = $sipstat['disable'] = $sipstat['total'] = 0;
 $iaxstat['enable'] = $iaxstat['disable'] = $iaxstat['total'] = 0;
 $live['activecalls'] = $live['activechannels'] = $live['callsprocessed'] = 0;
 
-if(($recvactivecalls = $ipbx->discuss('core show channels',true)) !== false
-&& ($nb = count($recvactivecalls)) > 0)
+if(($recvactivecalls = $ipbx->exec_cmd_ast('core show channels',true)) !== false
+		&& ($nb = count($recvactivecalls)) > 0)
 {
-    for ($i=0;$i<$nb;$i++)
-    {
-        $ref = &$recvactivecalls[$i];
-        if(preg_match('/^([0-9]+) ([a-z ]+)$/i',$ref,$out) === 0)
-            continue;
+	for ($i=0;$i<$nb;$i++)
+	{
+		$ref = &$recvactivecalls[$i];
+		if(preg_match('/^([0-9]+) ([a-z ]+)$/i',$ref,$out) === 0)
+			continue;
 
-        $count = (int) $out[1];
-        $text = str_replace(' ','',$out[2]);
+		$count = (int) $out[1];
+		$text = str_replace(' ','',$out[2]);
 
-        switch ($text)
-        {
-            case 'activechannel':
-            case 'activechannels':
-                $live['activechannels'] = $count;
-                break;
-            case 'activecall';
-            case 'activecalls';
-                $live['activecalls'] = $count;
-                break;
-            case 'callprocessed':
-            case 'callsprocessed':
-                $live['callsprocessed'] = $count;
-                break;
-            default:
-        }
-    }
+		switch ($text)
+		{
+			case 'activechannel':
+			case 'activechannels':
+				$live['activechannels'] = $count;
+				break;
+			case 'activecall';
+			case 'activecalls';
+				$live['activecalls'] = $count;
+				break;
+			case 'callprocessed':
+			case 'callsprocessed':
+				$live['callsprocessed'] = $count;
+				break;
+			default:
+		}
+	}
 }
 
 $appsip = &$ipbx->get_application('trunk',array('protocol' => XIVO_SRE_IPBX_AST_PROTO_SIP));

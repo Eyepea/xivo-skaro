@@ -52,10 +52,7 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
-			{
-			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/presences'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -89,10 +86,7 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
-			{
-			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/presences'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -116,7 +110,6 @@ switch($act)
 			$_QRY->go($_TPL->url('cti/presences'),$param);
 
 		$app->delete();
-		$ipbx->discuss('xivo[cticonfig,update]');
 
 		$_QRY->go($_TPL->url('cti/presences'),$param);
 		break;
@@ -173,7 +166,6 @@ switch($act)
 		$result = $fm_save = null;
 		$return = &$info;
 
-////////////////////////// FM_SEND ///////////////////////////////
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('status',$_QR) === true)
 		{
@@ -212,12 +204,8 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
-			{
-			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/presences'),$param);
-			}
 		}
-////////////////////////////////////////////////////////////////
 
 		$info['access_status']['slt'] = array();
 		if(($info['access_status']['list'] = $app->get_status_list($idpresences, null, null, true)) !== false)
@@ -266,7 +254,6 @@ switch($act)
 		$result = $fm_save = null;
 		$return = &$info;
 
-////////////////////////// FM_SEND ///////////////////////////////
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('status',$_QR) === true)
 		{
@@ -305,12 +292,8 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
-			{
-			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/presences'),$param);
-			}
 		}
-////////////////////////////////////////////////////////////////
 
 		$info['access_status']['slt'] = array();
 		if(($info['access_status']['list'] = $app->get_status_list($idpresences, null, null, true)) !== false)
@@ -350,7 +333,6 @@ switch($act)
 			$_QRY->go($_TPL->url('cti/presences'),$param);
 
 		$app->delete();
-	    $ipbx->discuss('xivo[cticonfig,update]');
 
 		$_QRY->go($_TPL->url('cti/presences'),$param);
 		break;

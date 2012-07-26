@@ -64,21 +64,7 @@ if(isset($_QR['fm_send']) === true
 		$error = $appuser->get_error();
 	}
 	else
-	{
-		/**
-		 * sip reload: refresh pickup groups
-		 * */
-		$ipbx->discuss(array('dialplan reload',
-							'xivo[userlist,update]',
-							'xivo[phonelist,update]',
-							'module reload app_queue.so',
-							'sip reload'
-		));
-		if(dwho_issa('voicemail',$_QR) === true)
-			$ipbx->discuss(array('voicemail reload',
-								'xivo[voicemaillist,update]'));
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
-	}
 }
 
 dwho::load_class('dwho_sort');

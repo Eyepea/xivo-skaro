@@ -63,10 +63,7 @@ switch($act)
 				$error   = $apppickup->get_error();
 			}
 			else
-			{
-				$ipbx->discuss(array('sip reload'));
 				$_QRY->go($_TPL->url('service/ipbx/call_management/pickup'),$param);
-			}
 		}
 
 		$dtsource = array(
@@ -174,10 +171,7 @@ switch($act)
 				$result['dialaction'] = $apppickup->get_dialaction_result();
 			}
 			else
-			{
-				$ipbx->discuss(array('sip reload'));
 				$_QRY->go($_TPL->url('service/ipbx/call_management/pickup'),$param);
-			}
 		}
 
 		$dtsource = array(
@@ -251,7 +245,6 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/pickup'),$param);
 
 		$apppickup->delete();
-		$ipbx->discuss(array('sip reload'));
 
 		$_QRY->go($_TPL->url('service/ipbx/call_management/pickup'),$param);
 		break;
@@ -272,7 +265,6 @@ switch($act)
 				$apppickup->delete();
 		}
 
-		$ipbx->discuss(array('sip reload'));
 		$_QRY->go($_TPL->url('service/ipbx/call_management/pickup'),$param);
 		break;
 
@@ -297,7 +289,6 @@ switch($act)
 				$apppickup->enable();
 		}
 
-		$ipbx->discuss(array('sip reload'));
 		$_QRY->go($_TPL->url('service/ipbx/call_management/pickup'),$param);
 		break;
 

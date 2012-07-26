@@ -85,6 +85,9 @@ $array['module']['configfiles']['datastorage'] = false;
 $array['module']['cel'] = array();
 $array['module']['cel']['datastorage'] = true;
 
+$array['module']['cmd_asterisk'] = array();
+$array['module']['cmd_asterisk']['datastorage'] = false;
+
 $array['module']['context'] = array();
 $array['module']['context']['datastorage'] = true;
 

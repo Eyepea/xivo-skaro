@@ -76,10 +76,7 @@ switch($act)
 				$result = $appagentgroup->get_result();
 			}
 			else
-			{
-				$ipbx->discuss(array('xivo[queuemember,update]'));
 				$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -169,10 +166,7 @@ switch($act)
 				$result = $appagentgroup->get_result();
 			}
 			else
-			{
-				$ipbx->discuss(array('xivo[queuemember,update]'));
 				$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -229,7 +223,6 @@ switch($act)
 
 		$appagentgroup->delete();
 
-		$ipbx->discuss(array('xivo[queuemember,update]'));
 		$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 		break;
 	case 'deletes':
@@ -249,7 +242,6 @@ switch($act)
 				$appagentgroup->delete();
 		}
 
-		$ipbx->discuss(array('xivo[queuemember,update]'));
 		$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 		break;
 	case 'enables':
@@ -272,8 +264,6 @@ switch($act)
 			else
 				$appagentgroup->enable();
 		}
-
-		$ipbx->reload_agents_and_queue_members();
 
 		$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 		break;
@@ -337,8 +327,6 @@ switch($act)
 			}
 			else
 			{
-				$ipbx->reload_agents_and_queue_members();
-
 				$param['group'] = $appagent->get_result_var('agentfeatures','numgroup');
 				$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 			}
@@ -457,8 +445,6 @@ switch($act)
 				// updating skills
 				$appqueue->agentskills_edit($_QR['id'], $queueskills);
 
-				$ipbx->reload_agents_and_queue_members();
-
 				$param['group'] = $appagent->get_result_var('agentfeatures','numgroup');
 				$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 			}
@@ -526,8 +512,6 @@ switch($act)
 
 		$appagent->delete();
 
-		$ipbx->reload_agents_and_queue_members();
-
 		$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 		break;
 	case 'deleteagents':
@@ -546,9 +530,6 @@ switch($act)
 			if($appagent->get($values[$i]) !== false)
 				$appagent->delete();
 		}
-
-		$ipbx->reload_agents_and_queue_members();
-
 
 		$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 		break;
@@ -573,8 +554,6 @@ switch($act)
 			else
 				$appagent->enable();
 		}
-
-		$ipbx->reload_agents_and_queue_members();
 
 		$_QRY->go($_TPL->url('callcenter/settings/agents'),$param);
 		break;

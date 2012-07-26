@@ -101,7 +101,7 @@ if(isset($_QR['fm_send']) === true)
 	}
 
 	if(dwho_issa('generalmeetme',$_QR) === true
-	&& ($rs = $appgeneralmeetme->set_save_all($_QR['generalmeetme'])) !== false)
+			&& ($rs = $appgeneralmeetme->set_save_all($_QR['generalmeetme'])) !== false)
 	{
 		$info['generalmeetme'] = $rs['result'];
 		$error['generalmeetme'] = $rs['error'];
@@ -131,7 +131,7 @@ if(isset($_QR['fm_send']) === true)
 	}
 
 	if($appgeneralsip->set($rs_sip) === false
-	|| $appgeneralsip->save() === false)
+			|| $appgeneralsip->save() === false)
 	{
 		dwho_report::push('error', 'Can\'t edit autocreatepeer in staticsip table');
 	}
@@ -149,29 +149,21 @@ if(isset($_QR['fm_send']) === true)
 		$fm_save = false;
 	}
 	else
-	{
 		$info['general'] = $_QR['general'];
-		$ipbx->discuss(array('module reload chan_agent.so',
-							'module reload app_queue.so',
-							'module reload app_meetme.so',
-							'sip reload',
-							'xivo[cticonfig,update]')
-		);
-	}
 }
 
 $_TPL->set_var('beep_list',$appagentglobalparams->get_beep());
 $_TPL->set_var('goodbye_list',$appagentglobalparams->get_goodbye());
-$_TPL->set_var('fm_save'      , $fm_save);
-$_TPL->set_var('error'        , $error);
+$_TPL->set_var('fm_save', $fm_save);
+$_TPL->set_var('error', $error);
 $_TPL->set_var('agentgeneralparams', $info['agentgeneralparams']);
 $_TPL->set_var('agentglobalparams', $info['agentglobalparams']);
 $_TPL->set_var('generalqueues', $info['generalqueues']);
 $_TPL->set_var('generalmeetme', $info['generalmeetme']);
-$_TPL->set_var('userinternal' , $info['userinternal']);
-$_TPL->set_var('general'      , $info['general']);
-$_TPL->set_var('info'         , $info);
-$_TPL->set_var('element'      , $element);
+$_TPL->set_var('userinternal', $info['userinternal']);
+$_TPL->set_var('general', $info['general']);
+$_TPL->set_var('info', $info);
+$_TPL->set_var('element', $element);
 
 
 $appagent = &$ipbx->get_application('agent',null,false);

@@ -47,10 +47,7 @@ switch($act)
 					dwho_report::push('error', 'voicemenuflow_empty');
 			}
 			else
-			{
-				$ipbx->discuss('dialplan reload');
 				$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
-			}
 		}
 
 		$dhtml = &$_TPL->get_module('dhtml');
@@ -111,10 +108,7 @@ switch($act)
 				$error = $appvoicemenu->get_error();
 			}
 			else
-			{
-				$ipbx->discuss('dialplan reload');
 				$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
-			}
 		}
 
 		if(dwho_issa('voicemenuflow-data',$return) === false)
@@ -159,7 +153,6 @@ switch($act)
 
 		$appvoicemenu->delete();
 
-		$ipbx->discuss('dialplan reload');
 		$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 		break;
 	case 'deletes':
@@ -178,7 +171,6 @@ switch($act)
 				$appvoicemenu->delete();
 		}
 
-		$ipbx->discuss('dialplan reload');
 		$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 		break;
 	case 'enables':
@@ -202,7 +194,6 @@ switch($act)
 				$appvoicemenu->enable();
 		}
 
-		$ipbx->discuss('dialplan reload');
 		$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 		break;
 	default:

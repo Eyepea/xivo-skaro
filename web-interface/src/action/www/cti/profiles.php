@@ -158,10 +158,7 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
-			{
-				$ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/profiles'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -269,10 +266,7 @@ switch($act)
 				$info['ctiprofiles'] = $result['profiles'];
 			}
 			else
-			{
-			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/profiles'),$param);
-			}
 		}
 
 
@@ -336,7 +330,6 @@ switch($act)
 			$_QRY->go($_TPL->url('cti/profiles'),$param);
 
 		$app->delete();
-	    $ipbx->discuss('xivo[cticonfig,update]');
 
 		$_QRY->go($_TPL->url('cti/profiles'),$param);
 		break;

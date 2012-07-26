@@ -95,15 +95,7 @@ switch($act)
 				$result['dialaction'] = $appqueue->get_dialaction_result();
 			}
 			else
-			{
-				// sip reload:: refresh pickup groups
-				$ipbx->discuss(array('module reload app_queue.so',  // must reload app_queue (propagate skills)
-				                     'xivo[queuelist,update]',
-				                     'sip reload',
-				                     'dialplan reload',
-				                     'xivo[queuemember,update]'));
 				$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
-			}
 		}
 
 		if($pannounce['list'] !== false
@@ -247,15 +239,7 @@ switch($act)
 				$result['dialaction'] = $appqueue->get_dialaction_result();
 			}
 			else
-			{
-				// sip reload:: refresh pickup groups
-				$ipbx->discuss(array('module reload app_queue.so',  // must reload app_queue (propagate skills)
-				                     'xivo[queuelist,update]',
-				                     'sip reload',
-				                     'dialplan reload',
-				                     'xivo[queuemember,update]'));
 				$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
-			}
 		}
 
 		if($pannounce['list'] !== false
@@ -344,13 +328,6 @@ switch($act)
 
 		$appqueue->delete();
 
-		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('module reload app_queue.so',
-							 'xivo[queuelist,update]',
-							 'sip reload',
-							 'dialplan reload',
-							 'xivo[queuemember,update]'));
-
 		$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
 		break;
 	case 'deletes':
@@ -368,13 +345,6 @@ switch($act)
 			if($appqueue->get($values[$i]) !== false)
 				$appqueue->delete();
 		}
-
-		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('module reload app_queue.so',  // must reload app_queue (propagate skills)
-		                     'xivo[queuelist,update]',
-		                     'sip reload',
-		                     'dialplan reload',
-		                     'xivo[queuemember,update]'));
 
 		$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
 		break;
@@ -397,13 +367,6 @@ switch($act)
 			if(($info = $queuefeatures->get($values[$i])) !== false)
 				$queue->disable($info['name'],$disable);
 		}
-
-		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('module reload app_queue.so',  // must reload app_queue (propagate skills)
-		                     'xivo[queuelist,update]',
-		                     'sip reload',
-		                     'dialplan reload',
-		                     'xivo[queuemember,update]'));
 
 		$_QRY->go($_TPL->url('callcenter/settings/queues'),$param);
 		break;

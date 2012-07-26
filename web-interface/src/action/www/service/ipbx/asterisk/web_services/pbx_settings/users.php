@@ -53,15 +53,10 @@ switch($act)
 		if(($userid = $appuser->add_from_json()) !== false)
 		{
 			$status = 200;
-			$ipbx->discuss(array('dialplan reload',
-								'xivo[userlist,update]',
-								'xivo[phonelist,update]',
-								'module reload app_queue.so',
-								'sip reload'
-			));
-
 			$_TPL->set_var('list',$userid);
-		}	else {
+		}
+		else
+		{
 			$http_response->set_status_line(400);
 			$http_response->send(true);
 		}
@@ -77,15 +72,7 @@ switch($act)
 				 $status = 404;
 
 		else if($appuser->edit_from_json($user) === true)
-		{
 			$status = 200;
-			$ipbx->discuss(array('dialplan reload',
-								'xivo[userlist,update]',
-								'xivo[phonelist,update]',
-								'module reload app_queue.so',
-								'sip reload'
-			));
-		}
 		else
 			$status = 400;
 
@@ -96,15 +83,7 @@ switch($act)
 		$appuser = &$ipbx->get_application('user');
 
 		if($appuser->import_from_csv() === true)
-		{
 			$status = 200;
-			$ipbx->discuss(array('dialplan reload',
-								'xivo[userlist,update]',
-								'xivo[phonelist,update]',
-								'module reload app_queue.so',
-								'sip reload'
-			));
-		}
 		else
 			$status = 400;
 
@@ -117,15 +96,7 @@ switch($act)
 		if($appuser->get($_QRY->get('id')) === false)
 			$status = 404;
 		else if($appuser->delete() === true)
-		{
 			$status = 200;
-			$ipbx->discuss(array('dialplan reload',
-								'xivo[userlist,update]',
-								'xivo[phonelist,update]',
-								'module reload app_queue.so',
-								'sip reload'
-			));
-		}
 		else
 			$status = 500;
 
@@ -148,12 +119,6 @@ switch($act)
 			$appuser->delete();
 		}
 		$status = 200;
-		$ipbx->discuss(array('dialplan reload',
-							'xivo[userlist,update]',
-							'xivo[phonelist,update]',
-							'module reload app_queue.so',
-							'sip reload'
-		));
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);

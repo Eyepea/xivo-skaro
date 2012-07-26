@@ -78,12 +78,7 @@ class xivo_service_asterisk_sccpdevice extends xivo_service_asterisk_abstract
 		$arr['name'] = $this->sccp_normalize_mac($arr['name']);
 		$arr['device'] = $arr['name'];
 
-		if (($ret = parent::add($arr,$id)) === false)
-			return(false);
-
-		$this->_sre->discuss(array('sccp update config'));
-
-		return($ret);
+		return(parent::add($arr,$id));
 	}
 
 	public function edit($id,$arr,$disable=null)
@@ -94,23 +89,13 @@ class xivo_service_asterisk_sccpdevice extends xivo_service_asterisk_abstract
 		$arr['name'] = $this->sccp_normalize_mac($arr['name']);
 		$arr['device'] = $arr['name'];
 
-		if (($ret = parent::edit($id,$arr,$disable)) === false)
-			return(false);
-
-		$this->_sre->discuss(array('sccp update config'));
-
-		return($ret);
+		return(parent::edit($id,$arr,$disable));
 	}
 
 	public function delete_by_mac($mac)
 	{
 		$arr = array('name' => $this->sccp_normalize_mac($mac));
-		if (($ret = parent::delete_where($arr)) === false)
-			return(false);
-
-		$this->_sre->discuss(array('sccp update config'));
-
-		return($ret);
+		return(parent::delete_where($arr));
 	}
 
 	public function init_device($mac,$line=false,$voicemail=false)
@@ -128,8 +113,6 @@ class xivo_service_asterisk_sccpdevice extends xivo_service_asterisk_abstract
 		else
 			$ret = parent::edit($info['id'],$arr);
 
-		$this->_sre->discuss(array('sccp update config'));
-
 		return($ret);
 	}
 
@@ -145,11 +128,7 @@ class xivo_service_asterisk_sccpdevice extends xivo_service_asterisk_abstract
 		if ($voicemail !== false)
 			$arr['voicemail'] = (string) $voicemail;
 
-		$ret = parent::edit($info['id'],$arr);
-
-		$this->_sre->discuss(array('sccp update config'));
-
-		return($ret);
+		return(parent::edit($info['id'],$arr));
 	}
 }
 

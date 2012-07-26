@@ -54,14 +54,7 @@ switch($act)
 		$appqueue = &$ipbx->get_application('queue');
 
 		if($appqueue->add_from_json() === true)
-		{
 			$status = 200;
-				$ipbx->discuss(array('module reload app_queue.so',  // must reload app_queue (propagate skills)
-				                     'xivo[queuelist,update]',
-				                     'sip reload',
-				                     'dialplan reload',
-				                     'xivo[queuemember,update]'));
-		}
 		else
 			$status = 400;
 
@@ -74,14 +67,7 @@ switch($act)
 		if($appqueue->get($_QRY->get('id')) === false)
 			$status = 404;
 		else if($appqueue->delete() === true)
-		{
 			$status = 200;
-			$ipbx->discuss(array('module reload app_queue.so',  // must reload app_queue (propagate skills)
-			                     'xivo[queuelist,update]',
-			                     'sip reload',
-			                     'dialplan reload',
-			                     'xivo[queuemember,update]'));
-		}
 		else
 			$status = 500;
 

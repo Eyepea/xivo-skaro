@@ -52,7 +52,7 @@ switch($act)
 		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('sheetactions',$_QR) === true)
+				&& dwho_issa('sheetactions',$_QR) === true)
 		{
 			$cpt = 10;
 			$str = "{";
@@ -140,16 +140,13 @@ switch($act)
 			$_QR['sheetactions']['context'] = $str;
 
 			if($app->set_add($_QR) === false
-			|| $app->add() === false)
+					|| $app->add() === false)
 			{
 				$fm_save = false;
 				$result = $app->get_result();
 			}
 			else
-			{
-			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/sheetactions'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -179,14 +176,14 @@ switch($act)
 		$app = &$ipbx->get_application('ctisheetactions');
 
 		if(isset($_QR['idsheetactions']) === false
-		|| ($info = $app->get($_QR['idsheetactions'])) === false)
+				|| ($info = $app->get($_QR['idsheetactions'])) === false)
 			$_QRY->go($_TPL->url('cti/sheetactions'),$param);
 
 		$result = $fm_save = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('sheetactions',$_QR) === true)
+				&& dwho_issa('sheetactions',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -246,7 +243,7 @@ switch($act)
 			}
 			$str = trim($str, ',');
 			$str .= '}';
-            
+
 			$_QR['sheetactions']['action_info'] = $str;
 
 			$_QR['sheetactions']['deletable'] = 1;
@@ -276,17 +273,14 @@ switch($act)
 			$_QR['sheetactions']['context'] = $str;
 
 			if($app->set_edit($_QR) === false
-			|| $app->edit() === false)
+					|| $app->edit() === false)
 			{
 				$fm_save = false;
 				$result = $app->get_result();
 				$error = $app->get_error();
 			}
 			else
-			{
-			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/sheetactions'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -325,22 +319,22 @@ switch($act)
 		}
 
 		$screens = null;
-        if(isset($info['sheetactions']['sheet_info']) && dwho_has_len($info['sheetactions']['sheet_info']))
-        {
-            $screens = dwho_json::decode($info['sheetactions']['sheet_info'], true);
-        }
+		if(isset($info['sheetactions']['sheet_info']) && dwho_has_len($info['sheetactions']['sheet_info']))
+		{
+			$screens = dwho_json::decode($info['sheetactions']['sheet_info'], true);
+		}
 
 		$systrays = null;
-        if(isset($info['sheetactions']['systray_info']) && dwho_has_len($info['sheetactions']['systray_info']))
-        {
-            $systrays = dwho_json::decode($info['sheetactions']['systray_info'], true);
-        }
+		if(isset($info['sheetactions']['systray_info']) && dwho_has_len($info['sheetactions']['systray_info']))
+		{
+			$systrays = dwho_json::decode($info['sheetactions']['systray_info'], true);
+		}
 
 		$informations = null;
-        if(isset($info['sheetactions']['action_info']) && dwho_has_len($info['sheetactions']['action_info']))
-        {
-            $informations = dwho_json::decode($info['sheetactions']['action_info'], true);
-        }
+		if(isset($info['sheetactions']['action_info']) && dwho_has_len($info['sheetactions']['action_info']))
+		{
+			$informations = dwho_json::decode($info['sheetactions']['action_info'], true);
+		}
 
 		$_TPL->set_var('idsheetactions',$return['sheetactions']['id']);
 		$_TPL->set_var('contextavail',$contextavail);
@@ -361,11 +355,10 @@ switch($act)
 		$app = &$ipbx->get_application('ctisheetactions');
 
 		if(isset($_QR['idsheetactions']) === false
-		|| ($info = $app->get($_QR['idsheetactions'])) === false)
+				|| ($info = $app->get($_QR['idsheetactions'])) === false)
 			$_QRY->go($_TPL->url('cti/sheetactions'),$param);
 
 		$app->delete();
-	    $ipbx->discuss('xivo[cticonfig,update]');
 
 		$_QRY->go($_TPL->url('cti/sheetactions'),$param);
 		break;

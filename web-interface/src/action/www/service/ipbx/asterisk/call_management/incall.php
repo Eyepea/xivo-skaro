@@ -60,10 +60,7 @@ switch($act)
 				$result['dialaction'] = $appincall->get_dialaction_result();
 			}
 			else
-			{
-				$ipbx->discuss(array('dialplan reload'));
 				$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
-			}
 		}
 
 		if(dwho_issa('incall',$result) === false || empty($result['incall']) === true)
@@ -125,10 +122,7 @@ switch($act)
 				$result['dialaction'] = $appincall->get_dialaction_result();
 			}
 			else
-			{
-				$ipbx->discuss(array('dialplan reload'));
 				$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
-			}
 		}
 
 		if(dwho_issa('incall',$return) === false || empty($return['incall']) === true)
@@ -182,7 +176,6 @@ switch($act)
 
 		$appincall->delete();
 
-		$ipbx->discuss(array('dialplan reload'));
 		$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 		break;
 	case 'deletes':
@@ -201,7 +194,6 @@ switch($act)
 				$appincall->delete();
 		}
 
-		$ipbx->discuss(array('dialplan reload'));
 		$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 		break;
 	case 'enables':
@@ -225,7 +217,6 @@ switch($act)
 				$appincall->enable();
 		}
 
-		$ipbx->discuss(array('dialplan reload'));
 		$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 		break;
 	default:

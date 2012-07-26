@@ -42,9 +42,9 @@ switch($act)
 	case 'add':
 		$fm_save = true;
 
-		if(isset($_QR['fm_send']) 	 === true 
+		if(isset($_QR['fm_send']) 	 === true
 		&& dwho_issa('parkinglot', $_QR) === true)
-		{	
+		{
 			// save item
 			if(($arr = $appark->chk_values($_QR['parkinglot'])) !== false
 			&& $appark->add($arr) !== false)
@@ -56,7 +56,6 @@ switch($act)
 		}
 
 		$_TPL->set_var('fm_save', $fm_save);
-		$ipbx->discuss('features reload');
 		break;
 
 	case 'edit':
@@ -84,14 +83,12 @@ switch($act)
 		$_TPL->set_var('id'      , $info['id']);
 		$_TPL->set_var('info'    , $info);
 		$_TPL->set_var('fm_save' , $fm_save);
-		$ipbx->discuss('features reload');
 		break;
 
 	case 'delete':
 		if(isset($_QR['id']))
 			$appark->delete($_QR['id']);
 
-		$ipbx->discuss('features reload');
 		$_QRY->go($_TPL->url('service/ipbx/pbx_services/parkinglot'),$param);
 		break;
 
@@ -106,7 +103,6 @@ switch($act)
 		for($i = 0; $i < $nb; $i++)
 			$appark->delete($values[$i]);
 
-		$ipbx->discuss('features reload');
 		$_QRY->go($_TPL->url('service/ipbx/pbx_services/parkinglot'), $param);
 		break;
 
@@ -127,7 +123,6 @@ switch($act)
 				$appark->enable($values[$i]);
 		}
 
-		$ipbx->discuss('features reload');
 		$_QRY->go($_TPL->url('service/ipbx/pbx_services/parkinglot'),$param);
 		break;
 

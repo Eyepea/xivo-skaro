@@ -42,10 +42,7 @@ if(isset($_QR['fm_send']) === true)
 		$ret = $ctimain->edit(1, $rs);
 
 	if($ret == 1)
-	{
 		$fm_save = true;
-		$ipbx->discuss('xivo[cticonfig,update]');
-	}
 }
 
 $info = array();

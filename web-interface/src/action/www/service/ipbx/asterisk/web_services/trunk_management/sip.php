@@ -41,10 +41,6 @@ switch($act)
 			$http_response->send(true);
 		}
 
-		$ipbx->discuss(array('dialplan reload',
-							'sip reload'
-		));
-
 		$_TPL->set_var('info',$info);
 		break;
 	case 'add':
@@ -56,10 +52,6 @@ switch($act)
 			$http_response->set_status_line(400);
 			$http_response->send(true);
 		}
-
-		$ipbx->discuss(array('dialplan reload',
-							'sip reload'
-		));
 
 		$_TPL->set_var('list',$insert_id);
 
@@ -74,10 +66,6 @@ switch($act)
 			$status = 200;
 		else
 			$status = 500;
-
-		$ipbx->discuss(array('dialplan reload',
-							'sip reload'
-		));
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);
@@ -99,9 +87,6 @@ switch($act)
 			$apptrunk->delete();
 		}
 		$status = 200;
-		$ipbx->discuss(array('dialplan reload',
-							'sip reload'
-		));
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);
