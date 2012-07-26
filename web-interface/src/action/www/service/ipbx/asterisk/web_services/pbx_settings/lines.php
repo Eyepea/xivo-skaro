@@ -42,10 +42,7 @@ switch($act)
 		$appline = &$ipbx->get_application('line');
 
 		if($appline->add_from_json() === true)
-		{
 			$status = 200;
-			$ipbx->discuss('xivo[userlist,update]');
-		}
 		else
 			$status = 400;
 
@@ -58,10 +55,7 @@ switch($act)
 		if(($line = $appline->get($_QRY->get('id'))) === false)
 			$status = 404;
 		else if($appline->edit_from_json($line) === true)
-		{
 			$status = 200;
-			$ipbx->discuss('xivo[userlist,update]');
-		}
 		else
 			$status = 400;
 
@@ -74,10 +68,7 @@ switch($act)
 		if($appline->get($_QRY->get('id')) === false)
 			$status = 404;
 		else if($appline->delete() === true)
-		{
 			$status = 200;
-			$ipbx->discuss('xivo[userlist,update]');
-		}
 		else
 			$status = 500;
 
@@ -100,7 +91,6 @@ switch($act)
 			$appline->delete();
 		}
 		$status = 200;
-		$ipbx->discuss('xivo[userlist,update]');
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);

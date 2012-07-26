@@ -45,10 +45,7 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
-			{
-			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/phonehints'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -78,10 +75,7 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
-			{
-			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/phonehints'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -100,7 +94,6 @@ switch($act)
 			$_QRY->go($_TPL->url('cti/phonehints'),$param);
 
 		$app->delete();
-		$ipbx->discuss('xivo[cticonfig,update]');
 
 		$_QRY->go($_TPL->url('cti/phonehints'),$param);
 		break;
@@ -131,10 +124,7 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
-			{
-			    $ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/phonehints'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');

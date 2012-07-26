@@ -68,15 +68,7 @@ switch($act)
 				$result['dialaction'] = $appgroup->get_dialaction_result();
 			}
 			else
-			{
-				// sip reload:: refresh pickup groups
-				$ipbx->discuss(array('dialplan reload',
-									'xivo[grouplist,update]',
-									'module reload app_queue.so',
-									'sip reload'// refresh pickup groups
-				));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -115,7 +107,6 @@ switch($act)
 		$dhtml->set_js('js/dwho/uri.js');
 		$dhtml->set_js('js/dwho/http.js');
 		$dhtml->set_js('js/dwho/suggest.js');
-#		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/meetme.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/groups.js');
@@ -160,15 +151,7 @@ switch($act)
 				$info = array_merge($info,$result);
 			}
 			else
-			{
-				// sip reload:: refresh pickup groups
-				$ipbx->discuss(array('dialplan reload',
-									'xivo[grouplist,update]',
-									'module reload app_queue.so',
-									'sip reload'// refresh pickup groups
-				));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -224,13 +207,6 @@ switch($act)
 
 		$appgroup->delete();
 
-		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('dialplan reload',
-							'xivo[grouplist,update]',
-							'module reload app_queue.so',
-							'sip reload'// refresh pickup groups
-		));
-
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 		break;
 	case 'deletes':
@@ -248,13 +224,6 @@ switch($act)
 			if($appgroup->get($values[$i]) !== false)
 				$appgroup->delete();
 		}
-
-		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('dialplan reload',
-							'xivo[grouplist,update]',
-							'module reload app_queue.so',
-							'sip reload'// refresh pickup groups
-		));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 		break;
@@ -277,13 +246,6 @@ switch($act)
 			if(($info = $groupfeatures->get($values[$i])) !== false)
 				$queue->disable($info['name'],$disable);
 		}
-
-		// sip reload:: refresh pickup groups
-		$ipbx->discuss(array('dialplan reload',
-							'xivo[grouplist,update]',
-							'module reload app_queue.so',
-							'sip reload'// refresh pickup groups
-		));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 		break;

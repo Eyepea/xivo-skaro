@@ -120,8 +120,6 @@ if(isset($_QR['fm_send']) === true)
 		else if($fm_save !== false)
 			$fm_save = true;
 	}
-
-	$ipbx->discuss(array('dialplan reload', 'features reload'));
 }
 
 $_TPL->set_var('fm_save',$fm_save);

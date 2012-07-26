@@ -87,10 +87,7 @@ switch($act)
 				$result = $app->get_result();
 			}
 			else
-			{
-				$ipbx->discuss('xivo[cticonfig,update]');
 				$_QRY->go($_TPL->url('cti/directories'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -138,11 +135,7 @@ switch($act)
 				$error  = $app->get_error();
 			}
 			else
-			{
-				$ipbx->discuss('xivo[cticonfig,update]');
-				$ipbx->discuss_dird('update-config');
 				$_QRY->go($_TPL->url('cti/directories'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -178,8 +171,6 @@ switch($act)
 			$_QRY->go($_TPL->url('cti/directories'),$param);
 
 		$app->delete();
-		$ipbx->discuss('xivo[cticonfig,update]');
-		$ipbx->discuss_dird('update-config');
 
 		$_QRY->go($_TPL->url('cti/directories'),$param);
 		break;

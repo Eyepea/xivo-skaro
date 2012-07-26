@@ -20,50 +20,45 @@
 
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
-class xivo_service_asterisk_sccpline extends xivo_service_asterisk_abstract
+class xivo_service_asterisk_cmd_asterisk extends xivo_service_asterisk_abstract
 {
-	var $_dso		= null;
-	var $_name		= 'sccpline';
-	var $_filter	= false;
-	var $_origin	= false;
+	var $_name		= 'cmd_asterisk';
+	var $_sysconfd  = false;
 
-	function xivo_service_asterisk_sccpline(&$sre,&$dso)
+	public function __construct(&$sre)
 	{
 		if(is_object($sre) === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
 
-		if(is_object($dso) === false)
-			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
+		if(($_XOBJ = &dwho_gct::get('xivo_object')) === false
+		|| ($this->_sysconfd = &$_XOBJ->get_module('sysconfd')) === false)
+			return(false);
 
 		$this->_sre = &$sre;
-		$this->_dso = &$dso;
-
-		$this->_load_config();
 	}
 
-	function _prepare($data)
+	function exec_cmd($cmd, $ask_cmd_answer=false)
 	{
-		$data['id'] = (int) $data['id'];
-
-		return($data);
+		$ret = $this->_sysconfd->request_post('/exec_cmd_asterisk', $cmd);
+		if ($ask_cmd_answer)
+			return($this->_parse_cmd_recv($ret));
+		return(true);
 	}
 
-	function add($arr,$id=0)
+	function _parse_cmd_recv($recv)
 	{
-		if(is_array($arr) === false)
+		$recv = (string) $recv;
+		$recv = str_replace("\r",'',$recv);
+		$recv = explode("\n",$recv);
+
+		if(($nb = count($recv)) === 0)
 			return(false);
 
-		return(parent::add($arr,$id));
+		$header = array_shift($recv);
+		$footer = array_pop($recv);
+
+		return($recv);
 	}
-
-	function edit($id,$arr,$disable=null)
-	{
-		if(is_array($arr) === false)
-			return(false);
-
-		return(parent::edit($id,$arr,$disable));
-	}
-
 }
 
 ?>

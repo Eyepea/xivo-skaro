@@ -62,8 +62,6 @@ switch($act)
 			}
 			else
 			{
-				// must reload configuration files
-				$ipbx->discuss('module reload app_queue.so');
 				$_QRY->go($_TPL->url('callcenter/settings/queueskillrules'), $param);
 			}
 		}
@@ -79,7 +77,7 @@ switch($act)
 
 		// id not set or skillcat[id] not found => redirect to list view
 		if(isset($_QR['id']) === false || ($info = $appqueue->skillrules_getone($_QR['id'])) === false)
-		{ $_QRY->go($_TPL->url('callcenter/settings/queueskillrules'), $param); }
+			$_QRY->go($_TPL->url('callcenter/settings/queueskillrules'), $param);
 
 		$act = 'edit';
 		if(isset($_QR['fm_send']) === true)
@@ -89,12 +87,7 @@ switch($act)
 					count($_QR['queueskillrule']['rule']) - 1);
 
 			if($appqueue->skillrules_update($_QR['queueskillrule']) === true)
-			{
-				// must reload configuration files
-				$ipbx->discuss('module reload app_queue.so');
-
 				$_QRY->go($_TPL->url('callcenter/settings/queueskillrules'), $param);
-			}
 
 			$fm_save = false;
 			$info = $_QR['queueskillrule'];
@@ -107,20 +100,15 @@ switch($act)
 		break;
 
 	case 'delete':
-		// delete selected items
 		$appqueue = &$ipbx->get_application('queue');
 
 		if(isset($_QR['id']))
 			$appqueue->skillrules_delete($_QR['id']);
 
-		// must reload configuration files
-		$ipbx->discuss('module reload app_queue.so');
-
 		$_QRY->go($_TPL->url('callcenter/settings/queueskillrules'),$param);
 		break;
 
 	case 'deletes':
-		// delete multiple items
 		$param['page'] = $page;
 
 		if(($values = dwho_issa_val('queueskillrules',$_QR)) === false)
@@ -130,13 +118,7 @@ switch($act)
 		$nb = count($values);
 
 		for($i = 0; $i < $nb; $i++)
-		{
-			// we delete each value one by one
 			$appqueue->skillrules_delete($values[$i]);
-		}
-
-		// must reload configuration files
-		$ipbx->discuss('module reload app_queue.so');
 
 		$_QRY->go($_TPL->url('callcenter/settings/queueskillrules'), $param);
 		break;
@@ -154,8 +136,8 @@ switch($act)
 		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
-		$list	  	= $appqueue->skillrules_getall($search, $limit);
-		$total		= $appqueue->skillrules_count($search);
+		$list = $appqueue->skillrules_getall($search, $limit);
+		$total = $appqueue->skillrules_count($search);
 
 		if($list === false && $total > 0 && $prevpage > 0)
 		{

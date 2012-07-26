@@ -74,8 +74,6 @@ if(isset($_QR['fm_send']) === true && dwho_issa('voicemail',$_QR) === true)
 			$fm_save = false;
 		}
 	}
-
-	$ipbx->discuss(array('voicemail reload'));
 }
 
 $element = array();

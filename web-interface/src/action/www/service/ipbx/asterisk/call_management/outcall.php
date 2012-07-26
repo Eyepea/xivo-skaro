@@ -69,10 +69,7 @@ switch($act)
 				$error = $appoutcall->get_error();
 			}
 			else
-			{
-				$ipbx->discuss(array('dialplan reload'));
 				$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
-			}
 		}
 
 		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$result) === true
@@ -141,10 +138,7 @@ switch($act)
 				$error = $appoutcall->get_error();
 			}
 			else
-			{
-				$ipbx->discuss(array('dialplan reload'));
 				$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
-			}
 		}
 
 		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$return) === true
@@ -186,7 +180,6 @@ switch($act)
 
 		$appoutcall->delete();
 
-		$ipbx->discuss(array('dialplan reload'));
 		$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		break;
 	case 'deletes':
@@ -205,7 +198,6 @@ switch($act)
 				$appoutcall->delete();
 		}
 
-		$ipbx->discuss(array('dialplan reload'));
 		$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		break;
 	case 'enables':
@@ -229,7 +221,6 @@ switch($act)
 				$appoutcall->enable();
 		}
 
-		$ipbx->discuss(array('dialplan reload'));
 		$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		break;
 	default:

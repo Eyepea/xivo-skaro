@@ -81,19 +81,10 @@ if(isset($_QR['fm_send']) === true
 		$error = $appuser->get_error();
 
 		$result['voicemail-option'] = $_QRY->get('voicemail-option');
-	} else {
-		// must reload app_queue
-		$ipbx->discuss(array('dialplan reload',
-							'xivo[userlist,update]',
-							'xivo[phonelist,update]',
-							'module reload app_queue.so',
-							'sip reload' // refresh pickup groups
-		));
-		if(dwho_issa('voicemail',$_QR) === true)
-			$ipbx->discuss(array('voicemail reload',
-			                     'xivo[voicemaillist,update]'));
-		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 	}
+	else
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
+
 
 }
 
