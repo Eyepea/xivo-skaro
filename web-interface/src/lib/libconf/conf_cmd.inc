@@ -32,6 +32,12 @@ $array['agentfeatures']['ctibus'] = array('xivo[agent,%s,%s]',
 $array['agentfeatures']['ipbx'] = array('module reload app_queue.so',
 		'module reload chan_agent.so');
 
+$array['agentglobalparams']['ctibus'] = array();
+$array['agentglobalparams']['ipbx'] = array('module reload chan_agent.so');
+
+$array['general']['ctibus'] = array();
+$array['general']['ipbx'] = array('sip reload');
+
 $array['queuefeatures']['ctibus'] = array('xivo[queue,%s,%s]',
 		'xivo[queuemember,update]');
 $array['queuefeatures']['ipbx'] = array('module reload app_queue.so',
@@ -104,5 +110,23 @@ $array['phonebook']['ipbx'] = array();
 
 $array['sccp*']['ctibus'] = array();
 $array['sccp*']['ipbx'] = array('sccp update config');
+
+
+# REALSTATIC FILE
+
+$array['queues.conf']['ctibus'] = array('xivo[cticonfig,update]');
+$array['queues.conf']['ipbx'] = array('module reload app_queue.so');
+
+$array['meetme.conf']['ctibus'] = array('xivo[cticonfig,update]');
+$array['meetme.conf']['ipbx'] = array('module reload app_meetme.so');
+
+$array['voicemail.conf']['ctibus'] = array();
+$array['voicemail.conf']['ipbx'] = array('voicemail reload');
+
+$array['iax.conf']['ctibus'] = array();
+$array['iax.conf']['ipbx'] = array('iax2 reload');
+
+$array['sip.conf']['ctibus'] = array();
+$array['sip.conf']['ipbx'] = array('sip reload');
 
 ?>
