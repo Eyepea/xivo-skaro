@@ -53,10 +53,7 @@ class xivo_service_asterisk_cmd_asterisk extends xivo_service_asterisk_abstract
 
 		if(($nb = count($recv)) === 0)
 			return(false);
-
-		$header = array_shift($recv);
-		$footer = array_pop($recv);
-
+		
 		return($recv);
 	}
 }

@@ -481,12 +481,19 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		return($r);
 	}
 
-	private function _asterisk_conf_manager()
+	private function _parse_ctibus_cmd(&$cmds, $state, $id)
+	{
+		foreach ($cmds as &$cmd)
+			$cmd = sprintf($cmd, $state, $id);
+	}
+
+	private function _asterisk_conf_manager($state, $id)
 	{
 		if (!isset($_SESSION['cmd_list_to_process']))
 			$_SESSION['cmd_list_to_process'] = array();
 
 		$cmds = &$_SESSION['cmd_list_to_process'];
+
 		if (!isset($cmds['dird']))
 			$cmds['dird'] = array();
 		if (!isset($cmds['ctibus']))
@@ -494,119 +501,19 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		if (!isset($cmds['ipbx']))
 			$cmds['ipbx'] = array();
 
-		$cmd_repartition = array();
-		$cmd_repartition['userfeatures'] = array();
-
-		$cmd_repartition['userfeatures']['ctibus'] = array('xivo[userlist,update]',
-														'xivo[phonelist,update]');
-		$cmd_repartition['userfeatures']['ipbx'] = array('dialplan reload',
-													'module reload app_queue.so',
-													'sip reload');
-
-
-		$cmd_repartition['groupfeatures']['ctibus'] = array('xivo[grouplist,update]');
-		$cmd_repartition['groupfeatures']['ipbx'] = array('dialplan reload',
-													'module reload app_queue.so',
-													'sip reload');
-
-		$cmd_repartition['linefeatures']['ctibus'] = array('xivo[phonelist,update]');
-		$cmd_repartition['linefeatures']['ipbx'] = array('dialplan reload',
-													'sip reload');
-
-		$cmd_repartition['meetmefeatures']['ctibus'] = array('xivo[meetmelist,update]');
-		$cmd_repartition['meetmefeatures']['ipbx'] = array('dialplan reload',
-													'module reload app_queue.so');
-
-		$cmd_repartition['voicemailfeatures']['ctibus'] = array('xivo[voicemaillist,update]');
-		$cmd_repartition['voicemailfeatures']['ipbx'] = array('voicemail reload');
-
-		$cmd_repartition['agentfeatures']['ctibus'] = array('xivo[agentlist,update]',
-															'xivo[userlist,update]',
-															'xivo[queuemember,update]');
-		$cmd_repartition['agentfeatures']['ipbx'] = array('module reload app_queue.so',
-															'module reload chan_agent.so');
-
-		$cmd_repartition['queuefeatures']['ctibus'] = array('xivo[queuelist,update]',
-															'xivo[queuemember,update]');
-		$cmd_repartition['queuefeatures']['ipbx'] = array('module reload app_queue.so',
-															'dialplan reload',
-															'sip reload');
-
-		$cmd_repartition['queueskill']['ctibus'] = array();
-		$cmd_repartition['queueskill']['ipbx'] = array('module reload app_queue.so');
-
-		$cmd_repartition['queueskillrule']['ctibus'] = array();
-		$cmd_repartition['queueskillrule']['ipbx'] = array('module reload app_queue.so');
-
-		$cmd_repartition['cti*']['ctibus'] = array('xivo[cticonfig,update]');
-		$cmd_repartition['cti*']['ipbx'] = array();
-
-		$cmd_repartition['ctidirectories']['dird'] = array('update-config');
-
-		$cmd_repartition['ctireversedirectories']['dird'] = array('update-config');
-
-		$cmd_repartition['incall']['ctibus'] = array();
-		$cmd_repartition['incall']['ipbx'] = array('dialplan reload');
-
-		$cmd_repartition['outcall']['ctibus'] = array();
-		$cmd_repartition['outcall']['ipbx'] = array('dialplan reload');
-
-		$cmd_repartition['voicemenu']['ctibus'] = array();
-		$cmd_repartition['voicemenu']['ipbx'] = array('dialplan reload');
-
-		$cmd_repartition['context']['ctibus'] = array();
-		$cmd_repartition['context']['ipbx'] = array('dialplan reload');
-
-		$cmd_repartition['pickup']['ctibus'] = array();
-		$cmd_repartition['pickup']['ipbx'] = array('sip reload');
-
-		$cmd_repartition['staticsip']['ctibus'] = array();
-		$cmd_repartition['staticsip']['ipbx'] = array('sip reload');
-
-		$cmd_repartition['trunksip']['ctibus'] = array();
-		$cmd_repartition['trunksip']['ipbx'] = array('dialplan reload',
-													'sip reload');
-
-		$cmd_repartition['staticiax']['ctibus'] = array();
-		$cmd_repartition['staticiax']['ipbx'] = array('iax2 reload');
-
-		$cmd_repartition['trunkiax']['ctibus'] = array();
-		$cmd_repartition['trunkiax']['ipbx'] = array('dialplan reload',
-													'iax2 reload');
-
-		$cmd_repartition['trunkiax']['ctibus'] = array();
-		$cmd_repartition['trunkiax']['ipbx'] = array('dialplan reload',
-													'iax2 reload');
-
-		$cmd_repartition['extensions']['ctibus'] = array();
-		$cmd_repartition['extensions']['ipbx'] = array('dialplan reload',
-													'features reload');
-
-		$cmd_repartition['extenumbers']['ctibus'] = array();
-		$cmd_repartition['extenumbers']['ipbx'] = array('dialplan reload',
-													'features reload');
-
-		$cmd_repartition['musiconhold']['ctibus'] = array();
-		$cmd_repartition['musiconhold']['ipbx'] = array('moh reload');
-
-		$cmd_repartition['parkinglot']['ctibus'] = array();
-		$cmd_repartition['parkinglot']['ipbx'] = array('features reload');
-
-		$cmd_repartition['phonebook']['dird'] = array('update-phonebook');
-		$cmd_repartition['phonebook']['ctibus'] = array('xivo[phonebooklist,update]');
-		$cmd_repartition['phonebook']['ipbx'] = array();
-
-		$cmd_repartition['sccp*']['ctibus'] = array();
-		$cmd_repartition['sccp*']['ipbx'] = array('sccp update config');
-
+		if(($cmd_repartition = dwho_gat::load_get('conf_cmd',DWHO_PATH_CONF)) === false)
+			trigger_error('Failed to load conf_cmd configuration',E_USER_ERROR);
+		
 		foreach ($cmd_repartition as $module => $types)
 		{
 			if (preg_match('/\*/', $module))
 			{
 				if (substr($this->_name, 0, strlen($module)) === $module)
 				{
-					foreach ($types as $cmd)
+					foreach ($types as $type => $cmd)
 					{
+						if ($type === 'ctibus')
+							$this->_parse_ctibus_cmd($cmd, $state, $id);
 						$cmds[$type] = array_merge($cmds[$type], $cmd);
 						$cmds[$type] = array_unique($cmds[$type]);
 					}
@@ -616,6 +523,8 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			{
 				foreach ($types as $type => $cmd)
 				{
+					if ($type === 'ctibus')
+						$this->_parse_ctibus_cmd($cmd, $state, $id);
 					$cmds[$type] = array_merge($cmds[$type], $cmd);
 					$cmds[$type] = array_unique($cmds[$type]);
 				}
@@ -638,7 +547,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		}
 
 		if (($ret = $this->_dso->add($arr,$autoid)) !== false)
-			$this->_asterisk_conf_manager();
+			$this->_asterisk_conf_manager('add', $ret);
 
 		return($ret);
 	}
@@ -651,7 +560,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		}
 
 		if (($ret = $this->_dso->edit($id,$arr,$disable,$chkunique)) !== false)
-			$this->_asterisk_conf_manager();
+			$this->_asterisk_conf_manager('edit', $id['id']);
 
 		return($ret);
 	}
@@ -671,7 +580,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		}
 
 		if (($ret = $this->_dso->edit($id,$arr,$disable,$chkunique)) !== false)
-			$this->_asterisk_conf_manager();
+			$this->_asterisk_conf_manager('edit', $this->get_id($id));
 
 		return($ret);
 	}
@@ -682,7 +591,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			return(false);
 
 		if (($ret = $this->_dso->delete($id,$disable)) !== false)
-			$this->_asterisk_conf_manager();
+			$this->_asterisk_conf_manager('delete', $id);
 
 		return($ret);
 	}
@@ -699,9 +608,11 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 
 			$where = array_merge($where,$id);
 		}
+		
+		$id = $this->get_id($where);
 
 		if (($ret = $this->_dso->delete($where,$disable)) !== false)
-			$this->_asterisk_conf_manager();
+			$this->_asterisk_conf_manager('delete', $id);
 
 		return($ret);
 	}
@@ -709,7 +620,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 	function delete_all()
 	{
 		if (($ret = $this->_dso->delete_all()) !== false)
-			$this->_asterisk_conf_manager();
+			$this->_asterisk_conf_manager('deleteall');
 
 		return($ret);
 	}
@@ -721,7 +632,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			return(false);
 
 		if (($ret = $this->_dso->edit($id,array($disable => intval((bool) $value)))) !== false)
-			$this->_asterisk_conf_manager();
+			$this->_asterisk_conf_manager('enable', $id);
 
 		return($ret);
 	}
@@ -733,7 +644,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			return(false);
 
 		if (($ret = $this->_dso->edit($id,array($disable => intval((bool) $value)))) !== false)
-			$this->_asterisk_conf_manager();
+			$this->_asterisk_conf_manager('disable', $id);
 
 		return($ret);
 	}
@@ -746,7 +657,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			return(false);
 
 		if (($ret = $this->_dso->edit($where,array($disable => intval((bool) $value)))) !== false)
-			$this->_asterisk_conf_manager();
+			$this->_asterisk_conf_manager('enable', $this->get_id($where));
 
 		return($ret);
 	}
@@ -759,9 +670,19 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			return(false);
 
 		if (($ret = $this->_dso->edit($where,array($disable => intval((bool) $value)))) !== false)
-			$this->_asterisk_conf_manager();
+			$this->_asterisk_conf_manager('disable', $this->get_id($where));
 
 		return($ret);
+	}
+
+	function get_id($where)
+	{
+		if(($this->_chk_primary_key('id')) === false)
+			return(false);
+
+		$rs = $this->_dso->get_id($where);
+
+		return ((int) $rs['id']);
 	}
 }
 

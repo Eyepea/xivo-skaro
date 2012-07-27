@@ -391,8 +391,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function _get_service_info_from_discuss()
 	{
 		if((defined('DWHO_SESS_ENABLE') === true
-		   && (bool) DWHO_SESS_ENABLE === false) === true
-		|| ($info = $this->discuss('core show version',true)) === false
+			&& (bool) DWHO_SESS_ENABLE === false) === true
+		|| ($info = $this->exec_cmd_ast('core show version',true)) === false
 		|| is_array($info) === false
 		|| isset($info[0]) === false)
 			return(false);

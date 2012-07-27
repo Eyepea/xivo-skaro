@@ -211,6 +211,17 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 		return(null);
 	}
 
+	function get_id($where)
+	{
+		$this->_dso->new_select($this->_table,'id');
+
+		$this->_dso->where($where);
+
+		dwho_var_dump($this->_dso->get_select());
+
+		return($this->_dso->select_single());
+	}
+
 	function get($arr,$disable=null,$primary=false,$exists=false)
 	{
 		$primary = (bool) $primary;
