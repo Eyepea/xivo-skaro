@@ -32,7 +32,7 @@ $array['agentfeatures']['ctibus'] = array('xivo[agent,%s,%s]',
 $array['agentfeatures']['ipbx'] = array('module reload app_queue.so',
 		'module reload chan_agent.so');
 
-$array['agentglobalparams']['ctibus'] = array();
+$array['agentglobalparams']['ctibus'] = array('xivo[cticonfig,update]');
 $array['agentglobalparams']['ipbx'] = array('module reload chan_agent.so');
 
 $array['general']['ctibus'] = array();
