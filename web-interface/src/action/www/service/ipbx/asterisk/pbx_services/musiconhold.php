@@ -46,6 +46,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/musiconhold.js');
 	case 'delete':
 	case 'deletes':
+		$param['doreload'] = true;
 	case 'list':
 		$action = $act;
 		break;
@@ -57,6 +58,7 @@ switch($act)
 		}
 	case 'editfile':
 	case 'deletefile':
+		$param['doreload'] = true;
 	case 'listfile':
 	case 'download':
 		$action = $act;
@@ -66,12 +68,16 @@ switch($act)
 	case 'enables':
 	case 'disables':
 		$action = 'enables';
+		$param['doreload'] = true;
 		break;
 	default:
 		$_QRY->go($_TPL->url('service/ipbx'));
 }
 
 include(dirname(__FILE__).'/musiconhold/'.$action.'.php');
+
+if (isset($_QR['doreload']))
+	$ipbx->exec_cmd_ast('moh reload');
 
 $_TPL->set_var('act',$act);
 $_TPL->set_var('cat',$cat);
