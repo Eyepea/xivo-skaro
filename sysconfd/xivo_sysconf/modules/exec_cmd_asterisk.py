@@ -65,10 +65,11 @@ def exec_cmd_asterisk(cmd, options):
                                 close_fds=True)
             ret = p.wait()
             output = p.stdout.read()
-            logger.info("cmd %s successfully executed" % cmd)
 
             if ret != 0:
                 raise HttpReqError(500, output)
+            else:
+                logger.info("Asterisk command '%s' successfully executed" % cmd)
         except OSError:
             traceback.print_exc()
             raise HttpReqError(500, "can't manage exec_cmd_asterisk")
