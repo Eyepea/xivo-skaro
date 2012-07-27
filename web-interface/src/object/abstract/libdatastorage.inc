@@ -503,12 +503,13 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 
 		if(($cmd_repartition = dwho_gat::load_get('conf_cmd',DWHO_PATH_CONF)) === false)
 			trigger_error('Failed to load conf_cmd configuration',E_USER_ERROR);
-		
+
 		foreach ($cmd_repartition as $module => $types)
 		{
 			if (preg_match('/\*/', $module))
 			{
-				if (substr($this->_name, 0, strlen($module)) === $module)
+				$pattern_mod = '/'.preg_replace('/\*/','(.*)',$module).'/i';
+				if (preg_match($pattern_mod, $this->_name, $out) > 0)
 				{
 					foreach ($types as $type => $cmd)
 					{
@@ -608,7 +609,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 
 			$where = array_merge($where,$id);
 		}
-		
+
 		$id = $this->get_id($where);
 
 		if (($ret = $this->_dso->delete($where,$disable)) !== false)

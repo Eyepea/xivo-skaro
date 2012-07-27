@@ -22,7 +22,7 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_cmd_asterisk extends xivo_service_asterisk_abstract
 {
-	var $_name		= 'cmd_asterisk';
+	var $_name      = 'cmd_asterisk';
 	var $_sysconfd  = false;
 
 	public function __construct(&$sre)
@@ -53,7 +53,7 @@ class xivo_service_asterisk_cmd_asterisk extends xivo_service_asterisk_abstract
 
 		if(($nb = count($recv)) === 0)
 			return(false);
-		
+
 		return($recv);
 	}
 }
