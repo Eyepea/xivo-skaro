@@ -217,8 +217,6 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 
 		$this->_dso->where($where);
 
-		dwho_var_dump($this->_dso->get_select());
-
 		return($this->_dso->select_single());
 	}
 
