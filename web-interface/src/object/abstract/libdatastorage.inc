@@ -487,12 +487,16 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			$cmd = sprintf($cmd, $state, $id);
 	}
 
-	private function _asterisk_conf_manager($state, $id)
+	private function _asterisk_conf_manager($state, $id=null)
 	{
 		if (!isset($_SESSION['cmd_list_to_process']))
 			$_SESSION['cmd_list_to_process'] = array();
 
 		$cmds = &$_SESSION['cmd_list_to_process'];
+		$name = $this->_name;
+
+		if ($name === 'realstatic')
+			$name = $this->_dso->_param['filename'];
 
 		if (!isset($cmds['dird']))
 			$cmds['dird'] = array();
@@ -509,7 +513,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			if (preg_match('/\*/', $module))
 			{
 				$pattern_mod = '/'.preg_replace('/\*/','(.*)',$module).'/i';
-				if (preg_match($pattern_mod, $this->_name, $out) > 0)
+				if (preg_match($pattern_mod, $name, $out) > 0)
 				{
 					foreach ($types as $type => $cmd)
 					{
@@ -520,7 +524,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 					}
 				}
 			}
-			elseif ($this->_name === $module)
+			elseif ($name === $module)
 			{
 				foreach ($types as $type => $cmd)
 				{
@@ -561,7 +565,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		}
 
 		if (($ret = $this->_dso->edit($id,$arr,$disable,$chkunique)) !== false)
-			$this->_asterisk_conf_manager('edit', $id['id']);
+			$this->_asterisk_conf_manager('edit', $this->get_id($id));
 
 		return($ret);
 	}
@@ -678,12 +682,19 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 
 	function get_id($where)
 	{
-		if(($this->_chk_primary_key('id')) === false)
-			return(false);
+		if (is_numeric($where))
+			return((int) $where);
+		elseif (is_array($where))
+		{
+			if(isset($where['id'])
+			&& $this->_chk_primary_key('id'))
+				return((int) $where['id']);
 
-		$rs = $this->_dso->get_id($where);
+			$primary_key = array_keys($this->_dso->get_primary_key());
+			$rs = $this->_dso->get_id($where, $primary_key);
 
-		return ((int) $rs['id']);
+			return($rs[array_pop($primary_key)]);
+		}
 	}
 }
 

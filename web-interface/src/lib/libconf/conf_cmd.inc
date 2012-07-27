@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 $array = array();
@@ -9,7 +9,6 @@ $array['userfeatures']['ctibus'] = array('xivo[user,%s,%s]',
 $array['userfeatures']['ipbx'] = array('dialplan reload',
 		'module reload app_queue.so',
 		'sip reload');
-
 
 $array['groupfeatures']['ctibus'] = array('xivo[group,%s,%s]');
 $array['groupfeatures']['ipbx'] = array('dialplan reload',

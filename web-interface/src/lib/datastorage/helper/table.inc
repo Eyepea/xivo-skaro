@@ -131,7 +131,9 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 
 	function mk_primary_key_value($val)
 	{
-		if(isset($this->_primary) === false
+		if ($val === null)
+			return(array(key($this->_primary) => $val));
+		elseif(isset($this->_primary) === false
 				|| is_scalar($val) === false
 				|| is_array($this->_primary) === false
 				|| count($this->_primary) !== 1)
@@ -211,9 +213,9 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 		return(null);
 	}
 
-	function get_id($where)
+	function get_id($where,$primary_key)
 	{
-		$this->_dso->new_select($this->_table,'id');
+		$this->_dso->new_select($this->_table,$primary_key);
 
 		$this->_dso->where($where);
 
