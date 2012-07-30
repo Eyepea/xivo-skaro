@@ -1,8 +1,7 @@
 # -*- coding: UTF-8 -*-
 
-__author__ = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
-    Copyright (C) 2010  Avencall
+    Copyright (C) 2012  Avencall
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,6 +28,8 @@ logger = logging.getLogger('xivo_sysconf.modules.exec_cmd_asterisk')
 
 
 AST_CMD_REQUESTS = [
+    'core reload',
+    'core restart now',
     'core show version',
     'core show channels',
     'dialplan reload',
@@ -55,9 +56,7 @@ def exec_cmd_asterisk(cmd, options):
 
     >>> exec_cmd_asterisk(sip reload)
     """
-    if cmd not in AST_CMD_REQUESTS:
-        logger.error("cmd %s not authorized on" % cmd)
-    else:
+    if cmd in AST_CMD_REQUESTS or cmd.startswith('sip show peer'):
         try:
             p = subprocess.Popen(['asterisk', '-rx', cmd],
                                 stdout=subprocess.PIPE,
@@ -73,8 +72,9 @@ def exec_cmd_asterisk(cmd, options):
         except OSError:
             traceback.print_exc()
             raise HttpReqError(500, "can't manage exec_cmd_asterisk")
-
         return output
+    else:
+        logger.error("cmd %s not authorized on" % cmd)
 
 
 http_json_server.register(exec_cmd_asterisk, CMD_RW, name='exec_cmd_asterisk')
