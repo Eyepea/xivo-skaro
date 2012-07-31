@@ -18,13 +18,13 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import logging, subprocess, traceback
+import logging, subprocess
 
 from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
 from xivo.http_json_server import CMD_RW
 
-logger = logging.getLogger('xivo_sysconf.modules.exec_cmd_asterisk')
+logger = logging.getLogger(__name__)
 
 
 AST_CMD_REQUESTS = [
@@ -62,20 +62,18 @@ def exec_cmd_asterisk(cmd, options):
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT,
                                 close_fds=True)
-            ret = p.wait()
-            output = p.stdout.read()
+            output = p.communicate()[0]
 
-            if ret != 0:
+            if p.returncode != 0:
                 raise HttpReqError(500, output)
             else:
-                logger.info("Asterisk command '%s' successfully executed" % cmd)
+                logger.info("Asterisk command '%s' successfully executed", cmd)
         except OSError:
-            traceback.print_exc()
+            logger.exception("Error while executing asterisk command")
             raise HttpReqError(500, "can't manage exec_cmd_asterisk")
         return output
     else:
-        logger.error("cmd %s not authorized on" % cmd)
+        logger.error("cmd %s not authorized on", cmd)
 
 
 http_json_server.register(exec_cmd_asterisk, CMD_RW, name='exec_cmd_asterisk')
-
