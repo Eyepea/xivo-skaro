@@ -212,6 +212,9 @@ class dwho_tpl_statistics extends dwho_tpl_module
 		{
 			$rowdata = array_shift($full_rows);
 
+			if (!isset($rowdata[$this->_row_key]))
+				continue;
+
 			$rownum = $rowdata[$this->_row_key];
 
 			if (isset($data_table[$rownum]) === false)
@@ -756,7 +759,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 			if (isset($coldata['type']) === true)
 				$type = $coldata['type'];
 
-			if ($axetype === 'month')
+			if ($axetype === 'month' && $coldata['key'] !== 'total')
 			{
 				$time = strtotime($infocal['dmonth']);
 				$day_num = $coldata['day'];

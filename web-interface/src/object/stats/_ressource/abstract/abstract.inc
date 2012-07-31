@@ -28,8 +28,10 @@ class xivo_stats_ressource_abstract
 	public 		$_data_custom 		= array();
 	public 		$_counter	 		= array();
 	public		$_result 			= array();
-	protected $_stat_queue_periodic = null;
-	protected $_stat_call_on_queue = null;
+	protected	$_stat_queue_periodic  = null;
+	protected	$_stat_call_on_queue   = null;
+	protected	$_queuefeatures        = null;
+	protected	$_stat_queue           = null;
 
 	public function __construct(&$_XS)
 	{
@@ -39,6 +41,8 @@ class xivo_stats_ressource_abstract
 		$ipbx = &$_SRE->get('ipbx');
 		$this->_stat_queue_periodic = $ipbx->get_module('stat_queue_periodic');
 		$this->_stat_call_on_queue = $ipbx->get_module('stat_call_on_queue');
+		$this->_queuefeatures = $ipbx->get_module('queuefeatures');
+		$this->_stat_queue = $ipbx->get_module('stat_queue');
 	}
 
 	public function set_data_custom($key,$data)
@@ -174,16 +178,16 @@ class xivo_stats_ressource_abstract
 		$dbeg = strtotime($itl['dbeg']);
 		$dend = strtotime($itl['dend']);
 
-		$queue_id = 0;
-		if (preg_match('/queue-([0-9]+)/', $this->_xs->_objectkey, $out) === 1)
-			$queue_id = (int) $out[1];
-
 		$this->_stat_queue_periodic->set_dso_param('hour_itl',$this->_xs->get_dip_hour());
 		$this->_stat_queue_periodic->set_dso_param('days',$this->_xs->get_valid_list_day());
 		$this->_stat_call_on_queue->set_dso_param('hour_itl',$this->_xs->get_dip_hour());
 		$this->_stat_call_on_queue->set_dso_param('days',$this->_xs->get_valid_list_day());
 
-		$this->_build_total($queue_id, $dbeg, $dend);
+		if (preg_match('/queue-([0-9]+)/', $this->_xs->_objectkey, $out) === 1)
+		{
+			$queuefeatures_id = (int) $out[1];
+			$this->_build_total($queuefeatures_id, $dbeg, $dend);
+		}
 
 		switch ($axetype)
 		{
@@ -193,18 +197,18 @@ class xivo_stats_ressource_abstract
 				{
 					$key_full_data = array_shift($key_data);
 					$key = $key_full_data['key'];
-					$this->build_stat($queue_id, $key, $this->_build_hour_for_day($key, $dbeg));
+					$this->build_stat($queuefeatures_id, $key, $this->_build_hour_for_day($key, $dbeg));
 				}
 				break;
 			case 'week':
 				$this->full_itl = $this->_xs->build_full_date_interval($dbeg, $dend);
 				foreach ($this->full_itl as $date => $date_itl)
-					$this->build_stat($queue_id, $date, $date_itl);
+					$this->build_stat($queuefeatures_id, $date, $date_itl);
 				break;
 			case 'month':
 				$this->full_itl = $this->_xs->build_full_date_interval($dbeg, $dend);
 				foreach ($this->full_itl as $date => $date_itl)
-					$this->build_stat($queue_id, $date, $date_itl);
+					$this->build_stat($queuefeatures_id, $date, $date_itl);
 				break;
 			case 'year':
 				$key_data = dwho_date::get_listmonth();
@@ -215,7 +219,7 @@ class xivo_stats_ressource_abstract
 					$dip = array();
 					$dip['beg'] = mktime(0,0,1,$key,1,date('Y', $dbeg));
 					$dip['end'] = mktime(23,59,59,$key,31,date('Y', $dbeg));
-					$this->build_stat($queue_id, $key, $dip);
+					$this->build_stat($queuefeatures_id, $key, $dip);
 				}
 				break;
 			case 'type':
@@ -226,12 +230,12 @@ class xivo_stats_ressource_abstract
 					$keyfile = $key_full_data['keyfile'];
 
 					preg_match('/queue-([0-9]+)/', $keyfile, $out);
-					$queue_id = (int) $out[1];
+					$queuefeatures_id = (int) $out[1];
 
 					$dip = array();
 					$dip['beg'] = $dbeg;
 					$dip['end'] = $dend;
-					$this->build_stat($queue_id, $keyfile, $dip);
+					$this->build_stat($queuefeatures_id, $keyfile, $dip);
 				}
 				break;
 			default:

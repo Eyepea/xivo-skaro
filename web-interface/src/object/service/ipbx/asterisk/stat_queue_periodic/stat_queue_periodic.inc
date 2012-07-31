@@ -56,59 +56,43 @@ class xivo_service_asterisk_stat_queue_periodic extends xivo_service_asterisk_ab
 		return($rs);
 	}
 
-	function get_event_abandon($interval, $queuefeatures_id)
+	function get_event_abandon($interval, $queue_id)
 	{
-		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
-		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
 		return($this->_dso->queue_sum_by_event('abandoned', $interval, $queue_id));
 	}
 
-	function get_event_answered($interval, $queuefeatures_id)
+	function get_event_answered($interval, $queue_id)
 	{
-		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
-		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
 		return($this->_dso->queue_sum_by_event('answered', $interval, $queue_id));
 	}
 
-	function get_event_closed($interval, $queuefeatures_id)
+	function get_event_closed($interval, $queue_id)
 	{
-		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
-		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
 		return($this->_dso->queue_sum_by_event('closed', $interval, $queue_id));
 	}
 
-	function get_event_full($interval, $queuefeatures_id)
+	function get_event_full($interval, $queue_id)
 	{
-		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
-		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
 		return($this->_dso->queue_sum_by_event('full', $interval, $queue_id));
 	}
 
-	function get_event_joinempty($interval, $queuefeatures_id)
+	function get_event_joinempty($interval, $queue_id)
 	{
-		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
-		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
 		return($this->_dso->queue_sum_by_event('joinempty', $interval, $queue_id));
 	}
 
-	function get_event_leaveempty($interval, $queuefeatures_id)
+	function get_event_leaveempty($interval, $queue_id)
 	{
-		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
-		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
 		return($this->_dso->queue_sum_by_event('leaveempty', $interval, $queue_id));
 	}
 
-	function get_event_timeout($interval, $queuefeatures_id)
+	function get_event_timeout($interval, $queue_id)
 	{
-		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
-		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
 		return($this->_dso->queue_sum_by_event('timeout', $interval, $queue_id));
 	}
 
-	function get_event_total($interval, $queuefeatures_id)
+	function get_event_total($interval, $queue_id)
 	{
-		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
-		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
 		return($this->_dso->queue_sum_by_event('total', $interval, $queue_id));
 	}
 }

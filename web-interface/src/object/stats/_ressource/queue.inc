@@ -41,10 +41,16 @@ class stats_ressource_queue extends xivo_stats_ressource_abstract
 		$this->_xs->set_type($this->_type);
 	}
 
-	public function build_stat($queue_id, $key, $interval)
+	public function build_stat($queuefeatures_id, $key, $interval)
 	{
 		$queue = $this->_xs->get_list_by_type('queue');
 		$stats_qos = $queue[0]['qos'];
+
+		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
+		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
+
+		if (!$queue_id)
+			return;
 
 		$total = $this->_stat_queue_periodic->get_event_total($interval, $queue_id);
 		$answered = $this->_stat_queue_periodic->get_event_answered($interval, $queue_id);
@@ -76,8 +82,6 @@ class stats_ressource_queue extends xivo_stats_ressource_abstract
 		$this->_result[$key]['leaveempty']['result'] = $leaveempty;
 		$this->_result[$key]['timeout']['result'] = $timeout;
 		$this->_result[$key]['home_rated']['result'] = $hr;
-
-		return($this->_result);
 	}
 }
 
