@@ -154,7 +154,8 @@ class dwho_tpl_statistics extends dwho_tpl_module
 
 	public function set_row_total($key)
 	{
-		$pr = &$this->_prepare_rows[$key];
+		if(!($pr = &$this->_prepare_rows[$key]))
+			return;
 		$row_total = array();
 		$row_total['identity'] = 'Total';
 		$row_total['name'] = 'total';

@@ -18,6 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+if(xivo_user::chk_acl('settings','configuration') === false)
+	$_QRY->go($_TPL->url('statistics/call_center/data/stats1'));
+
 $_QRY->go($_TPL->url('statistics/call_center/settings/configuration'));
 
 ?>

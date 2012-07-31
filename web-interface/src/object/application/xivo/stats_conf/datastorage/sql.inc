@@ -26,7 +26,8 @@ class xivo_application_xivo_object_stats_conf_sql extends xivo_application_abstr
 				'stats_conf'		=> '',
 				'stats_conf_queue'	=> '',
 				'stats_conf_agent'	=> '',
-				'stats_conf_user'	=> '');
+				'stats_conf_user'	=> '',
+				'stats_conf_xivouser'	=> '');
 
 	function get($id)
 	{
