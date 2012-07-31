@@ -107,12 +107,12 @@ $pop->print("");
 
 #Response: Follows
 #Privilege: Command
-#Peer           User/ANR    Call ID      Seq (Tx/Rx)  Format         Hold   Last Message   
-#0 active SIP channels
+#Peer             User/ANR         Call ID          Format           Hold     Last Message    Expiry     Peer
+#0 active SIP dialogs
 # -- OR --
-#74.218.176.166  (None)    c24a5a230c6  00101/278584006  0x0 (nothing) No    Rx: REGISTER   
-#74.218.176.166  (None)    508c037f936  00101/07310  0x0 (nothing)    No     Rx: REGISTER   
-#2 active SIP channels
+#10.34.1.27       5ux133           86b251ba24982c8  0x4 (ulaw)       No       Rx: ACK                    5ux133
+#10.34.1.35       wf6j7o           57d77675621255c  0x4 (ulaw)       No       Tx: ACK                    wf6j7o
+#2 active SIP dialogs
 #--END COMMAND--
 
 
@@ -123,7 +123,7 @@ foreach my $codec (@CODECS) {
     $i++;
 }
 
-while (($line = $pop->getline) and ($line !~ /END COMMAND/o))
+while (($line = $pop->getline) and ($line !~ /active SIP/o))
 {
     $i = 0;
     if ($start) {
