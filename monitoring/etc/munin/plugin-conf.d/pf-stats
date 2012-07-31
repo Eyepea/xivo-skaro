@@ -1,16 +1,10 @@
 [asterisk_*]
 env.username xivo_munin_user
 env.secret jeSwupAd0
+
+[asterisk_channelstypes]
 env.channels SIP IAX2 SCCP DAHDI MISDN
 
-[asterisk_voicemail]
-user asterisk
-
-[pgstats]
-user postgres
-env.PGUSER postgres
-env.PGPORT 5432
-env.include_db asterisk xivo
-
-[nginxstats]
-env.ssl yes
+[asterisk_sipchannels]
+env.codecs gsm ulaw alaw g729 g722
+env.codecsx 0x2 0x4 0x8 0x100 0x1000
