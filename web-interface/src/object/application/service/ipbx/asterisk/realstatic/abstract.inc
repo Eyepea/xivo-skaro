@@ -333,11 +333,6 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		return($r);
 	}
 
-	function _chk_pre_save()
-	{
-		return(null);
-	}
-
 	function set_save_all($arr,$disable=null)
 	{
 		if(is_array($arr) === false
@@ -369,9 +364,9 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 				$rs['var_val'] = '';
 
 			$this->_multi = (bool) dwho_ak('multi',$list[$key],true);
+
 			if($this->set($rs) === false
-			|| ($pre_save = $this->_chk_pre_save($rs)) === false
-			|| ($pre_save !== 1 && $this->save() === false) === true)
+			|| $this->save() === false)
 				$r['error'][$key] = $this->get_error($this->_name);
 
 			$r['result'][$key] = $this->get_result($this->_name);
@@ -389,6 +384,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		else if(($rs = $this->get_result($this->_name)) === null
 		|| $rs === false)
 			return(false);
+
 
 		$where = array();
 		$where['category'] = $this->_category;

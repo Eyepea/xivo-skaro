@@ -131,9 +131,7 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 
 	function mk_primary_key_value($val)
 	{
-		if ($val === null)
-			return(array(key($this->_primary) => $val));
-		elseif(isset($this->_primary) === false
+		if(isset($this->_primary) === false
 				|| is_scalar($val) === false
 				|| is_array($this->_primary) === false
 				|| count($this->_primary) !== 1)

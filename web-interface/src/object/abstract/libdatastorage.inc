@@ -584,7 +584,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			$where = array_merge($where,$id);
 		}
 
-		if (($ret = $this->_dso->edit($id,$arr,$disable,$chkunique)) !== false)
+		if (($ret = $this->_dso->edit($where,$arr,$disable,$chkunique)) !== false)
 			$this->_asterisk_conf_manager('edit', $this->get_id($id));
 
 		return($ret);
