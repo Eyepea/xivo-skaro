@@ -1,8 +1,8 @@
-Index: asterisk-1.8.14.1/channels/chan_sip.c
+Index: asterisk-1.8.15.0/channels/chan_sip.c
 ===================================================================
---- asterisk-1.8.14.1.orig/channels/chan_sip.c
-+++ asterisk-1.8.14.1/channels/chan_sip.c
-@@ -14047,11 +14047,19 @@ static enum parse_register_result parse_
+--- asterisk-1.8.15.0.orig/channels/chan_sip.c
++++ asterisk-1.8.15.0/channels/chan_sip.c
+@@ -14042,11 +14042,19 @@ static enum parse_register_result parse_
  		if (s) {
  			expires = strsep(&s, ";"); /* trim ; and beyond */
  			if (sscanf(expires + 9, "%30d", &expire) != 1) {
@@ -24,7 +24,7 @@ Index: asterisk-1.8.14.1/channels/chan_sip.c
  		}
  	}
  
-@@ -14193,11 +14201,20 @@ static enum parse_register_result parse_
+@@ -14188,11 +14196,20 @@ static enum parse_register_result parse_
  	AST_SCHED_DEL_UNREF(sched, peer->expire,
  			unref_peer(peer, "remove register expire ref"));
  
@@ -50,7 +50,7 @@ Index: asterisk-1.8.14.1/channels/chan_sip.c
  	}
  	if (peer->is_realtime && !ast_test_flag(&peer->flags[1], SIP_PAGE2_RTCACHEFRIENDS)) {
  		peer->expire = -1;
-@@ -14955,7 +14972,7 @@ static enum check_auth_result register_v
+@@ -14950,7 +14967,7 @@ static enum check_auth_result register_v
  		}
  		ao2_unlock(peer);
  	}
@@ -59,7 +59,7 @@ Index: asterisk-1.8.14.1/channels/chan_sip.c
  		/* Create peer if we have autocreate mode enabled */
  		peer = temp_peer(name);
  		if (peer) {
-@@ -18170,6 +18187,7 @@ static char *sip_show_settings(struct as
+@@ -18166,6 +18183,7 @@ static char *sip_show_settings(struct as
  	ast_cli(a->fd, "  Textsupport:            %s\n", AST_CLI_YESNO(ast_test_flag(&global_flags[1], SIP_PAGE2_TEXTSUPPORT)));
  	ast_cli(a->fd, "  Ignore SDP sess. ver.:  %s\n", AST_CLI_YESNO(ast_test_flag(&global_flags[1], SIP_PAGE2_IGNORESDPVERSION)));
  	ast_cli(a->fd, "  AutoCreate Peer:        %s\n", AST_CLI_YESNO(sip_cfg.autocreatepeer));
@@ -67,7 +67,7 @@ Index: asterisk-1.8.14.1/channels/chan_sip.c
  	ast_cli(a->fd, "  Match Auth Username:    %s\n", AST_CLI_YESNO(global_match_auth_username));
  	ast_cli(a->fd, "  Allow unknown access:   %s\n", AST_CLI_YESNO(sip_cfg.allowguest));
  	ast_cli(a->fd, "  Allow subscriptions:    %s\n", AST_CLI_YESNO(ast_test_flag(&global_flags[1], SIP_PAGE2_ALLOWSUBSCRIBE)));
-@@ -27281,6 +27299,9 @@ static struct sip_peer *temp_peer(const
+@@ -27323,6 +27341,9 @@ static struct sip_peer *temp_peer(const
  
  	ast_copy_string(peer->name, name, sizeof(peer->name));
  
@@ -77,7 +77,7 @@ Index: asterisk-1.8.14.1/channels/chan_sip.c
  	peer->selfdestruct = TRUE;
  	peer->host_dynamic = TRUE;
  	peer->prefs = default_prefs;
-@@ -28072,6 +28093,15 @@ static void cleanup_all_regs(void)
+@@ -28114,6 +28135,15 @@ static void cleanup_all_regs(void)
  		} while(0));
  }
  
@@ -93,7 +93,7 @@ Index: asterisk-1.8.14.1/channels/chan_sip.c
  /*! \brief Re-read SIP.conf config file
  \note	This function reloads all config data, except for
  	active peers (with registrations). They will only
-@@ -28156,7 +28186,11 @@ static int reload_config(enum channelrel
+@@ -28198,7 +28228,11 @@ static int reload_config(enum channelrel
  		/* Then, actually destroy users and registry */
  		ASTOBJ_CONTAINER_DESTROYALL(&regl, sip_registry_destroy);
  		ast_debug(4, "--------------- Done destroying registry list\n");
@@ -106,7 +106,7 @@ Index: asterisk-1.8.14.1/channels/chan_sip.c
  	}
  
  	/* Reset certificate handling for TLS sessions */
-@@ -28245,6 +28279,13 @@ static int reload_config(enum channelrel
+@@ -28287,6 +28321,13 @@ static int reload_config(enum channelrel
  	global_regattempts_max = 0;
  	sip_cfg.pedanticsipchecking = DEFAULT_PEDANTIC;
  	sip_cfg.autocreatepeer = DEFAULT_AUTOCREATEPEER;
@@ -120,7 +120,7 @@ Index: asterisk-1.8.14.1/channels/chan_sip.c
  	global_autoframing = 0;
  	sip_cfg.allowguest = DEFAULT_ALLOWGUEST;
  	global_callcounter = DEFAULT_CALLCOUNTER;
-@@ -28552,6 +28593,35 @@ static int reload_config(enum channelrel
+@@ -28594,6 +28635,35 @@ static int reload_config(enum channelrel
  			proxy_update(&sip_cfg.outboundproxy);
  		} else if (!strcasecmp(v->name, "autocreatepeer")) {
  			sip_cfg.autocreatepeer = ast_true(v->value);
@@ -156,10 +156,10 @@ Index: asterisk-1.8.14.1/channels/chan_sip.c
  		} else if (!strcasecmp(v->name, "match_auth_username")) {
  			global_match_auth_username = ast_true(v->value);
  		} else if (!strcasecmp(v->name, "srvlookup")) {
-Index: asterisk-1.8.14.1/channels/sip/include/sip.h
+Index: asterisk-1.8.15.0/channels/sip/include/sip.h
 ===================================================================
---- asterisk-1.8.14.1.orig/channels/sip/include/sip.h
-+++ asterisk-1.8.14.1/channels/sip/include/sip.h
+--- asterisk-1.8.15.0.orig/channels/sip/include/sip.h
++++ asterisk-1.8.15.0/channels/sip/include/sip.h
 @@ -206,6 +206,12 @@
  #define DEFAULT_NOTIFYCID      DISABLED	/*!< Include CID with ringing notifications */
  #define DEFAULT_PEDANTIC       TRUE     /*!< Follow SIP standards for dialog matching */

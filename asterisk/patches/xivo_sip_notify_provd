@@ -1,7 +1,7 @@
-Index: asterisk-1.8.14.1/channels/chan_sip.c
+Index: asterisk-1.8.15.0/channels/chan_sip.c
 ===================================================================
---- asterisk-1.8.14.1.orig/channels/chan_sip.c
-+++ asterisk-1.8.14.1/channels/chan_sip.c
+--- asterisk-1.8.15.0.orig/channels/chan_sip.c
++++ asterisk-1.8.15.0/channels/chan_sip.c
 @@ -553,6 +553,26 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revisi
  			via multiple Variable: name=value sequences.</para>
  		</description>
@@ -29,7 +29,7 @@ Index: asterisk-1.8.14.1/channels/chan_sip.c
   ***/
  
  static int min_expiry = DEFAULT_MIN_EXPIRY;        /*!< Minimum accepted registration time */
-@@ -12974,6 +12994,113 @@ static int transmit_notify_with_sipfrag(
+@@ -12969,6 +12989,113 @@ static int transmit_notify_with_sipfrag(
  	return send_request(p, &req, XMIT_RELIABLE, p->ocseq);
  }
  
@@ -143,7 +143,7 @@ Index: asterisk-1.8.14.1/channels/chan_sip.c
  static int manager_sipnotify(struct mansession *s, const struct message *m)
  {
  	const char *channame = astman_get_header(m, "Channel");
-@@ -30683,6 +30810,7 @@ static int load_module(void)
+@@ -30735,6 +30862,7 @@ static int load_module(void)
  	ast_manager_register_xml("SIPqualifypeer", EVENT_FLAG_SYSTEM | EVENT_FLAG_REPORTING, manager_sip_qualify_peer);
  	ast_manager_register_xml("SIPshowregistry", EVENT_FLAG_SYSTEM | EVENT_FLAG_REPORTING, manager_show_registry);
  	ast_manager_register_xml("SIPnotify", EVENT_FLAG_SYSTEM, manager_sipnotify);
@@ -151,7 +151,7 @@ Index: asterisk-1.8.14.1/channels/chan_sip.c
  	sip_poke_all_peers();	
  	sip_send_all_registers();
  	sip_send_all_mwi_subscriptions();
-@@ -30783,6 +30911,7 @@ static int unload_module(void)
+@@ -30835,6 +30963,7 @@ static int unload_module(void)
  	ast_manager_unregister("SIPqualifypeer");
  	ast_manager_unregister("SIPshowregistry");
  	ast_manager_unregister("SIPnotify");
