@@ -2432,6 +2432,12 @@ CREATE TYPE "call_exit_type" AS ENUM (
   'timeout'
 );
 
+DROP TABLE IF EXISTS "stat_agent";
+CREATE TABLE "stat_agent" (
+ "id" SERIAL PRIMARY KEY,
+ "name" VARCHAR(128) NOT NULL
+);
+
 DROP TABLE IF EXISTS "stat_queue";
 CREATE TABLE "stat_queue" (
  "id" SERIAL PRIMARY KEY,
@@ -2447,7 +2453,8 @@ CREATE TABLE "stat_call_on_queue" (
  "talktime" INTEGER NOT NULL DEFAULT 0,
  "waittime" INTEGER NOT NULL DEFAULT 0,
  "status" call_exit_type NOT NULL,
- "queue_id" INTEGER REFERENCES stat_queue (id)
+ "queue_id" INTEGER REFERENCES stat_queue (id),
+ "agent_id" INTEGER REFERENCES stat_agent (id)
 );
 
 DROP TABLE IF EXISTS "stat_queue_periodic";
