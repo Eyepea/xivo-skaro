@@ -563,7 +563,6 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		|| ($id = $this->_chk_primary_key($id)) === false) {
 			return(false);
 		}
-
 		if (($ret = $this->_dso->edit($id,$arr,$disable,$chkunique)) !== false)
 			$this->_asterisk_conf_manager('edit', $this->get_id($id));
 
@@ -584,8 +583,10 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			$where = array_merge($where,$id);
 		}
 
+		$id = $this->get_id($where);
+
 		if (($ret = $this->_dso->edit($where,$arr,$disable,$chkunique)) !== false)
-			$this->_asterisk_conf_manager('edit', $this->get_id($id));
+			$this->_asterisk_conf_manager('edit', $id);
 
 		return($ret);
 	}
@@ -596,7 +597,7 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			return(false);
 
 		if (($ret = $this->_dso->delete($id,$disable)) !== false)
-			$this->_asterisk_conf_manager('delete', $id);
+			$this->_asterisk_conf_manager('delete', $this->get_id($id));
 
 		return($ret);
 	}
