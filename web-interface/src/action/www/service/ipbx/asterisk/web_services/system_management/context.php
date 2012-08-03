@@ -47,6 +47,17 @@ switch($act)
 		$http_response->set_status_line($status);
 		$http_response->send(true);
 		break;
+	case 'edit':
+		if(($context = $appcontext->get($_QRY->get('id'))) === false)
+			$status = 404;
+		else if($appcontext->edit_from_json($context) === true)
+			$status = 200;
+		else
+			$status = 400;
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
 	case 'delete':
 		if($appcontext->get($_QRY->get('id')) === false)
 			$status = 404;
