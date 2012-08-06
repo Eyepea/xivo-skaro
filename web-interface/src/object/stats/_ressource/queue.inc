@@ -45,8 +45,10 @@ class stats_ressource_queue extends xivo_stats_ressource_abstract
 	{
 		$queue = $this->_xs->get_list_by_type('queue');
 		$stats_qos = $queue[0]['qos'];
-
 		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
+		if (! $queuefeatures_name)
+			return;
+
 		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
 
 		if (!$queue_id)
