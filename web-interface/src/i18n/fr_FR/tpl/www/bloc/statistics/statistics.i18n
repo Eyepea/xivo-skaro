@@ -145,6 +145,9 @@ Présentés hors FA
 ; col_login
 <acronym title="Login">Login</acronym>
 
+; col_conversation
+<acronym title="Temps total de conversation">Conversation</acronym>
+
 ; col_available
 <acronym title="Disponible">Dispo</acronym>
 

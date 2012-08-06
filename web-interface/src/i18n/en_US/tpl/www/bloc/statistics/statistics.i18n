@@ -143,6 +143,9 @@ Presented out of queue
 ; col_login
 <acronym title="Login">Login</acronym>
 
+; col_conversation
+<acronym title="Total time in conversation">Conversation</acronym>
+
 ; col_available
 <acronym title="Available">Avail.</acronym>
 

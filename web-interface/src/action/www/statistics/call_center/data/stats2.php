@@ -77,8 +77,13 @@ $tpl_statistics->add_col('ringnoanswer',
 $tpl_statistics->add_col('outgoing',
 					'direct',
 					'-');
-/*
+
 $tpl_statistics->set_col_struct('total_time');
+$tpl_statistics->add_col('conversation',
+			 'direct',
+			 'custom:agent,[key],conversationtime',
+			 'time');
+/*
 $tpl_statistics->add_col('login',
 					'direct',
 					'custom:agent,[key],logintime',
