@@ -129,18 +129,18 @@ $array['service/ipbx/general_settings/outboundmwi'] = 'service/ipbx/index.php/ge
 $array['service/ipbx/general_settings/dundi'] = 'service/ipbx/index.php/general_settings/dundi';
 $array['service/ipbx/general_settings/dahdi'] = 'service/ipbx/index.php/general_settings/dahdi';
 
-$array['service/ipbx/json/restricted/general_settings/sip']         = 'service/ipbx/json.php/restricted/general_settings/sip/';
-$array['service/ipbx/json/restricted/general_settings/iax']         = 'service/ipbx/json.php/restricted/general_settings/iax/';
-$array['service/ipbx/json/restricted/general_settings/voicemail']   = 'service/ipbx/json.php/restricted/general_settings/voicemail/';
-$array['service/ipbx/json/restricted/general_settings/phonebook']   = 'service/ipbx/json.php/restricted/general_settings/phonebook/';
-$array['service/ipbx/json/restricted/general_settings/advanced']    = 'service/ipbx/json.php/restricted/general_settings/advanced/';
+$array['service/ipbx/json/restricted/general_settings/sip'] = 'service/ipbx/json.php/restricted/general_settings/sip/';
+$array['service/ipbx/json/restricted/general_settings/iax'] = 'service/ipbx/json.php/restricted/general_settings/iax/';
+$array['service/ipbx/json/restricted/general_settings/voicemail'] = 'service/ipbx/json.php/restricted/general_settings/voicemail/';
+$array['service/ipbx/json/restricted/general_settings/phonebook'] = 'service/ipbx/json.php/restricted/general_settings/phonebook/';
+$array['service/ipbx/json/restricted/general_settings/advanced'] = 'service/ipbx/json.php/restricted/general_settings/advanced/';
 $array['service/ipbx/json/restricted/general_settings/outboundmwi'] = 'service/ipbx/json.php/restricted/general_settings/outboundmwi/';
 
-$array['service/ipbx/json/private/general_settings/sip']         = 'service/ipbx/json.php/private/general_settings/sip/';
-$array['service/ipbx/json/private/general_settings/iax']         = 'service/ipbx/json.php/private/general_settings/iax/';
-$array['service/ipbx/json/private/general_settings/voicemail']   = 'service/ipbx/json.php/private/general_settings/voicemail/';
-$array['service/ipbx/json/private/general_settings/phonebook']   = 'service/ipbx/json.php/private/general_settings/phonebook/';
-$array['service/ipbx/json/private/general_settings/advanced']    = 'service/ipbx/json.php/private/general_settings/advanced/';
+$array['service/ipbx/json/private/general_settings/sip'] = 'service/ipbx/json.php/private/general_settings/sip/';
+$array['service/ipbx/json/private/general_settings/iax'] = 'service/ipbx/json.php/private/general_settings/iax/';
+$array['service/ipbx/json/private/general_settings/voicemail'] = 'service/ipbx/json.php/private/general_settings/voicemail/';
+$array['service/ipbx/json/private/general_settings/phonebook'] = 'service/ipbx/json.php/private/general_settings/phonebook/';
+$array['service/ipbx/json/private/general_settings/advanced'] = 'service/ipbx/json.php/private/general_settings/advanced/';
 $array['service/ipbx/json/private/general_settings/outboundmwi'] = 'service/ipbx/json.php/private/general_settings/outboundmwi/';
 
 
@@ -202,13 +202,13 @@ $array['service/ipbx/call_management/schedule'] = 'service/ipbx/index.php/call_m
 $array['service/ipbx/call_management/voicemenu'] = 'service/ipbx/index.php/call_management/voicemenu/';
 $array['service/ipbx/call_management/cel'] = 'service/ipbx/index.php/call_management/cel/';
 
-$array['service/ipbx/json/restricted/call_management/incall']  = 'service/ipbx/json.php/restricted/call_management/incall/';
+$array['service/ipbx/json/restricted/call_management/incall'] = 'service/ipbx/json.php/restricted/call_management/incall/';
 $array['service/ipbx/json/restricted/call_management/outcall'] = 'service/ipbx/json.php/restricted/call_management/outcall/';
-$array['service/ipbx/json/restricted/call_management/pickup']  = 'service/ipbx/json.php/restricted/call_management/pickup/';
+$array['service/ipbx/json/restricted/call_management/pickup'] = 'service/ipbx/json.php/restricted/call_management/pickup/';
 $array['service/ipbx/json/restricted/call_management/cel'] = 'service/ipbx/json.php/restricted/call_management/cel/';
 
-$array['service/ipbx/json/private/call_management/incall']     = 'service/ipbx/json.php/private/call_management/incall/';
-$array['service/ipbx/json/private/call_management/pickup']     = 'service/ipbx/json.php/private/call_management/pickup/';
+$array['service/ipbx/json/private/call_management/incall'] = 'service/ipbx/json.php/private/call_management/incall/';
+$array['service/ipbx/json/private/call_management/pickup'] = 'service/ipbx/json.php/private/call_management/pickup/';
 $array['service/ipbx/json/private/call_management/cel'] = 'service/ipbx/json.php/private/call_management/cel/';
 
 $array['service/ipbx/ui/call_management/schedule'] = 'service/ipbx/ui.php/call_management/schedule/';
@@ -287,22 +287,22 @@ $array['service/ipbx/json/private/dundi/mappings'] = 'service/ipbx/json.php/priv
  *
  */
 
-$array['cti']                    = 'cti/index.php';
-$array['cti/general']            = 'cti/index.php/general';
-$array['cti/presences']          = 'cti/index.php/presences/';
-$array['cti/phonehints']         = 'cti/index.php/phonehints/';
-$array['cti/profiles']           = 'cti/index.php/profiles/';
-$array['cti/directories']        = 'cti/index.php/directories/';
+$array['cti'] = 'cti/index.php';
+$array['cti/general'] = 'cti/index.php/general';
+$array['cti/presences'] = 'cti/index.php/presences/';
+$array['cti/phonehints'] = 'cti/index.php/phonehints/';
+$array['cti/profiles'] = 'cti/index.php/profiles/';
+$array['cti/directories'] = 'cti/index.php/directories/';
 $array['cti/reversedirectories'] = 'cti/index.php/reversedirectories/';
-$array['cti/displays']           = 'cti/index.php/displays/';
-$array['cti/contexts']           = 'cti/index.php/contexts/';
-$array['cti/sheetactions']       = 'cti/index.php/sheetactions/';
-$array['cti/sheetevents']        = 'cti/index.php/sheetevents/';
-$array['cti/restart']            = 'cti/index.php/restart/';
+$array['cti/displays'] = 'cti/index.php/displays/';
+$array['cti/contexts'] = 'cti/index.php/contexts/';
+$array['cti/sheetactions'] = 'cti/index.php/sheetactions/';
+$array['cti/sheetevents'] = 'cti/index.php/sheetevents/';
+$array['cti/restart'] = 'cti/index.php/restart/';
 
 
 $array['service/ipbx/json/restricted/ctiserver/configuration'] = 'service/ipbx/json.php/restricted/ctiserver/configuration/';
-$array['service/ipbx/json/private/ctiserver/configuration']    = 'service/ipbx/json.php/private/ctiserver/configuration/';
+$array['service/ipbx/json/private/ctiserver/configuration'] = 'service/ipbx/json.php/private/ctiserver/configuration/';
 
 $array['cti/json/restricted/configuration'] = 'cti/json.php/restricted/configuration';
 
@@ -314,39 +314,39 @@ $array['cti/json/private/configuration'] = 'cti/json.php/private/configuration';
  *
  */
 
-$array['callcenter']                    = 'callcenter/index.php';
-$array['callcenter/settings/queues']             = 'callcenter/index.php/settings/queues/';
-$array['callcenter/settings/queuepenalty']       = 'callcenter/index.php/settings/queuepenalty/';
-$array['callcenter/settings/agents']             = 'callcenter/index.php/settings/agents/';
-$array['callcenter/settings/queueskills']        = 'callcenter/index.php/settings/queueskills/';
-$array['callcenter/settings/queueskillrules']    = 'callcenter/index.php/settings/queueskillrules/';
-$array['callcenter/registrationcampaign/general']            = 'callcenter/index.php/registrationcampaign/general/';
-$array['callcenter/registrationcampaign/tags']               = 'callcenter/index.php/registrationcampaign/tags/';
-$array['callcenter/registrationcampaign/campaigns']          = 'callcenter/index.php/registrationcampaign/campaigns/';
+$array['callcenter'] = 'callcenter/index.php';
+$array['callcenter/settings/queues'] = 'callcenter/index.php/settings/queues/';
+$array['callcenter/settings/queuepenalty'] = 'callcenter/index.php/settings/queuepenalty/';
+$array['callcenter/settings/agents'] = 'callcenter/index.php/settings/agents/';
+$array['callcenter/settings/queueskills'] = 'callcenter/index.php/settings/queueskills/';
+$array['callcenter/settings/queueskillrules'] = 'callcenter/index.php/settings/queueskillrules/';
+$array['callcenter/registrationcampaign/general'] = 'callcenter/index.php/registrationcampaign/general/';
+$array['callcenter/registrationcampaign/tags'] = 'callcenter/index.php/registrationcampaign/tags/';
+$array['callcenter/registrationcampaign/campaigns'] = 'callcenter/index.php/registrationcampaign/campaigns/';
 
 $array['service/ipbx/json/restricted/call_center/agents'] =
-$array['callcenter/json/restricted/settings/agents']          = 'callcenter/json.php/restricted/settings/agents/';
+$array['callcenter/json/restricted/settings/agents'] = 'callcenter/json.php/restricted/settings/agents/';
 $array['service/ipbx/json/restricted/call_center/queues'] =
-$array['callcenter/json/restricted/settings/queues']          = 'callcenter/json.php/restricted/settings/queues/';
+$array['callcenter/json/restricted/settings/queues'] = 'callcenter/json.php/restricted/settings/queues/';
 $array['service/ipbx/json/restricted/call_center/queuepenalty'] =
-$array['callcenter/json/restricted/settings/queuepenalty']    = 'callcenter/json.php/restricted/settings/queuepenalty/';
+$array['callcenter/json/restricted/settings/queuepenalty'] = 'callcenter/json.php/restricted/settings/queuepenalty/';
 $array['service/ipbx/json/restricted/call_center/queueskills'] =
-$array['callcenter/json/restricted/settings/queueskills']     = 'callcenter/json.php/restricted/settings/queueskills/';
+$array['callcenter/json/restricted/settings/queueskills'] = 'callcenter/json.php/restricted/settings/queueskills/';
 $array['service/ipbx/json/restricted/call_center/queueskillrules'] =
 $array['callcenter/json/restricted/settings/queueskillrules'] = 'callcenter/json.php/restricted/settings/queueskillrules/';
 $array['service/ipbx/json/restricted/call_center/campaigns'] =
-$array['callcenter/json/restricted/registrationcampaign/campaigns']       = 'callcenter/json.php/restricted/registrationcampaign/campaigns/';
+$array['callcenter/json/restricted/registrationcampaign/campaigns'] = 'callcenter/json.php/restricted/registrationcampaign/campaigns/';
 
 $array['service/ipbx/json/private/call_center/agents'] =
-$array['callcenter/json/private/settings/agents']          = 'callcenter/json.php/private/settings/agents/';
+$array['callcenter/json/private/settings/agents'] = 'callcenter/json.php/private/settings/agents/';
 $array['service/ipbx/json/private/call_center/queues'] =
-$array['callcenter/json/private/settings/queues']          = 'callcenter/json.php/private/settings/queues/';
+$array['callcenter/json/private/settings/queues'] = 'callcenter/json.php/private/settings/queues/';
 $array['service/ipbx/json/private/call_center/queuepenalty'] =
-$array['callcenter/json/private/settings/queuepenalty']    = 'callcenter/json.php/private/settings/queuepenalty/';
-$array['callcenter/json/private/settings/queueskills']     = 'callcenter/json.php/private/settings/queueskills/';
+$array['callcenter/json/private/settings/queuepenalty'] = 'callcenter/json.php/private/settings/queuepenalty/';
+$array['callcenter/json/private/settings/queueskills'] = 'callcenter/json.php/private/settings/queueskills/';
 $array['callcenter/json/private/settings/queueskillrules'] = 'callcenter/json.php/private/settings/queueskillrules/';
 $array['service/ipbx/json/private/call_center/campaigns'] =
-$array['callcenter/json/private/registrationcampaign/campaigns']      = 'callcenter/json.php/private/registrationcampaign/campaigns/';
+$array['callcenter/json/private/registrationcampaign/campaigns'] = 'callcenter/json.php/private/registrationcampaign/campaigns/';
 
 $array['service/ipbx/ui/call_center/agents'] =
 $array['callcenter/ui/settings/agents'] = 'callcenter/ui.php/settings/agents/';
@@ -359,53 +359,53 @@ $array['callcenter/ui/settings/queues'] = 'callcenter/ui.php/settings/queues/';
  */
 
 $array['graphs'] = 'graphs/index.php';
-$array['graphs/munin/nginx']        = 'graphs/munin/index.php/nginx';
-$array['graphs/munin/postgresql']   = 'graphs/munin/index.php/postgresql';
-$array['graphs/munin/mysql']	    = 'graphs/munin/index.php/mysql';
-$array['graphs/munin/asterisk']     = 'graphs/munin/index.php/asterisk';
-$array['graphs/munin/disk']         = 'graphs/munin/index.php/disk';
-$array['graphs/munin/time']         = 'graphs/munin/index.php/time';
-$array['graphs/munin/postfix']      = 'graphs/munin/index.php/postfix';
-$array['graphs/munin/processes']    = 'graphs/munin/index.php/processes';
-$array['graphs/munin/network']      = 'graphs/munin/index.php/network';
-$array['graphs/munin/system']       = 'graphs/munin/index.php/system';
-$array['graphs/munin/other']        = 'graphs/munin/index.php/other';
+$array['graphs/munin/nginx'] = 'graphs/munin/index.php/nginx';
+$array['graphs/munin/postgresql'] = 'graphs/munin/index.php/postgresql';
+$array['graphs/munin/mysql'] = 'graphs/munin/index.php/mysql';
+$array['graphs/munin/asterisk'] = 'graphs/munin/index.php/asterisk';
+$array['graphs/munin/disk'] = 'graphs/munin/index.php/disk';
+$array['graphs/munin/time'] = 'graphs/munin/index.php/time';
+$array['graphs/munin/postfix'] = 'graphs/munin/index.php/postfix';
+$array['graphs/munin/processes'] = 'graphs/munin/index.php/processes';
+$array['graphs/munin/network'] = 'graphs/munin/index.php/network';
+$array['graphs/munin/system'] = 'graphs/munin/index.php/system';
+$array['graphs/munin/other'] = 'graphs/munin/index.php/other';
 
 /*
  * STATISTICS SECTION
  *
  */
 
-$array['statistics']										= 'statistics/index.php';
-$array['statistics/call_center']							= 'statistics/call_center/index.php';
-$array['statistics/call_center/data/stats1']				= 'statistics/call_center/index.php/data/stats1';
-$array['statistics/call_center/data/stats2']				= 'statistics/call_center/index.php/data/stats2';
-$array['statistics/call_center/data/stats3']				= 'statistics/call_center/index.php/data/stats3';
-$array['statistics/call_center/data/stats4']				= 'statistics/call_center/index.php/data/stats4';
-$array['statistics/call_center/data/stats5']				= 'statistics/call_center/index.php/data/stats5';
-$array['statistics/call_center/settings/configuration']		= 'statistics/call_center/index.php/settings/configuration/';
-$array['statistics/call_center/settings/cache']				= 'statistics/call_center/index.php/settings/cache/';
+$array['statistics'] = 'statistics/index.php';
+$array['statistics/call_center'] = 'statistics/call_center/index.php';
+$array['statistics/call_center/data/stats1'] = 'statistics/call_center/index.php/data/stats1';
+$array['statistics/call_center/data/stats2'] = 'statistics/call_center/index.php/data/stats2';
+$array['statistics/call_center/data/stats3'] = 'statistics/call_center/index.php/data/stats3';
+$array['statistics/call_center/data/stats4'] = 'statistics/call_center/index.php/data/stats4';
+$array['statistics/call_center/data/stats5'] = 'statistics/call_center/index.php/data/stats5';
+$array['statistics/call_center/settings/configuration'] = 'statistics/call_center/index.php/settings/configuration/';
+$array['statistics/call_center/settings/cache'] = 'statistics/call_center/index.php/settings/cache/';
 
-$array['statistics/cel'] 						= 'statistics/cel/index.php';
-$array['statistics/cel/index'] 					= 'statistics/cel/index.php';
-$array['statistics/cel/search'] 				= 'statistics/cel/index.php/search';
+$array['statistics/cel'] = 'statistics/cel/index.php';
+$array['statistics/cel/index'] = 'statistics/cel/index.php';
+$array['statistics/cel/search'] = 'statistics/cel/index.php/search';
 
-$array['statistics/ui/call_center/genercache'] 				= 'statistics/ui.php/call_center/genercache';
-$array['statistics/ui/call_center/genergraphic'] 			= 'statistics/ui.php/call_center/genergraphic';
+$array['statistics/ui/call_center/genercache'] = 'statistics/ui.php/call_center/genercache';
+$array['statistics/ui/call_center/genergraphic'] = 'statistics/ui.php/call_center/genergraphic';
 
-$array['statistics/json/private/call_center/genercache'] 		= 'statistics/json.php/private/call_center/genercache/';
-$array['statistics/json/private/call_center/queue'] 		= 'statistics/json.php/private/call_center/queue/';
-$array['statistics/json/private/call_center/stats1'] 		= 'statistics/json.php/private/call_center/stats1/';
-$array['statistics/json/private/call_center/stats2'] 		= 'statistics/json.php/private/call_center/stats2/';
-$array['statistics/json/private/call_center/stats3'] 		= 'statistics/json.php/private/call_center/stats3/';
-$array['statistics/json/private/call_center/stats4'] 		= 'statistics/json.php/private/call_center/stats4/';
-$array['statistics/json/private/call_center/stats5'] 		= 'statistics/json.php/private/call_center/stats5/';
+$array['statistics/json/private/call_center/genercache'] = 'statistics/json.php/private/call_center/genercache/';
+$array['statistics/json/private/call_center/queue'] = 'statistics/json.php/private/call_center/queue/';
+$array['statistics/json/private/call_center/stats1'] = 'statistics/json.php/private/call_center/stats1/';
+$array['statistics/json/private/call_center/stats2'] = 'statistics/json.php/private/call_center/stats2/';
+$array['statistics/json/private/call_center/stats3'] = 'statistics/json.php/private/call_center/stats3/';
+$array['statistics/json/private/call_center/stats4'] = 'statistics/json.php/private/call_center/stats4/';
+$array['statistics/json/private/call_center/stats5'] = 'statistics/json.php/private/call_center/stats5/';
 
-$array['statistics/json/restricted/call_center/queue'] 		= 'statistics/json.php/restricted/call_center/queue/';
-$array['statistics/json/restricted/call_center/stats1'] 	= 'statistics/json.php/restricted/call_center/stats1/';
-$array['statistics/json/restricted/call_center/stats2'] 	= 'statistics/json.php/restricted/call_center/stats2/';
-$array['statistics/json/restricted/call_center/stats3'] 	= 'statistics/json.php/restricted/call_center/stats3/';
-$array['statistics/json/restricted/call_center/stats4'] 	= 'statistics/json.php/restricted/call_center/stats4/';
-$array['statistics/json/restricted/call_center/stats5'] 	= 'statistics/json.php/restricted/call_center/stats5/';
+$array['statistics/json/restricted/call_center/queue'] = 'statistics/json.php/restricted/call_center/queue/';
+$array['statistics/json/restricted/call_center/stats1'] = 'statistics/json.php/restricted/call_center/stats1/';
+$array['statistics/json/restricted/call_center/stats2'] = 'statistics/json.php/restricted/call_center/stats2/';
+$array['statistics/json/restricted/call_center/stats3'] = 'statistics/json.php/restricted/call_center/stats3/';
+$array['statistics/json/restricted/call_center/stats4'] = 'statistics/json.php/restricted/call_center/stats4/';
+$array['statistics/json/restricted/call_center/stats5'] = 'statistics/json.php/restricted/call_center/stats5/';
 
 ?>

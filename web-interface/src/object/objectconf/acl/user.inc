@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2011  Avencall
+# Copyright (C) 2006-2012  Avencall
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -73,21 +73,21 @@ $array['tree']['service']['ipbx']['control_system']['restart'] = true;
 
 // cti
 $array['tree']['service']['cti'] = array();
-$array['tree']['service']['cti']['general_settings']                  = array();
-$array['tree']['service']['cti']['general_settings']['general']       = true;
-$array['tree']['service']['cti']['general_settings']['profiles']      = true;
-$array['tree']['service']['cti']['general_settings']['presences']     = true;
-$array['tree']['service']['cti']['general_settings']['phonehints']    = true;
-$array['tree']['service']['cti']['directories']                       = array();
-$array['tree']['service']['cti']['directories']['directories']        = true;
+$array['tree']['service']['cti']['general_settings'] = array();
+$array['tree']['service']['cti']['general_settings']['general'] = true;
+$array['tree']['service']['cti']['general_settings']['profiles'] = true;
+$array['tree']['service']['cti']['general_settings']['presences'] = true;
+$array['tree']['service']['cti']['general_settings']['phonehints'] = true;
+$array['tree']['service']['cti']['directories'] = array();
+$array['tree']['service']['cti']['directories']['directories'] = true;
 $array['tree']['service']['cti']['directories']['reversedirectories'] = true;
-$array['tree']['service']['cti']['directories']['displays']           = true;
-$array['tree']['service']['cti']['directories']['contexts']           = true;
-$array['tree']['service']['cti']['sheets']                            = array();
-$array['tree']['service']['cti']['sheets']['sheetactions']            = true;
-$array['tree']['service']['cti']['sheets']['sheetevents']             = true;
-$array['tree']['service']['cti']['control_system']                    = array();
-$array['tree']['service']['cti']['control_system']['restart']         = true;
+$array['tree']['service']['cti']['directories']['displays'] = true;
+$array['tree']['service']['cti']['directories']['contexts'] = true;
+$array['tree']['service']['cti']['sheets'] = array();
+$array['tree']['service']['cti']['sheets']['sheetactions'] = true;
+$array['tree']['service']['cti']['sheets']['sheetevents'] = true;
+$array['tree']['service']['cti']['control_system'] = array();
+$array['tree']['service']['cti']['control_system']['restart'] = true;
 
 // monitoring
 $array['tree']['service']['monitoring'] = array();
@@ -125,7 +125,7 @@ $array['tree']['service']['callcenter']['settings']['queueskillrules'] = true;
 
 $array['tree']['xivo'] = array();
 
-$array['tree']['xivo']['monit']  = true;
+$array['tree']['xivo']['monit'] = true;
 
 $array['tree']['xivo']['configuration'] = array();
 $array['tree']['xivo']['configuration']['manage'] = array();

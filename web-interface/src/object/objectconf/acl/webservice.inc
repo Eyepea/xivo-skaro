@@ -44,11 +44,11 @@ $array['tree']['service']['ipbx'] = array();
 $array['tree']['service']['ipbx']['queuelogger']['configuration'] = true;
 
 $array['tree']['service']['ipbx']['general_settings'] = array();
-$array['tree']['service']['ipbx']['general_settings']['sip']         = true;
-$array['tree']['service']['ipbx']['general_settings']['iax']         = true;
-$array['tree']['service']['ipbx']['general_settings']['voicemail']   = true;
-$array['tree']['service']['ipbx']['general_settings']['phonebook']   = true;
-$array['tree']['service']['ipbx']['general_settings']['advanced']    = true;
+$array['tree']['service']['ipbx']['general_settings']['sip'] = true;
+$array['tree']['service']['ipbx']['general_settings']['iax'] = true;
+$array['tree']['service']['ipbx']['general_settings']['voicemail'] = true;
+$array['tree']['service']['ipbx']['general_settings']['phonebook'] = true;
+$array['tree']['service']['ipbx']['general_settings']['advanced'] = true;
 $array['tree']['service']['ipbx']['general_settings']['outboundmwi'] = true;
 
 $array['tree']['service']['ipbx']['pbx_settings'] = array();
@@ -63,8 +63,8 @@ $array['tree']['service']['ipbx']['pbx_settings']['extension'] = true;
 $array['tree']['service']['ipbx']['call_management'] = array();
 $array['tree']['service']['ipbx']['call_management']['incall'] = true;
 $array['tree']['service']['ipbx']['call_management']['outcall'] = true;
-$array['tree']['service']['ipbx']['call_management']['pickup']  = true;
-$array['tree']['service']['ipbx']['call_management']['cel']  = true;
+$array['tree']['service']['ipbx']['call_management']['pickup'] = true;
+$array['tree']['service']['ipbx']['call_management']['cel'] = true;
 
 $array['tree']['service']['ipbx']['trunk_management'] = array();
 $array['tree']['service']['ipbx']['trunk_management']['sip'] = true;
@@ -92,10 +92,12 @@ $array['tree']['statistics']['call_center']['data']['stats3'] = true;
 $array['tree']['statistics']['call_center']['data']['stats4'] = true;
 
 $array['tree']['service']['callcenter'] = array();
+$array['tree']['service']['callcenter']['settings'] = array();
 $array['tree']['service']['callcenter']['settings']['agents'] = true;
 $array['tree']['service']['callcenter']['settings']['queues'] = true;
 $array['tree']['service']['callcenter']['settings']['queueskills'] = true;
 $array['tree']['service']['callcenter']['settings']['queueskillrules'] = true;
-$array['tree']['service']['callcenter']['registrationcampaign']['campaigns'] = true;
+#$array['tree']['service']['callcenter']['registrationcampaign'] = array();
+#$array['tree']['service']['callcenter']['registrationcampaign']['campaigns'] = true;
 
 ?>
