@@ -23,6 +23,7 @@ class stats_ressource_agent extends xivo_stats_ressource_abstract
 
 	protected		$_field		= array('logintime'		=> array('type' => 'time'),
 									'holdtime'			=> array('type' => 'time'),
+									'conversationtime'		=> array('type' => 'time'),
 									'calltime'			=> array('type' => 'time'),
 									'ringtime'			=> array('type' => 'time'),
 									'pausetime'			=> array('type' => 'time'),
@@ -46,6 +47,12 @@ class stats_ressource_agent extends xivo_stats_ressource_abstract
 	public function parse_log($key_data,$key)
 	{
 		$this->init_result($key);
+
+                $agent_ids = $this->_stat_agent->id_from_numbers($key_data);
+                if (! agent_ids)
+                        return;
+
+                dwho_var_dump($agent_ids, "stat_agent ids");
 
 		$val = $this->eval_count_data($key_data,'CONNECT');
 		$this->update_result(array($key,'connect'),$val);
@@ -99,6 +106,10 @@ class stats_ressource_agent extends xivo_stats_ressource_abstract
 		$field = $this->eval_field_queue_log('AGENTCALLBACKLOGOFF','logintime');
 		$logintime = $this->eval_sum_data($key_data,'AGENTCALLBACKLOGOFF',$field,array('ISNOT', array('data1', '')));
 		$this->update_result(array($key,'logintime'),$logintime);
+
+		$interval = $this->_xs->_interval_process;
+		$conversation_time = $this->_stat_call_on_queue->get_agent_conversation_time($interval, $agent_ids);
+		$this->update_result(array($key, 'conversationtime'), $conversation_time);
 
 		return($this->_result);
 	}

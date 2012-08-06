@@ -52,6 +52,11 @@ class xivo_service_asterisk_stat_call_on_queue extends xivo_service_asterisk_abs
 	{
 		return $this->_dso->queue_wait_time($interval, $queue_id);
 	}
+
+	function get_agent_conversation_time($interval, $agent_ids)
+	{
+		return $this->_dso->agent_conversation_time($interval, $agent_ids);
+	}
 }
 
 ?>

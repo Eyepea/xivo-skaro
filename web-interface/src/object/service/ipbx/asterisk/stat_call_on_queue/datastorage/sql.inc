@@ -74,6 +74,40 @@ class xivo_service_asterisk_stat_call_on_queue_sql extends xivo_service_asterisk
 		return((int) $r[0]);
 	}
 
+	public function agent_conversation_time($interval, $agent_ids)
+	{
+		$field = array((object) ('SUM(talktime)'));
+
+		$this->_dso->new_select($this->_table, $field);
+
+		$this->_dso->aggregate_where(false, 'AND');
+		foreach($agent_ids as $agent_id) {
+			$this->_dso->orwhere(array('agent_id' => $agent_id));
+		}
+		$this->_dso->aggregate_where(false, 'AND');
+
+		if (is_null($interval) === false) {
+			$this->_dso->andwherebetween('time',
+					strftime('%Y-%m-%d %H:%M:%S', $interval['beg']),
+					strftime('%Y-%m-%d %H:%M:%S.999999', $interval['end']),
+					$this->_table);
+		}
+		$hour_itl = $this->get_param('hour_itl');
+		if (is_null($hour_itl) === false)
+			$this->_dso->andwhere('EXTRACT(HOUR FROM "'.$this->_table.'".time) BETWEEN '.$hour_itl['beg'].' AND '.($hour_itl['end']-1));
+
+		$days = $this->get_param('days');
+		if (is_null($days) === false)
+			$this->_dso->andwhere('EXTRACT(DOW FROM "'.$this->_table.'".time) IN ('.implode(',', array_values($days)).')');
+
+		$r = $this->_dso->select_singlecolumn();
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return((int) $r[0]);
+	}
+
 }
 
 ?>

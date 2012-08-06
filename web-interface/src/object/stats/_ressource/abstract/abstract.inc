@@ -32,6 +32,7 @@ class xivo_stats_ressource_abstract
 	protected	$_stat_call_on_queue   = null;
 	protected	$_queuefeatures        = null;
 	protected	$_stat_queue           = null;
+	protected	$_stat_agent           = null;
 
 	public function __construct(&$_XS)
 	{
@@ -43,6 +44,7 @@ class xivo_stats_ressource_abstract
 		$this->_stat_call_on_queue = $ipbx->get_module('stat_call_on_queue');
 		$this->_queuefeatures = $ipbx->get_module('queuefeatures');
 		$this->_stat_queue = $ipbx->get_module('stat_queue');
+		$this->_stat_agent = $ipbx->get_module('stat_agent');
 	}
 
 	public function set_data_custom($key,$data)
