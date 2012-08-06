@@ -456,4 +456,8 @@ $array['stat_queue'] = array();
 $array['stat_queue']['table'] = 'stat_queue';
 $array['stat_queue']['primary'] = array('id' => '');
 
+$array['stat_agent'] = array();
+$array['stat_agent']['table'] = 'stat_agent';
+$array['stat_agent']['primary'] = array('id' => '');
+
 ?>

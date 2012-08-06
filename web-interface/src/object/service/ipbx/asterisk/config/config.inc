@@ -382,7 +382,8 @@ $array['module']['stat_call_on_queue']['datastorage'] = true;
 $array['module']['stat_queue'] = array();
 $array['module']['stat_queue']['datastorage'] = true;
 
-
+$array['module']['stat_agent'] = array();
+$array['module']['stat_agent']['datastorage'] = true;
 
 $array['protocol'] = array();
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP]    = array('module' => 'usersip');
