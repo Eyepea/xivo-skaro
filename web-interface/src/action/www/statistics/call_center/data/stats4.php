@@ -23,7 +23,7 @@ include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 $_STS->load_ressource('period');
 
 $stats_period = new stats_ressource_period(&$_XS);
-$stats_period->get_data_period();
+$stats_period->get_data_queue();
 
 $tpl_statistics->set_name('period');
 $tpl_statistics->set_baseurl('statistics/call_center/data/stats4');
