@@ -43,17 +43,22 @@ class xivo_service_asterisk_stat_call_on_queue extends xivo_service_asterisk_abs
 		$this->_stat_queue = $this->_sre->get_module('stat_queue');
 	}
 
-	function get_count_under_qos($interval, $queue_id, $qos)
+	public function get_count_under_qos($interval, $queue_id, $qos)
 	{
 		return $this->_dso->queue_count_under_qos($qos, $interval, $queue_id);
 	}
 
-	function get_queue_wait_time($interval, $queue_id)
+	public function get_queue_wait_time($interval, $queue_id)
 	{
 		return $this->_dso->queue_wait_time($interval, $queue_id);
 	}
 
-	function get_agent_conversation_time($interval, $agent_ids)
+	public function get_count_wait_time_by_period($status, $interval, $queue_id, $interval_wt)
+	{
+		return $this->_dso->queue_count_by_period($status, $interval, $queue_id, $interval_wt);
+	}
+
+	public function get_agent_conversation_time($interval, $agent_ids)
 	{
 		return $this->_dso->agent_conversation_time($interval, $agent_ids);
 	}

@@ -61,27 +61,101 @@ class stats_ressource_period extends xivo_stats_ressource_abstract
 		return(true);
 	}
 
-	public function parse_log($key_data,$key)
+	public function get_data_period()
 	{
-		$this->init_result($key);
+		$axetype = $this->_xs->get_axetype();
 
-		foreach($this->_xs->_period as $k => $v)
+		if (($itl = $this->_xs->get_datecal()) === false
+		|| is_null($itl['dbeg']) === true)
+			return(false);
+
+		$dbeg = strtotime($itl['dbeg']);
+		$dend = strtotime($itl['dend']);
+
+		$this->_stat_queue_periodic->set_dso_param('hour_itl',$this->_xs->get_dip_hour());
+		$this->_stat_queue_periodic->set_dso_param('days',$this->_xs->get_valid_list_day());
+		$this->_stat_call_on_queue->set_dso_param('hour_itl',$this->_xs->get_dip_hour());
+		$this->_stat_call_on_queue->set_dso_param('days',$this->_xs->get_valid_list_day());
+
+		if (preg_match('/queue-([0-9]+)/', $this->_xs->_objectkey, $out) === 1)
 		{
-			if (($v['beg']) === 0
-			&& ($v['end']) === 0)
+			$queuefeatures_id = (int) $out[1];
+			$this->_build_total($queuefeatures_id, $dbeg, $dend);
+		}
+
+		switch ($axetype)
+		{
+			case 'day':
+				$key_data = $this->_xs->get_listhour();
+				while($key_data)
+				{
+					$key_full_data = array_shift($key_data);
+					$key = $key_full_data['key'];
+					$this->_build_stat($queuefeatures_id, $key, $this->_build_hour_for_day($key, $dbeg));
+				}
+				break;
+			case 'week':
+				$this->full_itl = $this->_xs->build_full_date_interval($dbeg, $dend);
+				foreach ($this->full_itl as $date => $date_itl)
+					$this->_build_stat($queuefeatures_id, $date, $date_itl);
+				break;
+			case 'month':
+				$this->full_itl = $this->_xs->build_full_date_interval($dbeg, $dend);
+				foreach ($this->full_itl as $date => $date_itl)
+					$this->_build_stat($queuefeatures_id, $date, $date_itl);
+				break;
+			case 'year':
+				$key_data = dwho_date::get_listmonth();
+				while ($key_data)
+				{
+					$key_full_data = array_shift($key_data);
+					$key = $key_full_data['key'];
+					$dip = array();
+					$dip['beg'] = mktime(0,0,1,$key,1,date('Y', $dbeg));
+					$dip['end'] = mktime(23,59,59,$key,31,date('Y', $dbeg));
+					$this->_build_stat($queuefeatures_id, $key, $dip);
+				}
+				break;
+			case 'type':
+				$key_data = $this->get_list_by_type();
+				while($key_data)
+				{
+					$key_full_data = array_shift($key_data);
+					$keyfile = $key_full_data['keyfile'];
+
+					preg_match('/queue-([0-9]+)/', $keyfile, $out);
+					$queuefeatures_id = (int) $out[1];
+
+					$dip = array();
+					$dip['beg'] = $dbeg;
+					$dip['end'] = $dend;
+					$this->_build_stat($queuefeatures_id, $keyfile, $dip);
+				}
+				break;
+		}
+	}
+
+	protected function _build_stat($queuefeatures_id, $key, $interval)
+	{
+		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
+		if (!$queuefeatures_name)
+			return;
+
+		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
+		if (!$queue_id)
+			return;
+
+		foreach($this->_xs->_period as $k => $interval_wt)
+		{
+			if (($interval_wt['beg']) === 0
+			&& ($interval_wt['end']) === 0)
 				continue;
 
-			$operator = 'BETWEEN';
-			if (is_null($v['end']) === true)
-				$operator = '>';
+			$answered = $this->_stat_call_on_queue->get_count_wait_time_by_period('answered', $interval, $queue_id, $interval_wt);
+			$this->_result[$key]['connect'][$k]['result'] = $answered;
 
-			$field = $this->eval_field_queue_log('CONNECT','holdtime');
-			$connect = $this->eval_count_data($key_data,'CONNECT',array($operator, array($field,$v['beg'],$v['end'])));
-			$this->update_result(array($key,'connect',$k),$connect);
-
-			$field = $this->eval_field_queue_log('ABANDON','waittime');
-			$abandon = $this->eval_count_data($key_data,'ABANDON',array($operator, array($field,$v['beg'],$v['end'])));
-			$this->update_result(array($key,'abandon',$k),$abandon);
+			$abandoned = $this->_stat_call_on_queue->get_count_wait_time_by_period('abandoned', $interval, $queue_id, $interval_wt);
+			$this->_result[$key]['abandon'][$k]['result'] = $abandoned;
 		}
 	}
 

@@ -32,8 +32,7 @@ class xivo_stats_lib
 	private	$_listday			= array('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
 	private	$_listmonth			= array('january','february','march','april','may','june','july','august','september','october','november','december');
 	private	$_listaxetype		= array('type','day','week','month','year');
-	private	$_listtype			= array('queue','agent','period',); # 'incall'
-	private	$_listconftype		= array('queue','group','agent','user','incall');
+	private	$_listtype			= array('agent',);
 	public 	$_error				= array();
 	public 	$_queue_log_conf	= array();
 	public 	$_queue_log 		= array();
@@ -557,58 +556,6 @@ class xivo_stats_lib
 	{
 		switch ($type)
 		{
-			case 'incall':
-				$ls_incall = array();
-				if ($this->_conf['incall'] === false)
-					return(false);
-
-				if (empty($this->_objectkey) === true
-				|| $this->_objectkey === 0
-				|| $this->_objectkey === null)
-				{
-					if($this->_conf['incall'] !== false)
-					{
-						$incall = array_values($this->_conf['incall']);
-						$nb = count($incall);
-						for($i=0;$i<$nb;$i++)
-						{
-							$ref = &$incall[$i];
-							if (($rs = $this->normalize_incall($ref,'incall')) === false)
-								continue;
-							array_push($ls_incall, $rs);
-						}
-					}
-				}
-				elseif (empty($this->_objectkey) === false
-				&& preg_match('/([a-z]+)-([0-9]+)/',$this->_objectkey,$out) === 1)
-				{
-					$key = $out[1];
-					$id = $out[2];
-
-					switch ($key)
-					{
-						case 'incall':
-							if ($this->_conf['incall'] !== false)
-							{
-								$listincall = $this->_conf['incall'];
-								while ($listincall)
-								{
-									$incall = array_shift($listincall);
-									if ((int) $id === (int) $incall['id']
-									&& ($rs = $this->normalize_incall($incall,$key)) !== false)
-									{
-										array_push($ls_incall, $rs);
-										break;
-									}
-								}
-							}
-							break;
-						default:
-							return($ls_incall);
-					}
-				}
-				return($ls_incall);
-				break;
 			case 'agent':
 				$ls_agent = array();
 
@@ -781,37 +728,14 @@ class xivo_stats_lib
 		}
 	}
 
-	public function has_type()
-	{
-		$rs = array();
-		$nb = count($this->_listconftype);
-		for($i=0;$i<$nb;$i++)
-		{
-			$ref = &$this->_listconftype[$i];
-			$rs[$ref] = true;
-			if (isset($this->_conf[$ref]) === false
-			|| $this->_conf[$ref] === false)
-				$rs[$ref] = false;
-		}
-
-		return($rs);
-	}
-
 	public function get_object_list()
 	{
 		$objrestore = $this->_objectkey;
 		$this->_objectkey = 0;
 		switch ($this->_type)
 		{
-			case 'incall':
-				$rs = ($this->get_incall_list());
-				break;
 			case 'agent':
 				$rs = ($this->get_agent_list());
-				break;
-			case 'period':
-			case 'queue':
-				$rs = ($this->get_queue_list());
 				break;
 			default:
 				$rs = (false);
@@ -892,103 +816,9 @@ class xivo_stats_lib
 			case 'user':
 				return($this->generate_cache_for_agent($list));
 				break;
-			case 'queue':
-			case 'group':
-				return($this->generate_cache_for_queue($list));
-				break;
-			case 'period':
-				return($this->generate_cache_for_period($list));
-				break;
-			case 'incall':
-				return($this->generate_cache_for_incall($list));
-				break;
 			default:
 				return(false);
 		}
-	}
-
-	private function generate_cache_for_incall($listincall)
-	{
-		$this->_sts->load_ressource('incall');
-		$stats_incall = new stats_ressource_incall(&$this);
-
-		$dbeg = $this->_interval['beg'];
-		$dend = $this->_interval['end'];
-
-		$full_interval = $this->build_full_date_interval($dbeg,$dend);
-		$data_listmonth = dwho_date::get_listmonth_for_interval($dbeg,$dend);
-
-		while($listincall)
-		{
-			$incall = array_shift($listincall);
-			$keyfile = $incall['keyfile'];
-			$keydata = $incall['keydata'];
-			$listmonth = $data_listmonth;
-			while($listmonth)
-			{
-				$key = array_shift($listmonth);
-				$key = $key['key'];
-				$year = substr($key,0,4);
-				$month = substr($key,4,2);
-				$listday = $this->get_listday_for_month($year,$month);
-				while($listday)
-				{
-					$day = array_shift($listday);
-					if (strlen(($day = $day['key'])) === 1)
-						$day = '0'.$day;
-					if (isset($full_interval[$year.$month.$day]) === false)
-						continue;
-					$this->_interval_process = $full_interval[$year.$month.$day];
-					$stats_incall->parse_log($keydata,$day);
-				}
-				$this->save_cache($stats_incall->_result,$keyfile,$year,$month);
-				$stats_incall->_result = array();
-			}
-		}
-		unset($stats_incall,$full_interval,$data_listmonth);
-		return(true);
-	}
-
-	private function generate_cache_for_queue($listqueue)
-	{
-		$this->_sts->load_ressource('queue');
-		$stats_queue = new stats_ressource_queue(&$this);
-
-		$dbeg = $this->_interval['beg'];
-		$dend = $this->_interval['end'];
-
-		$full_interval = $this->build_full_date_interval($dbeg,$dend);
-		$data_listmonth = dwho_date::get_listmonth_for_interval($dbeg,$dend);
-
-		while($listqueue)
-		{
-			$queue = array_shift($listqueue);
-			$keyfile = $queue['keyfile'];
-			$keydata = $queue['keydata'];
-			$listmonth = $data_listmonth;
-			while($listmonth)
-			{
-				$key = array_shift($listmonth);
-				$key = $key['key'];
-				$year = substr($key,0,4);
-				$month = substr($key,4,2);
-				$listday = $this->get_listday_for_month($year,$month);
-				while($listday)
-				{
-					$day = array_shift($listday);
-					if (strlen(($day = $day['key'])) === 1)
-						$day = '0'.$day;
-					if (isset($full_interval[$year.$month.$day]) === false)
-						continue;
-					$this->_interval_process = $full_interval[$year.$month.$day];
-					$stats_queue->parse_log($keydata,$day);
-				}
-				$this->save_cache($stats_queue->_result,$keyfile,$year,$month);
-				$stats_queue->_result = array();
-			}
-		}
-		unset($stats_queue,$full_interval,$data_listmonth);
-		return(true);
 	}
 
 	private function generate_cache_for_agent($listagent)
@@ -1030,48 +860,6 @@ class xivo_stats_lib
 			}
 		}
 		unset($stats_agent,$full_interval,$data_listmonth);
-		return(true);
-	}
-
-	private function generate_cache_for_period($listqueue)
-	{
-		$this->_sts->load_ressource('period');
-		$stats_period = new stats_ressource_period(&$this);
-
-		$dbeg = $this->_interval['beg'];
-		$dend = $this->_interval['end'];
-
-		$full_interval = $this->build_full_date_interval($dbeg,$dend);
-		$data_listmonth = dwho_date::get_listmonth_for_interval($dbeg,$dend);
-
-		while($listqueue)
-		{
-			$queue = array_shift($listqueue);
-			$keyfile = $queue['keyfile'];
-			$keydata = $queue['keydata'];
-			$listmonth = $data_listmonth;
-			while($listmonth)
-			{
-				$key = array_shift($listmonth);
-				$key = $key['key'];
-				$year = substr($key,0,4);
-				$month = substr($key,4,2);
-				$listday = $this->get_listday_for_month($year,$month);
-				while($listday)
-				{
-					$day = array_shift($listday);
-					if (strlen(($day = $day['key'])) === 1)
-						$day = '0'.$day;
-					if (isset($full_interval[$year.$month.$day]) === false)
-						continue;
-					$this->_interval_process = $full_interval[$year.$month.$day];
-					$stats_period->parse_log($keydata,$day);
-				}
-				$this->save_cache($stats_period->_result,$keyfile,$year,$month,'period');
-				$stats_period->_result = array();
-			}
-		}
-		unset($stats_period,$full_interval,$data_listmonth);
 		return(true);
 	}
 
@@ -1357,39 +1145,6 @@ class xivo_stats_lib
 		return((string) array_pop(array_keys($listday)));
 	}
 
-	public function get_data_cel($type,$value,$event,$field=null,$addwhere=null)
-	{
-		if(($_SRE = &dwho_gct::get('xivo_service')) === false
-		|| ($modcel = &$_SRE->get_module('ipbx','cel')) === false)
-			return(false);
-
-		$interval = $this->_interval_process;
-
-		if ((isset($interval['beg']) === false
-			|| empty($interval['beg']) === true
-			|| strlen($interval['beg']) !== 10)
-		|| (isset($interval['end']) === false
-			|| empty($interval['end']) === true
-			|| strlen($interval['end']) !== 10))
-			return(false);
-
-		$datetime = array();
-		$datetime['beg'] = date('Y-m-d H:i:s',$interval['beg']);
-		$datetime['end'] = date('Y-m-d H:i:s',$interval['end']);
-
-		switch ($type)
-		{
-			case 'count':
-				return($modcel->count_stats($this->_type,$value,$event,$datetime,$addwhere));
-				break;
-			case 'sum':
-				return($modcel->sum_stats($this->_type,$value,$event,$field,$datetime,$addwhere));
-				break;
-			default:
-				return(false);
-		}
-	}
-
 	public function get_data_queue_log($type,$value,$event,$field=null,$addwhere=null)
 	{
 		if(($_SRE = &dwho_gct::get('xivo_service')) === false
@@ -1405,19 +1160,6 @@ class xivo_stats_lib
 			|| empty($interval['end']) === true
 			|| strlen($interval['end']) !== 10))
 			return(false);
-
-		/*
-		 * FIXME do not necessary
-		 *
-		if (preg_match('/^([+-]{1})([0-9]{4})|(EST)$/',strftime('%z'),$out) !== 0)
-		{
-			$val = (int) substr($out[2],0 ,2);
-			$unit = ($val > 1) ? 'hours' : 'hour';
-			$operator = ($out[1] === '+') ? '-' : '+';
-			$interval['beg'] = strtotime("$operator $val $unit",$interval['beg']);
-			$interval['end'] = strtotime("$operator $val $unit",$interval['end']);
-		}
-		*/
 
 		$datetime = array();
 		$datetime['beg'] = date('Y-m-d H:i:s',$interval['beg']);

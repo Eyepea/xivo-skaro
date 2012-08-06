@@ -236,6 +236,8 @@ class xivo_service_asterisk_queue_log_sql extends xivo_service_asterisk_abstract
 				return(0);
 		}
 
+		dwho_var_dump($this->_dso->get_select());
+
 		if(($this->_cnt = $this->_dso->select_count()) === false)
 			$this->_cnt = 0;
 

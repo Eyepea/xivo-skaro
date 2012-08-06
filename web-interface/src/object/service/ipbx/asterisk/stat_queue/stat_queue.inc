@@ -40,6 +40,8 @@ class xivo_service_asterisk_stat_queue extends xivo_service_asterisk_abstract
 
 	function id_from_name($name)
 	{
+		if (empty($name))
+			return(false);
 		return($this->_dso->get_id_from_name($name));
 	}
 }

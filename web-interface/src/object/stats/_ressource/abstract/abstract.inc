@@ -84,15 +84,7 @@ class xivo_stats_ressource_abstract
 
 	private function get_data_queue_log($type,$value,$event,$field=null,$addwhere=null)
 	{
-		switch ($this->_table)
-		{
-			case 'cel':
-				return($this->_xs->get_data_cel($type,$value,$event,$field,$addwhere));
-				break;
-			case 'queue_log':
-			default:
-				return($this->_xs->get_data_queue_log($type,$value,$event,$field,$addwhere));
-		}
+		return($this->_xs->get_data_queue_log($type,$value,$event,$field,$addwhere));
 	}
 
 	public function eval_field_queue_log($event,$type)
@@ -128,7 +120,7 @@ class xivo_stats_ressource_abstract
 		}
 	}
 
-	private function _build_hour_for_day($key, $time)
+	protected function _build_hour_for_day($key, $time)
 	{
 		$dip = array();
 		$year = date('Y', $time);
@@ -158,7 +150,7 @@ class xivo_stats_ressource_abstract
 		return($rs);
 	}
 
-	private function _build_total($queue_id, $dbeg, $dend)
+	protected function _build_total($queue_id, $dbeg, $dend)
 	{
 		$year = date('Y', $dend);
 		$month = date('m', $dend);
@@ -166,82 +158,7 @@ class xivo_stats_ressource_abstract
 		$interval = array();
 		$interval['beg'] = $dbeg;
 		$interval['end'] = mktime(23, 59, 59, $month, $day, $year);
-		$this->build_stat($queue_id, "total", $interval);
-	}
-
-	public function get_data_queue()
-	{
-		$axetype = $this->_xs->get_axetype();
-
-		if (($itl = $this->_xs->get_datecal()) === false
-		|| is_null($itl['dbeg']) === true)
-			return(false);
-
-		$dbeg = strtotime($itl['dbeg']);
-		$dend = strtotime($itl['dend']);
-
-		$this->_stat_queue_periodic->set_dso_param('hour_itl',$this->_xs->get_dip_hour());
-		$this->_stat_queue_periodic->set_dso_param('days',$this->_xs->get_valid_list_day());
-		$this->_stat_call_on_queue->set_dso_param('hour_itl',$this->_xs->get_dip_hour());
-		$this->_stat_call_on_queue->set_dso_param('days',$this->_xs->get_valid_list_day());
-
-		if (preg_match('/queue-([0-9]+)/', $this->_xs->_objectkey, $out) === 1)
-		{
-			$queuefeatures_id = (int) $out[1];
-			$this->_build_total($queuefeatures_id, $dbeg, $dend);
-		}
-
-		switch ($axetype)
-		{
-			case 'day':
-				$key_data = $this->_xs->get_listhour();
-				while($key_data)
-				{
-					$key_full_data = array_shift($key_data);
-					$key = $key_full_data['key'];
-					$this->build_stat($queuefeatures_id, $key, $this->_build_hour_for_day($key, $dbeg));
-				}
-				break;
-			case 'week':
-				$this->full_itl = $this->_xs->build_full_date_interval($dbeg, $dend);
-				foreach ($this->full_itl as $date => $date_itl)
-					$this->build_stat($queuefeatures_id, $date, $date_itl);
-				break;
-			case 'month':
-				$this->full_itl = $this->_xs->build_full_date_interval($dbeg, $dend);
-				foreach ($this->full_itl as $date => $date_itl)
-					$this->build_stat($queuefeatures_id, $date, $date_itl);
-				break;
-			case 'year':
-				$key_data = dwho_date::get_listmonth();
-				while ($key_data)
-				{
-					$key_full_data = array_shift($key_data);
-					$key = $key_full_data['key'];
-					$dip = array();
-					$dip['beg'] = mktime(0,0,1,$key,1,date('Y', $dbeg));
-					$dip['end'] = mktime(23,59,59,$key,31,date('Y', $dbeg));
-					$this->build_stat($queuefeatures_id, $key, $dip);
-				}
-				break;
-			case 'type':
-				$key_data = $this->get_list_by_type();
-				while($key_data)
-				{
-					$key_full_data = array_shift($key_data);
-					$keyfile = $key_full_data['keyfile'];
-
-					preg_match('/queue-([0-9]+)/', $keyfile, $out);
-					$queuefeatures_id = (int) $out[1];
-
-					$dip = array();
-					$dip['beg'] = $dbeg;
-					$dip['end'] = $dend;
-					$this->build_stat($queuefeatures_id, $keyfile, $dip);
-				}
-				break;
-			default:
-		}
+		$this->_build_stat($queue_id, "total", $interval);
 	}
 
 	public function get_data()
