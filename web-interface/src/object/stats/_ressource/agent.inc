@@ -48,11 +48,9 @@ class stats_ressource_agent extends xivo_stats_ressource_abstract
 	{
 		$this->init_result($key);
 
-                $agent_ids = $this->_stat_agent->id_from_numbers($key_data);
-                if (! agent_ids)
-                        return;
-
-                dwho_var_dump($agent_ids, "stat_agent ids");
+		$agent_ids = $this->_stat_agent->id_from_numbers($key_data);
+		if (! agent_ids)
+			return;
 
 		$val = $this->eval_count_data($key_data,'CONNECT');
 		$this->update_result(array($key,'connect'),$val);
