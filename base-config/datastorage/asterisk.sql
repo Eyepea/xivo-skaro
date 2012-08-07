@@ -2771,6 +2771,45 @@ CREATE TABLE "sccpdevice" (
 );
 
 
+DROP TYPE IF EXISTS "queue_statistics";
+CREATE TYPE "queue_statistics" AS (
+    received_call_count bigint,
+    answered_call_count bigint,
+    answered_call_in_qos_count bigint,
+    abandonned_call_count bigint,
+    received_and_done bigint,
+    max_hold_time integer,
+    mean_hold_time integer
+);
+
+
+DROP FUNCTION IF EXISTS "get_queue_statistics" (text, int, int);
+CREATE FUNCTION "get_queue_statistics" (queue_name text, in_window int, xqos int)
+  RETURNS "queue_statistics" AS
+$$
+    SELECT
+        -- received_call_count
+        count(*),
+        -- answered_call_count
+        count(case when call_picker <> '' then 1 end),
+        -- answered_call_in_qos_count
+        count(case when call_picker <> '' and hold_time < $3 then 1 end),
+        -- abandonned_call_count
+        count(case when hold_time is not null and (call_picker = '' or call_picker is null) then 1 end),
+        -- received_and_done
+        count(hold_time),
+        -- max_hold_time
+        max(hold_time),
+         -- mean_hold_time
+        cast (round(avg(hold_time)) as int)
+    FROM
+        queue_info
+    WHERE
+        queue_name = $1 and call_time_t > $2;
+$$
+LANGUAGE SQL;
+
+
 -- grant all rights to asterisk
 GRANT ALL ON ALL TABLES IN SCHEMA public TO asterisk;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public to asterisk;
