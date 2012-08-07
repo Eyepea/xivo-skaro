@@ -38,9 +38,12 @@ class xivo_service_asterisk_stat_agent extends xivo_service_asterisk_abstract
 		$this->_dso = &$dso;
 	}
 
-	function id_from_numbers($numbers)
+	public function id_from_numbers($value)
 	{
-		return($this->_dso->get_id_from_numbers($numbers));
+		if (! $value)
+			return(false);
+
+		return($this->_dso->get_id_from_numbers($value));
 	}
 }
 

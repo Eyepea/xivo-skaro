@@ -21,93 +21,24 @@
 class stats_ressource_agent extends xivo_stats_ressource_abstract
 {
 
-	protected		$_field		= array('logintime'		=> array('type' => 'time'),
-									'holdtime'			=> array('type' => 'time'),
-									'conversationtime'		=> array('type' => 'time'),
-									'calltime'			=> array('type' => 'time'),
-									'ringtime'			=> array('type' => 'time'),
-									'pausetime'			=> array('type' => 'time'),
-									'traitmenttime'		=> array('type' => 'time'),
-									'connect'			=> array('type' => 'int'),
-									'completeagent'		=> array('type' => 'int'),
-									'completecaller'	=> array('type' => 'int'),
-									'ringnoanswer'		=> array('type' => 'int'),
-									'transfer'			=> array('type' => 'int'),
-									'abandon'			=> array('type' => 'int')
-							);
+	protected	$_type = 'agent';
 
 	public function __construct(&$_XS)
 	{
 		parent::__construct(&$_XS);
-		$this->_table = 'queue_log';
-		$this->_type = 'agent';
-		$this->_xs->set_type($this->_type);
 	}
 
-	public function parse_log($key_data,$key)
+	protected function _build_stat($obj_process, $key, $interval)
 	{
-		$this->init_result($key);
-
-		$agent_ids = $this->_stat_agent->id_from_numbers($key_data);
+		$agent_ids = $this->_stat_agent->id_from_numbers($obj_process['keydata']);
 		if (! $agent_ids)
 			return;
 
-		$val = $this->eval_count_data($key_data,'CONNECT');
-		$this->update_result(array($key,'connect'),$val);
-
-		$field = $this->eval_field_queue_log('CONNECT','holdtime');
-		$holdtime = $this->eval_sum_data($key_data,'CONNECT',$field);
-		$this->update_result(array($key,'holdtime'),$holdtime);
-		$this->update_result(array($key,'traitmenttime'),$holdtime);
-
-		$val = $this->eval_count_data($key_data,'TRANSFER');
-		$this->update_result(array($key,'transfer'),$val);
-
-		$field = $this->eval_field_queue_log('RINGNOANSWER','ringtime');
-		$ringtime = $this->eval_sum_data($key_data,'RINGNOANSWER',$field);
-		$this->update_result(array($key,'ringtime'),$ringtime);
-		$this->update_result(array($key,'traitmenttime'),$ringtime);
-		$val = $this->eval_count_data($key_data,'RINGNOANSWER');
-		$this->update_result(array($key,'ringnoanswer'),$val);
-
-		$val = $this->eval_count_data($key_data,'ABANDON');
-		$this->update_result(array($key,'abandon'),$val);
-
-		$field = $this->eval_field_queue_log('COMPLETEAGENT','calltime');
-		$calltime = $this->eval_sum_data($key_data,'COMPLETEAGENT',$field);
-		$this->update_result(array($key,'calltime'),$calltime);
-		$this->update_result(array($key,'traitmenttime'),$calltime);
-
-		$field = $this->eval_field_queue_log('COMPLETEAGENT','holdtime');
-		$holdtime = $this->eval_sum_data($key_data,'COMPLETEAGENT',$field);
-		$this->update_result(array($key,'holdtime'),$holdtime);
-
-		$val = $this->eval_count_data($key_data,'COMPLETEAGENT');
-		$this->update_result(array($key,'completeagent'),$val);
-
-		$field = $this->eval_field_queue_log('COMPLETECALLER','calltime');
-		$calltime = $this->eval_sum_data($key_data,'COMPLETECALLER',$field);
-		$this->update_result(array($key,'calltime'),$calltime);
-		$this->update_result(array($key,'traitmenttime'),$calltime);
-
-		$field = $this->eval_field_queue_log('COMPLETECALLER','holdtime');
-		$holdtime = $this->eval_sum_data($key_data,'COMPLETECALLER',$field);
-		$this->update_result(array($key,'holdtime'),$holdtime);
-
-		$val = $this->eval_count_data($key_data,'COMPLETECALLER');
-		$this->update_result(array($key,'completecaller'),$val);
-
-		$field = $this->eval_field_queue_log('AGENTLOGOFF','logintime');
-		$logintime = $this->eval_sum_data($key_data,'AGENTLOGOFF',$field);
-		$this->update_result(array($key,'logintime'),$logintime);
-
-		$field = $this->eval_field_queue_log('AGENTCALLBACKLOGOFF','logintime');
-		$logintime = $this->eval_sum_data($key_data,'AGENTCALLBACKLOGOFF',$field,array('ISNOT', array('data1', '')));
-		$this->update_result(array($key,'logintime'),$logintime);
-
-		$interval = $this->_xs->_interval_process;
 		$conversation_time = $this->_stat_call_on_queue->get_agent_conversation_time($interval, $agent_ids);
-		$this->update_result(array($key, 'conversationtime'), $conversation_time);
+		$answered = $this->_stat_call_on_queue->get_count_agent_answered($interval, $agent_ids);
+
+		$this->_result[$key]['conversationtime']['result'] = $conversation_time;
+		$this->_result[$key]['connect']['result'] = $answered;
 
 		return($this->_result);
 	}

@@ -57,6 +57,7 @@ switch ($axetype)
 }
 
 $tpl_statistics->set_data_custom('agent',$stats_agent->_result);
+
 /*
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('productivity',
@@ -64,10 +65,13 @@ $tpl_statistics->add_col('productivity',
 					'{custom:agent,[key],calltime}/{custom:agent,[key],logintime}',
 					'percent');
 */
+
 $tpl_statistics->set_col_struct('call_counter');
 $tpl_statistics->add_col('connect',
 					'direct',
 					'custom:agent,[key],connect');
+
+/*
 $tpl_statistics->add_col('transfer',
 					'direct',
 					'custom:agent,[key],transfer');
@@ -77,12 +81,14 @@ $tpl_statistics->add_col('ringnoanswer',
 $tpl_statistics->add_col('outgoing',
 					'direct',
 					'-');
+*/
 
 $tpl_statistics->set_col_struct('total_time');
 $tpl_statistics->add_col('conversation',
 			 'direct',
 			 'custom:agent,[key],conversationtime',
 			 'time');
+
 /*
 $tpl_statistics->add_col('login',
 					'direct',
@@ -100,8 +106,7 @@ $tpl_statistics->add_col('traitment',
 					'direct',
 					'custom:agent,[key],traitmenttime',
 					'time');
-*/
-/*
+
 $tpl_statistics->set_col_struct('average_time');
 $tpl_statistics->add_col('dmt',
 					'expression',

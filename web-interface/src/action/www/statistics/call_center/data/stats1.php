@@ -23,7 +23,7 @@ include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 $_STS->load_ressource('queue');
 
 $stats_queue = new stats_ressource_queue(&$_XS);
-$stats_queue->get_data_queue();
+$stats_queue->get_data();
 
 $tpl_statistics->set_name('queue');
 $tpl_statistics->set_baseurl('statistics/call_center/data/stats1');
@@ -108,8 +108,8 @@ $tpl_statistics->gener_table();
 
 $_TPL->set_var('table1',$tpl_statistics);
 $_TPL->set_var('listrow',$tpl_statistics->get_data_rows());
-$_TPL->set_var('listobject',$_XS->get_object_list());
 $_TPL->set_var('objectkey',$_XS->get_objectkey());
+$_TPL->set_var('listobject',$_XS->get_object_list());
 $_TPL->set_var('showdashboard_call_center',true);
 
 if($act === 'exportcsv')

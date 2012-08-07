@@ -560,10 +560,7 @@ class dwho_tpl_statistics extends dwho_tpl_module
 				&& $listtype !== false)
 			return($this->bbf('no_conf_selected'));
 		elseif($listtype === false)
-		return($this->bbf('no_type_in_conf'));
-		elseif (is_object($this->_xs) === true
-				&& $this->_xs->has_cache_type() === false)
-				return($this->bbf('no_cache_generate'));
+			return($this->bbf('no_type_in_conf'));
 		else
 			return(false);
 

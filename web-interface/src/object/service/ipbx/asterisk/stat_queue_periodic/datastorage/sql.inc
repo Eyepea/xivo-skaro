@@ -49,27 +49,14 @@ class xivo_service_asterisk_stat_queue_periodic_sql extends xivo_service_asteris
 		return($r[0]);
 	}
 
-	public function queue_sum_by_event($event,$interval,$queue_id)
+	public function queue_sum_by_event($event, $interval, $queue_id)
 	{
 		$field = array((object) ('SUM("'.$event.'")'));
 
 		$this->_dso->new_select($this->_table,$field);
 
 		$this->_dso->where(array('queue_id' => $queue_id));
-
-		if (is_null($interval) === false)
-			$this->_dso->wherebetween('time',
-										strftime('%Y-%m-%d %H:%M:%S', $interval['beg']),
-										strftime('%Y-%m-%d %H:%M:%S.999999', $interval['end']),
-										$this->_table);
-
-		$hour_itl = $this->get_param('hour_itl');
-		if (is_null($hour_itl) === false)
-			$this->_dso->andwhere('EXTRACT(HOUR FROM "'.$this->_table.'".time) BETWEEN '.$hour_itl['beg'].' AND '.($hour_itl['end']-1));
-
-		$days = $this->get_param('days');
-		if (is_null($days) === false)
-			$this->_dso->andwhere('EXTRACT(DOW FROM "'.$this->_table.'".time) IN ('.implode(',', array_values($days)).')');
+		$this->_stat_common_where($interval);
 
 		$r = $this->_dso->select_singlecolumn();
 

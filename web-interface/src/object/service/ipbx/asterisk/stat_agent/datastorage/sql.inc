@@ -23,16 +23,11 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 class xivo_service_asterisk_stat_agent_sql extends xivo_service_asterisk_abstract_sql
 {
 
-	public function get_id_from_numbers($numbers)
+	public function get_id_from_numbers($value)
 	{
-          if (! $numbers)
-			return(false);
-
 		$this->_dso->new_select($this->_table,'id');
 
-		foreach($numbers as $number) {
-			$this->_dso->orwhere(array('name' => $number));
-		}
+		$this->_dso->wherein('name',$value);
 
 		$r = $this->_dso->select_singlecolumn();
 

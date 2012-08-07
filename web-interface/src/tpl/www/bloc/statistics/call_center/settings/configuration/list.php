@@ -50,7 +50,7 @@ $page = $url->pager($pager['pages'],
 		$form->hidden(array('name'	=> 'page',
 					'value'	=> $pager['page']));
 ?>
-<table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
+<table id="table-main-listing">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
@@ -97,17 +97,6 @@ $page = $url->pager($pager['pages'],
 		</td>
 		<td class="td-right" colspan="2">
 <?php
-		if(xivo_user::chk_acl('settings','cache') === true):
-			echo	$url->href_html($url->img_html('img/site/button/file.gif',
-				 					   $this->bbf('opt_editcache'),
-									   'border="0"'),
-							'statistics/call_center/settings/cache',
-							array('act'		=> 'list',
-								  'idconf'	=> $ref['id']),
-							null,
-							$this->bbf('opt_editcache'));
-		endif;
-
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',
 								   $this->bbf('opt_modify'),
 								   'border="0"'),

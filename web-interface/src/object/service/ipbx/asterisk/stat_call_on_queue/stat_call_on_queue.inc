@@ -62,6 +62,13 @@ class xivo_service_asterisk_stat_call_on_queue extends xivo_service_asterisk_abs
 	{
 		return $this->_dso->agent_conversation_time($interval, $agent_ids);
 	}
+
+	public function get_count_agent_answered($interval, $agent_ids)
+	{
+		return $this->_dso->agent_count_status('answered', $interval, $agent_ids);
+	}
+
+
 }
 
 ?>

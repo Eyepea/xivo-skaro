@@ -21,42 +21,26 @@
 class stats_ressource_queue extends xivo_stats_ressource_abstract
 {
 
-	protected $_field = array('presented'                 => array(),
-								'connect'                 => array(),
-								'abandon'                 => array(),
-								'deterred_on_close'       => array(),
-								'deterred_on_saturation'  => array(),
-								'joinempty'               => array(),
-								'leaveempty'              => array(),
-								'timeout'                 => array(),
-								'average_wait_time'       => array(),
-								'home_rated'              => array(),
-								'qos'                     => array()
-		);
+	protected	$_type = 'queue';
 
 	public function __construct(&$_XS)
 	{
 		parent::__construct(&$_XS);
-		$this->_type = 'queue';
-		$this->_xs->set_type($this->_type);
 	}
 
-	protected function _build_stat($queuefeatures_id, $key, $interval)
+	protected function _build_stat($obj_process, $key, $interval)
 	{
-		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
+		$queuefeatures_name = $this->_queuefeatures->name_from_id($obj_process['id']);
 		if (!$queuefeatures_name)
 			return;
 
 		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
 		if (!$queue_id)
 			return;
-		$queue = $this->_xs->get_list_by_type('queue');
-		if (!$queue)
-			return;
 
 		$total = $this->_stat_queue_periodic->get_event_total($interval, $queue_id);
 		$answered = $this->_stat_queue_periodic->get_event_answered($interval, $queue_id);
-		$answered_in_qos = $this->_stat_call_on_queue->get_count_under_qos($interval, $queue_id, $queue[0]['qos']);
+		$answered_in_qos = $this->_stat_call_on_queue->get_count_under_qos($interval, $queue_id, $obj_process['qos']);
 		$closed = $this->_stat_queue_periodic->get_event_closed($interval, $queue_id);
 		$full = $this->_stat_queue_periodic->get_event_full($interval, $queue_id);
 		$abandon = $this->_stat_queue_periodic->get_event_abandon($interval, $queue_id);

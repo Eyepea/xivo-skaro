@@ -21,19 +21,17 @@
 class stats_ressource_period extends xivo_stats_ressource_abstract
 {
 
+	protected	$_type = 'period';
 	public		$_field		= array();
 
 	public function __construct(&$_XS)
 	{
 		parent::__construct(&$_XS);
-		$this->_table = 'queue_log';
-		$this->_type = 'period';
-		$this->_xs->set_type($this->_type);
 	}
 
-	protected function _build_stat($queuefeatures_id, $key, $interval)
+	protected function _build_stat($obj_process, $key, $interval)
 	{
-		$queuefeatures_name = $this->_queuefeatures->name_from_id($queuefeatures_id);
+		$queuefeatures_name = $this->_queuefeatures->name_from_id($obj_process['id']);
 		if (!$queuefeatures_name)
 			return;
 

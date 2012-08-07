@@ -106,12 +106,10 @@ $array['tree']['statistics'] = array();
 $array['tree']['statistics']['call_center'] = array();
 $array['tree']['statistics']['call_center']['settings'] = array();
 $array['tree']['statistics']['call_center']['settings']['configuration'] = true;
-$array['tree']['statistics']['call_center']['settings']['genercache'] = true;
-$array['tree']['statistics']['call_center']['settings']['cache'] = true;
 $array['tree']['statistics']['call_center']['data'] = array();
 $array['tree']['statistics']['call_center']['data']['stats1'] = true;
 $array['tree']['statistics']['call_center']['data']['stats2'] = true;
-$array['tree']['statistics']['call_center']['data']['stats3'] = true;
+#$array['tree']['statistics']['call_center']['data']['stats3'] = true;
 $array['tree']['statistics']['call_center']['data']['stats4'] = true;
 
 // callcenter

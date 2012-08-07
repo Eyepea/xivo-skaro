@@ -29,7 +29,7 @@ $axetype = $this->get_var('axetype');
 $infocal = $this->get_var('infocal');
 $element = $this->get_var('element');
 $objectkey = $this->get_var('objectkey');
-
+$listobject = $this->get_var('listobject');
 
 ?>
 <script type="text/javascript">
@@ -165,12 +165,7 @@ if($this->get_var('showdashboard_call_center') === true):
 ?>
 			</div>
 <?php
-	if(is_null($conf) === false && $conf !== false
-	&& is_null($this->get_var('listobject')) === false
-	&& ($listobject = $this->get_var('listobject')) !== false
-	&& is_null($this->get_var('axetype')) === false
-	&& $this->get_var('axetype') !== 'type'):
-
+	if($conf && $listobject && $axetype !== 'type'):
 		foreach ($listobject as $k => &$v)
 			$v['identity'] = dwho_trunc(&$v['identity'],25,'...',5);
 ?>
@@ -193,10 +188,7 @@ if($this->get_var('showdashboard_call_center') === true):
 	endif;
 ?>
 <?php
-	if(is_null($conf) === false && $conf !== false
-	&& is_null($this->get_var('listobject')) === false
-	&& is_null($this->get_var('axetype')) === false
-	&& $this->get_var('axetype') !== 'type'):
+	if($conf && $listobject && $axetype !== 'type'):
 ?>
 			<div id="d-conf-axetype" class="fm-paragraph">
 			<?=$this->bbf('conf_axetype')?>
@@ -273,10 +265,10 @@ if($this->get_var('showdashboard_call_center') === true):
 		</form>
 		</div>
 <?php
-	if(is_null($conf) === false && $conf !== false):
-	$dbeg = $conf['dbegcache'];
-	$dend = $conf['dendcache'];
-	$dencache = ($dend != 0) ? $this->bbf('hlp_fm_conf_period_cache-with_end',array($dend)) : $this->bbf('hlp_fm_conf_period_cache-without_end');
+	if($conf):
+		$dbeg = $conf['dbegcache'];
+		$dend = $conf['dendcache'];
+		$dencache = ($dend != 0) ? $this->bbf('hlp_fm_conf_period_cache-with_end',array($dend)) : $this->bbf('hlp_fm_conf_period_cache-without_end');
 ?>
 		<fieldset>
 			<legend><?=$this->bbf('title_conf_cache_period')?></legend>
