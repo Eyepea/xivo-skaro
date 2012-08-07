@@ -526,10 +526,12 @@ class xivo_stats_lib
 		return($rs);
 	}
 
-	public function get_object_list()
+	public function get_object_list($type=null)
 	{
+		if (!$type)
+			$type = $this->_type;
 		$rs = array();
-		switch ($this->_type)
+		switch ($type)
 		{
 			case 'agent':
 				$rs = $this->get_list_by_type('agent');

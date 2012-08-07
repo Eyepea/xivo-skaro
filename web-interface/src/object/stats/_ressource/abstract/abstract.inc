@@ -21,12 +21,12 @@
 class xivo_stats_ressource_abstract
 {
 
-	protected 	$_table		 		= '';
-	public	 	$_xs		 		= null;
-	public	 	$_sts		 		= null;
-	public 		$_data_custom 		= array();
-	public 		$_counter	 		= array();
-	public		$_result 			= array();
+	protected 	$_table                = '';
+	public	 	$_xs                   = null;
+	public	 	$_sts                  = null;
+	public 		$_data_custom          = array();
+	public 		$_counter              = array();
+	public		$_result               = array();
 	protected	$_stat_queue_periodic  = null;
 	protected	$_stat_call_on_queue   = null;
 	protected	$_queuefeatures        = null;
@@ -59,12 +59,12 @@ class xivo_stats_ressource_abstract
 
 	public function get_queue_list()
 	{
-		return($this->get_list_by_type());
+		return($this->_xs->get_object_list('queue'));
 	}
 
 	public function get_agent_list()
 	{
-		return($this->get_list_by_type());
+		return($this->_xs->get_object_list('agent'));
 	}
 
 	protected function _build_hour_for_day($key, $time)

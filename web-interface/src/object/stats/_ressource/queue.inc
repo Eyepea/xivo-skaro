@@ -30,11 +30,7 @@ class stats_ressource_queue extends xivo_stats_ressource_abstract
 
 	protected function _build_stat($obj_process, $key, $interval)
 	{
-		$queuefeatures_name = $this->_queuefeatures->name_from_id($obj_process['id']);
-		if (!$queuefeatures_name)
-			return;
-
-		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
+		$queue_id = $this->_stat_queue->id_from_name($obj_process['name']);
 		if (!$queue_id)
 			return;
 
