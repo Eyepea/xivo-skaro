@@ -315,6 +315,7 @@ class xivo_stats_ressource_abstract
 							continue;
 
 						$this->eval_update_result($month_data[$day],$dayname);
+                                                $this->set_agent_talk_time($dayname, $dip, $key_data_arr);
 					}
 				}
 				break;
@@ -367,6 +368,7 @@ class xivo_stats_ressource_abstract
 							// update result for day data
 							$this->eval_update_result($month_data[$day],$monthnum);
 						}
+                                                $this->set_agent_talk_time($monthnum, $dip, $key);
 					}
 				}
 				break;
@@ -406,6 +408,16 @@ class xivo_stats_ressource_abstract
 				}
 		}
 		return($this->_result);
+	}
+
+	private function set_agent_talk_time($key, $interval, $agents)
+	{
+		$agent_ids = $this->_stat_agent->id_from_numbers($agents);
+		if (! $agent_ids)
+			return(false);
+		$conversation_time = $this->_stat_call_on_queue->get_agent_conversation_time($interval, $agent_ids);
+		$this->update_result(array($key, 'conversationtime'), $conversation_time);
+		return(true);
 	}
 
 	private function eval_update_result($data_to_eval,$key)

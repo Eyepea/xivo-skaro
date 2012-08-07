@@ -25,7 +25,7 @@ class xivo_service_asterisk_stat_agent_sql extends xivo_service_asterisk_abstrac
 
 	public function get_id_from_numbers($numbers)
 	{
-		if (! $numbers)
+          if (! $numbers)
 			return(false);
 
 		$this->_dso->new_select($this->_table,'id');
