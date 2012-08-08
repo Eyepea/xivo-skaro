@@ -1121,11 +1121,11 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		$arr = array();
 		$arr['stats_conf_id'] = (int) $this->_info['stats_conf']['id'];
 
-		$this->_stats_conf_incall->delete_where($arr);
+		#$this->_stats_conf_incall->delete_where($arr);
 		$this->_stats_conf_queue->delete_where($arr);
-		$this->_stats_conf_group->delete_where($arr);
+		#$this->_stats_conf_group->delete_where($arr);
 		$this->_stats_conf_agent->delete_where($arr);
-		$this->_stats_conf_user->delete_where($arr);
+		#$this->_stats_conf_user->delete_where($arr);
 		$this->_stats_conf_xivouser->delete_where($arr);
 
 		if($this->_status === 'delete')
