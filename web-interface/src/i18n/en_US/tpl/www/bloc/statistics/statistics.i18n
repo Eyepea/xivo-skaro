@@ -53,7 +53,7 @@ Calls handled
 <acronym title="Average call duration">MTA</acronym>
 
 ; col_presented
-<acronym title="Total">Total</acronym>
+<acronym title="Received">Received</acronym>
 
 ; col_connect
 <acronym title="Answered">Answered</acronym>
@@ -62,7 +62,7 @@ Calls handled
 <acronym title="Abandoned">Abandoned</acronym>
 
 ; col_ringnoanswer
-<acronym title="No Answered">No Answ.</acronym>
+<acronym title="No Answer">NA</acronym>
 
 ; col_outgoing
 <acronym title="Outgoing calls">Out</acronym>
@@ -80,22 +80,22 @@ Calls handled
 Dissuaded
 
 ; col_on_close
-<acronym title="Dissuaded on close">Close</acronym>
+<acronym title="Closed">Closed</acronym>
 
 ; col_on_saturation
-<acronym title="Busy">Busy</acronym>
+<acronym title="Saturated">Saturated</acronym>
 
 ; colstruct_redistributed
-Redistributed
+Dissuaded or Overflowed
 
 ; colstruct_ratio
 Ratios
 
 ; col_on_joinempty
-<acronym title="Join empty">JE</acronym>
+<acronym title="Blocking (join empty)">Blocking (incoming)</acronym>
 
 ; col_on_leaveempty
-<acronym title="Leave empty">LE</acronym>
+<acronym title="Blocking (leave empty)">Blocking (passing)</acronym>
 
 ; col_on_timeout
 <acronym title="No answer">NA</acronym>
@@ -104,7 +104,7 @@ Ratios
 <acronym title="Average waiting time">AWT</acronym>
 
 ; col_home_rated
-<acronym title="Home rated">HR</acronym>
+<acronym title="Answered rate">Answered rate</acronym>
 
 ; col_qos
 <acronym title="Quality of service"> QoS </acronym>
