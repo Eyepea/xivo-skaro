@@ -18,8 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$access_category = 'statistics';
-$access_subcategory = 'call_center';
+$access_category = 'data';
+$access_subcategory = 'stats4';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
