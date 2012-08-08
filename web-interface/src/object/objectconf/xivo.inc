@@ -39,7 +39,6 @@ $array['ini']['session'] = array();
 $array['ini']['session']['name'] = '_eid';
 $array['ini']['session']['time'] = 7200;
 $array['ini']['session']['path'] = '/';
-$array['ini']['session']['save_path'] = '/var/lib/pf-xivo-web-interface/session';
 
 $array['ini']['service'] = array();
 $array['ini']['service']['ipbx'] = true;
