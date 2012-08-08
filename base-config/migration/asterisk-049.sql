@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 BEGIN;
 
 CREATE TYPE "queue_statistics" AS (

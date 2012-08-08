@@ -2413,11 +2413,9 @@ CREATE TABLE "queue_log" (
  );
 
 CREATE INDEX queue_log__idx_time ON queue_log USING btree ("time");
+CREATE INDEX queue_log__idx_callid ON queue_log USING btree ("callid");
 CREATE INDEX queue_log__idx_queuename ON queue_log USING btree ("queuename");
-CREATE INDEX queue_log__idx_agent ON queue_log USING btree ("agent");
 CREATE INDEX queue_log__idx_event ON queue_log USING btree ("event");
-CREATE INDEX queue_log__idx_data1 ON queue_log USING btree ("data1");
-CREATE INDEX queue_log__idx_data2 ON queue_log USING btree ("data2");
 
 DROP TYPE IF EXISTS "call_exit_type";
 CREATE TYPE "call_exit_type" AS ENUM (
