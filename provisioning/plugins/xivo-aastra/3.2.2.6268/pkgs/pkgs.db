@@ -1,14 +1,14 @@
 [pkg_6735i-fw]
 description: Firmware for Aastra 6735i
 description_fr: Micrologiciel pour Aastra 6735i
-version: 3.2.2.6038
+version: 3.2.2.6268
 files: 6735i-fw
 install: aastra-fw 6735i
 
 [pkg_6737i-fw]
 description: Firmware for Aastra 6737i
 description_fr: Micrologiciel pour Aastra 6737i
-version: 3.2.2.6038
+version: 3.2.2.6268
 files: 6737i-fw
 install: aastra-fw 6737i
 
@@ -23,7 +23,6 @@ install: aastra-lang
 
 [install_aastra-fw]
 a-b: unzip $FILE1
-b-c: cp */$ARG1.st $ARG1.st
 
 [install_aastra-lang]
 a-b: unzip $FILE1
@@ -33,15 +32,15 @@ b-c: cp * i18n/
 
 [file_6735i-fw]
 filename: 6735i-fw.zip
-url: http://www.aastra.com/cps/rde/aareddownload?file_id=15256-15650-_P06_XML&dsproject=aastra&mtype=zip
-size: 19175706
-sha1sum: 7e9ab785ecf6b4e93addb3849d8e24b108ece2ed
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=15256-16280-_P06_XML&dsproject=aastra&mtype=zip
+size: 19196593
+sha1sum: e65adf0d35afafd898113d76ead136bc7f5779cd
 
 [file_6737i-fw]
 filename: 6737i-fw.zip
-url: http://www.aastra.com/cps/rde/aareddownload?file_id=15257-15653-_P06_XML&dsproject=aastra&mtype=zip
-size: 19326355
-sha1sum: 996605abe72e11525101722b076e44bb20641923
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=15257-16282-_P06_XML&dsproject=aastra&mtype=zip
+size: 19346884
+sha1sum: cd17ab38cb5fb73f28e5527a3581e53dc4bf4c18
 
 [file_lang]
 filename: lang.zip

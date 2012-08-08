@@ -9,7 +9,7 @@ logger = logging.getLogger('plugin.xivo-aastra')
 
 
 MODELS = [u'6735i', u'6737i']
-VERSION = u'3.2.2.6038'
+VERSION = u'3.2.2.6268'
 
 
 class AastraPlugin(common['BaseAastraPlugin']):
