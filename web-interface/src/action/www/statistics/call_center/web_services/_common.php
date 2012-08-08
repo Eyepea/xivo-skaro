@@ -25,7 +25,7 @@ header(XIVO_WS_HEADER_NAME_VERSION.': '.XIVO_WS_VERSION);
 
 if(defined('XIVO_LOC_WEBSERVICES_MODE') === false
 || (XIVO_LOC_WEBSERVICES_MODE !== 'private'
-   && XIVO_LOC_WEBSERVICES_MODE !== 'restricted') === true)
+	&& XIVO_LOC_WEBSERVICES_MODE !== 'restricted') === true)
 {
 	$http_response->set_status_line(403);
 	$http_response->send(true);

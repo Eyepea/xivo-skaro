@@ -384,11 +384,13 @@ $array['statistics/call_center/data/stats2'] = 'statistics/call_center/index.php
 $array['statistics/call_center/data/stats4'] = 'statistics/call_center/index.php/data/stats4';
 $array['statistics/call_center/settings/configuration'] = 'statistics/call_center/index.php/settings/configuration/';
 
+$array['statistics/call_center/json/private/settings/configuration'] = 'statistics/call_center/json.php/private/settings/configuration/';
 $array['statistics/json/private/call_center/stats1'] = 'statistics/json.php/private/call_center/stats1/';
 $array['statistics/json/private/call_center/stats2'] = 'statistics/json.php/private/call_center/stats2/';
 #$array['statistics/json/private/call_center/stats3'] = 'statistics/json.php/private/call_center/stats3/';
 $array['statistics/json/private/call_center/stats4'] = 'statistics/json.php/private/call_center/stats4/';
 
+$array['statistics/call_center/json/restricted/settings/configuration'] = 'statistics/call_center/json.php/restricted/settings/configuration/';
 $array['statistics/json/restricted/call_center/stats1'] = 'statistics/json.php/restricted/call_center/stats1/';
 $array['statistics/json/restricted/call_center/stats2'] = 'statistics/json.php/restricted/call_center/stats2/';
 #$array['statistics/json/restricted/call_center/stats3'] = 'statistics/json.php/restricted/call_center/stats3/';

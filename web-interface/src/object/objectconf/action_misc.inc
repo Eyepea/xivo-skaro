@@ -424,6 +424,9 @@ $array['service/ipbx/asterisk/web_services/private/control_system/restart'] = ar
 ###################################################################
 
 # RESTRICTED
+$array['statistics/call_center/web_services/restricted/settings/configuration'] = array(
+	'path'		=> 'statistics/call_center/web_services/settings/configuration',
+	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 $array['statistics/web_services/restricted/call_center/stats1'] = array(
 	'path'		=> 'statistics/web_services/call_center/stats1',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
@@ -438,6 +441,9 @@ $array['statistics/web_services/restricted/call_center/stats4'] = array(
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 
 # PRIVATE
+$array['statistics/call_center/web_services/private/settings/configuration'] = array(
+	'path'		=> 'statistics/call_center/web_services/settings/configuration',
+	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['statistics/web_services/private/call_center/stats1'] = array(
 	'path'		=> 'statistics/web_services/call_center/stats1',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));

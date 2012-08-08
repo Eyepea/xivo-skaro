@@ -90,6 +90,7 @@ $array['tree']['statistics']['call_center']['data']['stats1'] = true;
 $array['tree']['statistics']['call_center']['data']['stats2'] = true;
 $array['tree']['statistics']['call_center']['data']['stats3'] = true;
 $array['tree']['statistics']['call_center']['data']['stats4'] = true;
+$array['tree']['statistics']['call_center']['settings']['configuration'] = true;
 
 $array['tree']['service']['callcenter'] = array();
 $array['tree']['service']['callcenter']['settings'] = array();
