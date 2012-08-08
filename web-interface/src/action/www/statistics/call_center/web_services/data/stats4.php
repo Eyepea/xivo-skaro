@@ -22,7 +22,6 @@ $access_category = 'statistics';
 $access_subcategory = 'call_center';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
-
 include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 $_STS->load_ressource('period');
@@ -31,32 +30,33 @@ $stats_period = new stats_ressource_period(&$_XS);
 $stats_period->get_data();
 
 $tpl_statistics->set_name('period');
-$tpl_statistics->set_data_custom('axetype',$_XS->get_axetype());
+$tpl_statistics->set_baseurl('statistics/call_center/data/stats4');
+$tpl_statistics->set_data_custom('axetype',$axetype);
 $tpl_statistics->set_data_custom('listtype',$stats_period->get_list_by_type());
 $itl = $_XS->get_datecal();
+
 switch ($axetype)
 {
 	case 'day':
-		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'key');
-		$tpl_statistics->set_data_custom('day_process',$_XS->get_datecal());
+		$tpl_statistics->set_rows('hour', $_XS->get_listhour(), 'key');
+		$tpl_statistics->set_row_total('hour');
 		break;
 	case 'week':
-		$tpl_statistics->set_rows('day',dwho_date::get_listday_for_week(),'key');
+		$tpl_statistics->set_rows('day',$stats_period->get_rows(),'key');
+		$tpl_statistics->set_row_total('day');
 		break;
 	case 'month':
-		$date = dwho_date::all_to_unixtime($itl['dmonth']);
-		$year = date('Y',$date);
-		$month = date('m',$date);
-		$tpl_statistics->set_rows('day',$_XS->get_listday_for_month($year,$month),'key');
-		$tpl_statistics->set_data_custom('month_process',$_XS->get_datecal());
+		$tpl_statistics->set_rows('day', $stats_period->get_rows(),'key');
+		$tpl_statistics->set_row_total('day');
 		break;
 	case 'year':
 		$tpl_statistics->set_rows('month',dwho_date::get_listmonth(),'key');
+		$tpl_statistics->set_row_total('month');
 		break;
 	case 'type':
 	default:
 		$tpl_statistics->set_rows('queuename',$stats_period->get_queue_list(),'keyfile',true);
-		$tpl_statistics->set_data_custom('date_process',$_XS->get_datecal());
+		$tpl_statistics->set_row_total('queuename');
 }
 
 $tpl_statistics->set_data_custom('period',$stats_period->_result);

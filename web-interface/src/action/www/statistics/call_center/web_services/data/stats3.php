@@ -22,7 +22,6 @@ $access_category = 'statistics';
 $access_subcategory = 'call_center';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
-
 include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 $_STS->load_ressource('agent');
@@ -31,17 +30,19 @@ $stats_agent = new stats_ressource_agent(&$_XS);
 $stats_agent->get_data();
 
 $tpl_statistics->set_name('agent');
+$tpl_statistics->set_baseurl('statistics/call_center/data/stats3');
 $tpl_statistics->set_data_custom('axetype',$_XS->get_axetype());
 $tpl_statistics->set_data_custom('listtype',$stats_agent->get_list_by_type());
 $itl = $_XS->get_datecal();
-switch ($_XS->get_axetype())
+
+switch ($axetype)
 {
 	case 'day':
 		$tpl_statistics->set_rows('hour',$_XS->get_listhour(),'key');
 		$tpl_statistics->set_data_custom('day_process',$_XS->get_datecal());
 		break;
 	case 'week':
-		$tpl_statistics->set_rows('day',dwho_date::get_listday_for_week(),'key');
+		$tpl_statistics->set_rows('day',$_XS->get_listday_for_week(),'key');
 		break;
 	case 'month':
 		$date = dwho_date::all_to_unixtime($itl['dmonth']);

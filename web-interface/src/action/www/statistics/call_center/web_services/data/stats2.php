@@ -22,8 +22,8 @@ $access_category = 'statistics';
 $access_subcategory = 'call_center';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
-
 include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
+
 
 $_STS->load_ressource('agent');
 
@@ -31,9 +31,11 @@ $stats_agent = new stats_ressource_agent(&$_XS);
 $stats_agent->get_data();
 
 $tpl_statistics->set_name('agent');
+$tpl_statistics->set_baseurl('statistics/call_center/data/stats2');
 $tpl_statistics->set_data_custom('axetype',$axetype);
 $tpl_statistics->set_data_custom('listtype',$stats_agent->get_list_by_type());
 $itl = $_XS->get_datecal();
+
 switch ($axetype)
 {
 	case 'day':
@@ -41,8 +43,7 @@ switch ($axetype)
 		$tpl_statistics->set_data_custom('day_process',$_XS->get_datecal());
 		break;
 	case 'week':
-		$tpl_statistics->set_rows('day',dwho_date::get_listday_for_week(),'key');
-		#$tpl_statistics->set_data_custom('week_range',$_XS->get_week_range());
+		$tpl_statistics->set_rows('day',$_XS->get_listday_for_week(),'key');
 		break;
 	case 'month':
 		$date = dwho_date::all_to_unixtime($itl['dmonth']);
@@ -62,16 +63,20 @@ switch ($axetype)
 
 $tpl_statistics->set_data_custom('agent',$stats_agent->_result);
 
+/*
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('productivity',
 					'expression',
 					'{custom:agent,[key],calltime}/{custom:agent,[key],logintime}',
 					'percent');
+*/
 
 $tpl_statistics->set_col_struct('call_counter');
 $tpl_statistics->add_col('connect',
 					'direct',
 					'custom:agent,[key],connect');
+
+/*
 $tpl_statistics->add_col('transfer',
 					'direct',
 					'custom:agent,[key],transfer');
@@ -81,21 +86,31 @@ $tpl_statistics->add_col('ringnoanswer',
 $tpl_statistics->add_col('outgoing',
 					'direct',
 					'-');
+*/
 
 $tpl_statistics->set_col_struct('total_time');
+$tpl_statistics->add_col('conversation',
+			 'direct',
+			 'custom:agent,[key],conversationtime',
+			 'time');
+
+/*
 $tpl_statistics->add_col('login',
 					'direct',
-					'custom:agent,[key],logintime');
+					'custom:agent,[key],logintime',
+					'time');
 $tpl_statistics->add_col('available',
 					'expression',
 					'{custom:agent,[key],logintime}-{custom:agent,[key],calltime}',
 					'time');
 $tpl_statistics->add_col('pause',
 					'direct',
-					'custom:agent,[key],pausetime');
+					'custom:agent,[key],pausetime',
+					'time');
 $tpl_statistics->add_col('traitment',
 					'direct',
-					'custom:agent,[key],traitmenttime');
+					'custom:agent,[key],traitmenttime',
+					'time');
 
 $tpl_statistics->set_col_struct('average_time');
 $tpl_statistics->add_col('dmt',
@@ -110,7 +125,7 @@ $tpl_statistics->add_col('dmwu',
 					'direct',
 					'0',
 					'time');
-
+*/
 $tpl_statistics->gener_table();
 
 $_TPL->set_var('list',$tpl_statistics->get_data_table());
