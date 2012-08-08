@@ -44,4 +44,11 @@ $array['ini']['service'] = array();
 $array['ini']['service']['ipbx'] = true;
 $array['ini']['service']['monitoring'] = true;
 
+$array['ini']['report'] = array();
+$array['ini']['report']['error'] = true;
+$array['ini']['report']['warning'] = true;
+$array['ini']['report']['info'] = true;
+$array['ini']['report']['notice'] = true;
+$array['ini']['report']['debug'] = false;
+
 ?>

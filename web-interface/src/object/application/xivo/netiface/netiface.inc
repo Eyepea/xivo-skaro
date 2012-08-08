@@ -1328,13 +1328,13 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 	{
 		// notify commonconf needs to be updated
 		$this->_commonconf->notify_changes();
-		touch('/var/lib/pf-xivo-web-interface/network.reload');
+		touch('/tmp/network.reload');
 	}
 
 	function changes_executed()
 	{
-		if (dwho_file::is_f('/var/lib/pf-xivo-web-interface/network.reload'))
-			unlink('/var/lib/pf-xivo-web-interface/network.reload');
+		if (dwho_file::is_f('/tmp/network.reload'))
+			unlink('/tmp/network.reload');
 	}
 }
 

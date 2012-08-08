@@ -18,7 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-define('DWHO_PATH_DS','/var/lib/pf-xivo-web-interface');
 define('DWHO_PATH_I18N','/usr/share/pf-xivo-web-interface/i18n');
 define('DWHO_PATH_ROOT','/usr/share/pf-xivo-web-interface/lib');
 

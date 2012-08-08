@@ -291,73 +291,17 @@ class dwho
     {
         if(is_array($report) === false || empty($report) === true)
             die('ERR: Invalid report configuration');
-        else if(dwho_issa('general',$report) === false)
-            die('ERR: Missing general section for report configuration');
 
         $listreport = array('error','warning','info','notice','debug');
 
         while($listreport)
         {
             $rp = array_shift($listreport);
-            if(isset($report['general'][$rp]) === false)
+            if(isset($report[$rp]) === false)
                 die('ERR: Missing '.$rp.' option in general for report configuration');
             else
-                define('REPORT_'.strtoupper($rp),(bool) $report['general'][$rp]);
+                define('REPORT_'.strtoupper($rp),(bool) $report[$rp]);
         }
-    }
-
-    protected function _cfg_ini_location($location)
-    {
-        if(is_array($location) === false || empty($location) === true)
-            die('ERR: Invalid location configuration');
-        else if(dwho_issa('general',$location) === false)
-            die('ERR: Missing general section for location configuration');
-
-        $this->_conf['location'] = array(
-                    'script'    => null,
-                    'action'    => null,
-                    'root_url'    => null);
-
-        if(isset($location['general']['script']) === false)
-            die('ERR: Missing script option in general for location configuration');
-        else if(($this->_conf['location']['script'] = dwho_file::is_d_r($location['general']['script'])) === false)
-            die('ERR: Invalid script option in general for path configuration');
-
-        if(isset($location['general']['action']) === false)
-            die('ERR: Missing action option in general for location configuration');
-        else if(($this->_conf['location']['action'] = dwho_file::is_d_r($location['general']['action'])) === false)
-            die('ERR: Invalid action option in general for path configuration');
-
-        if(isset($location['general']['root_url']) === true)
-        {
-            if(is_string($location['general']['root_url']) === true)
-                $this->_conf['location']['root_url'] = rtrim($location['general']['root_url'],'/');
-            else
-                die('ERR: Invalid root_url option in general for location configuration');
-        }
-
-        if(is_array($location['cache']) === false)
-            die('ERR: Missing cache section for location configuration');
-
-        if(isset($location['cache']['statistics']) === false)
-            die('ERR: Missing statistics option in cache for location configuration');
-
-        if (dwho_file::is_d_w($location['cache']['statistics']) === false
-        && mkdir($location['cache']['statistics'],0775) === false)
-            die('ERR: Invalid statistics option in cache for location configuration');
-        else
-            define('DWHO_PATH_CACHE_STATS',$location['cache']['statistics']);
-
-        if(isset($location['cache']['pchart']) === false)
-            die('ERR: Missing pchart section for location configuration');
-
-        if (dwho_file::is_d_w($location['cache']['pchart']) === false
-        && mkdir($location['cache']['pchart'],0775) === false)
-            die('ERR: Invalid pchart option in cache for location configuration');
-        else
-            define('DWHO_PATH_CACHE_PCHART',$location['cache']['pchart']);
-
-        return(true);
     }
 
     protected function _cfg_ini_template($template)

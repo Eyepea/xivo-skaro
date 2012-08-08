@@ -77,19 +77,14 @@ class xivo extends dwho
 		if(dwho_issa('error',$xivo_ini) === true)
 			$this->_cfg_ini_error($xivo_ini['error']);
 
+		if(dwho_issa('report',$xivo_ini) === true)
+			$this->_cfg_ini_report($xivo_ini['report']);
+
 		$this->_cfg_ini_set();
+		$this->_conf['location']['action'] = '/usr/share/pf-xivo-web-interface/action/www';
+		$this->_conf['location']['script'] = '/usr/share/pf-xivo-web-interface/www';
 
 		ini_set('include_path',XIVO_PATH_ROOT.DWHO_SEP_PATH.ini_get('include_path'));
-
-		if(($location_ini = parent::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'location.ini')) !== false)
-			$this->_cfg_ini_location($location_ini);
-		else
-			die('ERR: Missing location init file');
-
-		if(($report_ini = parent::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'report.ini')) !== false)
-			$this->_cfg_ini_report($report_ini);
-		else
-			die('ERR: Missing report init file');
 
 		if(($template_ini = parent::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'template.ini')) !== false)
 			$this->_cfg_ini_template($template_ini);
