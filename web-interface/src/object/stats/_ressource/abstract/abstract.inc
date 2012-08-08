@@ -97,15 +97,12 @@ class xivo_stats_ressource_abstract
 		return($rs);
 	}
 
-	protected function _build_total($queue_id, $dbeg, $dend)
+	protected function _build_interval_full_day($dbeg, $dend)
 	{
-		$year = date('Y', $dend);
-		$month = date('m', $dend);
-		$day = date('d' ,$dend);
 		$interval = array();
-		$interval['beg'] = $dbeg;
-		$interval['end'] = mktime(23, 59, 59, $month, $day, $year);
-		$this->_build_stat($queue_id, "total", $interval);
+		$interval['beg'] = mktime(00, 00, 01, date('m', $dbeg), date('d' ,$dbeg), date('Y', $dbeg));
+		$interval['end'] = mktime(23, 59, 59, date('m', $dend), date('d' ,$dend), date('Y', $dend));
+		return($interval);
 	}
 
 	public function get_data()
@@ -119,9 +116,6 @@ class xivo_stats_ressource_abstract
 		$dbeg = strtotime($itl['dbeg']);
 		$dend = strtotime($itl['dend']);
 
-		if ($dbeg == $dend)
-			$dend = strtotime('+1 day', $dend);
-
 		$this->_stat_queue_periodic->set_dso_param('hour_itl',$this->_xs->get_dip_hour());
 		$this->_stat_queue_periodic->set_dso_param('days',$this->_xs->get_valid_list_day());
 		$this->_stat_call_on_queue->set_dso_param('hour_itl',$this->_xs->get_dip_hour());
@@ -131,7 +125,9 @@ class xivo_stats_ressource_abstract
 		if ($axetype !== 'type' && !$obj_process)
 			return;
 
-		$this->_build_total($obj_process, $dbeg, $dend);
+		$interval = $this->_build_interval_full_day($dbeg, $dend);
+
+		$this->_build_stat($obj_process, "total", $interval);
 
 		switch ($axetype)
 		{
@@ -145,14 +141,10 @@ class xivo_stats_ressource_abstract
 				}
 				break;
 			case 'week':
-				$this->full_itl = $this->_xs->build_full_date_interval($dbeg, $dend);
-				foreach ($this->full_itl as $date => $date_itl)
-					$this->_build_stat($obj_process, $date, $date_itl);
-				break;
 			case 'month':
 				$this->full_itl = $this->_xs->build_full_date_interval($dbeg, $dend);
-				foreach ($this->full_itl as $date => $date_itl)
-					$this->_build_stat($obj_process, $date, $date_itl);
+				foreach ($this->full_itl as $key => $interval)
+					$this->_build_stat($obj_process, $key, $interval);
 				break;
 			case 'year':
 				$key_data = dwho_date::get_listmonth();
@@ -162,7 +154,7 @@ class xivo_stats_ressource_abstract
 					$key = $key_full_data['key'];
 					$dip = array();
 					$dip['beg'] = mktime(0,0,1,$key,1,date('Y', $dbeg));
-					$dip['end'] = mktime(23,59,59,$key,31,date('Y', $dbeg));
+					$dip['end'] = mktime(23,59,59,$key,31,date('Y', $dend));
 					$this->_build_stat($obj_process, $key, $dip);
 				}
 				break;
@@ -171,12 +163,7 @@ class xivo_stats_ressource_abstract
 				while($key_data)
 				{
 					$key_full_data = array_shift($key_data);
-					$keyfile = $key_full_data['keyfile'];
-
-					$dip = array();
-					$dip['beg'] = $dbeg;
-					$dip['end'] = $dend;
-					$this->_build_stat($key_full_data, $keyfile, $dip);
+					$this->_build_stat($key_full_data, $key_full_data['keyfile'], $interval);
 				}
 				break;
 		}
