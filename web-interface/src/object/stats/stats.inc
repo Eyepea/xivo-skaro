@@ -34,8 +34,6 @@ class xivo_stats_lib
 	private	$_listaxetype		= array('type','day','week','month','year');
 	private	$_listtype			= array('agent',);
 	public 	$_error				= array();
-	public 	$_queue_log_conf	= array();
-	public 	$_queue_log 		= array();
 	public 	$_conf		 		= array('stats_conf' => array(),
 										'queue'		=> array(),
 										'group'		=> array(),
@@ -82,9 +80,6 @@ class xivo_stats_lib
 		$this->_xobj = &dwho_gct::get('xivo_object');
 		$this->_statsconfsess = &$_SESSION['_statsconf'];
 		$this->_statsconfsess['_date_process'] = null;
-
-		if(($this->_queue_log_conf = dwho_gat::load_get('queue_log',DWHO_PATH_CONF)) === false)
-			trigger_error('Failed to load queuelog configuration',E_USER_ERROR);
 	}
 
 	public function load_component()

@@ -36,8 +36,8 @@ $array['element']['hour_end']['default'] = '00:00';
 
 $_SRE = &dwho_gct::get('xivo_service');
 $ipbx = &$_SRE->get('ipbx');
-if (($appqueue_log = &$ipbx->get_application('queue_log')) === false
-|| ($interval = $appqueue_log->get_min_and_max_time()) === false)
+$stat_queue_periodic = &$ipbx->get_module('stat_queue_periodic');
+if (($interval = $stat_queue_periodic->get_min_and_max_time()) === false)
 	$dbegcachedefault = null;
 else
 	$dbegcachedefault = strtotime($interval['min']);
