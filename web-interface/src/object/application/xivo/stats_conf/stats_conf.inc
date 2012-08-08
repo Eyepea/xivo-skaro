@@ -88,11 +88,11 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 
 		$this->_info['stats_conf'] = $this->_stats_conf->_prepare($r);
 
-		$this->_get_incall();
+		#$this->_get_incall();
 		$this->_get_queue();
-		$this->_get_group();
+		#$this->_get_group();
 		$this->_get_agent();
-		$this->_get_user();
+		#$this->_get_user();
 		$this->_get_xivouser();
 
 		return($this->_info);
@@ -664,11 +664,11 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 		}
 		elseif($this->get_errnb() > 0
 		|| ($stats_confid = $this->add_stats_conf()) === false
-		|| $this->add_incall($stats_confid) === false
+		#|| $this->add_incall($stats_confid) === false
 		|| $this->add_queue($stats_confid) === false
-		|| $this->add_group($stats_confid) === false
+		#|| $this->add_group($stats_confid) === false
 		|| $this->add_agent($stats_confid) === false
-		|| $this->add_user($stats_confid) === false
+		#|| $this->add_user($stats_confid) === false
 		|| $this->add_xivouser($stats_confid) === false)
 		{
 			$r = false;
@@ -934,11 +934,11 @@ class xivo_application_xivo_object_stats_conf extends xivo_application_xivo_obje
 
 		if($this->get_errnb() > 0
 		|| $this->edit_stats_conf() === false
-		|| $this->edit_incall() === false
+		#|| $this->edit_incall() === false
 		|| $this->edit_queue() === false
-		|| $this->edit_group() === false
+		#|| $this->edit_group() === false
 		|| $this->_edit_agent() === false
-		|| $this->edit_user() === false
+		#|| $this->edit_user() === false
 		|| $this->edit_xivouser() === false)
 		{
 			$r = false;

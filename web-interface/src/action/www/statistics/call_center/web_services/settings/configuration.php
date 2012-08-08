@@ -57,7 +57,9 @@ switch($act)
 	case 'edit':
 		$appstats_conf = &$_XOBJ->get_application('stats_conf');
 
-		if($appstats_conf->add_from_json() === true)
+		if(($stats_conf = $appstats_conf->get($_QRY->get('id'))) === false)
+			$status = 404;
+		elseif($appstats_conf->edit_from_json($stats_conf) === true)
 			$status = 200;
 		else
 			$status = 400;
