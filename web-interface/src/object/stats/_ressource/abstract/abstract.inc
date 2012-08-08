@@ -67,17 +67,6 @@ class xivo_stats_ressource_abstract
 		return($this->_xs->get_object_list('agent'));
 	}
 
-	protected function _build_hour_for_day($key, $time)
-	{
-		$dip = array();
-		$year = date('Y', $time);
-		$month = date('m', $time);
-		$day = date('d' ,$time);
-		$dip['beg'] = mktime($key, 0, 0, $month, $day, $year);
-		$dip['end'] = mktime($key+1, 0, -1, $month, $day, $year);
-		return $dip;
-	}
-
 	public function get_rows()
 	{
 		$days = $this->full_itl;
@@ -95,6 +84,25 @@ class xivo_stats_ressource_abstract
 			$rs[$day] = $tmp;
 		}
 		return($rs);
+	}
+
+	protected function _build_hours_for_day($hour, $daytime)
+	{
+		$year = date('Y', $daytime);
+		$month = date('m', $daytime);
+		$day = date('d' ,$daytime);
+		$interval = array();
+		$interval['beg'] = mktime($hour, 0, 0, $month, $day, $year);
+		$interval['end'] = mktime($hour+1, 0, -1, $month, $day, $year);
+		return($interval);
+	}
+
+	protected function _build_interval_days_for_month($year, $month)
+	{
+		$interval = array();
+		$interval['beg'] = mktime(0, 0, 1, $month, 1, $year);
+		$interval['end'] = mktime(23, 59, 59, $month, 31, $year);
+		return($interval);
 	}
 
 	protected function _build_interval_full_day($dbeg, $dend)
@@ -133,12 +141,8 @@ class xivo_stats_ressource_abstract
 		{
 			case 'day':
 				$key_data = $this->_xs->get_listhour();
-				while($key_data)
-				{
-					$key_full_data = array_shift($key_data);
-					$key = $key_full_data['key'];
-					$this->_build_stat($obj_process, $key, $this->_build_hour_for_day($key, $dbeg));
-				}
+				foreach ($key_data as $data)
+					$this->_build_stat($obj_process, $data['key'], $this->_build_hours_for_day($data['key'], $dbeg));
 				break;
 			case 'week':
 			case 'month':
@@ -148,23 +152,13 @@ class xivo_stats_ressource_abstract
 				break;
 			case 'year':
 				$key_data = dwho_date::get_listmonth();
-				while ($key_data)
-				{
-					$key_full_data = array_shift($key_data);
-					$key = $key_full_data['key'];
-					$dip = array();
-					$dip['beg'] = mktime(0,0,1,$key,1,date('Y', $dbeg));
-					$dip['end'] = mktime(23,59,59,$key,31,date('Y', $dend));
-					$this->_build_stat($obj_process, $key, $dip);
-				}
+				foreach ($key_data as $data)
+					$this->_build_stat($obj_process, $data['key'], $this->_build_interval_days_for_month(date('Y', $dbeg), $data['key']));
 				break;
 			case 'type':
 				$key_data = $this->get_list_by_type();
-				while($key_data)
-				{
-					$key_full_data = array_shift($key_data);
-					$this->_build_stat($key_full_data, $key_full_data['keyfile'], $interval);
-				}
+				foreach ($key_data as $data)
+					$this->_build_stat($data, $data['keyfile'], $interval);
 				break;
 		}
 	}
