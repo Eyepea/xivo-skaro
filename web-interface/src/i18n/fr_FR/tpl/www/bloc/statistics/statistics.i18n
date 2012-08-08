@@ -44,7 +44,7 @@ Horaire
 Ratio
 
 ; colstruct_redistributed
-Redistribués
+Dissuadés ou Redistribués
 
 ; colstruct_abandon
 Appels abandonnés
@@ -62,16 +62,16 @@ Appels traités
 <acronym title="Moyenne Temps d'Appels">MTA</acronym>
 
 ; col_presented
-<acronym title="Total">Total</acronym>
+<acronym title="Présentés">Présentés</acronym>
 
 ; col_connect
-<acronym title="Répondu">Répondus</acronym>
+<acronym title="Traités">Traités</acronym>
 
 ; col_abandon
 <acronym title="Abandonnés">Abandonnés</acronym>
 
 ; col_ringnoanswer
-<acronym title="NON répondu">Non R.</acronym>
+<acronym title="Sur non réponse">Sur NR</acronym>
 
 ; col_outgoing
 <acronym title="Sortants">Sort.</acronym>
@@ -89,7 +89,7 @@ Appels traités
 Dissuadés
 
 ; col_on_close
-<acronym title="Dissuadés sur fermeture">Fermés</acronym>
+<acronym title="Sur fermeture">Sur fermeture</acronym>
 
 ; col_on_saturation
 <acronym title="Redistribution sur occupation">Occupation</acronym>
@@ -98,13 +98,13 @@ Dissuadés
 Perdus
 
 ; col_on_joinempty
-<acronym title="Blocage entrant">BE</acronym>
+<acronym title="Blocage entrant">Sur blocage (entrant)</acronym>
 
 ; col_on_leaveempty
-<acronym title="Blocage passant">BP</acronym>
+<acronym title="Blocage passant">Sur blocage (sortant)</acronym>
 
 ; col_on_timeout
-<acronym title="Non réponse">Non réponse</acronym>
+<acronym title="Sur non réponse">Sur NR</acronym>
 
 ; col_average_time_waiting
 <acronym title="Temps moyen d'attente">TMA</acronym>

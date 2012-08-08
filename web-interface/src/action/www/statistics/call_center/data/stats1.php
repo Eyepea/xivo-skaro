@@ -62,7 +62,6 @@ $tpl_statistics->add_col('presented',
 		'direct',
 		'custom:queue,[key],presented');
 
-$tpl_statistics->set_col_struct('traitment');
 $tpl_statistics->add_col('connect',
 		'direct',
 		'custom:queue,[key],connect');
@@ -70,12 +69,10 @@ $tpl_statistics->add_col('abandon',
 		'direct',
 		'custom:queue,[key],abandon');
 
-$tpl_statistics->set_col_struct('schedule');
+$tpl_statistics->set_col_struct('redistributed');
 $tpl_statistics->add_col('on_close',
 		'direct',
 		'custom:queue,[key],deterred_on_close');
-
-$tpl_statistics->set_col_struct('redistributed');
 $tpl_statistics->add_col('on_timeout',
 		'direct',
 		'custom:queue,[key],timeout');
@@ -89,7 +86,7 @@ $tpl_statistics->add_col('on_leaveempty',
 		'direct',
 		'custom:queue,[key],leaveempty');
 
-$tpl_statistics->set_col_struct("ratio");
+$tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('average_time_waiting',
 		'direct',
 		'custom:queue,[key],average_wait_time',
