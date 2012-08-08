@@ -81,15 +81,15 @@ class xivo extends dwho
 			$this->_cfg_ini_report($xivo_ini['report']);
 
 		$this->_cfg_ini_set();
-		$this->_conf['location']['action'] = '/usr/share/pf-xivo-web-interface/action/www';
-		$this->_conf['location']['script'] = '/usr/share/pf-xivo-web-interface/www';
+		$this->_conf['location'] = array();
+		$this->_conf['location']['action'] = XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'action/www';
+		$this->_conf['location']['script'] = XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'www';
+		$this->_conf['template'] = array();
+		$this->_conf['template']['www']['path'] = XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'tpl/www';
+		$this->_conf['template']['json']['path'] = XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'tpl/json';
+		$this->_conf['template']['ui']['path'] = XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'tpl/ui';
 
 		ini_set('include_path',XIVO_PATH_ROOT.DWHO_SEP_PATH.ini_get('include_path'));
-
-		if(($template_ini = parent::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'template.ini')) !== false)
-			$this->_cfg_ini_template($template_ini);
-		else
-			die('ERR: Missing template init file');
 
 		if(dwho_constant('XIVO_WEBI_CONFIGURED',true) === false)
 			return(null);

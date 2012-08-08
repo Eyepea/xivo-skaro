@@ -304,25 +304,6 @@ class dwho
         }
     }
 
-    protected function _cfg_ini_template($template)
-    {
-        if(is_array($template) == false)
-            die('ERR: Invalid template configuration');
-
-        $this->_conf['template'] = array();
-
-        foreach($template as $key => $value)
-        {
-            if(isset($value['path']) === true
-            && ($path = dwho_file::is_d_r($value['path'])) !== false)
-                $this->_conf['template'][$key]['path'] = $path;
-            else
-                die('ERR: Missing or invalid option path in '.$key.' for template configuration');
-        }
-
-        return(true);
-    }
-
     public static function chk_extension_loaded($ext)
     {
         if(dwho_has_len($ext) === false)
