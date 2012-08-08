@@ -23,8 +23,4 @@ define('DWHO_PATH_ROOT','/usr/share/pf-xivo-web-interface/lib');
 
 define('XIVO_PATH_CONF','/etc/pf-xivo/web-interface');
 
-define('TPL_WWW', '/usr/share/pf-xivo-web-interface/tpl/www');
-define('TPL_JSON', '/usr/share/pf-xivo-web-interface/tpl/json');
-define('TPL_UI', '/usr/share/pf-xivo-web-interface/tpl/ui');
-
 ?>
