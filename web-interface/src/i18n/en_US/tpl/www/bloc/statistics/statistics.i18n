@@ -53,7 +53,7 @@ Calls handled
 <acronym title="Average call duration">MTA</acronym>
 
 ; col_presented
-<acronym title="Total">Total</acronym>
+<acronym title="Received">Received</acronym>
 
 ; col_connect
 <acronym title="Answered">Answered</acronym>
@@ -62,7 +62,7 @@ Calls handled
 <acronym title="Abandoned">Abandoned</acronym>
 
 ; col_ringnoanswer
-<acronym title="No Answered">No Answ.</acronym>
+<acronym title="No Answer">NA</acronym>
 
 ; col_outgoing
 <acronym title="Outgoing calls">Out</acronym>
@@ -80,39 +80,46 @@ Calls handled
 Dissuaded
 
 ; col_on_close
-<acronym title="Dissuaded on close">Close</acronym>
+<acronym title="Closed">Closed</acronym>
 
 ; col_on_saturation
-<acronym title="Dissuaded on saturation">Satur.</acronym>
+<acronym title="Saturated">Saturated</acronym>
 
-; colstruct_rerouted
-Dissuaded
+; colstruct_redistributed
+Dissuaded or Overflowed
 
-; col_on_hungup
-<acronym title="Rerouted after on hook">ROH</acronym>
+; colstruct_ratio
+Ratios
 
-; col_on_guide
-<acronym title="Rerouted after guide">ROG</acronym>
+; col_on_joinempty
+<acronym title="Blocking (join empty)">Blocking (incoming)</acronym>
 
-; col_on_number
-<acronym title="Rerouted on number">RN</acronym>
+; col_on_leaveempty
+<acronym title="Blocking (leave empty)">Blocking (passing)</acronym>
+
+; col_on_timeout
+<acronym title="No answer">NA</acronym>
 
 ; col_average_time_waiting
 <acronym title="Average waiting time">AWT</acronym>
 
 ; col_home_rated
-<acronym title="Arrival Rate"> RH </acronym>
+<acronym title="Answered rate">Answered rate</acronym>
 
 ; col_qos
-<acronym title="Quality of service"> QOS </acronym>
+<acronym title="Quality of service"> QoS </acronym>
 
 ; colstruct_calls
 Calls
+
+; colstruct_schedule
+Schedule
 
 ; colstruct_call_counter
 Nb. of calls
 
 ; colstruct_total_time
+
 Total time
 
 ; colstruct_average_time
@@ -135,6 +142,9 @@ Presented out of queue
 
 ; col_login
 <acronym title="Login">Login</acronym>
+
+; col_conversation
+<acronym title="Total time in conversation">Conversation</acronym>
 
 ; col_available
 <acronym title="Available">Avail.</acronym>

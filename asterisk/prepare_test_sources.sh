@@ -1,5 +1,4 @@
 #!/bin/sh
-
 VER=$(cat ASTERISK-VERSION)
 
 rm -rf tmp

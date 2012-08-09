@@ -199,7 +199,7 @@ $dhtml = &$this->get_module('dhtml');
 		echo '<dl><dt>',$this->bbf('mn_left_ti_controlsystem'),'</dt>';
 
 		if(xivo_user::chk_acl('controlsystem','network') === true):
-			$class_network = file_exists('/var/lib/pf-xivo-web-interface/network.reload')?'active':false;
+			$class_network = file_exists('/tmp/network.reload')?'active':false;
 
 			echo	'<dd id="mn-controlsystem--network">',
 				$url->href_html($this->bbf('mn_left_controlsystem-network'),
@@ -217,7 +217,7 @@ $dhtml = &$this->get_module('dhtml');
 		endif;
 
 		if(xivo_user::chk_acl('controlsystem','commonconf') === true):
-			$class_commonconf = file_exists('/var/lib/pf-xivo-web-interface/commonconf.reload')?'active':false;
+			$class_commonconf = file_exists('/tmp/commonconf.reload')?'active':false;
 
 			echo	'<dd id="mn-controlsystem--commonconf">',
 				 $url->href_html($this->bbf('mn_left_controlsystem-commonconf'),

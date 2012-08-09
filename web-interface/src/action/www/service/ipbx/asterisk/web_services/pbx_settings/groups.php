@@ -48,10 +48,7 @@ switch($act)
 		$appgroup = &$ipbx->get_application('group');
 
 		if($appgroup->add_from_json() === true)
-		{
 			$status = 200;
-			$ipbx->discuss('xivo[grouplist,update]');
-		}
 		else
 			$status = 400;
 
@@ -64,10 +61,7 @@ switch($act)
 		if($appgroup->get($_QRY->get('id')) === false)
 			$status = 404;
 		else if($appgroup->delete() === true)
-		{
 			$status = 200;
-			$ipbx->discuss('xivo[grouplist,update]');
-		}
 		else
 			$status = 500;
 
@@ -90,7 +84,6 @@ switch($act)
 			$appgroup->delete();
 		}
 		$status = 200;
-		$ipbx->discuss('xivo[grouplist,update]');
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);

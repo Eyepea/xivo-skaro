@@ -58,40 +58,33 @@ a-b: unzip $FILE1
 url: http://download.cisco.com/swc/esd/04/280136569/contract/cmterm-7911_7906-sccp.8-5-2.zip
 size: 4952371
 sha1sum: 46aeae6947f734a142df3d6e6f9b7393d31db042
-downloader: x-cisco
 
 [file_7931-fw]
 url: http://download.cisco.com/swc/esd/04/280799963/contract/cmterm-7931-scpp.8-5-2.zip
 size: 4943283
 sha1sum: 730bd0d1925e17028ded2a8fa80d91a026f63ccb
-downloader: x-cisco
 
 [file_7941-7961-fw]
 url: http://download.cisco.com/swc/esd/04/279251499/contract/cmterm-7941_7961-sccp.8-5-2.zip
 size: 5056951
 sha1sum: 7d33fffe4a93e8648b82a1d2a88191fff107ed14
-downloader: x-cisco
 
 [file_7942-7962-fw]
 url: http://download.cisco.com/swc/esd/04/281346593/contract/cmterm-7942_7962-sccp.8-5-2.zip
 size: 5086615
 sha1sum: 4e4e5d879882cc30b4380cb8abe544a34adeb938
-downloader: x-cisco
 
 [file_7945-7965-fw]
 url: http://download.cisco.com/swc/esd/04/281346594/contract/cmterm-7945_7965-sccp.8-5-2.zip
 size: 5214755
 sha1sum: e7599cec19c6a750414d9488bd27f82d45ad5860
-downloader: x-cisco
 
 [file_7970-7971-fw]
 url: http://download.cisco.com/swc/esd/04/278436620/contract/cmterm-7970_7971-sccp.8-5-2.zip
 size: 5163825
 sha1sum: 9c3a12c24485766d284c3d48134095c2d419a23f
-downloader: x-cisco
 
 [file_7975-fw]
 url: http://download.cisco.com/swc/esd/04/281346597/contract/cmterm-7975-sccp.8-5-2.zip
 size: 5212003
 sha1sum: a574dff0ce405316744e70fc5403ed91f35a2afc
-downloader: x-cisco

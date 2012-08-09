@@ -2,35 +2,34 @@
 Asterisk
 
 ; asterisk_channels
-Canaux asterisk
+Asterisk channels
 
 ; asterisk_channelstypes
-Types de canaux
+Asterisk channel types
 
 ; asterisk_codecs
 Codecs
 
 ; asterisk_iaxchannels
-Canaux IAX
+IAX channels
 
 ; asterisk_iaxlag
-Latence sur les canaux IAX
+IAX channels lag
 
 ; asterisk_iaxpeers
-Comptes IAX actifs
+Active IAX peers
 
 ; asterisk_meetme
-Chambres de conférence actives
+Active meetmes
 
 ; asterisk_meetmeusers
-Nombre d'utilisateurs dans les chambres de conférence
+Number of users in meetmes
 
 ; asterisk_sipchannels
-Canaux SIP
+SIP channels
 
 ; asterisk_sippeers
-Comptes SIP actifs (enregistrés)
+Active SIP peers (registered)
 
 ; asterisk_voicemail
-Messages vocaux
-
+Voicemail messages

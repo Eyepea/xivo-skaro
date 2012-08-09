@@ -53,12 +53,7 @@ class xivo_service_asterisk_sccpline extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		if (($ret = parent::add($arr,$id)) === false)
-			return(false);
-
-		$this->_sre->discuss(array('sccp update config'));
-
-		return($ret);
+		return(parent::add($arr,$id));
 	}
 
 	function edit($id,$arr,$disable=null)
@@ -66,22 +61,7 @@ class xivo_service_asterisk_sccpline extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		if (($ret = parent::edit($id,$arr,$disable)) === false)
-			return(false);
-
-		$this->_sre->discuss(array('sccp update config'));
-
-		return($ret);
-	}
-
-	function delete($id,$disable=null)
-	{
-		if (($ret = parent::delete($id,$disable)) === false)
-			return(false);
-
-		$this->_sre->discuss(array('sccp update config'));
-
-		return($ret);
+		return(parent::edit($id,$arr,$disable));
 	}
 
 }

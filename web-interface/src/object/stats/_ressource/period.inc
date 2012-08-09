@@ -21,67 +21,35 @@
 class stats_ressource_period extends xivo_stats_ressource_abstract
 {
 
+	protected	$_type = 'period';
 	public		$_field		= array();
 
 	public function __construct(&$_XS)
 	{
 		parent::__construct(&$_XS);
-		$this->_table = 'queue_log';
-		$this->_type = 'period';
-		$this->_xs->set_type($this->_type);
 	}
 
-	protected function init_result($key)
+	protected function _build_stat($obj_process, $key, $interval)
 	{
-		$res = &$this->_result;
+		$queuefeatures_name = $this->_queuefeatures->name_from_id($obj_process['id']);
+		if (!$queuefeatures_name)
+			return;
 
-		if (is_array($key) === true
-		&& isset($key['value']) === true)
-			$key = $key['value'];
+		$queue_id = $this->_stat_queue->id_from_name($queuefeatures_name);
+		if (!$queue_id)
+			return;
 
-		if (isset($res[$key]) === false)
+		foreach($this->_xs->_period as $k => $interval_wt)
 		{
-			$data_process = &$res[$key];
-			$data_process = array();
-
-			foreach($this->_xs->_period as $k => $v)
-			{
-				if(isset($data_process['connect'][$k]) === false)
-				{
-					$data_process['connect'][$k] = array();
-					$data_process['connect'][$k]['type'] = 'int';
-					$data_process['connect'][$k]['result'] = 0;
-					$data_process['abandon'][$k] = array();
-					$data_process['abandon'][$k]['type'] = 'int';
-					$data_process['abandon'][$k]['result'] = 0;
-				}
-			}
-		}
-
-		return(true);
-	}
-
-	public function parse_log($key_data,$key)
-	{
-		$this->init_result($key);
-
-		foreach($this->_xs->_period as $k => $v)
-		{
-			if (($v['beg']) === 0
-			&& ($v['end']) === 0)
+			if (($interval_wt['beg']) === 0
+			&& ($interval_wt['end']) === 0)
 				continue;
 
-			$operator = 'BETWEEN';
-			if (is_null($v['end']) === true)
-				$operator = '>';
+			$answered = $this->_stat_call_on_queue->get_count_wait_time_by_period('answered', $interval, $queue_id, $interval_wt);
+			$this->_result[$key]['connect'][$k]['result'] = $answered;
 
-			$field = $this->eval_field_queue_log('CONNECT','holdtime');
-			$connect = $this->eval_count_data($key_data,'CONNECT',array($operator, array($field,$v['beg'],$v['end'])));
-			$this->update_result(array($key,'connect',$k),$connect);
-
-			$field = $this->eval_field_queue_log('ABANDON','waittime');
-			$abandon = $this->eval_count_data($key_data,'ABANDON',array($operator, array($field,$v['beg'],$v['end'])));
-			$this->update_result(array($key,'abandon',$k),$abandon);
+			$abandoned = $this->_stat_call_on_queue->get_count_wait_time_by_period('abandoned', $interval, $queue_id, $interval_wt);
+			$this->_result[$key]['abandon'][$k]['result'] = $abandoned;
 		}
 	}
 

@@ -79,6 +79,13 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 			$this->_dso->andjoinwherenot($this->_table['linefeatures'],array('line_num' => 0));
 			$this->_dso->andjoinwherenot($this->_table['linefeatures'],array('rules_order' => 1));
 		}
+		else
+		{
+			$this->_dso->leftjoin($this->_table['linefeatures'],
+					       $this->_table['linefeatures'].'.iduserfeatures = '. $this->_dso->cast($this->_table['userfeatures'].'.id', 'int'),
+					       null,
+					       'id');
+		}
 
 		$this->_dso->aggregate_where();
 

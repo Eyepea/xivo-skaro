@@ -21,18 +21,30 @@
 class xivo_stats_ressource_abstract
 {
 
-	protected 	$_table		 		= '';
-	protected 	$_type		 		= '';
-	public	 	$_xs		 		= null;
-	public	 	$_sts		 		= null;
-	public 		$_data_custom 		= array();
-	public 		$_counter	 		= array();
-	public		$_result 			= array();
+	protected 	$_table                = '';
+	public	 	$_xs                   = null;
+	public	 	$_sts                  = null;
+	public 		$_data_custom          = array();
+	public 		$_counter              = array();
+	public		$_result               = array();
+	protected	$_stat_queue_periodic  = null;
+	protected	$_stat_call_on_queue   = null;
+	protected	$_queuefeatures        = null;
+	protected	$_stat_queue           = null;
+	protected	$_stat_agent           = null;
 
 	public function __construct(&$_XS)
 	{
 		$this->_xs = &$_XS;
 		$this->_sts = &dwho_gct::get('xivo_stats');
+		$_SRE = dwho_gct::get('xivo_service');
+		$ipbx = &$_SRE->get('ipbx');
+		$this->_stat_queue_periodic = $ipbx->get_module('stat_queue_periodic');
+		$this->_stat_call_on_queue = $ipbx->get_module('stat_call_on_queue');
+		$this->_queuefeatures = $ipbx->get_module('queuefeatures');
+		$this->_stat_queue = $ipbx->get_module('stat_queue');
+		$this->_stat_agent = $ipbx->get_module('stat_agent');
+		$this->_xs->set_type($this->_type);
 	}
 
 	public function set_data_custom($key,$data)
@@ -47,72 +59,58 @@ class xivo_stats_ressource_abstract
 
 	public function get_queue_list()
 	{
-		return($this->_xs->get_queue_list());
+		return($this->_xs->get_object_list('queue'));
 	}
 
 	public function get_agent_list()
 	{
-		return($this->_xs->get_agent_list());
+		return($this->_xs->get_object_list('agent'));
 	}
 
-	public function get_incall_list()
+	public function get_rows()
 	{
-		return($this->_xs->get_incall_list());
-	}
-
-	public function eval_count_data($value,$event,$addwhere=null)
-	{
-		return($this->get_data_queue_log('count',$value,$event,null,$addwhere));
-	}
-
-	public function eval_sum_data($value,$event,$field,$addwhere=null)
-	{
-		return($this->get_data_queue_log('sum',$value,$event,$field,$addwhere));
-	}
-
-	private function get_data_queue_log($type,$value,$event,$field=null,$addwhere=null)
-	{
-		switch ($this->_table)
+		$days = $this->full_itl;
+		$rs = array();
+		foreach ($days as $day => $data)
 		{
-			case 'cel':
-				return($this->_xs->get_data_cel($type,$value,$event,$field,$addwhere));
-				break;
-			case 'queue_log':
-			default:
-				return($this->_xs->get_data_queue_log($type,$value,$event,$field,$addwhere));
+			$tmp = array();
+			$dayname = strtolower( date('l', strtotime($day)) );
+			$tmp['identity'] = dwho_i18n::babelfish($dayname);
+			$tmp['name'] = $dayname;
+			$tmp['key'] = (int) $day;
+			$tmp['day'] = date('d', strtotime($day));
+			$tmp['month'] = date('m', strtotime($day));
+			$tmp['year'] = date('Y', strtotime($day));
+			$rs[$day] = $tmp;
 		}
+		return($rs);
 	}
 
-	public function eval_field_queue_log($event,$type)
+	protected function _build_hours_for_day($hour, $daytime)
 	{
-		return($this->_xs->eval_field_queue_log($event,$type));
+		$year = date('Y', $daytime);
+		$month = date('m', $daytime);
+		$day = date('d' ,$daytime);
+		$interval = array();
+		$interval['beg'] = mktime($hour, 0, 0, $month, $day, $year);
+		$interval['end'] = mktime($hour+1, 0, -1, $month, $day, $year);
+		return($interval);
 	}
 
-	public function eval_data_queue_log($queue_log_entry,$event,$type)
+	protected function _build_interval_days_for_month($year, $month)
 	{
-		return($this->_xs->eval_pos_data_queue_log_conf($queue_log_entry,$event,$type));
+		$interval = array();
+		$interval['beg'] = mktime(0, 0, 1, $month, 1, $year);
+		$interval['end'] = mktime(23, 59, 59, $month, 31, $year);
+		return($interval);
 	}
 
-	protected function init_result($key)
+	protected function _build_interval_full_day($dbeg, $dend)
 	{
-		$res = &$this->_result;
-
-		if (is_array($key) === true
-		&& isset($key['value']) === true)
-			$key = $key['value'];
-
-		if (isset($res[$key]) === false)
-		{
-			$data_process = &$res[$key];
-			$data_process = array();
-
-			foreach ($this->_field as $k => $field)
-			{
-				$data_process[$k] = array();
-				$data_process[$k]['type'] = $field['type'];
-				$data_process[$k]['result'] = 0;
-			}
-		}
+		$interval = array();
+		$interval['beg'] = mktime(00, 00, 01, date('m', $dbeg), date('d' ,$dbeg), date('Y', $dbeg));
+		$interval['end'] = mktime(23, 59, 59, date('m', $dend), date('d' ,$dend), date('Y', $dend));
+		return($interval);
 	}
 
 	public function get_data()
@@ -126,248 +124,43 @@ class xivo_stats_ressource_abstract
 		$dbeg = strtotime($itl['dbeg']);
 		$dend = strtotime($itl['dend']);
 
-		if (($full_list_day = dwho_date::get_listday_for_interval($dbeg,$dend)) === false
-		|| ($data_listmonth = dwho_date::get_listmonth_for_interval($dbeg,$dend)) === false)
-			return(false);
+		$this->_stat_queue_periodic->set_dso_param('hour_itl',$this->_xs->get_dip_hour());
+		$this->_stat_queue_periodic->set_dso_param('days',$this->_xs->get_valid_list_day());
+		$this->_stat_call_on_queue->set_dso_param('hour_itl',$this->_xs->get_dip_hour());
+		$this->_stat_call_on_queue->set_dso_param('days',$this->_xs->get_valid_list_day());
 
-		$data = $this->get_list_by_type();
+		$obj_process = $this->_xs->get_object_process();
+		if ($axetype !== 'type' && !$obj_process)
+			return;
 
-		if (empty($data) === true)
-			return(false);
+		$interval = $this->_build_interval_full_day($dbeg, $dend);
 
-		$data = array_shift($data);
-		$key_data_arr = $data['keydata'];
-		$keyfile = $data['keyfile'];
+		$this->_build_stat($obj_process, "total", $interval);
 
 		switch ($axetype)
 		{
 			case 'day':
 				$key_data = $this->_xs->get_listhour();
-				$date = dwho_date::all_to_unixtime($itl['dday']);
-				$year = date('Y',$date);
-				$month = date('m',$date);
-				$day = date('d',$date);
-
-				while($key_data)
-				{
-					$key_full_data = array_shift($key_data);
-					$key = $key_full_data['key'];
-					$dip = array();
-					$dip['beg'] = mktime($key,0,0,$month,$day,$year);
-					$dip['end'] = mktime($key+1,0,0,$month,$day,$year);
-					$this->_xs->_interval_process = $dip;
-					$this->parse_log($key_data_arr,$key);
-				}
+				foreach ($key_data as $data)
+					$this->_build_stat($obj_process, $data['key'], $this->_build_hours_for_day($data['key'], $dbeg));
 				break;
 			case 'week':
-				$key_data = dwho_date::get_listday_for_interval($dbeg,$dend);
-				while($key_data)
-				{
-					$key_full_data = array_shift($key_data);
-					$dayname = $key_full_data['dayname'];
-
-					$this->init_result($dayname);
-					$key = $key_full_data['key'];
-					$year = substr($key,0,4);
-					$month = substr($key,4,2);
-					if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
-							|| is_null($month_data) === true)
-						continue;
-					$listdaynum = array_keys($month_data);
-
-					while($listdaynum)
-					{
-						$day = array_shift($listdaynum);
-
-						$index = (int) ($year.$month.$day);
-						if ($index !== $key_full_data['key'])
-							continue;
-
-						if (isset($full_list_day[$year.$month.$day]) === false)
-							continue;
-
-						// update result for day data
-						$this->eval_update_result($month_data[$day],$dayname);
-					}
-				}
-				break;
 			case 'month':
-				$date = dwho_date::all_to_unixtime($itl['dmonth']);
-				$year = date('Y',$date);
-				$month = date('m',$date);
-
-				if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
-				|| is_null($month_data) === true)
-					break;
-
-				$this->_result = ($month_data);
+				$this->full_itl = $this->_xs->build_full_date_interval($dbeg, $dend);
+				foreach ($this->full_itl as $key => $interval)
+					$this->_build_stat($obj_process, $key, $interval);
 				break;
 			case 'year':
 				$key_data = dwho_date::get_listmonth();
-
-				while($key_data)
-				{
-					$key_full_data = array_shift($key_data);
-					$monthnum = $key_full_data['key'];
-
-					$this->init_result($monthnum);
-					$listmonth = $data_listmonth;
-					while($listmonth)
-					{
-						$key = array_shift($listmonth);
-						$key = $key['key'];
-						$year = substr($key,0,4);
-						$month = substr($key,4,2);
-
-						if (((int) $month) != ((int) $monthnum))
-							continue;
-
-						if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
-						|| is_null($month_data) === true)
-							continue;
-
-						$listdaynum = array_keys($month_data);
-						while($listdaynum)
-						{
-							$day = array_shift($listdaynum);
-							if (isset($full_list_day[$year.$month.$day]) === false)
-								continue;
-
-							// update result for day data
-							$this->eval_update_result($month_data[$day],$monthnum);
-						}
-					}
-				}
+				foreach ($key_data as $data)
+					$this->_build_stat($obj_process, $data['key'], $this->_build_interval_days_for_month(date('Y', $dbeg), $data['key']));
 				break;
 			case 'type':
-			default:
 				$key_data = $this->get_list_by_type();
-
-				while($key_data)
-				{
-					$key_full_data = array_shift($key_data);
-					$keyfile = $key_full_data['keyfile'];
-
-					$this->init_result($keyfile);
-					$listmonth = $data_listmonth;
-					while($listmonth)
-					{
-						$key = array_shift($listmonth);
-						$key = $key['key'];
-						$year = substr($key,0,4);
-						$month = substr($key,4,2);
-
-						if (($month_data = $this->_xs->get_cache($keyfile,$year,$month)) === false
-						|| is_null($month_data) === true)
-							continue;
-						$listdaynum = array_keys($month_data);
-						while($listdaynum)
-						{
-							$day = array_shift($listdaynum);
-
-							if (isset($full_list_day[$year.$month.$day]) === false)
-								continue;
-
-							// update result for day data
-							$this->eval_update_result($month_data[$day],$keyfile);
-						}
-					}
-				}
-		}
-		return($this->_result);
-	}
-
-	private function eval_update_result($data_to_eval,$key)
-	{
-		$listfield = array_keys($data_to_eval);
-		while($listfield)
-		{
-			$field = array_shift($listfield);
-			if(isset($data_to_eval[$field]['result']) === true
-			&& $data_to_eval[$field]['result'] !== 0)
-				$this->update_result(array($key,$field),$data_to_eval[$field]['result']);
-			elseif(isset($data_to_eval[$field]['result']) === false
-			&& count($data_to_eval[$field]) >> 2)
-			{
-				$listssfield = array_keys($data_to_eval[$field]);
-				while($listssfield)
-				{
-					$ssfield = array_shift($listssfield);
-					if($data_to_eval[$field][$ssfield]['result'] !== 0)
-						$this->update_result(array($key,$field,$ssfield),$data_to_eval[$field][$ssfield]['result']);
-				}
-			}
-		}
-	}
-
-	protected function update_result($var,$str,$operator='+')
-	{
-		if (($res = call_user_func_array(array($this,'eval_result_var'), $var)) === null
-		|| isset($res['result']) === false)
-			return(false);
-
-		$result = $res['result'];
-
-		switch($operator)
-		{
-			case '+':
-				$result += $str;
+				foreach ($key_data as $data)
+					$this->_build_stat($data, $data['keyfile'], $interval);
 				break;
-			case '-':
-				$result -= $str;
-				break;
-			default:
 		}
-
-		$this->set_result_var($result,$var);
-
-		return(true);
-	}
-
-	private function set_result_var($result,$arr)
-	{
-		$var = &$this->_result;
-
-		for($i = 0;$i < count($arr);$i++)
-		{
-			$key = $arr[$i];
-			if (isset($var[$key]) === true)
-				$var = &$var[$key];
-		}
-
-		$var['result'] = $result;
-	}
-
-	private function eval_result_var()
-	{
-		if(($argc = func_num_args()) === 0)
-			return(null);
-
-		$name = (string) func_get_arg(0);
-
-		if (isset($this->_result[$name]) === true)
-			$var = $this->_result;
-		else
-			return(null);
-
-		$ref = $var[$name];
-
-		if($argc === 1)
-			return($ref);
-		else if(is_array($var[$name]) === false)
-			return(null);
-
-		for($i = 1;$i < $argc;$i++)
-		{
-			$key = func_get_arg($i);
-
-			if(dwho_ak($key,$ref) === false)
-			        return(null);
-
-			$ref = $ref[$key];
-		}
-
-		return($ref);
 	}
 
 }

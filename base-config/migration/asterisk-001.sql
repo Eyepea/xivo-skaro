@@ -123,10 +123,9 @@ CREATE TABLE "sccpdevice" (
 COMMIT;
 
 
--- grant all rights to asterisk.* for asterisk user
 BEGIN;
 
-SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO asterisk;') FROM pg_tables WHERE schemaname = 'public';
-SELECT execute('GRANT ALL ON SEQUENCE '||relname||' TO asterisk;') FROM pg_class WHERE relkind = 'S';
+GRANT ALL ON ALL TABLES IN SCHEMA public TO asterisk;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public to asterisk;
 
 COMMIT;

@@ -61,21 +61,11 @@ class BaseCiscoSccpPlugin(StandardPlugin):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
         
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
-        
-        handlers = FetchfwPluginHelper.new_handlers(gen_cfg.get('proxies'))
-        downloaders = FetchfwPluginHelper.new_downloaders_from_handlers(handlers)
-        cisco_dler = common['CiscoDownloader'](handlers)
-        downloaders['x-cisco'] = cisco_dler
+
+        downloaders = FetchfwPluginHelper.new_downloaders(gen_cfg.get('proxies'))
         fetchfw_helper = FetchfwPluginHelper(plugin_dir, downloaders)
-        
-        cfg_service = common['CiscoConfigureService'](cisco_dler, spec_cfg.get('username'),
-                                                      spec_cfg.get('password'))
-        persister = JsonConfigPersister(os.path.join(self._plugin_dir, 'var',
-                                                     'config.json'))
-        cfg_service = PersistentConfigureServiceDecorator(cfg_service, persister)
-        
-        self.services = {'configure': cfg_service,
-                         'install': fetchfw_helper}
+
+        self.services = fetchfw_helper.services()
         self.tftp_service = TFTPFileService(self._tftpboot_dir)
     
     dhcp_dev_info_extractor = common['BaseCiscoDHCPDeviceInfoExtractor']()

@@ -231,7 +231,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 			$this->_info['protocol']['name']
 		);
 
-		$infos = $this->_service->discuss($q, true);
+		$infos = $this->_service->exec_cmd_ast($q, true);
 
 		if(!is_array($infos))
 			return false;
@@ -446,7 +446,7 @@ class xivo_application_service_asterisk_line extends xivo_application_asterisk_a
 		$this->_protocolname = $protocolname;
 
 		if ($action === 'add'
-		&& isset($arr['protocol']['secret']) === false)
+		&& dwho_has_len($arr['protocol'], 'secret') === false)
 			$arr['protocol']['secret'] = $this->gen_password(6);
 
 		$callerid = '';

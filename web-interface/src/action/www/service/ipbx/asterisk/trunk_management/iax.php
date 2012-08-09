@@ -63,12 +63,7 @@ switch($act)
 					$result['register'] = $result['register']['arr'];
 			}
 			else
-			{
-				$ipbx->discuss(array('dialplan reload',
-									'iax2 reload'
-				));
 				$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
-			}
 		}
 
 		$element = $apptrunk->get_elements();
@@ -145,12 +140,7 @@ switch($act)
 					$result['register'] = $result['register']['arr'];
 			}
 			else
-			{
-				$ipbx->discuss(array('dialplan reload',
-									'iax2 reload'
-				));
 				$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
-			}
 		}
 
 		$element = $apptrunk->get_elements();
@@ -214,10 +204,6 @@ switch($act)
 
 		$apptrunk->delete();
 
-		$ipbx->discuss(array('dialplan reload',
-							'iax2 reload'
-		));
-
 		$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
 		break;
 	case 'deletes':
@@ -236,10 +222,6 @@ switch($act)
 			if($apptrunk->get($values[$i]) !== false)
 				$apptrunk->delete();
 		}
-
-		$ipbx->discuss(array('dialplan reload',
-							'iax2 reload'
-		));
 
 		$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
 		break;
@@ -264,10 +246,6 @@ switch($act)
 			else
 				$apptrunk->enable();
 		}
-
-		$ipbx->discuss(array('dialplan reload',
-							'iax2 reload'
-		));
 
 		$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
 		break;

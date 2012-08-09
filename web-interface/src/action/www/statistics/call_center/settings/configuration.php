@@ -39,8 +39,8 @@ if($search !== '')
 
 $appstats_conf = &$_XOBJ->get_application('stats_conf');
 
-$appqueue_log = &$ipbx->get_application('queue_log');
-if (($interval = $appqueue_log->get_min_and_max_time()) === false)
+$stat_queue_periodic = &$ipbx->get_module('stat_queue_periodic');
+if (($interval = $stat_queue_periodic->get_min_and_max_time()) === false)
 	$dbegcachedefault = null;
 else
 	$dbegcachedefault = strtotime($interval['min']);

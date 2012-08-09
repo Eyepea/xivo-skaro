@@ -90,6 +90,20 @@ class xivo_user_abstract_sql extends dwho_datastorage_helper_table
 
 		return(dwho_unserialize($r));
 	}
+
+	function get_all_wherein($id,$where)
+	{
+		$this->_dso->new_select($this->_table,'*');
+
+		$this->_dso->wherein('id',$where);
+
+		$r = $this->_dso->select_all('',true,false,'id');
+
+		if(empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
 }
 
 ?>

@@ -37,6 +37,15 @@ Choisissez la configuration à appliquer:
 ; colstruct_traitment
 Traités
 
+; colstruct_schedule
+Horaire
+
+; colstruct_ratio
+Ratio
+
+; colstruct_redistributed
+Dissuadés ou Redistribués
+
 ; colstruct_abandon
 Appels abandonnés
 
@@ -53,16 +62,16 @@ Appels traités
 <acronym title="Moyenne Temps d'Appels">MTA</acronym>
 
 ; col_presented
-<acronym title="Total">Total</acronym>
+<acronym title="Présentés">Présentés</acronym>
 
 ; col_connect
-<acronym title="Répondu">Répondus</acronym>
+<acronym title="Traités">Traités</acronym>
 
 ; col_abandon
 <acronym title="Abandonnés">Abandonnés</acronym>
 
 ; col_ringnoanswer
-<acronym title="NON répondu">Non R.</acronym>
+<acronym title="Sur non réponse">Sur NR</acronym>
 
 ; col_outgoing
 <acronym title="Sortants">Sort.</acronym>
@@ -80,31 +89,31 @@ Appels traités
 Dissuadés
 
 ; col_on_close
-<acronym title="Dissuadés sur fermeture">fermeture</acronym>
+<acronym title="Sur fermeture">Sur fermeture</acronym>
 
 ; col_on_saturation
-<acronym title="Dissuadés sur saturation">saturation</acronym>
+<acronym title="Sur saturatin">Sur saturation</acronym>
 
-; colstruct_rerouted
-Reroutés
+; colstruct_lost
+Perdus
 
-; col_on_hungup
-<acronym title="Reroutés sur un raccrocheś">Raccrocheś</acronym>
+; col_on_joinempty
+<acronym title="Blocage entrant">Sur blocage (entrant)</acronym>
 
-; col_on_guide
-<acronym title="Reroutés sur guide">Sur guide</acronym>
+; col_on_leaveempty
+<acronym title="Blocage passant">Sur blocage (sortant)</acronym>
 
-; col_on_number
-<acronym title="Reroutés sur numéro">Sur numéro</acronym>
+; col_on_timeout
+<acronym title="Sur non réponse">Sur NR</acronym>
 
 ; col_average_time_waiting
-<acronym title="Temps moyen d'attente">Temps moyen d'attente</acronym>
+<acronym title="Temps moyen d'attente">TMA</acronym>
 
 ; col_home_rated
-<acronym title="Taux d'accueil">Taux d'accueil</acronym>
+<acronym title="Taux d'accueil">TA</acronym>
 
 ; col_qos
-<acronym title="Qualité de service">QOS</acronym>
+<acronym title="Qualité de service">QoS</acronym>
 
 ; colstruct_calls
 Appels
@@ -135,6 +144,9 @@ Présentés hors FA
 
 ; col_login
 <acronym title="Login">Login</acronym>
+
+; col_conversation
+<acronym title="Temps total de conversation">Conversation</acronym>
 
 ; col_available
 <acronym title="Disponible">Dispo</acronym>

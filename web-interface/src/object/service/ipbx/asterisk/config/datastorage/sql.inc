@@ -248,10 +248,6 @@ $array['queueskillrule'] = array();
 $array['queueskillrule']['table'] = 'queueskillrule';
 $array['queueskillrule']['primary'] = array('id' => '');
 
-$array['queue_log'] = array();
-$array['queue_log']['table'] = 'queue_log';
-$array['queue_log']['primary'] = array('time' => '');
-
 $array['rightcall'] = array();
 $array['rightcall']['table'] = 'rightcall';
 $array['rightcall']['primary'] = array('id' => '');
@@ -443,5 +439,21 @@ $array['campaign_campaign']['primary'] = array('id' => '');
 $array['campaign_campaign_filter'] = array();
 $array['campaign_campaign_filter']['table'] = 'callcenter_campaigns_campaign_filter';
 $array['campaign_campaign_filter']['primary'] = array('campaign_id' => '', 'type' => '', 'value' => '');
+
+$array['stat_queue_periodic'] = array();
+$array['stat_queue_periodic']['table'] = 'stat_queue_periodic';
+$array['stat_queue_periodic']['primary'] = array('id' => '');
+
+$array['stat_call_on_queue'] = array();
+$array['stat_call_on_queue']['table'] = 'stat_call_on_queue';
+$array['stat_call_on_queue']['primary'] = array('callid' => '', 'time' => '');
+
+$array['stat_queue'] = array();
+$array['stat_queue']['table'] = 'stat_queue';
+$array['stat_queue']['primary'] = array('id' => '');
+
+$array['stat_agent'] = array();
+$array['stat_agent']['table'] = 'stat_agent';
+$array['stat_agent']['primary'] = array('id' => '');
 
 ?>

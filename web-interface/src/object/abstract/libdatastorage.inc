@@ -22,6 +22,9 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','libconfig.inc'));
 
 abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 {
+
+	private $_asterisk_cmd_list = null;
+
 	function _reset_params()
 	{
 		if(isset($this->_param) === false)
@@ -478,6 +481,62 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		return($r);
 	}
 
+	private function _parse_ctibus_cmd(&$cmds, $state, $id)
+	{
+		foreach ($cmds as &$cmd)
+			$cmd = sprintf($cmd, $state, $id);
+	}
+
+	private function _asterisk_conf_manager($state, $id=null)
+	{
+		if (!isset($_SESSION['cmd_list_to_process']))
+			$_SESSION['cmd_list_to_process'] = array();
+
+		$cmds = &$_SESSION['cmd_list_to_process'];
+		$name = $this->_name;
+
+		if ($name === 'realstatic')
+			$name = $this->_dso->_param['filename'];
+
+		if (!isset($cmds['dird']))
+			$cmds['dird'] = array();
+		if (!isset($cmds['ctibus']))
+			$cmds['ctibus'] = array();
+		if (!isset($cmds['ipbx']))
+			$cmds['ipbx'] = array();
+
+		if(($cmd_repartition = dwho_gat::load_get('conf_cmd',DWHO_PATH_CONF)) === false)
+			trigger_error('Failed to load conf_cmd configuration',E_USER_ERROR);
+
+		foreach ($cmd_repartition as $module => $types)
+		{
+			if (preg_match('/\*/', $module))
+			{
+				$pattern_mod = '/'.preg_replace('/\*/','(.*)',$module).'/i';
+				if (preg_match($pattern_mod, $name, $out) > 0)
+				{
+					foreach ($types as $type => $cmd)
+					{
+						if ($type === 'ctibus')
+							$this->_parse_ctibus_cmd($cmd, $state, $id);
+						$cmds[$type] = array_merge($cmds[$type], $cmd);
+						$cmds[$type] = array_unique($cmds[$type]);
+					}
+				}
+			}
+			elseif ($name === $module)
+			{
+				foreach ($types as $type => $cmd)
+				{
+					if ($type === 'ctibus')
+						$this->_parse_ctibus_cmd($cmd, $state, $id);
+					$cmds[$type] = array_merge($cmds[$type], $cmd);
+					$cmds[$type] = array_unique($cmds[$type]);
+				}
+			}
+		}
+	}
+
 	function add($arr,$id=0)
 	{
 		$autoid = true;
@@ -492,7 +551,10 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			$autoid = false;
 		}
 
-		return($this->_dso->add($arr,$autoid));
+		if (($ret = $this->_dso->add($arr,$autoid)) !== false)
+			$this->_asterisk_conf_manager('add', $ret);
+
+		return($ret);
 	}
 
 	function edit($id,$arr,$disable=null,$chkunique=true)
@@ -501,8 +563,10 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		|| ($id = $this->_chk_primary_key($id)) === false) {
 			return(false);
 		}
+		if (($ret = $this->_dso->edit($id,$arr,$disable,$chkunique)) !== false)
+			$this->_asterisk_conf_manager('edit', $this->get_id($id));
 
-		return($this->_dso->edit($id,$arr,$disable,$chkunique));
+		return($ret);
 	}
 
 	function edit_where($where,$arr,$disable=null,$id=null,$chkunique=true)
@@ -519,7 +583,12 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			$where = array_merge($where,$id);
 		}
 
-		return($this->_dso->edit($where,$arr,$disable,$chkunique));
+		$id = $this->get_id($where);
+
+		if (($ret = $this->_dso->edit($where,$arr,$disable,$chkunique)) !== false)
+			$this->_asterisk_conf_manager('edit', $id);
+
+		return($ret);
 	}
 
 	function delete($id,$disable=null)
@@ -527,7 +596,10 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		if(($id = $this->_chk_primary_key($id)) === false)
 			return(false);
 
-		return($this->_dso->delete($id,$disable));
+		if (($ret = $this->_dso->delete($id,$disable)) !== false)
+			$this->_asterisk_conf_manager('delete', $this->get_id($id));
+
+		return($ret);
 	}
 
 	function delete_where($where,$disable=null,$id=null)
@@ -543,12 +615,20 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			$where = array_merge($where,$id);
 		}
 
-		return($this->_dso->delete($where,$disable));
+		$id = $this->get_id($where);
+
+		if (($ret = $this->_dso->delete($where,$disable)) !== false)
+			$this->_asterisk_conf_manager('delete', $id);
+
+		return($ret);
 	}
 
 	function delete_all()
 	{
-		return($this->_dso->delete_all());
+		if (($ret = $this->_dso->delete_all()) !== false)
+			$this->_asterisk_conf_manager('deleteall');
+
+		return($ret);
 	}
 
 	function enable($id,$value=false)
@@ -557,7 +637,10 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		|| ($disable = $this->_dso->get_disable()) === false)
 			return(false);
 
-		return($this->_dso->edit($id,array($disable => intval((bool) $value))));
+		if (($ret = $this->_dso->edit($id,array($disable => intval((bool) $value)))) !== false)
+			$this->_asterisk_conf_manager('enable', $id);
+
+		return($ret);
 	}
 
 	function disable($id,$value=true)
@@ -566,7 +649,10 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		|| ($disable = $this->_dso->get_disable()) === false)
 			return(false);
 
-		return($this->_dso->edit($id,array($disable => intval((bool) $value))));
+		if (($ret = $this->_dso->edit($id,array($disable => intval((bool) $value)))) !== false)
+			$this->_asterisk_conf_manager('disable', $id);
+
+		return($ret);
 	}
 
 	function enable_where($id,$value=false)
@@ -576,7 +662,10 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		|| ($disable = $this->_dso->get_disable()) === false)
 			return(false);
 
-		return($this->_dso->edit($where,array($disable => intval((bool) $value))));
+		if (($ret = $this->_dso->edit($where,array($disable => intval((bool) $value)))) !== false)
+			$this->_asterisk_conf_manager('enable', $this->get_id($where));
+
+		return($ret);
 	}
 
 	function disable_where($id,$value=true)
@@ -586,7 +675,27 @@ abstract class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		|| ($disable = $this->_dso->get_disable()) === false)
 			return(false);
 
-		return($this->_dso->edit($where,array($disable => intval((bool) $value))));
+		if (($ret = $this->_dso->edit($where,array($disable => intval((bool) $value)))) !== false)
+			$this->_asterisk_conf_manager('disable', $this->get_id($where));
+
+		return($ret);
+	}
+
+	function get_id($where)
+	{
+		if (is_numeric($where))
+			return((int) $where);
+		elseif (is_array($where))
+		{
+			if(isset($where['id'])
+			&& $this->_chk_primary_key('id'))
+				return((int) $where['id']);
+
+			$primary_key = array_keys($this->_dso->get_primary_key());
+			$rs = $this->_dso->get_id($where, $primary_key);
+
+			return($rs[array_pop($primary_key)]);
+		}
 	}
 }
 

@@ -23,7 +23,7 @@ require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'date.inc'));
 class stats_ressource_cel
 {
 
-	public		$_type		=    '';
+	public		$_type		= '';
 	public		$_field		= array('duration_in'		=> array('type' => 'time'),
 									'duration_out'		=> array('type' => 'time'),
 									'duration_intern'	=> array('type' => 'time'),

@@ -241,8 +241,8 @@ class xivo_object_commonconf extends xivo_object_abstract
 	{
 		$ret = $this->_sysconfd->request_get('/commonconf_apply');
 
-		if (dwho_file::is_f('/var/lib/pf-xivo-web-interface/commonconf.reload'))
-			unlink('/var/lib/pf-xivo-web-interface/commonconf.reload');
+		if (dwho_file::is_f('/tmp/commonconf.reload'))
+			unlink('/tmp/commonconf.reload');
 
 		return $ret;
 	}
@@ -254,7 +254,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 
 	function notify_changes()
 	{
-		touch('/var/lib/pf-xivo-web-interface/commonconf.reload');
+		touch('/tmp/commonconf.reload');
 		return(true);
 	}
 }

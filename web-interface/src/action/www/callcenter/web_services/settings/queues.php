@@ -54,10 +54,7 @@ switch($act)
 		$appqueue = &$ipbx->get_application('queue');
 
 		if($appqueue->add_from_json() === true)
-		{
 			$status = 200;
-			$ipbx->discuss('xivo[queuelist,update]');
-		}
 		else
 			$status = 400;
 
@@ -70,10 +67,7 @@ switch($act)
 		if($appqueue->get($_QRY->get('id')) === false)
 			$status = 404;
 		else if($appqueue->delete() === true)
-		{
 			$status = 200;
-			$ipbx->discuss('xivo[queuelist,update]');
-		}
 		else
 			$status = 500;
 

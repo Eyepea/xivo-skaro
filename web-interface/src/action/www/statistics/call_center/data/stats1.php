@@ -34,88 +34,79 @@ $itl = $_XS->get_datecal();
 switch ($axetype)
 {
 	case 'day':
-		$tpl_statistics->set_rows('hour', $_XS->get_listhour(),'key');
+		$tpl_statistics->set_rows('hour', $_XS->get_listhour(), 'key');
+		$tpl_statistics->set_row_total('hour');
 		break;
 	case 'week':
-		$tpl_statistics->set_rows('day',$_XS->get_listday_for_week(),'key');
+		$tpl_statistics->set_rows('day',$stats_queue->get_rows(),'key');
+		$tpl_statistics->set_row_total('day');
 		break;
 	case 'month':
-		$date = dwho_date::all_to_unixtime($itl['dmonth']);
-		$year = date('Y',$date);
-		$month = date('m',$date);
-		$tpl_statistics->set_rows('day', $_XS->get_listday_for_month($year,$month),'key');
+		$tpl_statistics->set_rows('day', $stats_queue->get_rows(),'key');
+		$tpl_statistics->set_row_total('day');
 		break;
 	case 'year':
 		$tpl_statistics->set_rows('month',dwho_date::get_listmonth(),'key');
+		$tpl_statistics->set_row_total('month');
 		break;
 	case 'type':
 	default:
 		$tpl_statistics->set_rows('queuename',$stats_queue->get_queue_list(),'keyfile',true);
+		$tpl_statistics->set_row_total('queuename');
 }
 
 $tpl_statistics->set_data_custom('queue',$stats_queue->_result);
 
 $tpl_statistics->set_col_struct(null);
-/*
 $tpl_statistics->add_col('presented',
-					'direct',
-					'custom:queue,[key],presented');
-*/
-#$tpl_statistics->set_col_struct('traitment');
-$tpl_statistics->add_col('presented',
-					'direct',
-					'custom:queue,[key],enterqueue');
+		'direct',
+		'custom:queue,[key],presented');
+
 $tpl_statistics->add_col('connect',
-					'direct',
-					'custom:queue,[key],connect');
+		'direct',
+		'custom:queue,[key],connect');
 $tpl_statistics->add_col('abandon',
-					'direct',
-					'custom:queue,[key],abandon');
-/*
-$tpl_statistics->set_col_struct('deterred');
+		'direct',
+		'custom:queue,[key],abandon');
+
+$tpl_statistics->set_col_struct('redistributed');
 $tpl_statistics->add_col('on_close',
-					'direct',
-					'custom:queue,[key],deterred_on_close');
+		'direct',
+		'custom:queue,[key],deterred_on_close');
+$tpl_statistics->add_col('on_timeout',
+		'direct',
+		'custom:queue,[key],timeout');
 $tpl_statistics->add_col('on_saturation',
-					'direct',
-					'custom:queue,[key],deterred_on_saturation');
-*/
-$tpl_statistics->set_col_struct('rerouted');
-/*
-$tpl_statistics->add_col('on_hungup',
-					'direct',
-					'custom:queue,[key],rerouted_on_hungup');
-*/
-$tpl_statistics->add_col('on_guide',
-					'direct',
-					'custom:queue,[key],rerouted_on_guide');
-$tpl_statistics->add_col('on_number',
-					'direct',
-					'custom:queue,[key],rerouted_on_number');
+		'direct',
+		'custom:queue,[key],deterred_on_saturation');
+$tpl_statistics->add_col('on_joinempty',
+		'direct',
+		'custom:queue,[key],joinempty');
+$tpl_statistics->add_col('on_leaveempty',
+		'direct',
+		'custom:queue,[key],leaveempty');
 
 $tpl_statistics->set_col_struct(null);
 $tpl_statistics->add_col('average_time_waiting',
-					'expression',
-					'{custom:queue,[key],total_time_waiting}/{custom:queue,[key],connect}',
-					'time',
-					'average');
+		'direct',
+		'custom:queue,[key],average_wait_time',
+		'time',
+		'average');
 $tpl_statistics->add_col('home_rated',
-					'expression',
-					'{custom:queue,[key],connect}/{custom:queue,[key],enterqueue}',
-					'percent',
-					'average');
+		'direct',
+		'custom:queue,[key],home_rated',
+		'percent');
 $tpl_statistics->add_col('qos',
-					'expression',
-					'{custom:queue,[key],qos}/{custom:queue,[key],connect}',
-					'percent',
-					'average');
+		'direct',
+		'custom:queue,[key],qos',
+		'percent');
 
 $tpl_statistics->gener_table();
 
 $_TPL->set_var('table1',$tpl_statistics);
 $_TPL->set_var('listrow',$tpl_statistics->get_data_rows());
-$_TPL->set_var('listobject',$_XS->get_object_list());
 $_TPL->set_var('objectkey',$_XS->get_objectkey());
+$_TPL->set_var('listobject',$_XS->get_object_list());
 $_TPL->set_var('showdashboard_call_center',true);
 
 if($act === 'exportcsv')

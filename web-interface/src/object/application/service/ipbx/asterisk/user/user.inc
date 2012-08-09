@@ -467,9 +467,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($r);
 	}
 
-	function get_users_search($search,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)
+	function get_users_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		return($this->_get_users('search',$disable,$search,$order,$limit,$assoc,$initialized));
+		return($this->_get_users('search',$disable,$search,$order,$limit,$assoc));
 	}
 
 	function get_users_search_number($search,$disable=null,$order=null,$limit=null,$assoc=false)
@@ -963,7 +963,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				if($ref['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SCCP) {
 					$ref['name'] = $ref['number'];
 				} else {
-					if(isset($ref['name']) === false) {
+					if(dwho_has_len($ref, 'name') === false) {
 						$ref['name'] = $this->gen_password(6,true);
 					}
 				}

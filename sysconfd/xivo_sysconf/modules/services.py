@@ -19,13 +19,14 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import logging, subprocess, traceback
+import logging, subprocess
 
 from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
 from xivo.http_json_server import CMD_RW
 
 logger = logging.getLogger('xivo_sysconf.modules.services')
+
 
 def services(args, options):
     """
@@ -35,24 +36,23 @@ def services(args, options):
     """
     for svc, act in args.iteritems():
         if act not in ['stop', 'start', 'restart']:
-            logger.error("action %s not authorized on %s service" % (act, svc))
+            logger.error("action %s not authorized on %s service", act, svc)
 
         try:
             p = subprocess.Popen(["/etc/init.d/%s" % svc, act],
-                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                close_fds=True)
-            ret = p.wait()
-            output = p.stdout.read()
-            logger.debug("/etc/init.d/%s %s : %d" % (svc, act, ret))
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.STDOUT,
+                                 close_fds=True)
+            output = p.communicate()[0]
+            logger.debug("/etc/init.d/%s %s : %d", svc, act, p.returncode)
 
-            if ret != 0:
+            if p.returncode != 0:
                 raise HttpReqError(500, output)
         except OSError:
-            traceback.print_exc()
+            logger.exception("Error while executing /etc/init.d script")
             raise HttpReqError(500, "can't manage services")
 
     return output
 
 
 http_json_server.register(services, CMD_RW, name='services')
-

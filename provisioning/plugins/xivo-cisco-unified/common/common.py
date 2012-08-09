@@ -17,14 +17,8 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import contextlib
-import cookielib
 import logging
 import re
-import urllib
-import urllib2
-from fetchfw.download import DefaultDownloader, InvalidCredentialsError, \
-    DownloadError
 from provd import tzinform
 from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT, \
     NO_SUPPORT, FULL_SUPPORT, COMPLETE_SUPPORT, PROBABLE_SUPPORT
@@ -32,71 +26,6 @@ from provd.util import norm_mac
 from twisted.internet import defer
 
 logger = logging.getLogger('plugin.xivo-cisco')
-
-
-class WeakCiscoCredentialsError(DownloadError):
-    pass
-
-
-class CiscoDownloader(DefaultDownloader):
-    _C14N_LOGIN_URL = 'http://www.cisco.com/cgi-bin/login'
-    _POST_LOGIN_URL = 'https://fedps.cisco.com/idp/startSSO.ping?PartnerSpId=https://fedam.cisco.com&IdpAdapterId=fedsmidpCCO&TargetResource=http%3A//www.cisco.com/cgi-bin/login%3Freferer%3Dhttp%3A//www.cisco.com/'
-
-    def __init__(self, handlers):
-        DefaultDownloader.__init__(self, handlers)
-        self._cookiejar = cookielib.CookieJar()
-        self._opener.add_handler(urllib2.HTTPCookieProcessor(self._cookiejar))
-        self._form_params = None
-        self._is_authenticated = False
-
-    def clear_password(self):
-        self._form_params = None
-
-    def set_password(self, user, passwd):
-        self._is_authenticated = False
-        self._cookiejar.clear()
-        self._form_params = {'USER': user, 'PASSWORD': passwd}
-
-    def _do_download(self, url, timeout):
-        if not self._form_params:
-            raise InvalidCredentialsError('no Cisco username/password have been set')
-        if not self._is_authenticated:
-            self._authenticate(timeout)
-        assert self._is_authenticated
-        f = self._opener.open(url, timeout=timeout)
-        # Cisco website is not using HTTP 4xx status code to signal that we can't access an URL, so...
-        if f.info().type == 'text/html':
-            f.close()
-            raise WeakCiscoCredentialsError('it seems like your Cisco username/password doesn\'t give you '
-                                            'access to this URL (or this URL might be no longer valid)')
-        return f
-
-    def _authenticate(self, timeout):
-        form_url = self._get_form_url(timeout)
-        data = urllib.urlencode(self._form_params)
-        logger.debug('Trying to authenticate on Cisco website')
-        with contextlib.closing(self._opener.open(form_url, data, timeout=timeout)) as f:
-            logger.debug('Checking for authentication failure - url "%s"', f.geturl())
-            for line in f:
-                if 'title' in line.lower():
-                    if 'login' in line.lower():
-                        break
-                    else:
-                        raise InvalidCredentialsError('authentification failed on Cisco website')
-            else:
-                logger.debug('No sign of authentication failure - assuming success')
-        with contextlib.closing(self._opener.open(self._POST_LOGIN_URL, timeout=timeout)) as f:
-            f.read()
-        self._is_authenticated = True
-
-    def _get_form_url(self, timeout):
-        # This step is not strictly required but this way we have less chance to be
-        # affected by an URL modification
-        logger.debug('Getting Cisco form URL from C14N URL')
-        with contextlib.closing(self._opener.open(self._C14N_LOGIN_URL, timeout=timeout)) as login:
-            url = login.geturl()
-            logger.debug('Form URL is "%s"', url)
-            return url
 
 
 class BaseCiscoPgAssociator(BasePgAssociator):
@@ -247,45 +176,3 @@ def _gen_tz_map():
         else:
             inner_dict[tzinfo['dst']['as_string']] = param_value
     return result
-
-
-class CiscoConfigureService(object):
-    # implements(IConfigureService)
-
-    def __init__(self, cisco_dler, username, password):
-        # Creating an instance will also set the password to the downloader
-        # if applicable
-        self._cisco_dler = cisco_dler
-        self._p_username = username
-        self._p_password = password
-        self._update_dler()
-
-    def _update_dler(self):
-        if self._p_username and self._p_password:
-            self._cisco_dler.set_password(self._p_username, self._p_password)
-        else:
-            self._cisco_dler.clear_password()
-
-    def get(self, name):
-        try:
-            return getattr(self, '_p_' + name)
-        except AttributeError, e:
-            raise KeyError(e)
-
-    def set(self, name, value):
-        attrname = '_p_' + name
-        if hasattr(self, attrname):
-            setattr(self, attrname, value)
-            self._update_dler()
-        else:
-            raise KeyError(name)
-
-    description = [
-        (u'username', u'The username used to download files from cisco.com website'),
-        (u'password', u'The password used to download files from cisco.com website'),
-    ]
-
-    description_fr = [
-        (u'username', u"Le nom d'utilisateur pour télécharger les fichiers sur le site cisco.com"),
-        (u'password', u'Le mot de passe pour télécharger les fichiers sur le site cisco.com'),
-    ]

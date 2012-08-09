@@ -23,8 +23,8 @@ require_once('xivo.php');
 if(xivo_user::chk_acl(true) === false)
 	$_QRY->go($_TPL->url('xivo'));
 
-$ctibus = &$ipbx->get_module('ctibus');
-$ctibus->cmd('core restart now',true);
+$sysconfd = &$_XOBJ->get_module('sysconfd');
+$res = $sysconfd->request_post('/services', array('asterisk' => 'restart'));
 
 if(isset($_SERVER['HTTP_REFERER']) === true)
 	$_QRY->go($_SERVER['HTTP_REFERER'],false);

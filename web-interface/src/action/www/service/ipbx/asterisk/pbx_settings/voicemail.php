@@ -52,10 +52,7 @@ switch($act)
 				$error = $appvoicemail->get_error();
 			}
 			else
-			{
-				$ipbx->discuss(array('xivo[voicemail,update]','voicemail reload'));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
-			}
 		}
 
 		$dhtml = &$_TPL->get_module('dhtml');
@@ -89,10 +86,7 @@ switch($act)
 				$error = $appvoicemail->get_error();
 			}
 			else
-			{
-				$ipbx->discuss(array('xivo[voicemail,update]','voicemail reload'));
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
-			}
 		}
 
 		$dhtml = &$_TPL->get_module('dhtml');
@@ -115,7 +109,6 @@ switch($act)
 
 		$appvoicemail->delete();
 
-		$ipbx->discuss(array('xivo[voicemail,update]','voicemail reload'));
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 		break;
 
@@ -133,7 +126,6 @@ switch($act)
 				$appvoicemail->delete();
 		}
 
-		$ipbx->discuss(array('xivo[voicemail,update]','voicemail reload'));
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 		break;
 
@@ -156,7 +148,6 @@ switch($act)
 				$appvoicemail->enable();
 		}
 
-		$ipbx->discuss(array('xivo[voicemail,update]','voicemail reload'));
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 		break;
 

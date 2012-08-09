@@ -1,17 +1,17 @@
 ; title_content_name
 Network
 
-; if_err_eth0
-Eth0 errors
-
-; if_eth0
-Eth0 traffic
-
-; if_err_eth1
-Eth1 errors
-
-; if_eth1
-Eth1 traffic
-
 ; netstat
 Netstat
+
+; interface_err
+Interface %s errors
+
+; interface
+Interface %s
+
+; vlan
+VLAN %s
+
+; ip_address
+IP address %s

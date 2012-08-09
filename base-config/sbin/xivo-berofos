@@ -42,6 +42,8 @@ def _parse_args():
 
 def _new_argument_parser():
     parser = argparse.ArgumentParser()
+    parser.add_argument('-q', '--quiet', action='store_true', default=False,
+                        help='quiet; only write errors')
     parser.add_argument('-v', '--verbose', action='store_true', default=False,
                         help='increase logging verbosity')
     parser.add_argument('--syslog', action='store_true', default=False,
@@ -61,7 +63,9 @@ def _init_logging(parsed_args):
         handler = SysLogHandler('/dev/log', SysLogHandler.LOG_USER)
         handler.setFormatter(logging.Formatter('xivo-berofos[%(process)d]: %(message)s'))
         logger.addHandler(handler)
-    if parsed_args.verbose:
+    if parsed_args.quiet:
+        logger.setLevel(logging.ERROR)
+    elif parsed_args.verbose:
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.INFO)
@@ -101,7 +105,7 @@ def _exec_bnfos_command(bnfos_command):
     else:
         if process.returncode:
             logger.error('error while executing bnfos command: return code %r', process.returncode)
-            logger.info('%s', output)
+            logger.debug('%s', output)
 
 
 if __name__ == '__main__':

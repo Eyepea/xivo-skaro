@@ -23,7 +23,7 @@ define('XIVO_TPL_AREA','json');
 
 require_once('xivo.php');
 
-$action_path = $_LOC->get_action_path('statistics/call_center/web_services/',3);
+$action_path = $_LOC->get_action_path('statistics/call_center/web_services/', 3);
 
 if($action_path === false)
 {

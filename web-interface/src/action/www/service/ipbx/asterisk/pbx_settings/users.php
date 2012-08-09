@@ -120,13 +120,6 @@ switch($act)
 		$appqueue = &$ipbx->get_application('queue');
 		$appqueue->userskills_delete($_QR['id']);
 
-		// refresh pickup groups
-		$ipbx->discuss(array('dialplan reload',
-							'xivo[userlist,update]',
-							'module reload app_queue.so',
-							'sip reload'
-		));
-
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		break;
 	case 'deletes':
@@ -147,13 +140,6 @@ switch($act)
 
 			$appqueue->userskills_delete($values[$i]);
 		}
-
-		// refresh pickup groups
-		$ipbx->discuss(array('dialplan reload',
-							'xivo[userlist,update]',
-							'module reload app_queue.so',
-							'sip reload'
-		));
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		break;
@@ -178,11 +164,6 @@ switch($act)
 				$appuser->enable();
 		}
 
-		$ipbx->discuss(array('dialplan reload',
-			'xivo[userlist,update]',
-			'sip reload'// refresh pickup groups
-		));
-
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		break;
 	case 'import':
@@ -191,9 +172,6 @@ switch($act)
 		if(isset($_QR['fm_send']) === true)
 		{
 			$appuser->import_csv();
-			$ipbx->discuss(array('dialplan reload',
-                                 'xivo[userlist,update]',
-                                 'sip reload'));
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		}
 

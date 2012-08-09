@@ -424,60 +424,37 @@ $array['service/ipbx/asterisk/web_services/private/control_system/restart'] = ar
 ###################################################################
 
 # RESTRICTED
-$array['statistics/web_services/restricted/call_center/queue'] = array(
-	'path'		=> 'statistics/web_services/call_center/queue',
+$array['statistics/call_center/web_services/restricted/settings/configuration'] = array(
+	'path'		=> 'statistics/call_center/web_services/settings/configuration',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['statistics/web_services/restricted/call_center/stats1'] = array(
-	'path'		=> 'statistics/web_services/call_center/stats1',
+$array['statistics/call_center/web_services/restricted/data/stats1'] = array(
+	'path'		=> 'statistics/call_center/web_services/data/stats1',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['statistics/web_services/restricted/call_center/stats2'] = array(
-	'path'		=> 'statistics/web_services/call_center/stats2',
+$array['statistics/call_center/web_services/restricted/data/stats2'] = array(
+	'path'		=> 'statistics/call_center/web_services/data/stats2',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['statistics/web_services/restricted/call_center/stats3'] = array(
-	'path'		=> 'statistics/web_services/call_center/stats3',
+$array['statistics/call_center/web_services/restricted/data/stats3'] = array(
+	'path'		=> 'statistics/call_center/web_services/data/stats3',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['statistics/web_services/restricted/call_center/stats4'] = array(
-	'path'		=> 'statistics/web_services/call_center/stats4',
-	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['statistics/web_services/restricted/call_center/stats5'] = array(
-	'path'		=> 'statistics/web_services/call_center/stats5',
+$array['statistics/call_center/web_services/restricted/data/stats4'] = array(
+	'path'		=> 'statistics/call_center/web_services/data/stats4',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 
 # PRIVATE
-$array['statistics/web_services/private/call_center/genercache'] = array(
-	'path'		=> 'statistics/web_services/call_center/genercache',
+$array['statistics/call_center/web_services/private/settings/configuration'] = array(
+	'path'		=> 'statistics/call_center/web_services/settings/configuration',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-$array['statistics/web_services/private/call_center/queue'] = array(
-	'path'		=> 'statistics/web_services/call_center/queue',
+$array['statistics/call_center/web_services/private/data/stats1'] = array(
+	'path'		=> 'statistics/call_center/web_services/data/stats1',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-$array['statistics/web_services/private/call_center/stats1'] = array(
-	'path'		=> 'statistics/web_services/call_center/stats1',
+$array['statistics/call_center/web_services/private/data/stats2'] = array(
+	'path'		=> 'statistics/call_center/web_services/data/stats2',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-$array['statistics/web_services/private/call_center/stats2'] = array(
-	'path'		=> 'statistics/web_services/call_center/stats2',
+$array['statistics/call_center/web_services/private/data/stats3'] = array(
+	'path'		=> 'statistics/call_center/web_services/data/stats3',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-$array['statistics/web_services/private/call_center/stats3'] = array(
-	'path'		=> 'statistics/web_services/call_center/stats3',
+$array['statistics/call_center/web_services/private/data/stats4'] = array(
+	'path'		=> 'statistics/call_center/web_services/data/stats4',
 	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-$array['statistics/web_services/private/call_center/stats4'] = array(
-	'path'		=> 'statistics/web_services/call_center/stats4',
-	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-$array['statistics/web_services/private/call_center/stats5'] = array(
-	'path'		=> 'statistics/web_services/call_center/stats5',
-	'define'	=> array('XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-
-# UI
-$array['statistics/ui/call_center/genercache'] = array(
-	'path'		=> 'statistics/ui/call_center/genercache',
-	'define'	=> array('XIVO_LOC_UI_ACL_CATEGORY'	=> 'call_center',
-        				 'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'genercache'));
-$array['statistics/ui/call_center/genergraphic'] = array(
-	'path'		=> 'statistics/ui/call_center/genergraphic',
-	'define'	=> array('XIVO_LOC_UI_ACL_CATEGORY'	=> 'call_center',
-						 'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'genergraphic'));
-$array['statistics/ui/cdr/search'] = array(
-	'path'		=> 'statistics/ui/cdr/search',
-	'define'	=> array('XIVO_LOC_UI_ACL_CATEGORY'	=> 'cdr',
-						 'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'search'));
 
 ?>

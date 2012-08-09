@@ -21,85 +21,50 @@
 class stats_ressource_queue extends xivo_stats_ressource_abstract
 {
 
-	protected	$_field	= array('presented'				=> array('type' => 'int'),
-								'enterqueue'			=> array('type' => 'int'),
-								'connect'				=> array('type' => 'int'),
-								'abandon'				=> array('type' => 'int'),
-								'deterred_on_close'		=> array('type' => 'int'),
-								'deterred_on_saturation'=> array('type' => 'int'),
-								'rerouted_on_hungup'	=> array('type' => 'int'),
-								'rerouted_on_guide'		=> array('type' => 'int'),
-								'rerouted_on_number'	=> array('type' => 'int'),
-								'total_time_waiting'	=> array('type' => 'int'),
-								'home_rated'			=> array('type' => 'percent'),
-								'qos'					=> array('type' => 'int')
-							);
+	protected	$_type = 'queue';
 
 	public function __construct(&$_XS)
 	{
 		parent::__construct(&$_XS);
-		$this->_table = 'queue_log';
-		$this->_type = 'queue';
-		$this->_xs->set_type($this->_type);
 	}
 
-	public function parse_log($key_data,$key)
+	protected function _build_stat($obj_process, $key, $interval)
 	{
-		$this->init_result($key);
+		$queue_id = $this->_stat_queue->id_from_name($obj_process['name']);
+		if (!$queue_id)
+			return;
 
-		$enterqueue = $this->eval_count_data($key_data,'ENTERQUEUE');
-		$this->update_result(array($key,'enterqueue'),$enterqueue);
-		$this->update_result(array($key,'presented'),$enterqueue);
+		$total = $this->_stat_queue_periodic->get_event_total($interval, $queue_id);
+		$answered = $this->_stat_queue_periodic->get_event_answered($interval, $queue_id);
+		$answered_in_qos = $this->_stat_call_on_queue->get_count_under_qos($interval, $queue_id, $obj_process['qos']);
+		$closed = $this->_stat_queue_periodic->get_event_closed($interval, $queue_id);
+		$full = $this->_stat_queue_periodic->get_event_full($interval, $queue_id);
+		$abandon = $this->_stat_queue_periodic->get_event_abandon($interval, $queue_id);
+		$joinempty = $this->_stat_queue_periodic->get_event_joinempty($interval, $queue_id);
+		$leaveempty = $this->_stat_queue_periodic->get_event_leaveempty($interval, $queue_id);
+		$timeout = $this->_stat_queue_periodic->get_event_timeout($interval, $queue_id);
+		$total_wait_time = $this->_stat_call_on_queue->get_queue_wait_time($interval, $queue_id);
 
-		$connect = $this->eval_count_data($key_data,'CONNECT');
-		$this->update_result(array($key,'connect'),$connect);
-		$this->update_result(array($key,'presented'),$connect);
+		$qos = $answered > 0 ? 100 * $answered_in_qos / $answered : null;
 
-		$field = $this->eval_field_queue_log('CONNECT','holdtime');
-		$sum = $this->eval_sum_data($key_data,'CONNECT',$field);
-		$this->update_result(array($key,'total_time_waiting'),$sum);
+		$hr_total = $answered + $abandon + $closed + $full + $leaveempty + $joinempty + $timeout;
+		$hr = $hr_total > 0 ? 100 * $answered / $hr_total : null;
 
-		$queue = $this->_xs->get_list_by_type('queue');
-		$stats_qos = array_shift($queue);
-		$stats_qos = $stats_qos['qos'];
+		$waited_call = $answered + $abandon + $leaveempty + $timeout;
+		$awt = $waited_call > 0 ? $total_wait_time / $waited_call : null;
 
-		$field = $this->eval_field_queue_log('CONNECT','holdtime');
-		$qos = $this->eval_count_data($key_data,'CONNECT',array('<', array($field, $stats_qos)));
-		$this->update_result(array($key,'qos'),$qos);
-
-		$closed = $this->eval_count_data($key_data,'CLOSED');
-		$this->update_result(array($key,'deterred_on_close'),$closed);
-		$this->update_result(array($key,'presented'),$closed);
-
-		$full = $this->eval_count_data($key_data,'FULL');
-		$this->update_result(array($key,'deterred_on_saturation'),$full);
-		$this->update_result(array($key,'presented'),$full);
-
-		$abandon = $this->eval_count_data($key_data,'ABANDON');
-		$this->update_result(array($key,'abandon'),$abandon);
-		$this->update_result(array($key,'presented'),$abandon);
-
-		$exitempty = $this->eval_count_data($key_data,'EXITEMPTY');
-		$this->update_result(array($key,'rerouted_on_hungup'),$exitempty);
-		$this->update_result(array($key,'presented'),$exitempty);
-		$exitwithtimeout = $this->eval_count_data($key_data,'EXITWITHTIMEOUT');
-		$this->update_result(array($key,'rerouted_on_hungup'),$exitwithtimeout);
-		$this->update_result(array($key,'presented'),$exitwithtimeout);
-
-		$rerouteguide = $this->eval_count_data($key_data,'REROUTEGUIDE');
-		$this->update_result(array($key,'rerouted_on_guide'),$rerouteguide);
-		$this->update_result(array($key,'presented'),$exitwithtimeout);
-
-		$reroutenumber = $this->eval_count_data($key_data,'REROUTENUMBER');
-		$this->update_result(array($key,'rerouted_on_number'),$reroutenumber);
-		$this->update_result(array($key,'presented'),$reroutenumber);
-		$transfer = $this->eval_count_data($key_data,'TRANSFER');
-		$this->update_result(array($key,'rerouted_on_number'),$transfer);
-		$this->update_result(array($key,'presented'),$transfer);
-
-		return($this->_result);
+		$this->_result[$key]['presented']['result'] = $total;
+		$this->_result[$key]['connect']['result'] = $answered;
+		$this->_result[$key]['average_wait_time']['result'] = $awt;
+		$this->_result[$key]['qos']['result'] = $qos;
+		$this->_result[$key]['deterred_on_close']['result'] = $closed;
+		$this->_result[$key]['deterred_on_saturation']['result'] = $full;
+		$this->_result[$key]['abandon']['result'] = $abandon;
+		$this->_result[$key]['joinempty']['result'] = $joinempty;
+		$this->_result[$key]['leaveempty']['result'] = $leaveempty;
+		$this->_result[$key]['timeout']['result'] = $timeout;
+		$this->_result[$key]['home_rated']['result'] = $hr;
 	}
-
 }
 
 ?>

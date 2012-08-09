@@ -94,6 +94,9 @@ $array['module']['stats_conf_user']['datastorage'] = true;
 $array['module']['stats_conf_incall'] = array();
 $array['module']['stats_conf_incall']['datastorage'] = true;
 
+$array['module']['stats_conf_xivouser'] = array();
+$array['module']['stats_conf_xivouser']['datastorage'] = true;
+
 $array['module']['sysconfd'] = array();
 $array['module']['sysconfd']['datastorage'] = false;
 

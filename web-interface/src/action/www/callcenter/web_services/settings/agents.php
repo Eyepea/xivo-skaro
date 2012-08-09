@@ -52,11 +52,7 @@ switch($act)
 		$appagent = &$ipbx->get_application('agent');
 
 		if($appagent->add_from_json() === true)
-		{
 			$status = 200;
-			$ipbx->discuss('module reload chan_agent.so');
-			$ipbx->discuss('xivo[agentlist,update]');
-		}
 		else
 			$status = 400;
 
@@ -69,11 +65,7 @@ switch($act)
 		if($appagent->get($_QRY->get('id')) === false)
 			$status = 404;
 		else if($appagent->delete() === true)
-		{
 			$status = 200;
-			$ipbx->discuss('module reload chan_agent.so');
-			$ipbx->discuss('xivo[agentlist,update]');
-		}
 		else
 			$status = 500;
 
@@ -92,12 +84,10 @@ switch($act)
 		for ($i=0; $i<$nb; $i++)
 		{
 			$ref = &$list[$i];
-			$appagent->get($ref['id']);
+			$appagent->get($ref['agentfeatures']['id']);
 			$appagent->delete();
 		}
 		$status = 200;
-		$ipbx->discuss('module reload chan_agent.so');
-		$ipbx->discuss('xivo[agentlist,update]');
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);

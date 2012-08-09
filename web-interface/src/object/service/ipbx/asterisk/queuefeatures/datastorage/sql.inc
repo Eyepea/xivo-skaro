@@ -39,6 +39,20 @@ class xivo_service_asterisk_queuefeatures_sql extends xivo_service_asterisk_abst
 		return($r);
 	}
 
+	public function get_name_from_queue_id($queue_id)
+	{
+		$this->_dso->new_select($this->_table,'name');
+
+		$this->_dso->where(array('id' => $queue_id));
+
+		$r = $this->_dso->select_singlecolumn();
+
+		if(isset($r[0]) === false)
+			return(false);
+
+		return($r[0]);
+	}
+
 	function get_all_wherein($id,$where,$order=null,$limit=null)
 	{
 		$this->_dso->new_select($this->_table,'*');

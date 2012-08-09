@@ -41,24 +41,20 @@ switch($act)
 			$http_response->send(true);
 		}
 
-		$ipbx->discuss(array('dialplan reload',
-							'sip reload'
-		));
-
 		$_TPL->set_var('info',$info);
 		break;
 	case 'add':
 		$apptrunk = &$ipbx->get_application('trunk',
 						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_SIP));
 
-		$status = $apptrunk->add_from_json() === true ? 200 : 400;
+		$insert_id = $apptrunk->add_from_json();
+		if ($insert_id === false) {
+			$http_response->set_status_line(400);
+			$http_response->send(true);
+		}
 
-		$ipbx->discuss(array('dialplan reload',
-							'sip reload'
-		));
+		$_TPL->set_var('list',$insert_id);
 
-		$http_response->set_status_line($status);
-		$http_response->send(true);
 		break;
 	case 'delete':
 		$apptrunk = &$ipbx->get_application('trunk',
@@ -70,10 +66,6 @@ switch($act)
 			$status = 200;
 		else
 			$status = 500;
-
-		$ipbx->discuss(array('dialplan reload',
-							'sip reload'
-		));
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);
@@ -95,9 +87,6 @@ switch($act)
 			$apptrunk->delete();
 		}
 		$status = 200;
-		$ipbx->discuss(array('dialplan reload',
-							'sip reload'
-		));
 
 		$http_response->set_status_line($status);
 		$http_response->send(true);

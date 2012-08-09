@@ -85,6 +85,9 @@ $array['module']['configfiles']['datastorage'] = false;
 $array['module']['cel'] = array();
 $array['module']['cel']['datastorage'] = true;
 
+$array['module']['cmd_asterisk'] = array();
+$array['module']['cmd_asterisk']['datastorage'] = false;
+
 $array['module']['context'] = array();
 $array['module']['context']['datastorage'] = true;
 
@@ -235,9 +238,6 @@ $array['module']['queueskillcat']['datastorage'] = true;
 $array['module']['queueskillrule'] = array();
 $array['module']['queueskillrule']['datastorage'] = true;
 
-$array['module']['queue_log'] = array();
-$array['module']['queue_log']['datastorage'] = true;
-
 $array['module']['rightcall'] = array();
 $array['module']['rightcall']['datastorage'] = true;
 
@@ -370,7 +370,17 @@ $array['module']['campaign_campaign']['datastorage'] = true;
 $array['module']['campaign_campaign_filter'] = array();
 $array['module']['campaign_campaign_filter']['datastorage'] = true;
 
+$array['module']['stat_queue_periodic'] = array();
+$array['module']['stat_queue_periodic']['datastorage'] = true;
 
+$array['module']['stat_call_on_queue'] = array();
+$array['module']['stat_call_on_queue']['datastorage'] = true;
+
+$array['module']['stat_queue'] = array();
+$array['module']['stat_queue']['datastorage'] = true;
+
+$array['module']['stat_agent'] = array();
+$array['module']['stat_agent']['datastorage'] = true;
 
 $array['protocol'] = array();
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP]    = array('module' => 'usersip');

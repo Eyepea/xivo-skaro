@@ -45,50 +45,50 @@ $_SRE = dwho_gct::get('xivo_service');
 $_USR = dwho_gct::get('_USR');
 
 if(defined('XIVO_TPL_AREA') === false)
-    define('XIVO_TPL_AREA','www');
+	define('XIVO_TPL_AREA','www');
 
 $tpl_area = XIVO_TPL_AREA;
 
 if(isset($_CF['template'][$tpl_area]) === false)
-    $tpl_area = false;
+	$tpl_area = false;
 
 switch($tpl_area)
 {
-    case 'www':
-        if(dwho_constant('XIVO_WEBI_CONFIGURED',false) === false
-        && $_LOC->cmp_to_current_location('/index.php') === false)
-            dwho_die('XIVO is not configured');
+	case 'www':
+		if(dwho_constant('XIVO_WEBI_CONFIGURED',false) === false
+		&& $_LOC->cmp_to_current_location('/index.php') === false)
+			dwho_die('XIVO is not configured');
 
-        dwho::load_class('dwho_tpl');
-        define('XIVO_LOG_TYPE', 'www');
+		dwho::load_class('dwho_tpl');
+		define('XIVO_LOG_TYPE', 'www');
 
-        $_TPL = &new dwho_tpl($_CF['template']['www']['path'],
-                      array('menu','url','dhtml'),
-                      $_URL);
-        break;
-    case 'ui':
-    case 'json':
-        dwho::load_class('dwho_tpl');
-        define('XIVO_LOG_TYPE', 'json');
-        $_TPL = &new dwho_tpl($_CF['template'][$tpl_area]['path'],
-                      array('json','url','dhtml'),
-                      $_URL);
+		$_TPL = &new dwho_tpl($_CF['template']['www']['path'],
+				array('menu','url','dhtml'),
+				$_URL);
+		break;
+	case 'ui':
+	case 'json':
+		dwho::load_class('dwho_tpl');
+		define('XIVO_LOG_TYPE', 'json');
+		$_TPL = &new dwho_tpl($_CF['template'][$tpl_area]['path'],
+				array('json','url','dhtml'),
+				$_URL);
 
 		if(defined('FORCE_WIZARD') === true
-		&& FORCE_WIZARD === true)
+				&& FORCE_WIZARD === true)
 			break;
 
 		if(dwho::load_class('dwho_json') === false
-        || dwho_constant('XIVO_WEBI_CONFIGURED',false) === false)
-        {
-            dwho::load_class('dwho_http');
-            $http_response = dwho_http::factory('response');
-            $http_response->set_status_line(500);
-            $http_response->send(true);
-        }
-        break;
-    default:
-        dwho_die('Invalid TPL AREA');
+				|| dwho_constant('XIVO_WEBI_CONFIGURED',false) === false)
+		{
+			dwho::load_class('dwho_http');
+			$http_response = dwho_http::factory('response');
+			$http_response->set_status_line(500);
+			$http_response->send(true);
+		}
+		break;
+	default:
+		dwho_die('Invalid TPL AREA');
 }
 
 ?>

@@ -37,21 +37,15 @@ if (($type = $table1->get_data_custom('listtype')) !== null
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-<?php
-	if (($msg = $table1->get_error()) !== false):
-		echo $msg;
-	else :
-?>
 		<div class="sb-list">
 <?php
 		echo $table1->infos_html();
-		echo $table1->render_html(false);
+		echo $table1->render_html(false,true,false);
 ?>
 		</div>
 <?php
 		$xivo_jqplot->get_result('chart1');
 		$xivo_jqplot->get_result('chart2');
-	endif;
 ?>
 	</div>
 	<div class="sb-foot xspan">

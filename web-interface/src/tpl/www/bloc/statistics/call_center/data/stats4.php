@@ -23,59 +23,52 @@ $table1 = $this->get_var('table1');
 $axetype = $this->get_var('axetype');
 $listrow = $this->get_var('listrow');
 $xivo_jqplot = $this->get_var('xivo_jqplot');
-$periods = $this->get_var('list_period');
+$conf = $this->get_var('conf');
+
+$periods = $conf['periods'];
 
 $tbl_identity = '';
 if (($type = $table1->get_data_custom('listtype')) !== null
-&& count($type) === 1
-&& isset($type[0]['identity']) === true)
-    $tbl_identity = '('.$type[0]['identity'].')';
+		&& count($type) === 1
+		&& isset($type[0]['identity']) === true)
+	$tbl_identity = '('.$type[0]['identity'].')';
 
 ?>
 
 <div class="b-infos">
 	<h3 class="sb-top xspan">
-		<span class="span-left">&nbsp;</span>
-		<span class="span-center"><?=$this->bbf('title_content_name');?> <?=$tbl_identity?></span>
-		<span class="span-right">&nbsp;</span>
+		<span class="span-left">&nbsp;</span> <span class="span-center"><?=$this->bbf('title_content_name');?>
+			<?=$tbl_identity?> </span> <span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-<?php
-    if ($periods != false):
-        foreach ($periods as $k => $v):
-            echo $this->bbf('col_t'.$k);
-            if (empty($v['end']) === true):
-            	echo ': ',$v['beg'], 's ';
-            else:
-                echo ': ',$v['beg'], '-', $v['end'], 's ';
-            endif;
-            echo ' | ';
-        endforeach;
-    endif;
-
-if (($msg = $table1->get_error()) !== false):
-	echo $msg;
-else :
-?>
+		<?php
+		if ($periods != false):
+			foreach ($periods as $k => $v):
+				echo $this->bbf('col_t'.$k);
+				if (empty($v['end']) === true):
+					echo ': ',$v['beg'], 's ';
+				else:
+					echo ': ',$v['beg'], '-', $v['end'], 's ';
+				endif;
+				echo ' | ';
+			endforeach;
+		endif;
+		?>
 		<div class="sb-list">
 <?php
 		echo $table1->infos_html();
-		echo $table1->render_html(false);
+		echo $table1->render_html(false,true,false);
 ?>
 		</div>
 		<div class="sb-graph">
-<?php
-		$xivo_jqplot->get_result('chart1');
-		$xivo_jqplot->get_result('chart2');
-?>
+			<?php
+			$xivo_jqplot->get_result('chart1');
+			$xivo_jqplot->get_result('chart2');
+			?>
 		</div>
-<?php
-endif;
-?>
-    </div>
+	</div>
 	<div class="sb-foot xspan">
-		<span class="span-left">&nbsp;</span>
-		<span class="span-center">&nbsp;</span>
+		<span class="span-left">&nbsp;</span> <span class="span-center">&nbsp;</span>
 		<span class="span-right">&nbsp;</span>
 	</div>
 </div>

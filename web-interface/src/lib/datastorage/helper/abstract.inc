@@ -20,40 +20,40 @@
 
 class dwho_datastorage_helper_abstract
 {
-    var $_dso    = null;
-    var $_param    = array();
+	var $_dso      = null;
+	var $_param    = array();
 
-    function _init(&$dso)
-    {
-        if(is_object($dso) === false)
-            trigger_error('Invalid Datastorage object',E_USER_ERROR);
+	function _init(&$dso)
+	{
+		if(is_object($dso) === false)
+			trigger_error('Invalid Datastorage object',E_USER_ERROR);
 
-        $this->_dso = &$dso;
-    }
+		$this->_dso = &$dso;
+	}
 
-    function set_param($name,$value)
-    {
-        $name = (string) $name;
+	function set_param($name,$value)
+	{
+		$name = (string) $name;
 
-        $this->_param[$name] = $value;
+		$this->_param[$name] = $value;
 
-        return(true);
-    }
+		return(true);
+	}
 
-    function get_param($name)
-    {
-        $name = (string) $name;
+	function get_param($name)
+	{
+		$name = (string) $name;
 
-        if(isset($this->_param[$name]) === true)
-            return($this->_param[$name]);
-        else
-            return(null);
-    }
+		if(isset($this->_param[$name]) === true)
+			return($this->_param[$name]);
+		else
+			return(null);
+	}
 
-    function get_params()
-    {
-        return($this->_param);
-    }
+	function get_params()
+	{
+		return($this->_param);
+	}
 }
 
 ?>

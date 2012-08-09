@@ -20,4 +20,3 @@
 include(dirname(__FILE__). ($this->get_var('zoom')?'/_zoom.php':'/_common.php'));
 
 ?>
-

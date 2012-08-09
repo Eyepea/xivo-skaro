@@ -2413,12 +2413,64 @@ CREATE TABLE "queue_log" (
  );
 
 CREATE INDEX queue_log__idx_time ON queue_log USING btree ("time");
+CREATE INDEX queue_log__idx_callid ON queue_log USING btree ("callid");
 CREATE INDEX queue_log__idx_queuename ON queue_log USING btree ("queuename");
-CREATE INDEX queue_log__idx_agent ON queue_log USING btree ("agent");
 CREATE INDEX queue_log__idx_event ON queue_log USING btree ("event");
-CREATE INDEX queue_log__idx_data1 ON queue_log USING btree ("data1");
-CREATE INDEX queue_log__idx_data2 ON queue_log USING btree ("data2");
 
+DROP TYPE IF EXISTS "call_exit_type";
+CREATE TYPE "call_exit_type" AS ENUM (
+  'full',
+  'closed',
+  'joinempty',
+  'leaveempty',
+  'reroutedguide',
+  'reroutednumber',
+  'answered',
+  'abandoned',
+  'timeout'
+);
+
+DROP TABLE IF EXISTS "stat_agent";
+CREATE TABLE "stat_agent" (
+ "id" SERIAL PRIMARY KEY,
+ "name" VARCHAR(128) NOT NULL
+);
+
+DROP TABLE IF EXISTS "stat_queue";
+CREATE TABLE "stat_queue" (
+ "id" SERIAL PRIMARY KEY,
+ "name" VARCHAR(128) NOT NULL
+);
+
+DROP TABLE IF EXISTS "stat_call_on_queue";
+CREATE TABLE "stat_call_on_queue" (
+ "id" SERIAL PRIMARY KEY,
+ "callid" VARCHAR(32) NOT NULL,
+ "time" timestamp NOT NULL,
+ "ringtime" INTEGER NOT NULL DEFAULT 0,
+ "talktime" INTEGER NOT NULL DEFAULT 0,
+ "waittime" INTEGER NOT NULL DEFAULT 0,
+ "status" call_exit_type NOT NULL,
+ "queue_id" INTEGER REFERENCES stat_queue (id),
+ "agent_id" INTEGER REFERENCES stat_agent (id)
+);
+
+DROP TABLE IF EXISTS "stat_queue_periodic";
+CREATE TABLE "stat_queue_periodic" (
+ "id" SERIAL PRIMARY KEY,
+ "time" timestamp NOT NULL,
+ "answered" INTEGER NOT NULL DEFAULT 0,
+ "abandoned" INTEGER NOT NULL DEFAULT 0,
+ "total" INTEGER NOT NULL DEFAULT 0,
+ "full" INTEGER NOT NULL DEFAULT 0,
+ "closed" INTEGER NOT NULL DEFAULT 0,
+ "joinempty" INTEGER NOT NULL DEFAULT 0,
+ "leaveempty" INTEGER NOT NULL DEFAULT 0,
+ "reroutedguide" INTEGER NOT NULL DEFAULT 0,
+ "reroutednumber" INTEGER NOT NULL DEFAULT 0,
+ "timeout" INTEGER NOT NULL DEFAULT 0,
+ "queue_id" INTEGER REFERENCES stat_queue (id)
+);
 
 DROP TABLE IF EXISTS "pickup";
 CREATE TABLE "pickup" (
@@ -2717,14 +2769,47 @@ CREATE TABLE "sccpdevice" (
 );
 
 
--- grant all rights to asterisk.* for asterisk user
-CREATE OR REPLACE FUNCTION execute(text) 
-RETURNS VOID AS '
-BEGIN
-	execute $1;
-END;
-' LANGUAGE plpgsql;
-SELECT execute('GRANT ALL ON '||schemaname||'.'||tablename||' TO asterisk;') FROM pg_tables WHERE schemaname = 'public';
-SELECT execute('GRANT ALL ON SEQUENCE '||relname||' TO asterisk;') FROM pg_class WHERE relkind = 'S';
+DROP TYPE IF EXISTS "queue_statistics";
+CREATE TYPE "queue_statistics" AS (
+    received_call_count bigint,
+    answered_call_count bigint,
+    answered_call_in_qos_count bigint,
+    abandonned_call_count bigint,
+    received_and_done bigint,
+    max_hold_time integer,
+    mean_hold_time integer
+);
+
+
+DROP FUNCTION IF EXISTS "get_queue_statistics" (text, int, int);
+CREATE FUNCTION "get_queue_statistics" (queue_name text, in_window int, xqos int)
+  RETURNS "queue_statistics" AS
+$$
+    SELECT
+        -- received_call_count
+        count(*),
+        -- answered_call_count
+        count(case when call_picker <> '' then 1 end),
+        -- answered_call_in_qos_count
+        count(case when call_picker <> '' and hold_time < $3 then 1 end),
+        -- abandonned_call_count
+        count(case when hold_time is not null and (call_picker = '' or call_picker is null) then 1 end),
+        -- received_and_done
+        count(hold_time),
+        -- max_hold_time
+        max(hold_time),
+         -- mean_hold_time
+        cast (round(avg(hold_time)) as int)
+    FROM
+        queue_info
+    WHERE
+        queue_name = $1 and call_time_t > $2;
+$$
+LANGUAGE SQL;
+
+
+-- grant all rights to asterisk
+GRANT ALL ON ALL TABLES IN SCHEMA public TO asterisk;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public to asterisk;
 
 COMMIT;

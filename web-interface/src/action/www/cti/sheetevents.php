@@ -48,7 +48,7 @@ if(isset($_QR['fm_send']) === true)
 	$parting = array();
 
 	$str = "{";
-    # Custom events commented out and removed from template untill correctly implemented.
+	# Custom events commented out and removed from template untill correctly implemented.
 	#foreach($_QR['customcol1'] as $k=>$v)
 	#{
 	#	$tv = trim($v);
@@ -70,10 +70,7 @@ if(isset($_QR['fm_send']) === true)
 	}
 
 	if($ret == 1)
-	{
-	    $ipbx->discuss('xivo[cticonfig,update]');
 		$fm_save = true;
-	}
 }
 $load_inf = $sheetevents->get_all();
 

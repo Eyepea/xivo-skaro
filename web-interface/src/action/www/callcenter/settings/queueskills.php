@@ -74,12 +74,7 @@ switch($act)
 				$fm_save = false;
 			}
 			else
-			{
-				// must reload configuration files
-				$ipbx->discuss('module reload app_queue.so');
-
 				$_QRY->go($_TPL->url('callcenter/settings/queueskills'), $param);
-			}
 		}
 
 		$_TPL->set_var('fm_save', $fm_save);
@@ -113,12 +108,7 @@ switch($act)
 
 			if($appqueue->skills_setedit($_QR['queueskill']['name'], $queueskills) === true
 			&& $appqueue->skills_edit($_QR['id'], $_QR['queueskill']['name'], $queueskills) === true)
-			{
-				// must reload configuration files
-				$ipbx->discuss('module reload app_queue.so');
-
 				$_QRY->go($_TPL->url('callcenter/settings/queueskills'), $param);
-			}
 
 			$fm_save = false;
 
@@ -135,21 +125,16 @@ switch($act)
 		break;
 
 	case 'delete':
-		// delete selected items
 		$appqueue = &$ipbx->get_application('queue');
 
 		if(isset($_QR['id']))
 			$appqueue->skills_delete($_QR['id']);
 
-		// must reload configuration files
-		$ipbx->discuss('module reload app_queue.so');
 		$_QRY->go($_TPL->url('callcenter/settings/queueskills'),$param);
 
-		// $ipbx->discuss('xivo[userlist,update]');
 		break;
 
 	case 'deletes':
-		// delete multiple items
 		$param['page'] = $page;
 
 		if(($values = dwho_issa_val('queueskills',$_QR)) === false)
@@ -159,13 +144,8 @@ switch($act)
 		$nb = count($values);
 
 		for($i = 0; $i < $nb; $i++)
-		{
-			// we delete each value one by one
 			$appqueue->skills_delete($values[$i]);
-		}
 
-		// must reload configuration files
-		$ipbx->discuss('module reload app_queue.so');
 		$_QRY->go($_TPL->url('callcenter/settings/queueskills'), $param);
 		break;
 
